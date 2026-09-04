@@ -1,12 +1,23 @@
+# Dependencies
 node_modules/
+
+# Build and test output
 dist/
 coverage/
+playwright-report/
+test-results/
 
-# Generated curated runtime assets.
+# Generated runtime assets
 public/assets/
 
-# Local tooling and OS files.
+# Local environment and editor files
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
 *.log
+*.tsbuildinfo
 .DS_Store
 Thumbs.db
 
