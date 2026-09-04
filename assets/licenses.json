@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "commercialReleaseBlocked": true,
+  "commercialReleaseBlockReason": "The checked-in Minifantasy archives contain no local commercial-license proof. Their free licenses permit non-commercial projects only. Replace the license records with purchase evidence before a commercial release.",
+  "licenses": [
+    {
+      "id": "minifantasy-creatures-free",
+      "pack": "Minifantasy Creatures",
+      "author": "Krishna Palacio",
+      "sourceUrl": "https://krishna-palacio.itch.io/minifantasy-creatures",
+      "licenseName": "Minifantasy Free License (non-commercial only)",
+      "attribution": "Krishna Palacio",
+      "attributionRequired": true,
+      "commercialUseAllowed": false,
+      "licenseEvidence": "Official publisher page, Licenses > Free License, verified 2026-09-04; local archive has animation metadata but no license file.",
+      "releaseRequirement": "Credit Krishna Palacio and send the creator a link when the project is completed. Acquire and record the commercial version before any commercial release."
+    },
+    {
+      "id": "minifantasy-forgotten-plains-free",
+      "pack": "Minifantasy Forgotten Plains",
+      "author": "Krishna Palacio",
+      "sourceUrl": "https://krishna-palacio.itch.io/minifantasy-forgotten-plains",
+      "licenseName": "Minifantasy Free License (non-commercial only)",
+      "attribution": "Krishna Palacio",
+      "attributionRequired": true,
+      "commercialUseAllowed": false,
+      "licenseEvidence": "Official publisher page, Licenses section, verified 2026-09-04; local archive has tileset metadata but no license file.",
+      "releaseRequirement": "Credit Krishna Palacio and send the creator a link when the project is completed. Acquire and record the commercial version before any commercial release."
+    },
+    {
+      "id": "xdeviruchi-16bit-2025",
+      "pack": "16-Bit Fantasy & Adventure Music (2025)",
+      "author": "Marllon Silva (xDeviruchi)",
+      "sourceUrl": "https://xdeviruchi.itch.io/16-bit-fantasy-adventure-music-pack",
+      "licenseName": "xDeviruchi non-exclusive commercial and non-commercial use license",
+      "attribution": "Original music by Marllon Silva (xDeviruchi)",
+      "attributionRequired": true,
+      "commercialUseAllowed": true,
+      "licenseEvidence": "assets/music/xDeviruchi - 16 bit Fantasy & Adventure (2025)/DOCUMENTATION & LICENSE.pdf",
+      "releaseRequirement": "Include the exact attribution text and do not redistribute the original tracks as standalone material."
+    },
+    {
+      "id": "leohpaz-rpg-essentials-free",
+      "pack": "RPG Essentials SFX - Free",
+      "author": "Leohpaz",
+      "sourceUrl": "https://leohpaz.itch.io/rpg-essentials-sfx-free",
+      "licenseName": "RPG Essentials SFX Free project-use license",
+      "attribution": "Leohpaz",
+      "attributionRequired": false,
+      "commercialUseAllowed": true,
+      "licenseEvidence": "Official publisher page, LICENSING section and publisher commercial-use confirmation, verified 2026-09-04; no local license file was supplied.",
+      "releaseRequirement": "Do not sell or redistribute the sound pack; direct interested users to the publisher page."
+    }
+  ]
+}

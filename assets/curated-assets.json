@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "key": "unit.goblin.idle",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Base_Humanoids/Goblin/GoblinIdle.png",
+      "output": "public/assets/runtime/units/goblin/idle.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 200,
+      "animationStart": 0,
+      "animationEnd": 15
+    },
+    {
+      "key": "unit.goblin.walk",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Base_Humanoids/Goblin/GoblinWalk.png",
+      "output": "public/assets/runtime/units/goblin/walk.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 200,
+      "animationStart": 0,
+      "animationEnd": 3
+    },
+    {
+      "key": "unit.goblin.attack",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Base_Humanoids/Goblin/GoblinAttack.png",
+      "output": "public/assets/runtime/units/goblin/attack.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 100,
+      "animationStart": 0,
+      "animationEnd": 3
+    },
+    {
+      "key": "unit.goblin.dmg",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Base_Humanoids/Goblin/GoblinDmg.png",
+      "output": "public/assets/runtime/units/goblin/dmg.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 100,
+      "animationStart": 0,
+      "animationEnd": 3
+    },
+    {
+      "key": "unit.goblin.death",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Base_Humanoids/Goblin/GoblinSpinDie.png",
+      "output": "public/assets/runtime/units/goblin/death.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 100,
+      "animationStart": 0,
+      "animationEnd": 11
+    },
+    {
+      "key": "unit.troll.idle",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollIdle.png",
+      "output": "public/assets/runtime/units/troll/idle.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 200,
+      "animationStart": 0,
+      "animationEnd": 15
+    },
+    {
+      "key": "unit.troll.walk",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollWalk.png",
+      "output": "public/assets/runtime/units/troll/walk.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 200,
+      "animationStart": 0,
+      "animationEnd": 5
+    },
+    {
+      "key": "unit.troll.attack",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollAttack.png",
+      "output": "public/assets/runtime/units/troll/attack.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 100,
+      "animationStart": 0,
+      "animationEnd": 3
+    },
+    {
+      "key": "unit.troll.dmg",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollDmg.png",
+      "output": "public/assets/runtime/units/troll/dmg.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 100,
+      "animationStart": 0,
+      "animationEnd": 3
+    },
+    {
+      "key": "unit.troll.death",
+      "type": "spritesheet",
+      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollDie.png",
+      "output": "public/assets/runtime/units/troll/death.png",
+      "licenseId": "minifantasy-creatures-free",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frameDurationMs": 100,
+      "animationStart": 0,
+      "animationEnd": 13
+    },
+    {
+      "key": "world.ground",
+      "type": "image",
+      "source": "assets/sprites/Minifantasy_ForgottenPlains_Assets/Tileset/Minifantasy_ForgottenPlainsTiles.png",
+      "output": "public/assets/runtime/world/forgotten-plains-tiles.png",
+      "licenseId": "minifantasy-forgotten-plains-free"
+    },
+    {
+      "key": "world.props",
+      "type": "image",
+      "source": "assets/sprites/Minifantasy_ForgottenPlains_Assets/props/Minifantasy_ForgottenPlainsProps.png",
+      "output": "public/assets/runtime/world/forgotten-plains-props.png",
+      "licenseId": "minifantasy-forgotten-plains-free"
+    },
+    {
+      "key": "music.colony",
+      "type": "audio",
+      "source": "assets/music/xDeviruchi - 16 bit Fantasy & Adventure (2025)/Loopable + one shots/ogg/03 - Definitely Our Town.ogg",
+      "output": "public/assets/runtime/audio/music/colony.ogg",
+      "licenseId": "xdeviruchi-16bit-2025"
+    },
+    {
+      "key": "music.battle",
+      "type": "audio",
+      "source": "assets/music/xDeviruchi - 16 bit Fantasy & Adventure (2025)/Loopable + one shots/ogg/05 - Battle 1.ogg",
+      "output": "public/assets/runtime/audio/music/battle.ogg",
+      "licenseId": "xdeviruchi-16bit-2025",
+      "preload": false
+    },
+    {
+      "key": "music.victory",
+      "type": "audio",
+      "source": "assets/music/xDeviruchi - 16 bit Fantasy & Adventure (2025)/Loopable + one shots/ogg/06 - Victory!.ogg",
+      "output": "public/assets/runtime/audio/music/victory.ogg",
+      "licenseId": "xdeviruchi-16bit-2025",
+      "preload": false
+    },
+    {
+      "key": "sfx.buy",
+      "type": "audio",
+      "source": "assets/music/RPG_Essentials_Free/10_UI_Menu_SFX/079_Buy_sell_01.wav",
+      "output": "public/assets/runtime/audio/sfx/buy.wav",
+      "licenseId": "leohpaz-rpg-essentials-free"
+    },
+    {
+      "key": "sfx.attack",
+      "type": "audio",
+      "source": "assets/music/RPG_Essentials_Free/10_Battle_SFX/22_Slash_04.wav",
+      "output": "public/assets/runtime/audio/sfx/attack.wav",
+      "licenseId": "leohpaz-rpg-essentials-free"
+    },
+    {
+      "key": "sfx.death",
+      "type": "audio",
+      "source": "assets/music/RPG_Essentials_Free/10_Battle_SFX/69_Enemy_death_01.wav",
+      "output": "public/assets/runtime/audio/sfx/death.wav",
+      "licenseId": "leohpaz-rpg-essentials-free"
+    }
+  ]
+}
