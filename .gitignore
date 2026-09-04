@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+
+# Generated curated runtime assets.
+public/assets/
+
+# Local tooling and OS files.
+*.log
+.DS_Store
+Thumbs.db
+
