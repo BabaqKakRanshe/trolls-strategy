@@ -15,27 +15,44 @@ import {
 } from '../../src/game/scenes/MinimalScene';
 
 describe('minimal visual runtime', () => {
-  it('registers only the geometry-only scene on a white background', () => {
+  it('registers the colony scene in a 16:9 viewport without white letterboxing', () => {
     const config = createGameConfig('game-canvas');
 
-    expect(config.backgroundColor).toBe('#ffffff');
+    expect(config.backgroundColor).toBe('#102f31');
+    expect(config.width).toBe(1280);
+    expect(config.height).toBe(720);
     expect(config.scene).toEqual([MinimalScene]);
   });
 
-  it('defines only a red market and a blue warehouse', () => {
+  it('aligns the red market, blue warehouse, and barracks to grid cells', () => {
     expect(MINIMAL_SCENE_LAYOUT).toEqual([
-      { kind: 'market', x: 420, y: 360, width: 240, height: 180, color: 0xff0000 },
-      { kind: 'warehouse', x: 860, y: 360, width: 240, height: 180, color: 0x0000ff },
+      { kind: 'market', cell: { x: 9, y: 10 }, color: 0xff0000 },
+      { kind: 'warehouse', cell: { x: 29, y: 10 }, color: 0x0000ff },
+      { kind: 'barracks', cell: { x: 19, y: 18 }, color: 0xff9900 },
     ]);
   });
 
-  it('does not load or render sprites, images, text, or audio', () => {
+  it('loads only the approved background and building images', () => {
     const source = readFileSync(
       new URL('../../src/game/scenes/MinimalScene.ts', import.meta.url),
       'utf8',
     );
 
-    expect(source).not.toMatch(/\.sprite\(|\.image\(|\.text\(|this\.load|this\.sound|texture/i);
+    expect(source.match(/this\.load\.image/g)).toHaveLength(3);
+    expect(source.match(/this\.load\.spritesheet/g)).toHaveLength(6);
+    expect(source).not.toContain("'/assets/runtime/world/background.png'");
+    expect(source).toContain("'/assets/runtime/buildings/market.png'");
+    expect(source).toContain("'/assets/runtime/buildings/mine.png'");
+    expect(source).toContain("'/assets/runtime/buildings/warehouse.png'");
+    expect(source).toContain("'goblin.idle'");
+    expect(source).toContain("'goblin.walk'");
+    expect(source).toContain("'goblin.attack'");
+    expect(source).toContain("'goblin.jump'");
+    expect(source).toContain("'goblin.damage'");
+    expect(source).toContain("'goblin.death'");
+    expect(source).not.toMatch(/\.text\(|this\.sound|\.audio\(/i);
     expect(source).toContain('.circle(');
+    expect(source).not.toContain('lineBetween(');
+    expect(source).toContain('isBuildingPlacementValid');
   });
 });

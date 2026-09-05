@@ -11,10 +11,23 @@ import type {
   Equipment,
   Formation,
   GameState,
+  GridCell,
   Item,
   MissionState,
   Unit,
 } from '../domain/model';
+import {
+  BARRACKS_CELL,
+  BARRACKS_FOOTPRINT,
+  BUILDING_FOOTPRINTS,
+  MARKET_CELL,
+  MAX_UNITS_PER_CELL,
+  WAREHOUSE_CELL,
+  cellKey,
+  footprintCells,
+  isFootprintInside,
+  isGridCell,
+} from '../domain/map/grid';
 import { deriveMissionRunIdentity } from '../domain/progression/missionIdentity';
 import type { CommandResult } from '../domain/results';
 
@@ -123,8 +136,12 @@ function parseUnit(value: unknown): Unit | null {
   const armor = nonNegativeFinite(value.armor);
   const assignment = parseAssignment(value.assignment);
   const equipment = parseEquipment(value.equipment);
+  const mapCell = value.mapCell === undefined || value.mapCell === null
+    ? null
+    : parseGridCell(value.mapCell);
   if ([level, health, maxHealth, strength, speed, carryCapacity, attackIntervalMs, damage, armor]
-    .some((entry) => entry === null) || assignment === null || equipment === null) {
+    .some((entry) => entry === null) || assignment === null || equipment === null
+    || (value.mapCell !== undefined && value.mapCell !== null && mapCell === null)) {
     return null;
   }
   if (health! > maxHealth!) {
@@ -145,6 +162,7 @@ function parseUnit(value: unknown): Unit | null {
     armor: armor!,
     assignment,
     equipment,
+    mapCell,
   } as Unit;
 }
 
@@ -236,10 +254,18 @@ function parseBuilding(value: unknown): Building | null {
     return null;
   }
   const ironOre = repairedCounter(value.inventory.ironOre);
+  const defaultCells: Record<string, GridCell | null> = {
+    market: MARKET_CELL, warehouse: WAREHOUSE_CELL, mine: null, 'town-hall': null,
+  };
+  const mapCell = value.mapCell === undefined
+    ? defaultCells[value.kind] ?? null
+    : value.mapCell === null ? null : parseGridCell(value.mapCell);
+  if (value.mapCell !== undefined && value.mapCell !== null && mapCell === null) return null;
   return ironOre === null ? null : {
     id: value.id,
     kind: value.kind,
     inventory: { ironOre },
+    mapCell,
   } as Building;
 }
 
@@ -312,6 +338,11 @@ function parseFormationSlot(value: unknown): { x: number; y: number } | null {
     return null;
   }
   return { x: value.x as number, y: value.y as number };
+}
+
+function parseGridCell(value: unknown): GridCell | null {
+  const cell = parseFormationSlot(value);
+  return cell !== null && isGridCell(cell) ? cell : null;
 }
 
 function parseCombatInput(value: unknown): CombatInput | null {
@@ -409,6 +440,7 @@ function hasValidStateInvariants(state: GameState): boolean {
     || hasDuplicates(state.mission.appliedRunIds)
     || hasDuplicates(state.mission.clearedMissionIds)
     || hasDuplicates(state.unlocks)
+    || !hasValidMapOccupancy(state)
   ) {
     return false;
   }
@@ -433,6 +465,31 @@ function hasValidStateInvariants(state: GameState): boolean {
     return false;
   }
   return hasConsistentMission(state);
+}
+
+function hasValidMapOccupancy(state: GameState): boolean {
+  if (state.units.some((unit) => unit.mapCell !== null && !isGridCell(unit.mapCell))
+    || state.buildings.some((building) => building.mapCell !== null && !isGridCell(building.mapCell))) {
+    return false;
+  }
+  const buildingCells = state.buildings.flatMap((building) => {
+    if (building.mapCell === null) return [];
+    const footprint = BUILDING_FOOTPRINTS[building.kind];
+    return isFootprintInside(building.mapCell, footprint)
+      ? footprintCells(building.mapCell, footprint).map(cellKey)
+      : ['invalid'];
+  });
+  buildingCells.push(...footprintCells(BARRACKS_CELL, BARRACKS_FOOTPRINT).map(cellKey));
+  if (buildingCells.includes('invalid')) return false;
+  if (new Set(buildingCells).size !== buildingCells.length) return false;
+  const counts = new Map<string, number>();
+  for (const unit of state.units) {
+    if (unit.mapCell === null) continue;
+    const key = cellKey(unit.mapCell);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+    if (counts.get(key)! > MAX_UNITS_PER_CELL) return false;
+  }
+  return true;
 }
 
 function hasCanonicalBuildings(buildings: Building[]): boolean {

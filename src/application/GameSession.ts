@@ -2,15 +2,20 @@ import { BUILDING_CATALOG, UNIT_CATALOG, type UnitSpecies } from '../content/cat
 import { MISSION_ONE } from '../content/missionCatalog';
 import {
   assignHauler,
+  assignHaulers,
   assignWorkers,
   equipItem,
   recruitUnit,
+  sellUnits,
+  sendToBarracks,
+  spawnUnit,
   setIdle,
   unequipItem,
 } from '../domain/colony/commands';
 import { tickColony } from '../domain/colony/tickColony';
 import { simulateCombat } from '../domain/combat/simulateCombat';
 import { createInitialState } from '../domain/initialState';
+import { DEFAULT_MINE_CELL, isBuildingPlacementValid } from '../domain/map/grid';
 import type {
   ActiveMissionRun,
   BuildingId,
@@ -23,6 +28,7 @@ import type {
   MissionRunId,
   Unit,
   UnitId,
+  GridCell,
 } from '../domain/model';
 import {
   combatantId,
@@ -45,6 +51,10 @@ export interface GameCommandContractMap {
     payload: { species: UnitSpecies; id: UnitId; name: string };
     value: UnitId;
   };
+  SPAWN_UNIT: {
+    payload: { species: UnitSpecies; id: UnitId; name: string; cell: GridCell };
+    value: UnitId;
+  };
   ASSIGN_WORKERS: {
     payload: { unitIds: readonly UnitId[]; buildingId: BuildingId };
     value: void;
@@ -53,6 +63,12 @@ export interface GameCommandContractMap {
     payload: { unitId: UnitId; fromId: BuildingId; toId: BuildingId };
     value: void;
   };
+  ASSIGN_HAULERS: {
+    payload: { unitIds: readonly UnitId[]; fromId: BuildingId; toId: BuildingId };
+    value: void;
+  };
+  SELL_UNITS: { payload: { unitIds: readonly UnitId[] }; value: number };
+  SEND_TO_BARRACKS: { payload: { unitIds: readonly UnitId[] }; value: void };
   SET_IDLE: { payload: { unitIds: readonly UnitId[] }; value: void };
   EQUIP_ITEM: { payload: { unitId: UnitId; itemId: ItemId }; value: void };
   UNEQUIP_ITEM: {
@@ -60,7 +76,7 @@ export interface GameCommandContractMap {
     value: void;
   };
   SELL_ORE: { payload: { buildingId: BuildingId; amount: number }; value: number };
-  PURCHASE_MINE: { payload: Record<never, never>; value: void };
+  PURCHASE_MINE: { payload: { cell?: GridCell }; value: void };
   START_MISSION: {
     payload: { missionId: typeof MISSION_ONE.id; formation: Formation };
     value: MissionRunId;
@@ -93,11 +109,21 @@ export class GameSession {
     RECRUIT_UNIT: (command: GameCommandOf<'RECRUIT_UNIT'>) => (
       recruitUnit(this.state, command.species, command.id, command.name)
     ),
+    SPAWN_UNIT: (command: GameCommandOf<'SPAWN_UNIT'>) => (
+      spawnUnit(this.state, command.species, command.id, command.name, command.cell)
+    ),
     ASSIGN_WORKERS: (command: GameCommandOf<'ASSIGN_WORKERS'>) => (
       assignWorkers(this.state, command.unitIds, command.buildingId)
     ),
     ASSIGN_HAULER: (command: GameCommandOf<'ASSIGN_HAULER'>) => (
       assignHauler(this.state, command.unitId, command.fromId, command.toId)
+    ),
+    ASSIGN_HAULERS: (command: GameCommandOf<'ASSIGN_HAULERS'>) => (
+      assignHaulers(this.state, command.unitIds, command.fromId, command.toId)
+    ),
+    SELL_UNITS: (command: GameCommandOf<'SELL_UNITS'>) => sellUnits(this.state, command.unitIds),
+    SEND_TO_BARRACKS: (command: GameCommandOf<'SEND_TO_BARRACKS'>) => (
+      sendToBarracks(this.state, command.unitIds)
     ),
     SET_IDLE: (command: GameCommandOf<'SET_IDLE'>) => (
       setIdle(this.state, command.unitIds)
@@ -111,7 +137,7 @@ export class GameSession {
     SELL_ORE: (command: GameCommandOf<'SELL_ORE'>) => (
       this.sellOre(command.buildingId, command.amount)
     ),
-    PURCHASE_MINE: () => this.purchaseMine(),
+    PURCHASE_MINE: (command: GameCommandOf<'PURCHASE_MINE'>) => this.purchaseMine(command.cell),
     START_MISSION: (command: GameCommandOf<'START_MISSION'>) => (
       this.startMission(command.missionId, command.formation)
     ),
@@ -205,7 +231,7 @@ export class GameSession {
     return { ok: true, value: proceeds };
   }
 
-  private purchaseMine(): CommandResult<void> {
+  private purchaseMine(cell?: GridCell): CommandResult<void> {
     const definition = BUILDING_CATALOG.mine;
     if (this.state.unlocks.includes(definition.unlockId)) {
       return { ok: false, error: { code: 'ALREADY_APPLIED' } };
@@ -213,9 +239,16 @@ export class GameSession {
     if (this.state.wallet.gold < definition.purchaseCost) {
       return { ok: false, error: { code: 'INSUFFICIENT_GOLD' } };
     }
+    const placement = cell ?? DEFAULT_MINE_CELL;
+    const mine = this.state.buildings.find((building) => building.kind === 'mine');
+    const occupiedBuildings = this.state.buildings.filter((building) => building !== mine);
+    if (!isBuildingPlacementValid({ units: this.state.units, buildings: occupiedBuildings }, 'mine', placement)) {
+      return { ok: false, error: { code: 'CELL_OCCUPIED' } };
+    }
 
     this.state.wallet.gold -= definition.purchaseCost;
     this.state.unlocks.push(definition.unlockId);
+    if (mine) mine.mapCell = { ...placement };
     return { ok: true, value: undefined };
   }
 

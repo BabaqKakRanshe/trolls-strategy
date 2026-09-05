@@ -23,6 +23,11 @@ export type EquipmentSlot = 'weapon' | 'armor';
 export type BuildingKind = 'town-hall' | 'mine' | 'warehouse' | 'market';
 export type HaulPhase = 'toSource' | 'loading' | 'toDestination' | 'unloading';
 
+export interface GridCell {
+  x: number;
+  y: number;
+}
+
 export type Assignment =
   | { kind: 'idle' }
   | { kind: 'work'; buildingId: BuildingId }
@@ -58,6 +63,7 @@ export interface Unit {
   armor: number;
   assignment: Assignment;
   equipment: Equipment;
+  mapCell: GridCell | null;
 }
 
 export interface Item {
@@ -80,6 +86,7 @@ export interface Building {
   id: BuildingId;
   kind: BuildingKind;
   inventory: Inventory;
+  mapCell: GridCell | null;
 }
 
 export interface FormationSlot {

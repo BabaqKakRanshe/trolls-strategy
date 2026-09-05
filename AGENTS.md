@@ -14,7 +14,7 @@ These rules apply to every change in this repository.
 - Domain rules live in `src/domain` and must remain deterministic and independent of Phaser, DOM, storage, and wall-clock APIs.
 - `src/application` coordinates domain commands and exposes immutable snapshots; it must not import browser adapters.
 - `src/persistence` owns save validation and storage coordination. Browser APIs stay behind `SavePort` adapters.
-- `src/game` renders geometry only: white background, red market, blue warehouse, purchased mine, and creatures. Do not introduce sprites, textures, or audio unless the user explicitly changes this constraint.
+- `src/game` renders only manifest-approved sprites from `assets/sprites/sources`; geometry remains the fallback for missing textures. Do not load the rest of `assets` or introduce audio unless the user explicitly changes this constraint.
 - `src/ui` contains the counters and native shop buttons. It reads immutable snapshots and submits typed commands; it never mutates domain state or recomputes gameplay outcomes.
 - `src/main.ts` is only the composition root. Do not move business rules into it.
 - Dependencies flow inward: presentation/adapters → application → domain. Content definitions may be consumed by all inner gameplay layers but must not depend on presentation.
@@ -30,6 +30,9 @@ These rules apply to every change in this repository.
 
 - All state changes enter through the typed `GameCommandContractMap` and `GameSession.dispatch`.
 - Validate an entire command before mutation and commit it atomically.
+- Grid coordinates and cell-capacity rules are domain state in `src/domain/map`; Phaser only projects them to pixels.
+- Building footprints and the central buildable zone are canonical domain rules; placement previews must call the same validator as purchase commands.
+- Selection, drag rectangles, stack pickers, and target modes are transient application state in `MapInteractionController`; they must never become a second owner of units, buildings, gold, or assignments.
 - Rich Phaser scenes, if reintroduced, receive a narrow runtime facade and immutable snapshots. Scene-local state may control presentation only.
 - Mission start accepts only a formation. `GameSession` derives and stores the canonical run ID, seed, combat input, and combat report.
 - Mission resolve/abort accepts only a run ID and settles the stored report exactly once. Leaving playback must never cancel casualties or rewards.

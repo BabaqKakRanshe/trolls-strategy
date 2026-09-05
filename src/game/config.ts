@@ -14,7 +14,8 @@ export function createGameConfig(
     parent,
     width: 1280,
     height: 720,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#102f31',
+    pixelArt: true,
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,

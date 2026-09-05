@@ -10,7 +10,7 @@ describe('map shop', () => {
 
     expect(snapshot.wallet.gold).toBe(1_000);
     expect(snapshot.units).toHaveLength(0);
-    expect(markup).toContain('Gold');
+    expect(markup).toContain('GOLD');
     expect(markup).toContain('data-testid="gold">1000');
     expect(markup).toContain('data-testid="creature-count">0');
   });

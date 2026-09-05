@@ -1,28 +1,16 @@
-import type {
-  GameCommandContractMap,
-  GameCommandOf,
-  GameCommandType,
-} from '../application/GameSession';
-import type { GameSnapshot } from '../application/snapshot';
-import { unitId } from '../domain/model';
-import type { CommandResult } from '../domain/results';
+import { MapInteractionController } from '../application/MapInteractionController';
 import { renderShopPanel, type ShopCategory } from './renderShopPanel';
-
-export interface ShopRuntime {
-  getSnapshot(): GameSnapshot;
-  dispatch<TType extends GameCommandType>(
-    command: GameCommandOf<TType>,
-  ): CommandResult<GameCommandContractMap[TType]['value']>;
-}
 
 export class ShopUi {
   private category: ShopCategory = null;
 
   public constructor(
     private readonly root: HTMLElement,
-    private readonly runtime: ShopRuntime,
+    private readonly controller: MapInteractionController,
   ) {
     this.root.addEventListener('click', this.handleClick);
+    this.root.addEventListener('input', this.handleInput);
+    this.controller.subscribe(() => this.render());
     this.render();
   }
 
@@ -39,35 +27,53 @@ export class ShopUi {
     }
 
     if (action === 'buy-goblin') {
-      const snapshot = this.runtime.getSnapshot();
-      const sequence = snapshot.units.length + 1;
-      const result = this.runtime.dispatch({
-        type: 'RECRUIT_UNIT',
-        species: 'goblin',
-        id: unitId(`goblin-${sequence}`),
-        name: `Гоблин ${sequence}`,
-      });
-      this.render(result.ok ? 'Гоблин появился на карте' : errorMessage(result.error.code));
+      this.controller.beginGoblinPlacement();
       return;
     }
 
     if (action === 'buy-mine') {
-      const result = this.runtime.dispatch({ type: 'PURCHASE_MINE' });
-      this.render(result.ok ? 'Шахта построена' : errorMessage(result.error.code));
+      this.controller.beginMinePlacement();
+      return;
+    }
+    if (action === 'cancel-mode') this.controller.cancelMode();
+    if (action === 'confirm-stack') this.controller.confirmStackSelection();
+    if (action === 'open-commands') this.controller.openCommands();
+    if (action === 'sell-selected') this.controller.sellSelected();
+    if (action === 'command-work') this.controller.beginWorkTarget();
+    if (action === 'command-haul') this.controller.beginHaulTarget();
+    if (action === 'command-barracks') this.controller.sendSelectedToBarracks();
+    if (action === 'select-cell') {
+      const cell = this.readCell('1');
+      if (cell) this.controller.handleCellClick(cell);
+    }
+    if (action === 'select-area') {
+      const from = this.readCell('1');
+      const to = this.readCell('2');
+      if (from && to) this.controller.handleBoxSelection(from, to);
     }
   };
 
-  private render(message = ''): void {
+  private readonly handleInput = (event: Event): void => {
+    const input = event.target as HTMLInputElement | null;
+    if (input?.dataset.action === 'stack-quantity') {
+      this.controller.setStackQuantity(Number(input.value));
+      const output = this.root.querySelector<HTMLOutputElement>('[data-stack-output]');
+      if (output) output.value = input.value;
+    }
+  };
+
+  private readCell(suffix: '1' | '2'): { x: number; y: number } | null {
+    const x = this.root.querySelector<HTMLInputElement>(`[data-cell-x${suffix}]`);
+    const y = this.root.querySelector<HTMLInputElement>(`[data-cell-y${suffix}]`);
+    if (!x || !y || !x.checkValidity() || !y.checkValidity()) return null;
+    return { x: Number(x.value), y: Number(y.value) };
+  }
+
+  private render(): void {
     this.root.innerHTML = renderShopPanel(
-      this.runtime.getSnapshot(),
+      this.controller.getSnapshot(),
       this.category,
-      message,
+      this.controller.getViewState(),
     );
   }
-}
-
-function errorMessage(code: string): string {
-  if (code === 'INSUFFICIENT_GOLD') return 'Недостаточно золота';
-  if (code === 'ALREADY_APPLIED') return 'Шахта уже построена';
-  return 'Действие недоступно';
 }

@@ -6,8 +6,9 @@
     "node": "^20.19.0 || ^22.13.0 || >=24"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "assets:prepare": "python scripts/copy-curated-assets.py",
+    "dev": "npm run assets:prepare && vite",
+    "build": "npm run assets:prepare && tsc --noEmit && vite build",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint ."

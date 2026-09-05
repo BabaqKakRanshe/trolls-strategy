@@ -7,16 +7,17 @@ import {
   type GameState,
   type Item,
 } from './model';
+import { MARKET_CELL, WAREHOUSE_CELL } from './map/grid';
 
 const INITIAL_GOLD = 1_000;
 const DEFAULT_CAMPAIGN_SEED = 0x5eed_1234;
 
 function createBuildings(): Building[] {
   return [
-    { id: buildingId('town-hall'), kind: 'town-hall', inventory: { ironOre: 0 } },
-    { id: buildingId('mine'), kind: 'mine', inventory: { ironOre: 0 } },
-    { id: buildingId('warehouse'), kind: 'warehouse', inventory: { ironOre: 0 } },
-    { id: buildingId('market'), kind: 'market', inventory: { ironOre: 0 } },
+    { id: buildingId('town-hall'), kind: 'town-hall', inventory: { ironOre: 0 }, mapCell: null },
+    { id: buildingId('mine'), kind: 'mine', inventory: { ironOre: 0 }, mapCell: null },
+    { id: buildingId('warehouse'), kind: 'warehouse', inventory: { ironOre: 0 }, mapCell: { ...WAREHOUSE_CELL } },
+    { id: buildingId('market'), kind: 'market', inventory: { ironOre: 0 }, mapCell: { ...MARKET_CELL } },
   ];
 }
 

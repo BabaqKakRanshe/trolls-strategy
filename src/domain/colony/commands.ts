@@ -12,8 +12,19 @@ import type {
   ItemId,
   Unit,
   UnitId,
+  GridCell,
 } from '../model';
 import type { CommandErrorCode, CommandResult } from '../results';
+import {
+  BARRACKS_CELL,
+  BARRACKS_FOOTPRINT,
+  MAX_UNITS_PER_CELL,
+  buildingAtCell,
+  buildingInteractionCell,
+  footprintContains,
+  isGridCell,
+  sameCell,
+} from '../map/grid';
 
 function success<T>(value: T): CommandResult<T> {
   return { ok: true, value };
@@ -86,11 +97,32 @@ export function recruitUnit(
     armor: definition.armor,
     assignment: { kind: 'idle' },
     equipment: { weaponId: null, armorId: null },
+    mapCell: null,
   };
 
   state.wallet.gold -= definition.cost;
   state.units.push(unit);
   return success(id);
+}
+
+export function spawnUnit(
+  state: GameState,
+  species: UnitSpecies,
+  id: UnitId,
+  name: string,
+  cell: GridCell,
+): CommandResult<UnitId> {
+  if (!isGridCell(cell)) return failure('INVALID_CELL');
+  if (footprintContains(BARRACKS_CELL, BARRACKS_FOOTPRINT, cell)
+    || buildingAtCell(state.buildings, cell) !== undefined) {
+    return failure('CELL_OCCUPIED');
+  }
+  if (state.units.filter((unit) => sameCell(unit.mapCell, cell)).length >= MAX_UNITS_PER_CELL) {
+    return failure('CELL_FULL');
+  }
+  const result = recruitUnit(state, species, id, name);
+  if (result.ok) state.units.at(-1)!.mapCell = { ...cell };
+  return result;
 }
 
 export function assignWorkers(
@@ -142,8 +174,60 @@ export function assignWorkers(
 
   selectedUnits.forEach((unit) => {
     unit.assignment = { kind: 'work', buildingId };
+    if (building.mapCell !== null) unit.mapCell = buildingInteractionCell(building.kind, building.mapCell);
   });
   return success(undefined);
+}
+
+export function assignHaulers(
+  state: GameState,
+  unitIds: readonly UnitId[],
+  fromId: BuildingId,
+  toId: BuildingId,
+): CommandResult<void> {
+  if (unitIds.length === 0) return failure('INVALID_ASSIGNMENT');
+  if (hasDuplicateIds(unitIds)) return failure('DUPLICATE_ID');
+  const source = state.buildings.find((building) => building.id === fromId);
+  const destination = state.buildings.find((building) => building.id === toId);
+  if (!source || !destination) return failure('NOT_FOUND');
+  const units = unitIds.map((id) => findUnit(state, id));
+  if (fromId === toId || units.some((unit) => !unit || unit.assignment.kind !== 'idle')) {
+    return failure('INVALID_ASSIGNMENT');
+  }
+  for (const unit of units as Unit[]) {
+    unit.assignment = {
+      kind: 'haul', fromId, toId, resource: 'ironOre', carried: 0,
+      phase: 'toSource', progressMs: 0,
+    };
+    if (source.mapCell !== null) unit.mapCell = buildingInteractionCell(source.kind, source.mapCell);
+  }
+  return success(undefined);
+}
+
+export function sellUnits(
+  state: GameState,
+  unitIds: readonly UnitId[],
+): CommandResult<number> {
+  if (unitIds.length === 0) return failure('INVALID_ASSIGNMENT');
+  if (hasDuplicateIds(unitIds)) return failure('DUPLICATE_ID');
+  const units = unitIds.map((id) => findUnit(state, id));
+  if (units.some((unit) => !unit)) return failure('NOT_FOUND');
+  const selected = units as Unit[];
+  if (selected.some((unit) => isUnavailable(unit)
+    || (unit.assignment.kind === 'haul' && unit.assignment.carried > 0))) {
+    return failure('INVALID_ASSIGNMENT');
+  }
+  const refund = selected.reduce(
+    (sum, unit) => sum + Math.floor(UNIT_CATALOG[unit.species].cost * 0.5), 0,
+  );
+  for (const unit of selected) {
+    if (unit.equipment.weaponId !== null) state.colonyInventory.itemIds.push(unit.equipment.weaponId);
+    if (unit.equipment.armorId !== null) state.colonyInventory.itemIds.push(unit.equipment.armorId);
+  }
+  const selectedIds = new Set(unitIds);
+  state.units = state.units.filter((unit) => !selectedIds.has(unit.id));
+  state.wallet.gold += refund;
+  return success(refund);
 }
 
 export function assignHauler(
@@ -201,6 +285,19 @@ export function setIdle(
 
   selectedUnits.forEach((unit) => {
     unit.assignment = { kind: 'idle' };
+  });
+  return success(undefined);
+}
+
+export function sendToBarracks(
+  state: GameState,
+  unitIds: readonly UnitId[],
+): CommandResult<void> {
+  const result = setIdle(state, unitIds);
+  if (!result.ok) return result;
+  const selected = new Set(unitIds);
+  state.units.forEach((unit) => {
+    if (selected.has(unit.id)) unit.mapCell = { ...BARRACKS_CELL };
   });
   return success(undefined);
 }

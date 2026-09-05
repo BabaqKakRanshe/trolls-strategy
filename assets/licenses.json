@@ -50,6 +50,18 @@
       "commercialUseAllowed": true,
       "licenseEvidence": "Official publisher page, LICENSING section and publisher commercial-use confirmation, verified 2026-09-04; no local license file was supplied.",
       "releaseRequirement": "Do not sell or redistribute the sound pack; direct interested users to the publisher page."
+    },
+    {
+      "id": "user-provided-sources",
+      "pack": "Project source sprites",
+      "author": "User-provided",
+      "sourceUrl": "local://assets/sprites/sources",
+      "licenseName": "License not supplied",
+      "attribution": "Unknown",
+      "attributionRequired": false,
+      "commercialUseAllowed": false,
+      "licenseEvidence": "The user explicitly supplied assets/sprites/sources for this project on 2026-09-04; no separate license document was supplied.",
+      "releaseRequirement": "Confirm ownership or obtain license evidence before commercial release."
     }
   ]
 }
