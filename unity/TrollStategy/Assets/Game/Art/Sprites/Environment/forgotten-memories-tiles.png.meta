@@ -1,0 +1,1202 @@
+fileFormatVersion: 2
+guid: dd659b5861f2838409a51eb291b94ead
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3415052791512053575
+    second: forgotten-memories-tiles_0
+  - first:
+      213: -8059671733869829532
+    second: forgotten-memories-tiles_1
+  - first:
+      213: -3744936262709463108
+    second: forgotten-memories-tiles_2
+  - first:
+      213: 7510608056565422377
+    second: forgotten-memories-tiles_3
+  - first:
+      213: -2744563143899644373
+    second: forgotten-memories-tiles_4
+  - first:
+      213: -8678696394595301230
+    second: forgotten-memories-tiles_5
+  - first:
+      213: 5563952884186969209
+    second: forgotten-memories-tiles_6
+  - first:
+      213: -6109839067321731567
+    second: forgotten-memories-tiles_7
+  - first:
+      213: 1524841466839890
+    second: forgotten-memories-tiles_8
+  - first:
+      213: -8933125242141854939
+    second: forgotten-memories-tiles_9
+  - first:
+      213: 4080744671082814563
+    second: forgotten-memories-tiles_10
+  - first:
+      213: 2834200414225187359
+    second: forgotten-memories-tiles_11
+  - first:
+      213: 1634218667901208507
+    second: forgotten-memories-tiles_12
+  - first:
+      213: 4051625978017577727
+    second: forgotten-memories-tiles_13
+  - first:
+      213: -5471210195471434591
+    second: forgotten-memories-tiles_14
+  - first:
+      213: 7212554559287450823
+    second: forgotten-memories-tiles_15
+  - first:
+      213: -6521812482012359617
+    second: forgotten-memories-tiles_16
+  - first:
+      213: 7322856806185757568
+    second: forgotten-memories-tiles_17
+  - first:
+      213: 4829700046187663882
+    second: forgotten-memories-tiles_18
+  - first:
+      213: -6259224336865970795
+    second: forgotten-memories-tiles_19
+  - first:
+      213: -5688063588647780546
+    second: forgotten-memories-tiles_20
+  - first:
+      213: -1444462639774561532
+    second: forgotten-memories-tiles_21
+  - first:
+      213: 3155125416983114916
+    second: forgotten-memories-tiles_22
+  - first:
+      213: -7564363915646015537
+    second: forgotten-memories-tiles_23
+  - first:
+      213: -8385333050547315385
+    second: forgotten-memories-tiles_24
+  - first:
+      213: 5651060071311629230
+    second: forgotten-memories-tiles_25
+  - first:
+      213: -5255019265967768853
+    second: forgotten-memories-tiles_26
+  - first:
+      213: 7065168174864277656
+    second: forgotten-memories-tiles_27
+  - first:
+      213: -2070843640439553433
+    second: forgotten-memories-tiles_28
+  - first:
+      213: 4447867787410852862
+    second: forgotten-memories-tiles_29
+  - first:
+      213: -455926793748513540
+    second: forgotten-memories-tiles_30
+  - first:
+      213: -6241927376060796670
+    second: forgotten-memories-tiles_31
+  - first:
+      213: 2416547180121350483
+    second: forgotten-memories-tiles_32
+  - first:
+      213: 2240262972921694885
+    second: forgotten-memories-tiles_33
+  - first:
+      213: -9038108945447990806
+    second: forgotten-memories-tiles_34
+  - first:
+      213: -6125274640713554716
+    second: forgotten-memories-tiles_35
+  - first:
+      213: 2207272322684941476
+    second: forgotten-memories-tiles_36
+  - first:
+      213: 5023893829460029292
+    second: forgotten-memories-tiles_37
+  - first:
+      213: -3209724426021839413
+    second: forgotten-memories-tiles_38
+  - first:
+      213: -3542844504103999347
+    second: forgotten-memories-tiles_39
+  - first:
+      213: 4388139171144850372
+    second: forgotten-memories-tiles_40
+  - first:
+      213: 7114575568001325337
+    second: forgotten-memories-tiles_41
+  - first:
+      213: -8926218951264404938
+    second: forgotten-memories-tiles_42
+  - first:
+      213: 2672819345206308023
+    second: forgotten-memories-tiles_43
+  - first:
+      213: 3420069190238292492
+    second: forgotten-memories-tiles_44
+  - first:
+      213: 5142164373872629928
+    second: forgotten-memories-tiles_45
+  - first:
+      213: 4886969917771862453
+    second: forgotten-memories-tiles_46
+  - first:
+      213: -5749334204827031752
+    second: forgotten-memories-tiles_47
+  - first:
+      213: -334684414860362548
+    second: forgotten-memories-tiles_48
+  - first:
+      213: 4457515980486476324
+    second: forgotten-memories-tiles_49
+  - first:
+      213: -236482275643988326
+    second: forgotten-memories-tiles_50
+  - first:
+      213: -1813543039538792479
+    second: forgotten-memories-tiles_51
+  - first:
+      213: 6977856182123996253
+    second: forgotten-memories-tiles_52
+  - first:
+      213: -6748478288948881171
+    second: forgotten-memories-tiles_53
+  - first:
+      213: 5279999684800137047
+    second: forgotten-memories-tiles_54
+  - first:
+      213: -4455754097683230114
+    second: forgotten-memories-tiles_55
+  - first:
+      213: -6532897949953588361
+    second: forgotten-memories-tiles_56
+  - first:
+      213: 8216264860222614250
+    second: forgotten-memories-tiles_57
+  - first:
+      213: -2724637814507466683
+    second: forgotten-memories-tiles_58
+  - first:
+      213: 7277909872435631124
+    second: forgotten-memories-tiles_59
+  - first:
+      213: 7381501859290291621
+    second: forgotten-memories-tiles_60
+  - first:
+      213: 3192322337123720017
+    second: forgotten-memories-tiles_61
+  - first:
+      213: -9045197140213249194
+    second: forgotten-memories-tiles_62
+  - first:
+      213: -2439566797653284717
+    second: forgotten-memories-tiles_63
+  - first:
+      213: 3450870649000059889
+    second: forgotten-memories-tiles_64
+  - first:
+      213: 5598686577881788425
+    second: forgotten-memories-tiles_65
+  - first:
+      213: -6121272637651764450
+    second: forgotten-memories-tiles_66
+  - first:
+      213: 8970728650799276859
+    second: forgotten-memories-tiles_67
+  - first:
+      213: 4744642182859268524
+    second: forgotten-memories-tiles_68
+  - first:
+      213: 3439650902116923649
+    second: forgotten-memories-tiles_69
+  - first:
+      213: -7580565510822816740
+    second: forgotten-memories-tiles_70
+  - first:
+      213: 6683769272119533980
+    second: forgotten-memories-tiles_71
+  - first:
+      213: -2409206268779906254
+    second: forgotten-memories-tiles_72
+  - first:
+      213: -1650218421801293680
+    second: forgotten-memories-tiles_73
+  - first:
+      213: 5891086124214713996
+    second: forgotten-memories-tiles_74
+  - first:
+      213: -735043868218232786
+    second: forgotten-memories-tiles_75
+  - first:
+      213: -6010809338202947584
+    second: forgotten-memories-tiles_76
+  - first:
+      213: 7283159947986811293
+    second: forgotten-memories-tiles_77
+  - first:
+      213: -5130370379969442802
+    second: forgotten-memories-tiles_78
+  - first:
+      213: -5572161069180202346
+    second: forgotten-memories-tiles_79
+  - first:
+      213: -1079198501069585341
+    second: forgotten-memories-tiles_80
+  - first:
+      213: 5694160200425296708
+    second: forgotten-memories-tiles_81
+  - first:
+      213: -2484518167884352724
+    second: forgotten-memories-tiles_82
+  - first:
+      213: 1833372903557712011
+    second: forgotten-memories-tiles_83
+  - first:
+      213: 8375685719502411452
+    second: forgotten-memories-tiles_84
+  - first:
+      213: 2130119794840087188
+    second: forgotten-memories-tiles_85
+  - first:
+      213: -7228659490070451020
+    second: forgotten-memories-tiles_86
+  - first:
+      213: 3205148119600305693
+    second: forgotten-memories-tiles_87
+  - first:
+      213: -2255033027601305057
+    second: forgotten-memories-tiles_88
+  - first:
+      213: 4204284626016072434
+    second: forgotten-memories-tiles_89
+  - first:
+      213: -7217607589589943137
+    second: forgotten-memories-tiles_90
+  - first:
+      213: -3354640609052953542
+    second: forgotten-memories-tiles_91
+  - first:
+      213: 4485429248128815824
+    second: forgotten-memories-tiles_92
+  - first:
+      213: 2850244900385731358
+    second: forgotten-memories-tiles_93
+  - first:
+      213: -6560108248193832932
+    second: forgotten-memories-tiles_94
+  - first:
+      213: 1856673808121634675
+    second: forgotten-memories-tiles_95
+  - first:
+      213: 5395714695476369454
+    second: forgotten-memories-tiles_96
+  - first:
+      213: 3453280489224227602
+    second: forgotten-memories-tiles_97
+  - first:
+      213: 2121067948230825078
+    second: forgotten-memories-tiles_98
+  - first:
+      213: 6080038392821619751
+    second: forgotten-memories-tiles_99
+  - first:
+      213: 8919258076826181887
+    second: forgotten-memories-tiles_100
+  - first:
+      213: 2590072064220776097
+    second: forgotten-memories-tiles_101
+  - first:
+      213: -5963431939279452558
+    second: forgotten-memories-tiles_102
+  - first:
+      213: -5329779443476050374
+    second: forgotten-memories-tiles_103
+  - first:
+      213: -3938385749189134488
+    second: forgotten-memories-tiles_104
+  - first:
+      213: 980083313231215134
+    second: forgotten-memories-tiles_105
+  - first:
+      213: 8424507080833848871
+    second: forgotten-memories-tiles_106
+  - first:
+      213: -4847444225050726616
+    second: forgotten-memories-tiles_107
+  - first:
+      213: -2237789285909109771
+    second: forgotten-memories-tiles_108
+  - first:
+      213: -4786650419528842742
+    second: forgotten-memories-tiles_109
+  - first:
+      213: -6776932889324279287
+    second: forgotten-memories-tiles_110
+  - first:
+      213: 8661629368741774388
+    second: forgotten-memories-tiles_111
+  - first:
+      213: -4335122191314148498
+    second: forgotten-memories-tiles_112
+  - first:
+      213: 1813403329014400614
+    second: forgotten-memories-tiles_113
+  - first:
+      213: -9102207235367908495
+    second: forgotten-memories-tiles_114
+  - first:
+      213: -5589009814087265893
+    second: forgotten-memories-tiles_115
+  - first:
+      213: 5657779711633825648
+    second: forgotten-memories-tiles_116
+  - first:
+      213: -3338438928866205057
+    second: forgotten-memories-tiles_117
+  - first:
+      213: 8894190999970625813
+    second: forgotten-memories-tiles_118
+  - first:
+      213: -2381159714031160549
+    second: forgotten-memories-tiles_119
+  - first:
+      213: 8977565752528566911
+    second: forgotten-memories-tiles_120
+  - first:
+      213: 1382250587908402493
+    second: forgotten-memories-tiles_121
+  - first:
+      213: -3338016893955710836
+    second: forgotten-memories-tiles_122
+  - first:
+      213: 9214304014375590481
+    second: forgotten-memories-tiles_123
+  - first:
+      213: 8573294644502629473
+    second: forgotten-memories-tiles_124
+  - first:
+      213: 2961692458954852477
+    second: forgotten-memories-tiles_125
+  - first:
+      213: -979232875678989574
+    second: forgotten-memories-tiles_126
+  - first:
+      213: 1644420390433901023
+    second: forgotten-memories-tiles_127
+  - first:
+      213: -5475148177790038145
+    second: forgotten-memories-tiles_128
+  - first:
+      213: 272405239650268640
+    second: forgotten-memories-tiles_129
+  - first:
+      213: 4870764220608743289
+    second: forgotten-memories-tiles_130
+  - first:
+      213: 2867161442530517069
+    second: forgotten-memories-tiles_131
+  - first:
+      213: -3862293123248027579
+    second: forgotten-memories-tiles_132
+  - first:
+      213: -4637105799156244838
+    second: forgotten-memories-tiles_133
+  - first:
+      213: 5784984652783077098
+    second: forgotten-memories-tiles_134
+  - first:
+      213: 5939109940745694954
+    second: forgotten-memories-tiles_135
+  - first:
+      213: -6728038160669437629
+    second: forgotten-memories-tiles_136
+  - first:
+      213: -4972158425778335452
+    second: forgotten-memories-tiles_137
+  - first:
+      213: 4846822085064654740
+    second: forgotten-memories-tiles_138
+  - first:
+      213: -4406482345845531396
+    second: forgotten-memories-tiles_139
+  - first:
+      213: 5883869428089120378
+    second: forgotten-memories-tiles_140
+  - first:
+      213: 2165467043925435171
+    second: forgotten-memories-tiles_141
+  - first:
+      213: -2991466507110427969
+    second: forgotten-memories-tiles_142
+  - first:
+      213: -8247757632227750556
+    second: forgotten-memories-tiles_143
+  - first:
+      213: 7713819393718715255
+    second: tile_1
+  - first:
+      213: -7289178230066185966
+    second: tile_2
+  - first:
+      213: -113938230342917849
+    second: tile_3
+  - first:
+      213: 1143979919660041559
+    second: tile_128
+  - first:
+      213: -3070440010494646231
+    second: tile_130
+  - first:
+      213: 1711186581144538768
+    second: tile_132
+  - first:
+      213: -7120984583098850190
+    second: tile_257
+  - first:
+      213: -8822702274612510479
+    second: tile_258
+  - first:
+      213: -7797822560416310266
+    second: tile_259
+  - first:
+      213: -4218175724689534006
+    second: tile_46
+  - first:
+      213: 2613680082296423215
+    second: tile_47
+  - first:
+      213: 6960097206262026729
+    second: tile_110
+  - first:
+      213: 650880317243395282
+    second: tile_111
+  - first:
+      213: -5569773980574526406
+    second: tile_174
+  - first:
+      213: -8144514851780060175
+    second: tile_175
+  - first:
+      213: -8449498998493815577
+    second: tile_238
+  - first:
+      213: -4518745357175320972
+    second: tile_239
+  - first:
+      213: 6554095271551705399
+    second: tile_302
+  - first:
+      213: 7614795043324887704
+    second: tile_303
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: tile_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 2016
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7738f187eddfc0b60800000000000000
+      internalID: 7713819393718715255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 2016
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 219f46cf403a7da90800000000000000
+      internalID: -7289178230066185966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 2016
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 721e21e78c53b6ef0800000000000000
+      internalID: -113938230342917849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_128
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1952
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75544850dab30ef00800000000000000
+      internalID: 1143979919660041559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_130
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 1952
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 928e15e041b9365d0800000000000000
+      internalID: -3070440010494646231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_132
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 1952
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09e0989112b5fb710800000000000000
+      internalID: 1711186581144538768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_257
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 1888
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2742c51104e2d2d90800000000000000
+      internalID: -7120984583098850190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_258
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 1888
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f0c0b2a6077f8580800000000000000
+      internalID: -8822702274612510479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_259
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 1888
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60cdbd822b198c390800000000000000
+      internalID: -7797822560416310266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_46
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 2016
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac354b9f6870675c0800000000000000
+      internalID: -4218175724689534006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_47
+      rect:
+        serializedVersion: 2
+        x: 1504
+        y: 2016
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f23cacddf28a54420800000000000000
+      internalID: 2613680082296423215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_110
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 1984
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e1df6d688b379060800000000000000
+      internalID: 6960097206262026729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_111
+      rect:
+        serializedVersion: 2
+        x: 1504
+        y: 1984
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2dc06943334680900800000000000000
+      internalID: 650880317243395282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_174
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 1952
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3454a8131034b2b0800000000000000
+      internalID: -5569773980574526406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_175
+      rect:
+        serializedVersion: 2
+        x: 1504
+        y: 1952
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fb91cfc4eed8fe80800000000000000
+      internalID: -8144514851780060175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_238
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 1920
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ecd1c0ad695dba80800000000000000
+      internalID: -8449498998493815577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_239
+      rect:
+        serializedVersion: 2
+        x: 1504
+        y: 1920
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47e8e1bf9013a41c0800000000000000
+      internalID: -4518745357175320972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_302
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 1888
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73128e4ace2d4fa50800000000000000
+      internalID: 6554095271551705399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_303
+      rect:
+        serializedVersion: 2
+        x: 1504
+        y: 1888
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89209ca3fbf2da960800000000000000
+      internalID: 7614795043324887704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      forgotten-memories-tiles_0: 3415052791512053575
+      forgotten-memories-tiles_1: -8059671733869829532
+      forgotten-memories-tiles_10: 4080744671082814563
+      forgotten-memories-tiles_100: 8919258076826181887
+      forgotten-memories-tiles_101: 2590072064220776097
+      forgotten-memories-tiles_102: -5963431939279452558
+      forgotten-memories-tiles_103: -5329779443476050374
+      forgotten-memories-tiles_104: -3938385749189134488
+      forgotten-memories-tiles_105: 980083313231215134
+      forgotten-memories-tiles_106: 8424507080833848871
+      forgotten-memories-tiles_107: -4847444225050726616
+      forgotten-memories-tiles_108: -2237789285909109771
+      forgotten-memories-tiles_109: -4786650419528842742
+      forgotten-memories-tiles_11: 2834200414225187359
+      forgotten-memories-tiles_110: -6776932889324279287
+      forgotten-memories-tiles_111: 8661629368741774388
+      forgotten-memories-tiles_112: -4335122191314148498
+      forgotten-memories-tiles_113: 1813403329014400614
+      forgotten-memories-tiles_114: -9102207235367908495
+      forgotten-memories-tiles_115: -5589009814087265893
+      forgotten-memories-tiles_116: 5657779711633825648
+      forgotten-memories-tiles_117: -3338438928866205057
+      forgotten-memories-tiles_118: 8894190999970625813
+      forgotten-memories-tiles_119: -2381159714031160549
+      forgotten-memories-tiles_12: 1634218667901208507
+      forgotten-memories-tiles_120: 8977565752528566911
+      forgotten-memories-tiles_121: 1382250587908402493
+      forgotten-memories-tiles_122: -3338016893955710836
+      forgotten-memories-tiles_123: 9214304014375590481
+      forgotten-memories-tiles_124: 8573294644502629473
+      forgotten-memories-tiles_125: 2961692458954852477
+      forgotten-memories-tiles_126: -979232875678989574
+      forgotten-memories-tiles_127: 1644420390433901023
+      forgotten-memories-tiles_128: -5475148177790038145
+      forgotten-memories-tiles_129: 272405239650268640
+      forgotten-memories-tiles_13: 4051625978017577727
+      forgotten-memories-tiles_130: 4870764220608743289
+      forgotten-memories-tiles_131: 2867161442530517069
+      forgotten-memories-tiles_132: -3862293123248027579
+      forgotten-memories-tiles_133: -4637105799156244838
+      forgotten-memories-tiles_134: 5784984652783077098
+      forgotten-memories-tiles_135: 5939109940745694954
+      forgotten-memories-tiles_136: -6728038160669437629
+      forgotten-memories-tiles_137: -4972158425778335452
+      forgotten-memories-tiles_138: 4846822085064654740
+      forgotten-memories-tiles_139: -4406482345845531396
+      forgotten-memories-tiles_14: -5471210195471434591
+      forgotten-memories-tiles_140: 5883869428089120378
+      forgotten-memories-tiles_141: 2165467043925435171
+      forgotten-memories-tiles_142: -2991466507110427969
+      forgotten-memories-tiles_143: -8247757632227750556
+      forgotten-memories-tiles_15: 7212554559287450823
+      forgotten-memories-tiles_16: -6521812482012359617
+      forgotten-memories-tiles_17: 7322856806185757568
+      forgotten-memories-tiles_18: 4829700046187663882
+      forgotten-memories-tiles_19: -6259224336865970795
+      forgotten-memories-tiles_2: -3744936262709463108
+      forgotten-memories-tiles_20: -5688063588647780546
+      forgotten-memories-tiles_21: -1444462639774561532
+      forgotten-memories-tiles_22: 3155125416983114916
+      forgotten-memories-tiles_23: -7564363915646015537
+      forgotten-memories-tiles_24: -8385333050547315385
+      forgotten-memories-tiles_25: 5651060071311629230
+      forgotten-memories-tiles_26: -5255019265967768853
+      forgotten-memories-tiles_27: 7065168174864277656
+      forgotten-memories-tiles_28: -2070843640439553433
+      forgotten-memories-tiles_29: 4447867787410852862
+      forgotten-memories-tiles_3: 7510608056565422377
+      forgotten-memories-tiles_30: -455926793748513540
+      forgotten-memories-tiles_31: -6241927376060796670
+      forgotten-memories-tiles_32: 2416547180121350483
+      forgotten-memories-tiles_33: 2240262972921694885
+      forgotten-memories-tiles_34: -9038108945447990806
+      forgotten-memories-tiles_35: -6125274640713554716
+      forgotten-memories-tiles_36: 2207272322684941476
+      forgotten-memories-tiles_37: 5023893829460029292
+      forgotten-memories-tiles_38: -3209724426021839413
+      forgotten-memories-tiles_39: -3542844504103999347
+      forgotten-memories-tiles_4: -2744563143899644373
+      forgotten-memories-tiles_40: 4388139171144850372
+      forgotten-memories-tiles_41: 7114575568001325337
+      forgotten-memories-tiles_42: -8926218951264404938
+      forgotten-memories-tiles_43: 2672819345206308023
+      forgotten-memories-tiles_44: 3420069190238292492
+      forgotten-memories-tiles_45: 5142164373872629928
+      forgotten-memories-tiles_46: 4886969917771862453
+      forgotten-memories-tiles_47: -5749334204827031752
+      forgotten-memories-tiles_48: -334684414860362548
+      forgotten-memories-tiles_49: 4457515980486476324
+      forgotten-memories-tiles_5: -8678696394595301230
+      forgotten-memories-tiles_50: -236482275643988326
+      forgotten-memories-tiles_51: -1813543039538792479
+      forgotten-memories-tiles_52: 6977856182123996253
+      forgotten-memories-tiles_53: -6748478288948881171
+      forgotten-memories-tiles_54: 5279999684800137047
+      forgotten-memories-tiles_55: -4455754097683230114
+      forgotten-memories-tiles_56: -6532897949953588361
+      forgotten-memories-tiles_57: 8216264860222614250
+      forgotten-memories-tiles_58: -2724637814507466683
+      forgotten-memories-tiles_59: 7277909872435631124
+      forgotten-memories-tiles_6: 5563952884186969209
+      forgotten-memories-tiles_60: 7381501859290291621
+      forgotten-memories-tiles_61: 3192322337123720017
+      forgotten-memories-tiles_62: -9045197140213249194
+      forgotten-memories-tiles_63: -2439566797653284717
+      forgotten-memories-tiles_64: 3450870649000059889
+      forgotten-memories-tiles_65: 5598686577881788425
+      forgotten-memories-tiles_66: -6121272637651764450
+      forgotten-memories-tiles_67: 8970728650799276859
+      forgotten-memories-tiles_68: 4744642182859268524
+      forgotten-memories-tiles_69: 3439650902116923649
+      forgotten-memories-tiles_7: -6109839067321731567
+      forgotten-memories-tiles_70: -7580565510822816740
+      forgotten-memories-tiles_71: 6683769272119533980
+      forgotten-memories-tiles_72: -2409206268779906254
+      forgotten-memories-tiles_73: -1650218421801293680
+      forgotten-memories-tiles_74: 5891086124214713996
+      forgotten-memories-tiles_75: -735043868218232786
+      forgotten-memories-tiles_76: -6010809338202947584
+      forgotten-memories-tiles_77: 7283159947986811293
+      forgotten-memories-tiles_78: -5130370379969442802
+      forgotten-memories-tiles_79: -5572161069180202346
+      forgotten-memories-tiles_8: 1524841466839890
+      forgotten-memories-tiles_80: -1079198501069585341
+      forgotten-memories-tiles_81: 5694160200425296708
+      forgotten-memories-tiles_82: -2484518167884352724
+      forgotten-memories-tiles_83: 1833372903557712011
+      forgotten-memories-tiles_84: 8375685719502411452
+      forgotten-memories-tiles_85: 2130119794840087188
+      forgotten-memories-tiles_86: -7228659490070451020
+      forgotten-memories-tiles_87: 3205148119600305693
+      forgotten-memories-tiles_88: -2255033027601305057
+      forgotten-memories-tiles_89: 4204284626016072434
+      forgotten-memories-tiles_9: -8933125242141854939
+      forgotten-memories-tiles_90: -7217607589589943137
+      forgotten-memories-tiles_91: -3354640609052953542
+      forgotten-memories-tiles_92: 4485429248128815824
+      forgotten-memories-tiles_93: 2850244900385731358
+      forgotten-memories-tiles_94: -6560108248193832932
+      forgotten-memories-tiles_95: 1856673808121634675
+      forgotten-memories-tiles_96: 5395714695476369454
+      forgotten-memories-tiles_97: 3453280489224227602
+      forgotten-memories-tiles_98: 2121067948230825078
+      forgotten-memories-tiles_99: 6080038392821619751
+      tile_1: 7713819393718715255
+      tile_110: 6960097206262026729
+      tile_111: 650880317243395282
+      tile_128: 1143979919660041559
+      tile_130: -3070440010494646231
+      tile_132: 1711186581144538768
+      tile_174: -5569773980574526406
+      tile_175: -8144514851780060175
+      tile_2: -7289178230066185966
+      tile_238: -8449498998493815577
+      tile_239: -4518745357175320972
+      tile_257: -7120984583098850190
+      tile_258: -8822702274612510479
+      tile_259: -7797822560416310266
+      tile_3: -113938230342917849
+      tile_302: 6554095271551705399
+      tile_303: 7614795043324887704
+      tile_46: -4218175724689534006
+      tile_47: 2613680082296423215
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

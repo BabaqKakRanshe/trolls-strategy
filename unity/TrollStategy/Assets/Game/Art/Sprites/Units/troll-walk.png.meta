@@ -1,0 +1,384 @@
+fileFormatVersion: 2
+guid: e12c01f2d3610d74291db9b46783451b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2034987578301592101
+    second: troll-walk_0
+  - first:
+      213: -782193919289829734
+    second: troll-walk_1
+  - first:
+      213: -1806350680364310980
+    second: troll-walk_2
+  - first:
+      213: 2141866366432261379
+    second: troll-walk_3
+  - first:
+      213: -898392750814334835
+    second: troll-walk_4
+  - first:
+      213: -2534117119610006481
+    second: troll-walk_5
+  - first:
+      213: 5525313632409355454
+    second: troll-walk_6
+  - first:
+      213: 5715439201042052372
+    second: troll-walk_7
+  - first:
+      213: 3110723257867217462
+    second: troll-walk_8
+  - first:
+      213: -410693028405249949
+    second: troll-walk_9
+  - first:
+      213: -3715521162919871965
+    second: troll-walk_10
+  - first:
+      213: -5326271698806218367
+    second: troll-walk_11
+  - first:
+      213: -7292186011979374519
+    second: troll-walk_12
+  - first:
+      213: 4865973320651080550
+    second: troll-walk_13
+  - first:
+      213: -8279100117046129038
+    second: troll-walk_14
+  - first:
+      213: -5541332968973819312
+    second: troll-walk_15
+  - first:
+      213: -5639512101807342591
+    second: troll-walk_16
+  - first:
+      213: -1486796470536385316
+    second: troll-walk_17
+  - first:
+      213: 8699219987413875313
+    second: troll-walk_18
+  - first:
+      213: -3653148280628533675
+    second: troll-walk_19
+  - first:
+      213: -7473942254574650695
+    second: troll-walk_20
+  - first:
+      213: -984043865172657814
+    second: troll-walk_21
+  - first:
+      213: -6238909858974887648
+    second: troll-walk_22
+  - first:
+      213: 1345864120934891313
+    second: troll-walk_23
+  - first:
+      213: 7457262499840173999
+    second: troll_walk_0
+  - first:
+      213: 193887042755987836
+    second: troll_walk_1
+  - first:
+      213: 6863704876348422395
+    second: troll_walk_2
+  - first:
+      213: -4612681976924115529
+    second: troll_walk_3
+  - first:
+      213: -964566017298276739
+    second: troll_walk_4
+  - first:
+      213: -2376287946914599000
+    second: troll_walk_5
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: troll_walk_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa7a0dbbbb48d7760800000000000000
+      internalID: 7457262499840173999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_walk_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c798506fc33d0b200800000000000000
+      internalID: 193887042755987836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_walk_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf83dd53837c04f50800000000000000
+      internalID: 6863704876348422395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_walk_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bd67975e267cffb0800000000000000
+      internalID: -4612681976924115529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_walk_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7ed588515c2d92f0800000000000000
+      internalID: -964566017298276739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_walk_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8afec10d3bab50fd0800000000000000
+      internalID: -2376287946914599000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      troll-walk_0: -2034987578301592101
+      troll-walk_1: -782193919289829734
+      troll-walk_10: -3715521162919871965
+      troll-walk_11: -5326271698806218367
+      troll-walk_12: -7292186011979374519
+      troll-walk_13: 4865973320651080550
+      troll-walk_14: -8279100117046129038
+      troll-walk_15: -5541332968973819312
+      troll-walk_16: -5639512101807342591
+      troll-walk_17: -1486796470536385316
+      troll-walk_18: 8699219987413875313
+      troll-walk_19: -3653148280628533675
+      troll-walk_2: -1806350680364310980
+      troll-walk_20: -7473942254574650695
+      troll-walk_21: -984043865172657814
+      troll-walk_22: -6238909858974887648
+      troll-walk_23: 1345864120934891313
+      troll-walk_3: 2141866366432261379
+      troll-walk_4: -898392750814334835
+      troll-walk_5: -2534117119610006481
+      troll-walk_6: 5525313632409355454
+      troll-walk_7: 5715439201042052372
+      troll-walk_8: 3110723257867217462
+      troll-walk_9: -410693028405249949
+      troll_walk_0: 7457262499840173999
+      troll_walk_1: 193887042755987836
+      troll_walk_2: 6863704876348422395
+      troll_walk_3: -4612681976924115529
+      troll_walk_4: -964566017298276739
+      troll_walk_5: -2376287946914599000
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

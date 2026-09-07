@@ -1,0 +1,82 @@
+{
+  "tileSize": 32,
+  "textureKey": "terrain.forgotten-memories",
+  "palette": {
+    "l": 1,
+    "t": 2,
+    "r": 3,
+    "m": 128,
+    "c": 130,
+    "n": 132,
+    "b": 257,
+    "u": 258,
+    "d": 259,
+    "f": 46,
+    "g": 47,
+    "h": 110,
+    "i": 175
+  },
+  "layout": [
+    "lttttttttttttr",
+    "mccfccccccgccn",
+    "mccccchccccccn",
+    "mcgccccccicccn",
+    "mccccfcccccccn",
+    "mccchcccccgccn",
+    "mccccccicccccn",
+    "mcfccccccccgcn",
+    "mccccgcccccccn",
+    "mcchccccccfccn",
+    "mcccccccgccccn",
+    "mcgccccccccicn",
+    "mccccfcccccccn",
+    "buuuuuuuuuuuud"
+  ],
+  "lockedTerrain": {
+    "columns": [-4, -3, -2, -1, 14, 15, 16, 17],
+    "rows": [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+    "topBottomColumns": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+    "topBottomRows": [-1, 14],
+    "baseFrame": 130,
+    "detailFrames": [46, 47, 110, 111, 174, 175, 238, 239, 302, 303]
+  },
+  "forest": {
+    "textureKey": "decor.forgotten-memories-props",
+    "scale": 0.72,
+    "frames": {
+      "tree.autumn": [0, 0, 92, 142],
+      "tree.blue": [94, 0, 112, 145],
+      "tree.gold": [220, 0, 72, 142],
+      "tree.pine": [291, 0, 58, 142],
+      "tree.willow": [350, 12, 195, 215]
+    },
+    "columns": [38, 92, 150, 920, 978, 1034],
+    "startY": 104,
+    "rows": 11,
+    "stepY": 68
+  },
+  "props": {
+    "frames": {
+      "prop.rock.gold": [0, 220, 102, 72],
+      "prop.rock.iron": [0, 292, 102, 68],
+      "prop.sapling.gold": [120, 226, 92, 90],
+      "prop.sapling.blue": [242, 226, 86, 92],
+      "prop.bush.green": [574, 42, 60, 62],
+      "prop.bush.gold": [574, 126, 60, 64],
+      "prop.bush.autumn": [574, 214, 60, 64],
+      "prop.bush.blue": [574, 300, 60, 66]
+    },
+    "placements": [
+      { "frame": "prop.rock.gold", "x": 166, "y": 214, "scale": 0.5 },
+      { "frame": "prop.bush.green", "x": 178, "y": 308, "scale": 0.7 },
+      { "frame": "prop.sapling.gold", "x": 164, "y": 422, "scale": 0.58 },
+      { "frame": "prop.rock.iron", "x": 172, "y": 566, "scale": 0.48 },
+      { "frame": "prop.bush.blue", "x": 178, "y": 690, "scale": 0.7 },
+      { "frame": "prop.bush.gold", "x": 894, "y": 194, "scale": 0.7 },
+      { "frame": "prop.rock.gold", "x": 898, "y": 330, "scale": 0.48 },
+      { "frame": "prop.sapling.blue", "x": 902, "y": 456, "scale": 0.58 },
+      { "frame": "prop.bush.autumn", "x": 894, "y": 588, "scale": 0.7 },
+      { "frame": "prop.rock.iron", "x": 900, "y": 724, "scale": 0.46 }
+    ]
+  }
+}

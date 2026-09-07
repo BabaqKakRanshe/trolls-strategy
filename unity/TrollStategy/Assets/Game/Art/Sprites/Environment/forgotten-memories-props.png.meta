@@ -1,0 +1,540 @@
+fileFormatVersion: 2
+guid: 9d049cc96cf18a84c9a71d5d62c818da
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -413917098048106096
+    second: forgotten-memories-props_0
+  - first:
+      213: 6310308833101028414
+    second: forgotten-memories-props_1
+  - first:
+      213: 6376858558870375472
+    second: forgotten-memories-props_2
+  - first:
+      213: 1285645738535280675
+    second: forgotten-memories-props_3
+  - first:
+      213: -4529882125419228324
+    second: forgotten-memories-props_4
+  - first:
+      213: -6993205508732889388
+    second: forgotten-memories-props_5
+  - first:
+      213: 447634906070553158
+    second: forgotten-memories-props_6
+  - first:
+      213: -2322469051383708492
+    second: forgotten-memories-props_7
+  - first:
+      213: 1779100960453570797
+    second: forgotten-memories-props_8
+  - first:
+      213: -9154774927669931679
+    second: forgotten-memories-props_9
+  - first:
+      213: -8706067110739059783
+    second: forgotten-memories-props_10
+  - first:
+      213: 1396266623507348841
+    second: forgotten-memories-props_11
+  - first:
+      213: -3494507378254711785
+    second: forgotten-memories-props_12
+  - first:
+      213: 7812906424123594660
+    second: forgotten-memories-props_13
+  - first:
+      213: -1252465212513968470
+    second: forgotten-memories-props_14
+  - first:
+      213: -4974940013401939521
+    second: forgotten-memories-props_15
+  - first:
+      213: 2236381376031988581
+    second: forgotten-memories-props_16
+  - first:
+      213: 4606692872314821661
+    second: forgotten-memories-props_17
+  - first:
+      213: -7580654544270639227
+    second: forgotten-memories-props_18
+  - first:
+      213: 600457079712584452
+    second: forgotten-memories-props_19
+  - first:
+      213: 4627646332990092671
+    second: forgotten-memories-props_20
+  - first:
+      213: 6546756561959421936
+    second: forgotten-memories-props_21
+  - first:
+      213: -6813308341697195196
+    second: forgotten-memories-props_22
+  - first:
+      213: -7821068051654583666
+    second: forgotten-memories-props_23
+  - first:
+      213: -6206158911460654672
+    second: forgotten-memories-props_24
+  - first:
+      213: -6255538205158337344
+    second: forgotten-memories-props_25
+  - first:
+      213: 880373959810616697
+    second: forgotten-memories-props_26
+  - first:
+      213: -4082457036459604949
+    second: forgotten-memories-props_27
+  - first:
+      213: 6141645647815444607
+    second: forgotten-memories-props_28
+  - first:
+      213: -8535485006564998888
+    second: forgotten-memories-props_29
+  - first:
+      213: -7014741752671636948
+    second: forgotten-memories-props_30
+  - first:
+      213: -2666116490769459274
+    second: forgotten-memories-props_31
+  - first:
+      213: 789755583109765772
+    second: forgotten-memories-props_32
+  - first:
+      213: -2284446370489321765
+    second: forgotten-memories-props_33
+  - first:
+      213: 1638619863377173817
+    second: forgotten-memories-props_34
+  - first:
+      213: 4382237221077400082
+    second: forgotten-memories-props_35
+  - first:
+      213: -8934131893634266504
+    second: forgotten-memories-props_36
+  - first:
+      213: -2552166759705006675
+    second: forgotten-memories-props_37
+  - first:
+      213: 1603819067189585787
+    second: forgotten-memories-props_38
+  - first:
+      213: 6527509389205162020
+    second: forgotten-memories-props_39
+  - first:
+      213: -1362541364556796468
+    second: forgotten-memories-props_40
+  - first:
+      213: -7921419853581744806
+    second: forgotten-memories-props_41
+  - first:
+      213: 8408353290826356672
+    second: forgotten-memories-props_42
+  - first:
+      213: -4104220914291969508
+    second: forgotten-memories-props_43
+  - first:
+      213: -5886364784258268555
+    second: forgotten-memories-props_44
+  - first:
+      213: -3052849280668620638
+    second: forgotten-memories-props_45
+  - first:
+      213: 8697514585906491578
+    second: forgotten-memories-props_46
+  - first:
+      213: -6949849207231314769
+    second: forgotten-memories-props_47
+  - first:
+      213: -2545400963253811833
+    second: forgotten-memories-props_48
+  - first:
+      213: 3511043399588131382
+    second: forgotten-memories-props_49
+  - first:
+      213: 72790105512462910
+    second: tree.autumn
+  - first:
+      213: 577255133866346708
+    second: tree.blue
+  - first:
+      213: 2506722767505106820
+    second: tree.gold
+  - first:
+      213: 4631247426306763343
+    second: tree.pine
+  - first:
+      213: -1626252544758556695
+    second: tree.willow
+  - first:
+      213: 6278117164477294581
+    second: prop.rock.gold
+  - first:
+      213: 700803001891356522
+    second: prop.rock.moss
+  - first:
+      213: 1204657373086918538
+    second: prop.stump
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: tree.autumn
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 882
+        width: 92
+        height: 142
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3acb3e173a920100800000000000000
+      internalID: 72790105512462910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tree.blue
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 879
+        width: 112
+        height: 145
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d8cfde5c72d20800800000000000000
+      internalID: 577255133866346708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tree.gold
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 882
+        width: 72
+        height: 142
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 487a68b631ba9c220800000000000000
+      internalID: 2506722767505106820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tree.pine
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 882
+        width: 58
+        height: 142
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4ae4ff2ffe754040800000000000000
+      internalID: 4631247426306763343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tree.willow
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 797
+        width: 195
+        height: 215
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e757924de36e69e0800000000000000
+      internalID: -1626252544758556695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: prop.rock.gold
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 732
+        width: 102
+        height: 72
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f7a3f65c4a502750800000000000000
+      internalID: 6278117164477294581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: prop.rock.moss
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 734
+        width: 94
+        height: 70
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6ff2410e90c9b900800000000000000
+      internalID: 700803001891356522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: prop.stump
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 736
+        width: 70
+        height: 68
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a87a6ee8f7dc7b010800000000000000
+      internalID: 1204657373086918538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      forgotten-memories-props_0: -413917098048106096
+      forgotten-memories-props_1: 6310308833101028414
+      forgotten-memories-props_10: -8706067110739059783
+      forgotten-memories-props_11: 1396266623507348841
+      forgotten-memories-props_12: -3494507378254711785
+      forgotten-memories-props_13: 7812906424123594660
+      forgotten-memories-props_14: -1252465212513968470
+      forgotten-memories-props_15: -4974940013401939521
+      forgotten-memories-props_16: 2236381376031988581
+      forgotten-memories-props_17: 4606692872314821661
+      forgotten-memories-props_18: -7580654544270639227
+      forgotten-memories-props_19: 600457079712584452
+      forgotten-memories-props_2: 6376858558870375472
+      forgotten-memories-props_20: 4627646332990092671
+      forgotten-memories-props_21: 6546756561959421936
+      forgotten-memories-props_22: -6813308341697195196
+      forgotten-memories-props_23: -7821068051654583666
+      forgotten-memories-props_24: -6206158911460654672
+      forgotten-memories-props_25: -6255538205158337344
+      forgotten-memories-props_26: 880373959810616697
+      forgotten-memories-props_27: -4082457036459604949
+      forgotten-memories-props_28: 6141645647815444607
+      forgotten-memories-props_29: -8535485006564998888
+      forgotten-memories-props_3: 1285645738535280675
+      forgotten-memories-props_30: -7014741752671636948
+      forgotten-memories-props_31: -2666116490769459274
+      forgotten-memories-props_32: 789755583109765772
+      forgotten-memories-props_33: -2284446370489321765
+      forgotten-memories-props_34: 1638619863377173817
+      forgotten-memories-props_35: 4382237221077400082
+      forgotten-memories-props_36: -8934131893634266504
+      forgotten-memories-props_37: -2552166759705006675
+      forgotten-memories-props_38: 1603819067189585787
+      forgotten-memories-props_39: 6527509389205162020
+      forgotten-memories-props_4: -4529882125419228324
+      forgotten-memories-props_40: -1362541364556796468
+      forgotten-memories-props_41: -7921419853581744806
+      forgotten-memories-props_42: 8408353290826356672
+      forgotten-memories-props_43: -4104220914291969508
+      forgotten-memories-props_44: -5886364784258268555
+      forgotten-memories-props_45: -3052849280668620638
+      forgotten-memories-props_46: 8697514585906491578
+      forgotten-memories-props_47: -6949849207231314769
+      forgotten-memories-props_48: -2545400963253811833
+      forgotten-memories-props_49: 3511043399588131382
+      forgotten-memories-props_5: -6993205508732889388
+      forgotten-memories-props_6: 447634906070553158
+      forgotten-memories-props_7: -2322469051383708492
+      forgotten-memories-props_8: 1779100960453570797
+      forgotten-memories-props_9: -9154774927669931679
+      prop.rock.gold: 6278117164477294581
+      prop.rock.moss: 700803001891356522
+      prop.stump: 1204657373086918538
+      tree.autumn: 72790105512462910
+      tree.blue: 577255133866346708
+      tree.gold: 2506722767505106820
+      tree.pine: 4631247426306763343
+      tree.willow: -1626252544758556695
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

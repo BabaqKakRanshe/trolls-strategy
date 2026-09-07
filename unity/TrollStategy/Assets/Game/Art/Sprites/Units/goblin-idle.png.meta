@@ -1,0 +1,804 @@
+fileFormatVersion: 2
+guid: 371e95c1a163ad7499ce0cda665bf42b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3041552050115924206
+    second: goblin-idle_0
+  - first:
+      213: -7103582190743073792
+    second: goblin-idle_1
+  - first:
+      213: 7632703689998003652
+    second: goblin-idle_2
+  - first:
+      213: 5573738310580646734
+    second: goblin-idle_3
+  - first:
+      213: -4890965365761210833
+    second: goblin-idle_4
+  - first:
+      213: -254590580228348667
+    second: goblin-idle_5
+  - first:
+      213: -4867630464666160621
+    second: goblin-idle_6
+  - first:
+      213: -6075437741274082779
+    second: goblin-idle_7
+  - first:
+      213: 4980141222850733371
+    second: goblin-idle_8
+  - first:
+      213: 5542420759059925863
+    second: goblin-idle_9
+  - first:
+      213: 3211847467113557624
+    second: goblin-idle_10
+  - first:
+      213: -9211185379471674161
+    second: goblin-idle_11
+  - first:
+      213: 5656144356149340613
+    second: goblin-idle_12
+  - first:
+      213: 3809495092103588673
+    second: goblin-idle_13
+  - first:
+      213: 3414638054002762950
+    second: goblin-idle_14
+  - first:
+      213: 4092680802490466265
+    second: goblin-idle_15
+  - first:
+      213: 8298419077262814276
+    second: goblin-idle_16
+  - first:
+      213: 8878486790996540610
+    second: goblin-idle_17
+  - first:
+      213: 4715362180568340212
+    second: goblin-idle_18
+  - first:
+      213: 1606623457483258739
+    second: goblin-idle_19
+  - first:
+      213: -1101770769128010294
+    second: goblin-idle_20
+  - first:
+      213: -7676545660389235812
+    second: goblin-idle_21
+  - first:
+      213: 7740671895251864555
+    second: goblin-idle_22
+  - first:
+      213: -4295767359230306649
+    second: goblin-idle_23
+  - first:
+      213: -1318550616616886908
+    second: goblin-idle_24
+  - first:
+      213: 6232678882770965920
+    second: goblin-idle_25
+  - first:
+      213: -1907398145644667435
+    second: goblin-idle_26
+  - first:
+      213: 2375808177462443440
+    second: goblin-idle_27
+  - first:
+      213: -3679334950033609712
+    second: goblin-idle_28
+  - first:
+      213: 6320899685618540798
+    second: goblin-idle_29
+  - first:
+      213: -7826980594012659992
+    second: goblin-idle_30
+  - first:
+      213: -5447693996026857788
+    second: goblin-idle_31
+  - first:
+      213: 739862883276503765
+    second: goblin-idle_32
+  - first:
+      213: -5019635719378256752
+    second: goblin-idle_33
+  - first:
+      213: -5002709294013875871
+    second: goblin-idle_34
+  - first:
+      213: 5315129509334251619
+    second: goblin-idle_35
+  - first:
+      213: -6764021124216157534
+    second: goblin-idle_36
+  - first:
+      213: -2908179583863281242
+    second: goblin-idle_37
+  - first:
+      213: -5113970697938558297
+    second: goblin-idle_38
+  - first:
+      213: 6044219599093799836
+    second: goblin-idle_39
+  - first:
+      213: 998265729958859305
+    second: goblin-idle_40
+  - first:
+      213: -9146304758104375573
+    second: goblin-idle_41
+  - first:
+      213: -3394724467197118801
+    second: goblin-idle_42
+  - first:
+      213: 1068119647091272510
+    second: goblin-idle_43
+  - first:
+      213: -636471613525191530
+    second: goblin-idle_44
+  - first:
+      213: -4805019683823016531
+    second: goblin-idle_45
+  - first:
+      213: 3090193655200309784
+    second: goblin-idle_46
+  - first:
+      213: 3109694756463370724
+    second: goblin-idle_47
+  - first:
+      213: 5458232769125794184
+    second: goblin-idle_48
+  - first:
+      213: 6204964246767397995
+    second: goblin-idle_49
+  - first:
+      213: -6372710803069499199
+    second: goblin-idle_50
+  - first:
+      213: -7074268236078730747
+    second: goblin-idle_51
+  - first:
+      213: -3710462109786676021
+    second: goblin-idle_52
+  - first:
+      213: 2430111273523684752
+    second: goblin-idle_53
+  - first:
+      213: 2913474806800489776
+    second: goblin-idle_54
+  - first:
+      213: -5690632531231554303
+    second: goblin-idle_55
+  - first:
+      213: -3030223966042490663
+    second: goblin-idle_56
+  - first:
+      213: -5766572885134809816
+    second: goblin-idle_57
+  - first:
+      213: 8895359466055729772
+    second: goblin-idle_58
+  - first:
+      213: -1423942360530800581
+    second: goblin-idle_59
+  - first:
+      213: 1623348320201000651
+    second: goblin-idle_60
+  - first:
+      213: -2792834781690976953
+    second: goblin-idle_61
+  - first:
+      213: 9198243550005498134
+    second: goblin-idle_62
+  - first:
+      213: -5646911101344990827
+    second: goblin-idle_63
+  - first:
+      213: -4004981323987347463
+    second: goblin_idle_0
+  - first:
+      213: 1188879964842525537
+    second: goblin_idle_1
+  - first:
+      213: 8869205000577459251
+    second: goblin_idle_2
+  - first:
+      213: -6950601958726238420
+    second: goblin_idle_3
+  - first:
+      213: 8100803782014930940
+    second: goblin_idle_4
+  - first:
+      213: -6579380373942221910
+    second: goblin_idle_5
+  - first:
+      213: 1229588369074526678
+    second: goblin_idle_6
+  - first:
+      213: -1607690529812340672
+    second: goblin_idle_7
+  - first:
+      213: -5081467547810471195
+    second: goblin_idle_8
+  - first:
+      213: 1728917683587687492
+    second: goblin_idle_9
+  - first:
+      213: -5181009194790058764
+    second: goblin_idle_10
+  - first:
+      213: 2816609869878131
+    second: goblin_idle_11
+  - first:
+      213: 6160113294103413805
+    second: goblin_idle_12
+  - first:
+      213: -2533053980791990341
+    second: goblin_idle_13
+  - first:
+      213: 8346540070287092904
+    second: goblin_idle_14
+  - first:
+      213: 8098837683162971046
+    second: goblin_idle_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: goblin_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f719a384b27b68c0800000000000000
+      internalID: -4004981323987347463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16384017700cf7010800000000000000
+      internalID: 1188879964842525537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 334a98bf4feb51b70800000000000000
+      internalID: 8869205000577459251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2ffcfa28508a8f90800000000000000
+      internalID: -6950601958726238420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cff042eae16db6070800000000000000
+      internalID: 8100803782014930940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa34ff0b86851b4a0800000000000000
+      internalID: -6579380373942221910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d993a66b10601110800000000000000
+      internalID: 1229588369074526678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 040a6c52bf550b9e0800000000000000
+      internalID: -1607690529812340672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e2e41320300b79b0800000000000000
+      internalID: -5081467547810471195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 444a22819795ef710800000000000000
+      internalID: 1728917683587687492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f48186669b5918b0800000000000000
+      internalID: -5181009194790058764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 373d3c611b10a0000800000000000000
+      internalID: 2816609869878131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d24023f376e1d7550800000000000000
+      internalID: 6160113294103413805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb7110e33d8c8dcd0800000000000000
+      internalID: -2533053980791990341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aca609d8fdd4d370800000000000000
+      internalID: 8346540070287092904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6abf97e96f9d46070800000000000000
+      internalID: 8098837683162971046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      goblin-idle_0: -3041552050115924206
+      goblin-idle_1: -7103582190743073792
+      goblin-idle_10: 3211847467113557624
+      goblin-idle_11: -9211185379471674161
+      goblin-idle_12: 5656144356149340613
+      goblin-idle_13: 3809495092103588673
+      goblin-idle_14: 3414638054002762950
+      goblin-idle_15: 4092680802490466265
+      goblin-idle_16: 8298419077262814276
+      goblin-idle_17: 8878486790996540610
+      goblin-idle_18: 4715362180568340212
+      goblin-idle_19: 1606623457483258739
+      goblin-idle_2: 7632703689998003652
+      goblin-idle_20: -1101770769128010294
+      goblin-idle_21: -7676545660389235812
+      goblin-idle_22: 7740671895251864555
+      goblin-idle_23: -4295767359230306649
+      goblin-idle_24: -1318550616616886908
+      goblin-idle_25: 6232678882770965920
+      goblin-idle_26: -1907398145644667435
+      goblin-idle_27: 2375808177462443440
+      goblin-idle_28: -3679334950033609712
+      goblin-idle_29: 6320899685618540798
+      goblin-idle_3: 5573738310580646734
+      goblin-idle_30: -7826980594012659992
+      goblin-idle_31: -5447693996026857788
+      goblin-idle_32: 739862883276503765
+      goblin-idle_33: -5019635719378256752
+      goblin-idle_34: -5002709294013875871
+      goblin-idle_35: 5315129509334251619
+      goblin-idle_36: -6764021124216157534
+      goblin-idle_37: -2908179583863281242
+      goblin-idle_38: -5113970697938558297
+      goblin-idle_39: 6044219599093799836
+      goblin-idle_4: -4890965365761210833
+      goblin-idle_40: 998265729958859305
+      goblin-idle_41: -9146304758104375573
+      goblin-idle_42: -3394724467197118801
+      goblin-idle_43: 1068119647091272510
+      goblin-idle_44: -636471613525191530
+      goblin-idle_45: -4805019683823016531
+      goblin-idle_46: 3090193655200309784
+      goblin-idle_47: 3109694756463370724
+      goblin-idle_48: 5458232769125794184
+      goblin-idle_49: 6204964246767397995
+      goblin-idle_5: -254590580228348667
+      goblin-idle_50: -6372710803069499199
+      goblin-idle_51: -7074268236078730747
+      goblin-idle_52: -3710462109786676021
+      goblin-idle_53: 2430111273523684752
+      goblin-idle_54: 2913474806800489776
+      goblin-idle_55: -5690632531231554303
+      goblin-idle_56: -3030223966042490663
+      goblin-idle_57: -5766572885134809816
+      goblin-idle_58: 8895359466055729772
+      goblin-idle_59: -1423942360530800581
+      goblin-idle_6: -4867630464666160621
+      goblin-idle_60: 1623348320201000651
+      goblin-idle_61: -2792834781690976953
+      goblin-idle_62: 9198243550005498134
+      goblin-idle_63: -5646911101344990827
+      goblin-idle_7: -6075437741274082779
+      goblin-idle_8: 4980141222850733371
+      goblin-idle_9: 5542420759059925863
+      goblin_idle_0: -4004981323987347463
+      goblin_idle_1: 1188879964842525537
+      goblin_idle_10: -5181009194790058764
+      goblin_idle_11: 2816609869878131
+      goblin_idle_12: 6160113294103413805
+      goblin_idle_13: -2533053980791990341
+      goblin_idle_14: 8346540070287092904
+      goblin_idle_15: 8098837683162971046
+      goblin_idle_2: 8869205000577459251
+      goblin_idle_3: -6950601958726238420
+      goblin_idle_4: 8100803782014930940
+      goblin_idle_5: -6579380373942221910
+      goblin_idle_6: 1229588369074526678
+      goblin_idle_7: -1607690529812340672
+      goblin_idle_8: -5081467547810471195
+      goblin_idle_9: 1728917683587687492
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

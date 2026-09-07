@@ -1,0 +1,804 @@
+fileFormatVersion: 2
+guid: a6336965953365c4aa5d5ce936dca220
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5273142631677489525
+    second: troll-idle_0
+  - first:
+      213: -3549570062898136114
+    second: troll-idle_1
+  - first:
+      213: -2658580596735773546
+    second: troll-idle_2
+  - first:
+      213: 5342721009802708552
+    second: troll-idle_3
+  - first:
+      213: -362605244453638991
+    second: troll-idle_4
+  - first:
+      213: 3260264458114423140
+    second: troll-idle_5
+  - first:
+      213: 447036465393609041
+    second: troll-idle_6
+  - first:
+      213: -3187059846937094277
+    second: troll-idle_7
+  - first:
+      213: -230038865496608902
+    second: troll-idle_8
+  - first:
+      213: 447443708831113470
+    second: troll-idle_9
+  - first:
+      213: -8306987521803040172
+    second: troll-idle_10
+  - first:
+      213: 4005925842095697546
+    second: troll-idle_11
+  - first:
+      213: 137182846057343103
+    second: troll-idle_12
+  - first:
+      213: -6470813456402729409
+    second: troll-idle_13
+  - first:
+      213: 3685550735984132253
+    second: troll-idle_14
+  - first:
+      213: -2892767091191829145
+    second: troll-idle_15
+  - first:
+      213: 1907906200531916653
+    second: troll-idle_16
+  - first:
+      213: 5467886057541181230
+    second: troll-idle_17
+  - first:
+      213: 2771853727128135357
+    second: troll-idle_18
+  - first:
+      213: -5335696345563550603
+    second: troll-idle_19
+  - first:
+      213: 8703306037407376188
+    second: troll-idle_20
+  - first:
+      213: -2227267128558443832
+    second: troll-idle_21
+  - first:
+      213: 8921123159406430108
+    second: troll-idle_22
+  - first:
+      213: -4980340501781986179
+    second: troll-idle_23
+  - first:
+      213: 1132181229771941807
+    second: troll-idle_24
+  - first:
+      213: -3951094963717607505
+    second: troll-idle_25
+  - first:
+      213: -1072892503428489040
+    second: troll-idle_26
+  - first:
+      213: -100142226246478142
+    second: troll-idle_27
+  - first:
+      213: 6318241581329351293
+    second: troll-idle_28
+  - first:
+      213: -1754180437428554950
+    second: troll-idle_29
+  - first:
+      213: -186819166953086348
+    second: troll-idle_30
+  - first:
+      213: -5561917105865776921
+    second: troll-idle_31
+  - first:
+      213: 9200294387899560256
+    second: troll-idle_32
+  - first:
+      213: -4407366294640769612
+    second: troll-idle_33
+  - first:
+      213: 2767214285942631918
+    second: troll-idle_34
+  - first:
+      213: 5713038621574702725
+    second: troll-idle_35
+  - first:
+      213: 506855243697208063
+    second: troll-idle_36
+  - first:
+      213: -7738463215598581088
+    second: troll-idle_37
+  - first:
+      213: -4801819689669660585
+    second: troll-idle_38
+  - first:
+      213: 856468050971909777
+    second: troll-idle_39
+  - first:
+      213: 7068820201513282973
+    second: troll-idle_40
+  - first:
+      213: 5615009896385447227
+    second: troll-idle_41
+  - first:
+      213: 9201079568689279307
+    second: troll-idle_42
+  - first:
+      213: -5061654568950307657
+    second: troll-idle_43
+  - first:
+      213: 894874743541639542
+    second: troll-idle_44
+  - first:
+      213: 2130100070612316448
+    second: troll-idle_45
+  - first:
+      213: 6071394427898643756
+    second: troll-idle_46
+  - first:
+      213: -7014477846340805052
+    second: troll-idle_47
+  - first:
+      213: -6941681364124198622
+    second: troll-idle_48
+  - first:
+      213: 2945115701331415630
+    second: troll-idle_49
+  - first:
+      213: 6252417264641755775
+    second: troll-idle_50
+  - first:
+      213: -2591979485715822038
+    second: troll-idle_51
+  - first:
+      213: -4170818449409735639
+    second: troll-idle_52
+  - first:
+      213: -523277303561481111
+    second: troll-idle_53
+  - first:
+      213: 7867115510732939519
+    second: troll-idle_54
+  - first:
+      213: 5837923249687098826
+    second: troll-idle_55
+  - first:
+      213: -7253578078805025275
+    second: troll-idle_56
+  - first:
+      213: 5910775314039379546
+    second: troll-idle_57
+  - first:
+      213: -2609084407466645323
+    second: troll-idle_58
+  - first:
+      213: -1868058959826043714
+    second: troll-idle_59
+  - first:
+      213: 102370410083440454
+    second: troll-idle_60
+  - first:
+      213: -14441655375753031
+    second: troll-idle_61
+  - first:
+      213: -5717636678363431517
+    second: troll-idle_62
+  - first:
+      213: 4162906964883663749
+    second: troll-idle_63
+  - first:
+      213: -9173216857798640283
+    second: troll_idle_0
+  - first:
+      213: -5359561666787777773
+    second: troll_idle_1
+  - first:
+      213: -3178105144775357667
+    second: troll_idle_2
+  - first:
+      213: -8871137853510011568
+    second: troll_idle_3
+  - first:
+      213: -2366468525560251064
+    second: troll_idle_4
+  - first:
+      213: 7433655786853790106
+    second: troll_idle_5
+  - first:
+      213: 5296572607437401908
+    second: troll_idle_6
+  - first:
+      213: -1395090074234929150
+    second: troll_idle_7
+  - first:
+      213: 1002423985040268466
+    second: troll_idle_8
+  - first:
+      213: 2217468297158686461
+    second: troll_idle_9
+  - first:
+      213: -170338394538682326
+    second: troll_idle_10
+  - first:
+      213: -8178576858951997436
+    second: troll_idle_11
+  - first:
+      213: 1806507597908654129
+    second: troll_idle_12
+  - first:
+      213: -1558037190797023984
+    second: troll_idle_13
+  - first:
+      213: 2304080523408206141
+    second: troll_idle_14
+  - first:
+      213: 1574766340149110249
+    second: troll_idle_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: troll_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56d794f9edf22b080800000000000000
+      internalID: -9173216857798640283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 313605b6f030f95b0800000000000000
+      internalID: -5359561666787777773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1bc2da853a15e3d0800000000000000
+      internalID: -3178105144775357667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 055b300af1363e480800000000000000
+      internalID: -8871137853510011568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84db6d10a6d982fd0800000000000000
+      internalID: -2366468525560251064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9172fd8d86a92760800000000000000
+      internalID: 7433655786853790106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43fee5959b4318940800000000000000
+      internalID: 5296572607437401908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 200cd8f08f4a3ace0800000000000000
+      internalID: -1395090074234929150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bc18a6ad4359ed00800000000000000
+      internalID: 1002423985040268466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df675d8eaa706ce10800000000000000
+      internalID: 2217468297158686461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2859e5f126d2adf0800000000000000
+      internalID: -170338394538682326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 408afe1cdabdf7e80800000000000000
+      internalID: -8178576858951997436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 138b369c611021910800000000000000
+      internalID: 1806507597908654129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01522b70e6db06ae0800000000000000
+      internalID: -1558037190797023984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3964ab470db9ff10800000000000000
+      internalID: 2304080523408206141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: troll_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e564d494a1bad510800000000000000
+      internalID: 1574766340149110249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      troll-idle_0: -5273142631677489525
+      troll-idle_1: -3549570062898136114
+      troll-idle_10: -8306987521803040172
+      troll-idle_11: 4005925842095697546
+      troll-idle_12: 137182846057343103
+      troll-idle_13: -6470813456402729409
+      troll-idle_14: 3685550735984132253
+      troll-idle_15: -2892767091191829145
+      troll-idle_16: 1907906200531916653
+      troll-idle_17: 5467886057541181230
+      troll-idle_18: 2771853727128135357
+      troll-idle_19: -5335696345563550603
+      troll-idle_2: -2658580596735773546
+      troll-idle_20: 8703306037407376188
+      troll-idle_21: -2227267128558443832
+      troll-idle_22: 8921123159406430108
+      troll-idle_23: -4980340501781986179
+      troll-idle_24: 1132181229771941807
+      troll-idle_25: -3951094963717607505
+      troll-idle_26: -1072892503428489040
+      troll-idle_27: -100142226246478142
+      troll-idle_28: 6318241581329351293
+      troll-idle_29: -1754180437428554950
+      troll-idle_3: 5342721009802708552
+      troll-idle_30: -186819166953086348
+      troll-idle_31: -5561917105865776921
+      troll-idle_32: 9200294387899560256
+      troll-idle_33: -4407366294640769612
+      troll-idle_34: 2767214285942631918
+      troll-idle_35: 5713038621574702725
+      troll-idle_36: 506855243697208063
+      troll-idle_37: -7738463215598581088
+      troll-idle_38: -4801819689669660585
+      troll-idle_39: 856468050971909777
+      troll-idle_4: -362605244453638991
+      troll-idle_40: 7068820201513282973
+      troll-idle_41: 5615009896385447227
+      troll-idle_42: 9201079568689279307
+      troll-idle_43: -5061654568950307657
+      troll-idle_44: 894874743541639542
+      troll-idle_45: 2130100070612316448
+      troll-idle_46: 6071394427898643756
+      troll-idle_47: -7014477846340805052
+      troll-idle_48: -6941681364124198622
+      troll-idle_49: 2945115701331415630
+      troll-idle_5: 3260264458114423140
+      troll-idle_50: 6252417264641755775
+      troll-idle_51: -2591979485715822038
+      troll-idle_52: -4170818449409735639
+      troll-idle_53: -523277303561481111
+      troll-idle_54: 7867115510732939519
+      troll-idle_55: 5837923249687098826
+      troll-idle_56: -7253578078805025275
+      troll-idle_57: 5910775314039379546
+      troll-idle_58: -2609084407466645323
+      troll-idle_59: -1868058959826043714
+      troll-idle_6: 447036465393609041
+      troll-idle_60: 102370410083440454
+      troll-idle_61: -14441655375753031
+      troll-idle_62: -5717636678363431517
+      troll-idle_63: 4162906964883663749
+      troll-idle_7: -3187059846937094277
+      troll-idle_8: -230038865496608902
+      troll-idle_9: 447443708831113470
+      troll_idle_0: -9173216857798640283
+      troll_idle_1: -5359561666787777773
+      troll_idle_10: -170338394538682326
+      troll_idle_11: -8178576858951997436
+      troll_idle_12: 1806507597908654129
+      troll_idle_13: -1558037190797023984
+      troll_idle_14: 2304080523408206141
+      troll_idle_15: 1574766340149110249
+      troll_idle_2: -3178105144775357667
+      troll_idle_3: -8871137853510011568
+      troll_idle_4: -2366468525560251064
+      troll_idle_5: 7433655786853790106
+      troll_idle_6: 5296572607437401908
+      troll_idle_7: -1395090074234929150
+      troll_idle_8: 1002423985040268466
+      troll_idle_9: 2217468297158686461
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

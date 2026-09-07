@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8a00bdba7ebde45b55ead7faf2ecb3, type: 3}
+  m_Name: GameContentCatalog
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.GameContentCatalog
+  _economy: {fileID: 11400000, guid: 5da5d5ebd9b71b947af27eb67e1a98cc, type: 2}
+  _buildings:
+  - {fileID: 11400000, guid: 28bb1031d48ac0142bdc49ae418b6fb8, type: 2}
+  - {fileID: 11400000, guid: f25a3b1cc65af90498e7d63c15ab2716, type: 2}
+  - {fileID: 11400000, guid: 34707619c5bcbf447a0d3a126333fffb, type: 2}
+  _units:
+  - {fileID: 11400000, guid: b58bf60ea0eaf9f4ea5e4d2ad86e21c9, type: 2}
+  - {fileID: 11400000, guid: c85990950bee1644aa6fb0874ac8a0d3, type: 2}

@@ -1,54 +1,58 @@
+export const CELL_SIZE = 48;
+export const GRID_WIDTH = 14;
+export const GRID_HEIGHT = 14;
+export const MAX_UNITS_PER_CELL = 20;
+export const ECONOMY_STEP_MS = 250;
+export const ORE_PER_STRENGTH_SECOND = 0.1;
+export const ORE_SELL_PRICE = 3;
+export const TRANSFER_TIME_MS = 500;
+
 export const UNIT_CATALOG = {
   goblin: {
-    cost: 40,
-    maxHealth: 20,
+    name: 'Гоблин',
+    price: 40,
     strength: 3,
     speed: 5,
-    carryCapacity: 10,
-    damage: 2,
-    armor: 1,
-    attackIntervalMs: 2_000,
+    cargo: 10,
+    description: 'Быстрый рабочий и носильщик',
   },
   troll: {
-    cost: 170,
-    maxHealth: 55,
+    name: 'Тролль',
+    price: 170,
     strength: 9,
     speed: 2,
-    carryCapacity: 30,
-    damage: 7,
-    armor: 3,
-    attackIntervalMs: 2_600,
+    cargo: 30,
+    description: 'Медленный, но очень сильный',
   },
 } as const;
+
+export type UnitKind = keyof typeof UNIT_CATALOG;
 
 export const BUILDING_CATALOG = {
   mine: {
-    purchaseCost: 200,
-    unlockId: 'building:mine',
-    workerCapacity: 5,
-    orePerStrengthSecond: 0.1,
-    inventoryCapacity: 100,
+    name: 'Шахта',
+    price: 200,
+    width: 3,
+    height: 3,
+    maxOre: 100,
+    maxWorkers: 5,
   },
   warehouse: {
-    inventoryCapacity: 500,
+    name: 'Склад',
+    price: 0,
+    width: 3,
+    height: 3,
+    maxOre: 500,
+    maxWorkers: 0,
   },
   market: {
-    oreSalePrice: 3,
+    name: 'Рынок',
+    price: 0,
+    width: 3,
+    height: 2,
+    maxOre: 0,
+    maxWorkers: 0,
   },
 } as const;
 
-export const ITEM_CATALOG = {
-  'rusty-sword': {
-    slot: 'weapon',
-    damageBonus: 1,
-    armorBonus: 0,
-  },
-  'patched-armor': {
-    slot: 'armor',
-    damageBonus: 0,
-    armorBonus: 1,
-  },
-} as const;
-
-export type UnitSpecies = keyof typeof UNIT_CATALOG;
-export type ItemKind = keyof typeof ITEM_CATALOG;
+export type BuildingKind = keyof typeof BUILDING_CATALOG;

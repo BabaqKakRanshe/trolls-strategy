@@ -2,6 +2,22 @@
   "schemaVersion": 1,
   "assets": [
     {
+      "key": "terrain.forgotten-memories",
+      "type": "spritesheet",
+      "source": "assets/sprites/sources/environment/forgotten-memories-tiles.png",
+      "output": "public/assets/runtime/environment/forgotten-memories-tiles.png",
+      "licenseId": "minifantasy-forgotten-plains-free",
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "key": "decor.forgotten-memories-props",
+      "type": "image",
+      "source": "assets/sprites/sources/environment/forgotten-memories-props.png",
+      "output": "public/assets/runtime/environment/forgotten-memories-props.png",
+      "licenseId": "minifantasy-forgotten-plains-free"
+    },
+    {
       "key": "building.market",
       "type": "image",
       "source": "assets/sprites/sources/Market_01.png",
@@ -25,74 +41,50 @@
     {
       "key": "unit.goblin.idle",
       "type": "spritesheet",
-      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollIdle.png",
-      "output": "public/assets/runtime/units/goblin/idle.png",
+      "source": "assets/sprites/sources/units/goblin-idle.png",
+      "output": "public/assets/runtime/units/goblin-idle.png",
       "licenseId": "minifantasy-creatures-free",
       "frameWidth": 32,
       "frameHeight": 32,
-      "frameDurationMs": 200,
       "animationStart": 0,
-      "animationEnd": 15
+      "animationEnd": 15,
+      "frameDurationMs": 200
     },
     {
       "key": "unit.goblin.walk",
       "type": "spritesheet",
-      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollWalk.png",
-      "output": "public/assets/runtime/units/goblin/walk.png",
+      "source": "assets/sprites/sources/units/goblin-walk.png",
+      "output": "public/assets/runtime/units/goblin-walk.png",
       "licenseId": "minifantasy-creatures-free",
       "frameWidth": 32,
       "frameHeight": 32,
-      "frameDurationMs": 200,
       "animationStart": 0,
-      "animationEnd": 5
+      "animationEnd": 3,
+      "frameDurationMs": 200
     },
     {
-      "key": "unit.goblin.attack",
+      "key": "unit.troll.idle",
       "type": "spritesheet",
-      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollAttack.png",
-      "output": "public/assets/runtime/units/goblin/attack.png",
+      "source": "assets/sprites/sources/units/troll-idle.png",
+      "output": "public/assets/runtime/units/troll-idle.png",
       "licenseId": "minifantasy-creatures-free",
       "frameWidth": 32,
       "frameHeight": 32,
-      "frameDurationMs": 100,
       "animationStart": 0,
-      "animationEnd": 3
+      "animationEnd": 15,
+      "frameDurationMs": 200
     },
     {
-      "key": "unit.goblin.jump",
+      "key": "unit.troll.walk",
       "type": "spritesheet",
-      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollJump.png",
-      "output": "public/assets/runtime/units/goblin/jump.png",
+      "source": "assets/sprites/sources/units/troll-walk.png",
+      "output": "public/assets/runtime/units/troll-walk.png",
       "licenseId": "minifantasy-creatures-free",
       "frameWidth": 32,
       "frameHeight": 32,
-      "frameDurationMs": 100,
       "animationStart": 0,
-      "animationEnd": 5
-    },
-    {
-      "key": "unit.goblin.damage",
-      "type": "spritesheet",
-      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollDmg.png",
-      "output": "public/assets/runtime/units/goblin/damage.png",
-      "licenseId": "minifantasy-creatures-free",
-      "frameWidth": 32,
-      "frameHeight": 32,
-      "frameDurationMs": 100,
-      "animationStart": 0,
-      "animationEnd": 3
-    },
-    {
-      "key": "unit.goblin.death",
-      "type": "spritesheet",
-      "source": "assets/sprites/Minifantasy_Creatures_Assets/Monsters/Troll/TrollDie.png",
-      "output": "public/assets/runtime/units/goblin/death.png",
-      "licenseId": "minifantasy-creatures-free",
-      "frameWidth": 32,
-      "frameHeight": 32,
-      "frameDurationMs": 100,
-      "animationStart": 0,
-      "animationEnd": 13
+      "animationEnd": 5,
+      "frameDurationMs": 200
     }
   ]
 }
