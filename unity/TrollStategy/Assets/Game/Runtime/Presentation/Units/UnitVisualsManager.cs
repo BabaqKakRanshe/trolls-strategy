@@ -71,7 +71,8 @@ namespace TrollStrategy.Presentation.Units
                 }
                 else
                 {
-                    view.UpdateVisuals(uSnap, selected.Contains(uSnap.Id));
+                    bool isSelected = selected.Contains(uSnap.Id) || (_interaction != null && uSnap.Id == _interaction.InspectedUnitId);
+                    view.UpdateVisuals(uSnap, isSelected);
                 }
             }
 
@@ -92,6 +93,7 @@ namespace TrollStrategy.Presentation.Units
         private void SyncSelection()
         {
             var selected = _interaction != null ? new HashSet<string>(_interaction.SelectedIds) : new HashSet<string>();
+            string inspectedId = _interaction != null ? _interaction.InspectedUnitId : null;
             var snap = _session.CurrentSnapshot;
 
             for (int i = 0; i < snap.Units.Count; i++)
@@ -99,7 +101,8 @@ namespace TrollStrategy.Presentation.Units
                 var uSnap = snap.Units[i];
                 if (_views.TryGetValue(uSnap.Id, out var view))
                 {
-                    view.UpdateVisuals(uSnap, selected.Contains(uSnap.Id));
+                    bool isSelected = selected.Contains(uSnap.Id) || uSnap.Id == inspectedId;
+                    view.UpdateVisuals(uSnap, isSelected);
                 }
             }
         }

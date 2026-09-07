@@ -1,28 +1,40 @@
-﻿using UnityEngine;
+using UnityEngine;
 using TrollStrategy.Application;
 
 namespace TrollStrategy.UI
 {
     public class HudPresenter : MonoBehaviour
     {
-        [SerializeField] private UnitRosterView _rosterView;
+        [SerializeField] private ResourceBarView _resourceBar;
         [SerializeField] private ShopDockView _shopDock;
         [SerializeField] private CommandDockView _commandDock;
+        [SerializeField] private InspectCardView _inspectCard;
+        [SerializeField] private StatusMessageView _statusView;
 
         private GameSession _session;
         private InteractionController _interaction;
 
-        public void Init(GameSession session, InteractionController interaction, UnitRosterView rosterView, ShopDockView shopDock, CommandDockView commandDock)
+        public void Init(
+            GameSession session,
+            InteractionController interaction,
+            ResourceBarView resourceBar,
+            ShopDockView shopDock,
+            CommandDockView commandDock,
+            InspectCardView inspectCard,
+            StatusMessageView statusView)
         {
             _session = session;
             _interaction = interaction;
-            _rosterView = rosterView;
+            _resourceBar = resourceBar;
             _shopDock = shopDock;
             _commandDock = commandDock;
+            _inspectCard = inspectCard;
+            _statusView = statusView;
 
-            if (_rosterView != null) _rosterView.BindInteraction(_interaction);
-            if (_shopDock != null) _shopDock.BindInteraction(_interaction);
-            if (_commandDock != null) _commandDock.BindInteraction(_interaction);
+            if (_shopDock != null) _shopDock.Bind(_session, _interaction);
+            if (_commandDock != null) _commandDock.Bind(_session, _interaction);
+            if (_inspectCard != null) _inspectCard.Bind(_session, _interaction);
+            if (_statusView != null) _statusView.Bind(_interaction);
 
             _session.OnSnapshotChanged += OnSnapshotChanged;
             _interaction.OnInteractionChanged += OnInteractionChanged;
@@ -53,15 +65,20 @@ namespace TrollStrategy.UI
             var snap = _session.CurrentSnapshot;
             var selIds = _interaction.SelectedIds;
 
-            if (_rosterView != null)
-                _rosterView.UpdateRoster(snap.Units, selIds);
+            if (_resourceBar != null)
+                _resourceBar.UpdateView(snap);
 
             if (_shopDock != null)
-                _shopDock.UpdateView(snap, _interaction.Mode, _interaction.Message);
+                _shopDock.UpdateView(snap);
 
             if (_commandDock != null)
-                _commandDock.UpdateState(selIds.Count, _interaction.Mode, snap);
+                _commandDock.UpdateView(selIds.Count, _interaction.CommandsOpen, _interaction.StackQuantity);
+
+            if (_inspectCard != null)
+                _inspectCard.UpdateView(snap, _interaction.InspectedBuildingId, _interaction.InspectedUnitId);
+
+            if (_statusView != null)
+                _statusView.UpdateView(_interaction.Mode, _interaction.Message);
         }
     }
 }
-

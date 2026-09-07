@@ -4,6 +4,7 @@ namespace TrollStrategy.Content
     {
         Mine,
         Warehouse,
-        Market
+        Market,
+        Barracks
     }
 }

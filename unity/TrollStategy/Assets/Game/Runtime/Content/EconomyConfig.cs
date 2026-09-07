@@ -30,5 +30,18 @@ namespace TrollStrategy.Content
         public int StartingGold => _startingGold;
         public float OrePerStrengthSecond => _orePerStrengthSecond;
         public int OreSellPrice => _oreSellPrice;
+
+        public void Init(int gridWidth, int gridHeight, float cellSize, int startingGold, int maxUnitsPerCell, float tickIntervalSeconds, int oreSellPrice, float orePerStrengthSecond, float transferTimeSeconds)
+        {
+            _gridWidth = gridWidth;
+            _gridHeight = gridHeight;
+            _cellSize = cellSize;
+            _startingGold = startingGold;
+            _maxUnitsPerCell = maxUnitsPerCell;
+            _stepTimeSeconds = tickIntervalSeconds;
+            _oreSellPrice = oreSellPrice;
+            _orePerStrengthSecond = orePerStrengthSecond;
+            _transferTimeSeconds = transferTimeSeconds;
+        }
     }
 }

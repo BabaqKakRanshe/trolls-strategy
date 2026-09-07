@@ -1,32 +1,30 @@
 using TMPro;
 using UnityEngine;
+using TrollStrategy.Application;
 
 namespace TrollStrategy.UI
 {
     public class ResourceBarView : MonoBehaviour
     {
+        [Header("Stats Displays")]
         [SerializeField] private TextMeshProUGUI _goldText;
-        [SerializeField] private TextMeshProUGUI _totalOreText;
-        [SerializeField] private TextMeshProUGUI _soldOreText;
-        [SerializeField] private TextMeshProUGUI _populationText;
-        [SerializeField] private TextMeshProUGUI _selectedText;
+        [SerializeField] private TextMeshProUGUI _minionsText;
+        [SerializeField] private TextMeshProUGUI _oreText;
 
-        public void Setup(TextMeshProUGUI gold, TextMeshProUGUI totalOre, TextMeshProUGUI soldOre, TextMeshProUGUI population, TextMeshProUGUI selected)
+        public void Setup(TextMeshProUGUI gold, TextMeshProUGUI minions, TextMeshProUGUI ore)
         {
             _goldText = gold;
-            _totalOreText = totalOre;
-            _soldOreText = soldOre;
-            _populationText = population;
-            _selectedText = selected;
+            _minionsText = minions;
+            _oreText = ore;
         }
 
-        public void UpdateValues(int gold, int totalOre, int soldOre, int population, int selected)
+        public void UpdateView(GameSnapshot snapshot)
         {
-            if (_goldText != null) _goldText.text = $"Золото: {gold:N0}";
-            if (_totalOreText != null) _totalOreText.text = $"Руда: {totalOre:N0}";
-            if (_soldOreText != null) _soldOreText.text = $"Продано: {soldOre:N0}";
-            if (_populationText != null) _populationText.text = $"Существ: {population}";
-            if (_selectedText != null) _selectedText.text = $"Выбрано: {selected}";
+            if (snapshot == null) return;
+
+            if (_goldText != null) _goldText.text = snapshot.Gold.ToString("N0");
+            if (_minionsText != null) _minionsText.text = snapshot.Units.Count.ToString();
+            if (_oreText != null) _oreText.text = snapshot.TotalOre.ToString("N0");
         }
     }
 }

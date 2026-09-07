@@ -23,8 +23,11 @@ namespace TrollStrategy.Presentation.Units
         private bool _isWalking;
         private float _animTimer;
         private int _currentFrame;
+        private LineRenderer _selectionRing;
 
         public string UnitId => _snapshot?.Id;
+        public UnitSnapshot Snapshot => _snapshot;
+        public UnitDefinition Definition => _definition;
 
         public void Setup(UnitSnapshot snapshot, UnitDefinition definition, Action<string, bool> onClick)
         {
@@ -40,10 +43,108 @@ namespace TrollStrategy.Presentation.Units
                     _spriteRenderer.sprite = definition.IdleSprite;
             }
 
+            EnsureSelectionVisuals();
+
             _targetPosition = new Vector3(snapshot.Position.X, snapshot.Position.Y, 0f);
             transform.position = _targetPosition;
 
             UpdateVisuals(snapshot, false);
+        }
+
+        private static Sprite _proceduralSelectionSprite;
+
+        private static Sprite GetSelectionSprite()
+        {
+            if (_proceduralSelectionSprite != null) return _proceduralSelectionSprite;
+
+            int size = 64;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            float center = (size - 1) * 0.5f;
+            float radius = center - 2f;
+            float innerRadius = radius - 5f;
+
+            Color transparent = new Color(0, 0, 0, 0);
+            Color ringColor = new Color(0.92f, 1f, 0.45f, 1f);
+            Color fillColor = new Color(0.92f, 1f, 0.45f, 0.28f);
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float d = Vector2.Distance(new Vector2(x, y), new Vector2(center, center));
+                    if (d <= radius && d >= innerRadius)
+                    {
+                        tex.SetPixel(x, y, ringColor);
+                    }
+                    else if (d < innerRadius)
+                    {
+                        tex.SetPixel(x, y, fillColor);
+                    }
+                    else
+                    {
+                        tex.SetPixel(x, y, transparent);
+                    }
+                }
+            }
+            tex.Apply();
+            _proceduralSelectionSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
+            return _proceduralSelectionSprite;
+        }
+
+        private void EnsureSelectionVisuals()
+        {
+            if (_selectionCircle == null)
+            {
+                var circleGo = new GameObject("SelectionCircle");
+                circleGo.transform.SetParent(transform, false);
+                circleGo.transform.localPosition = new Vector3(0f, -0.16f, 0f);
+                circleGo.transform.localScale = new Vector3(1.1f, 0.65f, 1f);
+
+                _selectionCircle = circleGo.AddComponent<SpriteRenderer>();
+                _selectionCircle.sprite = GetSelectionSprite();
+                _selectionCircle.sortingOrder = 19;
+                _selectionCircle.color = Color.white;
+            }
+
+            if (_selectionRing == null)
+            {
+                var ringGo = new GameObject("SelectionRing");
+                ringGo.transform.SetParent(transform, false);
+                ringGo.transform.localPosition = new Vector3(0f, -0.16f, 0f);
+
+                _selectionRing = ringGo.AddComponent<LineRenderer>();
+                _selectionRing.useWorldSpace = false;
+                _selectionRing.loop = true;
+                _selectionRing.positionCount = 24;
+                _selectionRing.startWidth = 0.055f;
+                _selectionRing.endWidth = 0.055f;
+                _selectionRing.sortingOrder = 22;
+
+                Shader shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
+                if (shader == null) shader = Shader.Find("Sprites/Default");
+                if (shader == null) shader = Shader.Find("Hidden/Internal-Colored");
+                if (shader != null) _selectionRing.material = new Material(shader);
+
+                var goldColor = new Color(0.95f, 1f, 0.4f, 1f);
+                _selectionRing.startColor = goldColor;
+                _selectionRing.endColor = goldColor;
+
+                float rx = 0.45f;
+                float ry = 0.26f;
+                for (int i = 0; i < 24; i++)
+                {
+                    float angle = i * Mathf.PI * 2f / 24f;
+                    _selectionRing.SetPosition(i, new Vector3(Mathf.Cos(angle) * rx, Mathf.Sin(angle) * ry, 0f));
+                }
+            }
+
+            if (_collider == null)
+            {
+                _collider = GetComponent<CircleCollider2D>();
+                if (_collider == null) _collider = gameObject.AddComponent<CircleCollider2D>();
+                _collider.radius = 0.4f;
+            }
         }
 
         public void UpdateVisuals(UnitSnapshot snapshot, bool isSelected)
@@ -51,8 +152,16 @@ namespace TrollStrategy.Presentation.Units
             _snapshot = snapshot;
             _targetPosition = new Vector3(snapshot.Position.X, snapshot.Position.Y, 0f);
 
+            EnsureSelectionVisuals();
+
+            if (_selectionRing != null)
+                _selectionRing.enabled = isSelected;
+
             if (_selectionCircle != null)
                 _selectionCircle.gameObject.SetActive(isSelected);
+
+            if (_spriteRenderer != null)
+                _spriteRenderer.color = isSelected ? new Color(1f, 1f, 0.6f, 1f) : Color.white;
 
             if (snapshot.Assignment != null && snapshot.Assignment.Kind == AssignmentKind.Haul && snapshot.Assignment.Carried > 0)
             {
@@ -66,7 +175,8 @@ namespace TrollStrategy.Presentation.Units
             else
             {
                 if (_cargoIcon != null) _cargoIcon.gameObject.SetActive(false);
-                if (_cargoLabel != null) _cargoLabel.gameObject.SetActive(false);
+                if (_cargoLabel != null)
+                    _cargoLabel.gameObject.SetActive(false);
             }
         }
 

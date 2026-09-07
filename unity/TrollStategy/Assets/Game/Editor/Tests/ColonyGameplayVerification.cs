@@ -53,7 +53,7 @@ namespace TrollStrategy.Editor.Tests
             var buildResult = session.Dispatch(new BuildMineCommand(new Cell(3, 3)));
             Assert(buildResult.Ok, "Build Mine Command succeeded at (3, 3)", buildResult.Error);
             var s1 = session.CurrentSnapshot;
-            Assert(s1.Gold == 800, "Gold decreased to 800 after Mine construction (200g)");
+            Assert(s1.Gold == 900, "Gold decreased to 900 after Mine construction (100g)");
             Assert(s1.Buildings.Count == 3, "Building count is now 3");
 
             // 3. Overlap validation
@@ -61,21 +61,21 @@ namespace TrollStrategy.Editor.Tests
             Assert(!invalidBuild.Ok, "Building on existing building is rejected");
 
             // 4. Boundary validation
-            var outOfBoundsBuild = session.Dispatch(new BuildMineCommand(new Cell(13, 13)));
+            var outOfBoundsBuild = session.Dispatch(new BuildMineCommand(new Cell(14, 14)));
             Assert(!outOfBoundsBuild.Ok, "Building outside map bounds is rejected");
 
             // 5. Buy Goblins at free cell (7, 7)
             var buyGoblins = session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 3, new Cell(7, 7)));
             Assert(buyGoblins.Ok, "Hired 3 Goblins at (7, 7)", buyGoblins.Error);
             var s2 = session.CurrentSnapshot;
-            Assert(s2.Gold == 680, "Gold decreased to 680 (3 * 40g = 120g)");
+            Assert(s2.Gold == 825, "Gold decreased to 825 (3 * 25g = 75g)");
             Assert(s2.Units.Count == 3, "Unit count is now 3");
 
             // 6. Buy Troll at free cell (8, 7)
             var buyTroll = session.Dispatch(new BuyUnitsCommand(UnitKind.Troll, 1, new Cell(8, 7)));
             Assert(buyTroll.Ok, "Hired 1 Troll at (8, 7)", buyTroll.Error);
             var s3 = session.CurrentSnapshot;
-            Assert(s3.Gold == 510, "Gold decreased to 510 (170g)");
+            Assert(s3.Gold == 775, "Gold decreased to 775 (50g)");
             Assert(s3.Units.Count == 4, "Unit count is now 4");
 
             // 7. Assign Work

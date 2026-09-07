@@ -86,8 +86,9 @@ namespace TrollStrategy.Presentation.Buildings
                 }
                 else
                 {
+                    bool isHighlighted = targets.Contains(bSnap.Id) || (_interaction != null && bSnap.Id == _interaction.InspectedBuildingId);
                     view.transform.position = targetPos;
-                    view.UpdateVisuals(bSnap, targets.Contains(bSnap.Id));
+                    view.UpdateVisuals(bSnap, isHighlighted);
                 }
             }
 
@@ -108,6 +109,7 @@ namespace TrollStrategy.Presentation.Buildings
         private void SyncHighlights()
         {
             var targets = _interaction != null ? new HashSet<string>(_interaction.GetTargetBuildingIds()) : new HashSet<string>();
+            string inspectedId = _interaction != null ? _interaction.InspectedBuildingId : null;
             var snap = _session.CurrentSnapshot;
 
             for (int i = 0; i < snap.Buildings.Count; i++)
@@ -115,7 +117,8 @@ namespace TrollStrategy.Presentation.Buildings
                 var bSnap = snap.Buildings[i];
                 if (_views.TryGetValue(bSnap.Id, out var view))
                 {
-                    view.UpdateVisuals(bSnap, targets.Contains(bSnap.Id));
+                    bool isHighlighted = targets.Contains(bSnap.Id) || bSnap.Id == inspectedId;
+                    view.UpdateVisuals(bSnap, isHighlighted);
                 }
             }
         }

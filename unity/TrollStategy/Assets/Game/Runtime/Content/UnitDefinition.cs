@@ -42,5 +42,10 @@ namespace TrollStrategy.Content
             _idleFrames = idleFrames ?? new Sprite[0];
             _walkFrames = walkFrames ?? new Sprite[0];
         }
+
+        public void Init(UnitKind kind, string displayName, int price, int strength, float speed, int cargoCapacity, Sprite portrait, Sprite[] idleFrames, Sprite[] walkFrames)
+        {
+            Init(kind, displayName, price, strength, speed, cargoCapacity, "", portrait, idleFrames, walkFrames);
+        }
     }
 }

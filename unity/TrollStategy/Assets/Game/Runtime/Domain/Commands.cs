@@ -74,4 +74,16 @@ namespace TrollStrategy.Domain
         public IReadOnlyList<string> UnitIds { get; }
         public ReleaseUnitsCommand(IReadOnlyList<string> unitIds) => UnitIds = unitIds;
     }
+
+    public class SellUnitsCommand : IGameCommand
+    {
+        public IReadOnlyList<string> UnitIds { get; }
+        public SellUnitsCommand(IReadOnlyList<string> unitIds) => UnitIds = unitIds;
+    }
+
+    public class SendToBarracksCommand : IGameCommand
+    {
+        public IReadOnlyList<string> UnitIds { get; }
+        public SendToBarracksCommand(IReadOnlyList<string> unitIds) => UnitIds = unitIds;
+    }
 }

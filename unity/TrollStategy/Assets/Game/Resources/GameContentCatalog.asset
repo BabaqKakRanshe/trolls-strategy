@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.GameContentCatalog
   _economy: {fileID: 11400000, guid: 5da5d5ebd9b71b947af27eb67e1a98cc, type: 2}
   _buildings:
-  - {fileID: 11400000, guid: 28bb1031d48ac0142bdc49ae418b6fb8, type: 2}
-  - {fileID: 11400000, guid: f25a3b1cc65af90498e7d63c15ab2716, type: 2}
-  - {fileID: 11400000, guid: 34707619c5bcbf447a0d3a126333fffb, type: 2}
+  - {fileID: 11400000, guid: 7577d3699339c9248b95587980e22c69, type: 2}
+  - {fileID: 11400000, guid: 4463564e7f531cf43906f329d3f16c64, type: 2}
+  - {fileID: 11400000, guid: 0149dbea25a705142bfa15797b071ac3, type: 2}
+  - {fileID: 11400000, guid: 91c0e55d0d210ad4090e93869c6aee9e, type: 2}
   _units:
-  - {fileID: 11400000, guid: b58bf60ea0eaf9f4ea5e4d2ad86e21c9, type: 2}
-  - {fileID: 11400000, guid: c85990950bee1644aa6fb0874ac8a0d3, type: 2}
+  - {fileID: 11400000, guid: 00ed8c2edd1992b4a92287cf49f58038, type: 2}
+  - {fileID: 11400000, guid: a64c4bf0d6855224cb929cc5081b6a7a, type: 2}

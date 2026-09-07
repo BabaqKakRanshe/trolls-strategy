@@ -60,6 +60,12 @@ namespace TrollStrategy.Presentation.Visuals
 
             _ghostRenderer.gameObject.SetActive(true);
 
+            if (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame)
+            {
+                _interaction.CancelOrClear();
+                return;
+            }
+
             if (mode.Type == InteractionModeType.PlacingMine)
             {
                 var mineDef = _catalog.GetBuilding(BuildingKind.Mine);
@@ -67,9 +73,9 @@ namespace TrollStrategy.Presentation.Visuals
                 _ghostRenderer.transform.position = _worldView.BuildingCenterWorld(cell, mineDef.Width, mineDef.Height);
 
                 bool valid = _session.CanBuildMine(cell).Ok;
-                _ghostRenderer.color = valid ? new Color(0.2f, 1f, 0.3f, 0.6f) : new Color(1f, 0.2f, 0.2f, 0.6f);
+                _ghostRenderer.color = valid ? new Color(0.2f, 1f, 0.3f, 0.75f) : new Color(1f, 0.2f, 0.2f, 0.75f);
 
-                if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && !UIInputUtils.IsPointerOverInteractiveUI())
                 {
                     _interaction.PlaceMine(cell);
                 }
@@ -81,9 +87,9 @@ namespace TrollStrategy.Presentation.Visuals
                 _ghostRenderer.transform.position = _worldView.CellToWorld(cell) + new Vector3(0.5f, 0.5f, 0f);
 
                 bool valid = _session.CanBuyUnits(mode.UnitKind, mode.Amount, cell).Ok;
-                _ghostRenderer.color = valid ? new Color(0.2f, 1f, 0.3f, 0.7f) : new Color(1f, 0.2f, 0.2f, 0.7f);
+                _ghostRenderer.color = valid ? new Color(0.2f, 1f, 0.3f, 0.8f) : new Color(1f, 0.2f, 0.2f, 0.8f);
 
-                if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && !UIInputUtils.IsPointerOverInteractiveUI())
                 {
                     _interaction.PlaceUnits(cell);
                 }

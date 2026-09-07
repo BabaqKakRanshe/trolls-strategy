@@ -56,7 +56,7 @@ namespace TrollStrategy.Presentation.Visuals
 
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
-                if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                if (UIInputUtils.IsPointerOverInteractiveUI())
                     return;
 
                 _startWorldPos = mouseWorld;
@@ -105,16 +105,21 @@ namespace TrollStrategy.Presentation.Visuals
                 else
                 {
                     bool shift = Keyboard.current != null && (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed);
-                    var hit = Physics2D.OverlapPoint(new Vector2(mouseWorld.x, mouseWorld.y));
+                    var hit = Physics2D.OverlapCircle(new Vector2(mouseWorld.x, mouseWorld.y), 0.45f);
                     if (hit != null)
                     {
-                        if (hit.TryGetComponent<UnitView>(out var uv))
+                        var uv = hit.GetComponentInParent<UnitView>();
+                        if (uv != null)
                         {
                             _interaction.ClickUnit(uv.UnitId, shift);
                         }
-                        else if (hit.TryGetComponent<BuildingView>(out var bv))
+                        else
                         {
-                            _interaction.ChooseBuilding(bv.BuildingId);
+                            var bv = hit.GetComponentInParent<BuildingView>();
+                            if (bv != null)
+                            {
+                                _interaction.ChooseBuilding(bv.BuildingId);
+                            }
                         }
                     }
                     else if (!shift)

@@ -32,9 +32,11 @@ namespace TrollStrategy.Bootstrap
 
         [Header("UI")]
         [SerializeField] private HudPresenter _hudPresenter;
-        [SerializeField] private UnitRosterView _rosterView;
+        [SerializeField] private ResourceBarView _resourceBar;
         [SerializeField] private ShopDockView _shopDockView;
         [SerializeField] private CommandDockView _commandDockView;
+        [SerializeField] private InspectCardView _inspectCardView;
+        [SerializeField] private StatusMessageView _statusMessageView;
 
         private GameSession _session;
         private InteractionController _interaction;
@@ -57,9 +59,11 @@ namespace TrollStrategy.Bootstrap
             if (_routeVisualizer == null) _routeVisualizer = FindAnyObjectByType<HaulRouteVisualizer>();
             if (_inputHandler == null) _inputHandler = FindAnyObjectByType<MapInputHandler>();
             if (_hudPresenter == null) _hudPresenter = FindAnyObjectByType<HudPresenter>();
-            if (_rosterView == null) _rosterView = FindAnyObjectByType<UnitRosterView>();
+            if (_resourceBar == null) _resourceBar = FindAnyObjectByType<ResourceBarView>();
             if (_shopDockView == null) _shopDockView = FindAnyObjectByType<ShopDockView>();
             if (_commandDockView == null) _commandDockView = FindAnyObjectByType<CommandDockView>();
+            if (_inspectCardView == null) _inspectCardView = FindAnyObjectByType<InspectCardView>();
+            if (_statusMessageView == null) _statusMessageView = FindAnyObjectByType<StatusMessageView>();
 
             _session = new GameSession(_catalog);
             _interaction = new InteractionController(_session);
@@ -83,7 +87,7 @@ namespace TrollStrategy.Bootstrap
                 _inputHandler.Init(_interaction);
 
             if (_hudPresenter != null)
-                _hudPresenter.Init(_session, _interaction, _rosterView, _shopDockView, _commandDockView);
+                _hudPresenter.Init(_session, _interaction, _resourceBar, _shopDockView, _commandDockView, _inspectCardView, _statusMessageView);
         }
 
         private void Update()
@@ -104,9 +108,11 @@ namespace TrollStrategy.Bootstrap
             BuildingView buildingPrefab,
             UnitView unitPrefab,
             HudPresenter hudPresenter,
-            UnitRosterView rosterView,
+            ResourceBarView resourceBar,
             ShopDockView shopDockView,
-            CommandDockView commandDockView)
+            CommandDockView commandDockView,
+            InspectCardView inspectCardView,
+            StatusMessageView statusMessageView)
         {
             _catalog = catalog;
             _worldView = worldView;
@@ -120,9 +126,11 @@ namespace TrollStrategy.Bootstrap
             _buildingPrefab = buildingPrefab;
             _unitPrefab = unitPrefab;
             _hudPresenter = hudPresenter;
-            _rosterView = rosterView;
+            _resourceBar = resourceBar;
             _shopDockView = shopDockView;
             _commandDockView = commandDockView;
+            _inspectCardView = inspectCardView;
+            _statusMessageView = statusMessageView;
         }
     }
 }

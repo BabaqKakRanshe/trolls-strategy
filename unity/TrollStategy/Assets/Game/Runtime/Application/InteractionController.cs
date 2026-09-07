@@ -37,6 +37,10 @@ namespace TrollStrategy.Application
         private readonly HashSet<string> _selected = new();
         private InteractionMode _mode = InteractionMode.Neutral;
         private string _message = "Постройте шахту и наймите рабочих.";
+        private string _inspectedBuildingId = null;
+        private string _inspectedUnitId = null;
+        private bool _commandsOpen = false;
+        private int _stackQuantity = 1;
 
         public event Action OnInteractionChanged;
 
@@ -48,6 +52,10 @@ namespace TrollStrategy.Application
         public InteractionMode Mode => _mode;
         public string Message => _message;
         public IReadOnlyCollection<string> SelectedIds => _selected;
+        public string InspectedBuildingId => _inspectedBuildingId;
+        public string InspectedUnitId => _inspectedUnitId;
+        public bool CommandsOpen => _commandsOpen;
+        public int StackQuantity => _stackQuantity;
 
         public void ClickUnit(string unitId, bool additive)
         {
@@ -58,6 +66,8 @@ namespace TrollStrategy.Application
                 _selected.Add(unitId);
 
             _mode = InteractionMode.Neutral;
+            _inspectedBuildingId = null;
+            _inspectedUnitId = _selected.Count == 1 ? unitId : null;
             _message = _selected.Count == 0 ? "Выбор снят." : $"Выбрано юнитов: {_selected.Count}";
             Emit();
         }
@@ -180,10 +190,76 @@ namespace TrollStrategy.Application
             Emit();
         }
 
+        public void RecruitUnit(UnitKind kind, int amount = 1)
+        {
+            var cell = _session.FindSpawnCell();
+            var result = _session.Dispatch(new BuyUnitsCommand(kind, amount, cell));
+            if (result.Ok)
+            {
+                var def = _session.Catalog.GetUnit(kind);
+                string name = def != null ? def.DisplayName : kind.ToString();
+                _message = $"{name} нанят в поселение!";
+                _mode = InteractionMode.Neutral;
+            }
+            else
+            {
+                _message = result.Error;
+            }
+            Emit();
+        }
+
+        public void SelectBuilding(string buildingId)
+        {
+            _inspectedBuildingId = buildingId;
+            _inspectedUnitId = null;
+            BuildingSnapshot b = null;
+            var bList = _session.CurrentSnapshot.Buildings;
+            for (int i = 0; i < bList.Count; i++)
+            {
+                if (bList[i].Id == buildingId) { b = bList[i]; break; }
+            }
+            _message = b != null ? $"Выбрано: {b.Name}" : "Здание выбрано.";
+            Emit();
+        }
+
+        public void ToggleCommands(bool open)
+        {
+            _commandsOpen = open;
+            Emit();
+        }
+
+        public void CloseInspect()
+        {
+            _inspectedBuildingId = null;
+            _inspectedUnitId = null;
+            Emit();
+        }
+
+        public void SetStackQuantity(int qty)
+        {
+            _stackQuantity = UnityEngine.Mathf.Max(1, qty);
+            Emit();
+        }
+
+        public void ConfirmStackSelection(IReadOnlyList<string> fullList)
+        {
+            if (fullList == null || fullList.Count == 0) return;
+            int take = UnityEngine.Mathf.Clamp(_stackQuantity, 1, fullList.Count);
+            var subset = new List<string>(take);
+            for (int i = 0; i < take; i++) subset.Add(fullList[i]);
+            SelectUnits(subset);
+        }
+
         public void ChooseBuilding(string buildingId)
         {
+            if (_mode.Type == InteractionModeType.Neutral)
+            {
+                SelectBuilding(buildingId);
+                return;
+            }
+
             var validTargets = GetTargetBuildingIds();
-            if (_mode.Type != InteractionModeType.Neutral && !validTargets.Contains(buildingId))
+            if (!validTargets.Contains(buildingId))
             {
                 _message = "Это здание нельзя выбрать для текущего шага.";
                 Emit();
@@ -233,11 +309,39 @@ namespace TrollStrategy.Application
             }
         }
 
+        public void SellSelected()
+        {
+            if (!HasSelection()) return;
+            var ids = new List<string>(_selected);
+            var result = _session.Dispatch(new SellUnitsCommand(ids));
+            if (result.Ok)
+            {
+                _selected.Clear();
+                _inspectedUnitId = null;
+                _commandsOpen = false;
+                FinishCommand(true, "Юниты проданы за 50% стоимости.");
+            }
+            else
+            {
+                FinishCommand(false, result.Error);
+            }
+        }
+
+        public void SendSelectedToBarracks()
+        {
+            if (!HasSelection()) return;
+            var ids = new List<string>(_selected);
+            var result = _session.Dispatch(new SendToBarracksCommand(ids));
+            _commandsOpen = false;
+            FinishCommand(result.Ok, result.Ok ? "Юниты отправлены в бараки." : result.Error);
+        }
+
         public void ReleaseSelected()
         {
             if (!HasSelection()) return;
             var ids = new List<string>(_selected);
             var result = _session.Dispatch(new ReleaseUnitsCommand(ids));
+            _commandsOpen = false;
             FinishCommand(result.Ok, result.Ok ? "Юниты освобождены от работы." : result.Error);
         }
 

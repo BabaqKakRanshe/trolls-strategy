@@ -23,6 +23,7 @@ namespace TrollStrategy.Application
 
         public GameSnapshot CurrentSnapshot => CreateSnapshot();
         public GameState InternalState => _state;
+        public GameContentCatalog Catalog => _catalog;
 
         public CommandResult Dispatch(IGameCommand command)
         {
@@ -60,6 +61,35 @@ namespace TrollStrategy.Application
         public Cell? FindFirstMineCell()
         {
             return ColonySimulation.FindFirstValidMineCell(_state, _catalog);
+        }
+
+        public Cell FindSpawnCell()
+        {
+            var barracks = _state.Buildings.Find(b => b.Kind == BuildingKind.Barracks);
+            if (barracks != null)
+            {
+                var def = _catalog.GetBuilding(BuildingKind.Barracks);
+                int x = barracks.Cell.X + def.Width / 2;
+                int y = barracks.Cell.Y + def.Height;
+                var candidate = new Cell(x, y);
+                if (CanBuyUnits(UnitKind.Goblin, 1, candidate).Ok)
+                    return candidate;
+            }
+
+            for (int r = 0; r < 6; r++)
+            {
+                for (int dy = -r; dy <= r; dy++)
+                {
+                    for (int dx = -r; dx <= r; dx++)
+                    {
+                        var candidate = new Cell(3 + dx, 3 + dy);
+                        if (CanBuyUnits(UnitKind.Goblin, 1, candidate).Ok)
+                            return candidate;
+                    }
+                }
+            }
+
+            return new Cell(3, 3);
         }
 
         public CommandResult CanBuildMine(Cell cell)

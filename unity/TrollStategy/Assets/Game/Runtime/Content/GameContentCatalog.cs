@@ -22,6 +22,13 @@ namespace TrollStrategy.Content
             _units = units;
         }
 
+        public void Init(EconomyConfig economy, IEnumerable<UnitDefinition> units, IEnumerable<BuildingDefinition> buildings)
+        {
+            _economy = economy;
+            _units = new List<UnitDefinition>(units);
+            _buildings = new List<BuildingDefinition>(buildings);
+        }
+
         public BuildingDefinition GetBuilding(BuildingKind kind)
         {
             for (int i = 0; i < _buildings.Count; i++)

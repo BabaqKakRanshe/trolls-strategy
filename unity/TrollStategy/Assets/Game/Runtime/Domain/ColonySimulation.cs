@@ -15,6 +15,8 @@ namespace TrollStrategy.Domain
                 AssignWorkCommand c => AssignWork(state, c.UnitIds, c.BuildingId, catalog),
                 AssignHaulCommand c => AssignHaul(state, c.UnitIds, c.SourceId, c.DestinationId, catalog),
                 ReleaseUnitsCommand c => ReleaseUnits(state, c.UnitIds, catalog),
+                SellUnitsCommand c => SellUnits(state, c.UnitIds, catalog),
+                SendToBarracksCommand c => SendToBarracks(state, c.UnitIds, catalog),
                 _ => CommandResult.Fail("Неизвестная команда")
             };
         }
@@ -240,6 +242,56 @@ namespace TrollStrategy.Domain
                 ReturnCarriedOre(state, u);
                 u.Assignment = Assignment.Idle();
                 u.Position = IdlePosition(GetUnitNumber(u.Id), catalog.Economy);
+            }
+
+            return CommandResult.Success();
+        }
+
+        private static CommandResult SellUnits(GameState state, IReadOnlyList<string> unitIds, GameContentCatalog catalog)
+        {
+            if (unitIds == null || unitIds.Count == 0) return CommandResult.Fail("Сначала выберите юнитов");
+
+            int totalRefund = 0;
+            var toRemove = new HashSet<string>();
+
+            for (int i = 0; i < unitIds.Count; i++)
+            {
+                var id = unitIds[i];
+                var u = state.Units.Find(un => un.Id == id);
+                if (u != null)
+                {
+                    ReturnCarriedOre(state, u);
+                    var def = catalog.GetUnit(u.Kind);
+                    int refund = (int)Math.Floor(def.Price * 0.5f);
+                    totalRefund += refund;
+                    toRemove.Add(id);
+                }
+            }
+
+            state.Units.RemoveAll(u => toRemove.Contains(u.Id));
+            state.Gold += totalRefund;
+            return CommandResult.Success();
+        }
+
+        private static CommandResult SendToBarracks(GameState state, IReadOnlyList<string> unitIds, GameContentCatalog catalog)
+        {
+            if (unitIds == null || unitIds.Count == 0) return CommandResult.Fail("Сначала выберите юнитов");
+
+            var barracks = state.Buildings.Find(b => b.Kind == BuildingKind.Barracks);
+            var targetPos = barracks != null 
+                ? BuildingEntrancePosition(barracks, catalog) 
+                : new WorldPosition(2.5f * catalog.Economy.CellSize, 2.5f * catalog.Economy.CellSize);
+
+            for (int i = 0; i < unitIds.Count; i++)
+            {
+                var id = unitIds[i];
+                var u = state.Units.Find(un => un.Id == id);
+                if (u != null)
+                {
+                    ReturnCarriedOre(state, u);
+                    u.Assignment = Assignment.Idle();
+                    u.Position = targetPos;
+                }
             }
 
             return CommandResult.Success();

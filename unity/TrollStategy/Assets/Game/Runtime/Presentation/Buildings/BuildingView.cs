@@ -52,17 +52,59 @@ namespace TrollStrategy.Presentation.Buildings
             UpdateVisuals(snapshot, false);
         }
 
+        private static Sprite _proceduralBoxOutlineSprite;
+
+        private static Sprite GetBoxOutlineSprite()
+        {
+            if (_proceduralBoxOutlineSprite != null) return _proceduralBoxOutlineSprite;
+
+            int size = 64;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            Color border = Color.white;
+            Color fill = new Color(1f, 1f, 1f, 0.16f);
+            int bw = 4;
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    bool isBorder = x < bw || x >= size - bw || y < bw || y >= size - bw;
+                    tex.SetPixel(x, y, isBorder ? border : fill);
+                }
+            }
+            tex.Apply();
+            _proceduralBoxOutlineSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
+            return _proceduralBoxOutlineSprite;
+        }
+
+        private void EnsureHighlightVisuals(BuildingSnapshot snapshot)
+        {
+            if (_selectionHighlight == null)
+            {
+                var hlGo = new GameObject("SelectionHighlight");
+                hlGo.transform.SetParent(transform, false);
+                hlGo.transform.localPosition = Vector3.zero;
+
+                _selectionHighlight = hlGo.AddComponent<SpriteRenderer>();
+                _selectionHighlight.sprite = GetBoxOutlineSprite();
+                _selectionHighlight.sortingOrder = 14;
+            }
+        }
+
         public void UpdateVisuals(BuildingSnapshot snapshot, bool isTarget)
         {
             _snapshot = snapshot;
+
+            EnsureHighlightVisuals(snapshot);
 
             if (_selectionHighlight != null)
             {
                 _selectionHighlight.gameObject.SetActive(isTarget);
                 if (isTarget)
                 {
-                    _selectionHighlight.transform.localScale = new Vector3(snapshot.Width + 0.2f, snapshot.Height + 0.2f, 1f);
-                    _selectionHighlight.color = new Color(0.4f, 0.9f, 1f, 0.5f);
+                    _selectionHighlight.transform.localScale = new Vector3(snapshot.Width + 0.18f, snapshot.Height + 0.18f, 1f);
+                    _selectionHighlight.color = new Color(0.86f, 1f, 0.53f, 0.95f); // 0xdcff87
                 }
             }
 
