@@ -105,7 +105,10 @@ namespace TrollStrategy.Presentation.Visuals
                 else
                 {
                     bool shift = Keyboard.current != null && (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed);
-                    var hit = Physics2D.OverlapCircle(new Vector2(mouseWorld.x, mouseWorld.y), 0.45f);
+                    var hit = Physics2D.OverlapPoint(new Vector2(mouseWorld.x, mouseWorld.y));
+                    if (hit == null)
+                        hit = Physics2D.OverlapCircle(new Vector2(mouseWorld.x, mouseWorld.y), 0.45f);
+
                     if (hit != null)
                     {
                         var uv = hit.GetComponentInParent<UnitView>();

@@ -60,11 +60,14 @@ namespace TrollStrategy.Presentation.Visuals
 
             _ghostRenderer.gameObject.SetActive(true);
 
-            if (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame)
+            bool rightClicked = (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame) || Input.GetMouseButtonDown(1);
+            if (rightClicked)
             {
                 _interaction.CancelOrClear();
                 return;
             }
+
+            bool leftClicked = (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) || Input.GetMouseButtonDown(0);
 
             if (mode.Type == InteractionModeType.PlacingMine)
             {
@@ -75,7 +78,7 @@ namespace TrollStrategy.Presentation.Visuals
                 bool valid = _session.CanBuildMine(cell).Ok;
                 _ghostRenderer.color = valid ? new Color(0.2f, 1f, 0.3f, 0.75f) : new Color(1f, 0.2f, 0.2f, 0.75f);
 
-                if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && !UIInputUtils.IsPointerOverInteractiveUI())
+                if (leftClicked && !UIInputUtils.IsPointerOverInteractiveUI())
                 {
                     _interaction.PlaceMine(cell);
                 }
@@ -89,7 +92,7 @@ namespace TrollStrategy.Presentation.Visuals
                 bool valid = _session.CanBuyUnits(mode.UnitKind, mode.Amount, cell).Ok;
                 _ghostRenderer.color = valid ? new Color(0.2f, 1f, 0.3f, 0.8f) : new Color(1f, 0.2f, 0.2f, 0.8f);
 
-                if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && !UIInputUtils.IsPointerOverInteractiveUI())
+                if (leftClicked && !UIInputUtils.IsPointerOverInteractiveUI())
                 {
                     _interaction.PlaceUnits(cell);
                 }

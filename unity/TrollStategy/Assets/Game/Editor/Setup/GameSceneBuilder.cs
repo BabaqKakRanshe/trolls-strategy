@@ -196,7 +196,9 @@ namespace TrollStrategy.Editor.Setup
             var hlGo = new GameObject("Highlight");
             hlGo.transform.SetParent(bGo.transform, false);
             var hlSr = hlGo.AddComponent<SpriteRenderer>();
-            hlSr.sortingOrder = 9;
+            hlSr.sortingOrder = 14;
+            hlSr.sprite = BuildingView.GetBoxOutlineSprite();
+            hlSr.gameObject.SetActive(false);
 
             var pbGo = new GameObject("ProgressBar");
             pbGo.transform.SetParent(bGo.transform, false);

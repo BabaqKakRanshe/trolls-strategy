@@ -103,12 +103,22 @@ namespace TrollStrategy.UI
             if (_buyGoblinBtn != null)
             {
                 _buyGoblinBtn.onClick.RemoveAllListeners();
-                _buyGoblinBtn.onClick.AddListener(() => _interaction?.RecruitUnit(UnitKind.Goblin));
+                _buyGoblinBtn.onClick.AddListener(() =>
+                {
+                    _interaction?.BeginUnitPlacement(UnitKind.Goblin, 1);
+                    _activeCategory = ShopCategory.None;
+                    RefreshDrawer();
+                });
             }
             if (_buyTrollBtn != null)
             {
                 _buyTrollBtn.onClick.RemoveAllListeners();
-                _buyTrollBtn.onClick.AddListener(() => _interaction?.RecruitUnit(UnitKind.Troll));
+                _buyTrollBtn.onClick.AddListener(() =>
+                {
+                    _interaction?.BeginUnitPlacement(UnitKind.Troll, 1);
+                    _activeCategory = ShopCategory.None;
+                    RefreshDrawer();
+                });
             }
 
             if (_buildMineBtn != null)

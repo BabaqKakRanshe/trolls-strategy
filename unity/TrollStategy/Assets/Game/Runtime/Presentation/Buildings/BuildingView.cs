@@ -54,7 +54,7 @@ namespace TrollStrategy.Presentation.Buildings
 
         private static Sprite _proceduralBoxOutlineSprite;
 
-        private static Sprite GetBoxOutlineSprite()
+        public static Sprite GetBoxOutlineSprite()
         {
             if (_proceduralBoxOutlineSprite != null) return _proceduralBoxOutlineSprite;
 
@@ -87,9 +87,13 @@ namespace TrollStrategy.Presentation.Buildings
                 hlGo.transform.localPosition = Vector3.zero;
 
                 _selectionHighlight = hlGo.AddComponent<SpriteRenderer>();
-                _selectionHighlight.sprite = GetBoxOutlineSprite();
-                _selectionHighlight.sortingOrder = 14;
             }
+
+            if (_selectionHighlight.sprite == null)
+            {
+                _selectionHighlight.sprite = GetBoxOutlineSprite();
+            }
+            _selectionHighlight.sortingOrder = 14;
         }
 
         public void UpdateVisuals(BuildingSnapshot snapshot, bool isTarget)
@@ -103,9 +107,14 @@ namespace TrollStrategy.Presentation.Buildings
                 _selectionHighlight.gameObject.SetActive(isTarget);
                 if (isTarget)
                 {
-                    _selectionHighlight.transform.localScale = new Vector3(snapshot.Width + 0.18f, snapshot.Height + 0.18f, 1f);
+                    _selectionHighlight.transform.localScale = new Vector3(snapshot.Width + 0.16f, snapshot.Height + 0.16f, 1f);
                     _selectionHighlight.color = new Color(0.86f, 1f, 0.53f, 0.95f); // 0xdcff87
                 }
+            }
+
+            if (_spriteRenderer != null)
+            {
+                _spriteRenderer.color = isTarget ? new Color(1f, 1f, 0.75f, 1f) : Color.white;
             }
 
             if (_progressBar != null)

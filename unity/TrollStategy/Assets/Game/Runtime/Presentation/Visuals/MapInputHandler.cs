@@ -36,6 +36,12 @@ namespace TrollStrategy.Presentation.Visuals
 
                 if (Keyboard.current.rKey.wasPressedThisFrame)
                     _interaction.ReleaseSelected();
+
+                if (Keyboard.current.gKey.wasPressedThisFrame)
+                {
+                    var visualizer = Object.FindAnyObjectByType<HaulRouteVisualizer>();
+                    if (visualizer != null) visualizer.ToggleGuides();
+                }
             }
 
             if (Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame)
