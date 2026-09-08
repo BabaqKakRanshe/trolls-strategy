@@ -14,7 +14,7 @@ namespace TrollStrategy.Presentation.Visuals
 
             Vector2 screenPos = Mouse.current != null 
                 ? Mouse.current.position.ReadValue() 
-                : (Vector2)Input.mousePosition;
+                : Vector2.zero;
 
             var pointerData = new PointerEventData(EventSystem.current)
             {
@@ -26,14 +26,18 @@ namespace TrollStrategy.Presentation.Visuals
 
             for (int i = 0; i < results.Count; i++)
             {
-                var hitGo = results[i].gameObject;
-                if (hitGo == null) continue;
-
-                if (hitGo.GetComponentInParent<Selectable>() != null)
+                if (results[i].module is GraphicRaycaster)
+                    return true;
+                if (results[i].gameObject != null && results[i].gameObject.GetComponentInParent<Selectable>() != null)
                     return true;
             }
 
             return false;
+        }
+
+        public static bool IsPointerOverUI()
+        {
+            return IsPointerOverInteractiveUI();
         }
     }
 }

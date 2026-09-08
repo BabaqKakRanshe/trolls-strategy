@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -32,8 +33,8 @@ namespace TrollStrategy.Editor.Setup
 
             EnsureDirectories();
             s_fontAsset = FontTester.CreateOrGetArial();
-            AssetSlicer.SliceAll();
-            ConfigureBuildingImports();
+            try { AssetSlicer.SliceAll(); } catch (System.Exception ex) { Debug.LogWarning($"[GameSceneBuilder] SliceAll warning: {ex.Message}"); }
+            try { ConfigureBuildingImports(); } catch (System.Exception ex) { Debug.LogWarning($"[GameSceneBuilder] ConfigureBuildingImports warning: {ex.Message}"); }
 
             var catalog = CreateOrUpdateContentCatalog();
             var (buildingPrefab, unitPrefab) = CreatePrefabs(catalog);
@@ -50,8 +51,7 @@ namespace TrollStrategy.Editor.Setup
             string[] dirs = {
                 "Assets/Game/Content/Definitions",
                 "Assets/Game/Prefabs",
-                "Assets/Game/Scenes",
-                "Assets/Game/Resources"
+                "Assets/Game/Scenes"
             };
             foreach (var d in dirs)
             {
@@ -97,6 +97,29 @@ namespace TrollStrategy.Editor.Setup
             return asset;
         }
 
+        private static Sprite[] LoadSpriteFrames(string path)
+        {
+            var frames = AssetDatabase.LoadAllAssetRepresentationsAtPath(path)
+                .OfType<Sprite>()
+                .OrderBy(sprite => GetFrameIndex(sprite.name))
+                .ThenBy(sprite => sprite.name, StringComparer.Ordinal)
+                .ToArray();
+
+            if (frames.Length > 0)
+                return frames;
+
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            return sprite != null ? new[] { sprite } : Array.Empty<Sprite>();
+        }
+
+        private static int GetFrameIndex(string spriteName)
+        {
+            int separator = spriteName.LastIndexOf('_');
+            return separator >= 0 && int.TryParse(spriteName.Substring(separator + 1), out int index)
+                ? index
+                : int.MaxValue;
+        }
+
         private static GameContentCatalog CreateOrUpdateContentCatalog()
         {
             string catPath = "Assets/Game/Content/Definitions/GameContentCatalog.asset";
@@ -116,17 +139,20 @@ namespace TrollStrategy.Editor.Setup
             );
             EditorUtility.SetDirty(economy);
 
-            var goblinIdle = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/Sprites/Units/goblin-idle.png");
-            var goblinWalk = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/Sprites/Units/goblin-walk.png");
-            var trollIdle = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/Sprites/Units/troll-idle.png");
-            var trollWalk = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/Sprites/Units/troll-walk.png");
+            var goblinIdleFrames = LoadSpriteFrames("Assets/Game/Art/Sprites/Units/goblin-idle.png");
+            var goblinWalkFrames = LoadSpriteFrames("Assets/Game/Art/Sprites/Units/goblin-walk.png");
+            var trollIdleFrames = LoadSpriteFrames("Assets/Game/Art/Sprites/Units/troll-idle.png");
+            var trollWalkFrames = LoadSpriteFrames("Assets/Game/Art/Sprites/Units/troll-walk.png");
+
+            var goblinIdle = goblinIdleFrames.FirstOrDefault();
+            var trollIdle = trollIdleFrames.FirstOrDefault();
 
             var goblinDef = GetOrCreateAsset<UnitDefinition>("Assets/Game/Content/Definitions/Unit_Goblin.asset");
-            goblinDef.Init(UnitKind.Goblin, "Гоблин", 25, 1, 3, 12, goblinIdle, new[] { goblinIdle }, new[] { goblinWalk });
+            goblinDef.Init(UnitKind.Goblin, "Гоблин", 40, 3, 5f, 10, "Быстрый рабочий и носильщик", goblinIdle, goblinIdleFrames, goblinWalkFrames);
             EditorUtility.SetDirty(goblinDef);
 
             var trollDef = GetOrCreateAsset<UnitDefinition>("Assets/Game/Content/Definitions/Unit_Troll.asset");
-            trollDef.Init(UnitKind.Troll, "Тролль", 50, 3, 6, 8, trollIdle, new[] { trollIdle }, new[] { trollWalk });
+            trollDef.Init(UnitKind.Troll, "Тролль", 170, 9, 2f, 30, "Медленный, но очень сильный", trollIdle, trollIdleFrames, trollWalkFrames);
             EditorUtility.SetDirty(trollDef);
 
             var mineSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/Sprites/Buildings/Mine_01.png");
@@ -134,15 +160,15 @@ namespace TrollStrategy.Editor.Setup
             var mktSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/Sprites/Buildings/Market_01.png");
 
             var mineDef = GetOrCreateAsset<BuildingDefinition>("Assets/Game/Content/Definitions/Building_Mine.asset");
-            mineDef.Init(BuildingKind.Mine, "Шахта", 100, 2, 2, 3, 50, mineSprite);
+            mineDef.Init(BuildingKind.Mine, "Шахта", 200, 3, 3, 100, 5, mineSprite);
             EditorUtility.SetDirty(mineDef);
 
             var whDef = GetOrCreateAsset<BuildingDefinition>("Assets/Game/Content/Definitions/Building_Warehouse.asset");
-            whDef.Init(BuildingKind.Warehouse, "Склад", 100, 3, 3, 500, 200, whSprite);
+            whDef.Init(BuildingKind.Warehouse, "Склад", 0, 3, 3, 500, 0, whSprite);
             EditorUtility.SetDirty(whDef);
 
             var mktDef = GetOrCreateAsset<BuildingDefinition>("Assets/Game/Content/Definitions/Building_Market.asset");
-            mktDef.Init(BuildingKind.Market, "Рынок", 150, 3, 2, 0, 0, mktSprite);
+            mktDef.Init(BuildingKind.Market, "Рынок", 0, 3, 2, 0, 0, mktSprite);
             EditorUtility.SetDirty(mktDef);
 
             var bksDef = GetOrCreateAsset<BuildingDefinition>("Assets/Game/Content/Definitions/Building_Barracks.asset");
@@ -171,14 +197,6 @@ namespace TrollStrategy.Editor.Setup
 
             catalog.Init(economy, uDefs, bDefs);
             EditorUtility.SetDirty(catalog);
-            AssetDatabase.SaveAssets();
-
-            string resCatPath = "Assets/Game/Resources/GameContentCatalog.asset";
-            if (File.Exists(resCatPath))
-            {
-                AssetDatabase.DeleteAsset(resCatPath);
-            }
-            AssetDatabase.CopyAsset(catPath, resCatPath);
             AssetDatabase.SaveAssets();
 
             return catalog;
@@ -225,14 +243,14 @@ namespace TrollStrategy.Editor.Setup
             soB.ApplyModifiedPropertiesWithoutUndo();
 
             var bPrefab = PrefabUtility.SaveAsPrefabAsset(bGo, buildingPath).GetComponent<BuildingView>();
-            string resBldPath = "Assets/Game/Resources/BuildingPrefab.prefab";
-            PrefabUtility.SaveAsPrefabAsset(bGo, resBldPath);
             UnityEngine.Object.DestroyImmediate(bGo);
 
             string unitPath = "Assets/Game/Prefabs/UnitPrefab.prefab";
             var uGo = new GameObject("UnitPrefab");
             var uView = uGo.AddComponent<UnitView>();
-            var uSr = uGo.AddComponent<SpriteRenderer>();
+            var spriteGo = new GameObject("SpriteVisual");
+            spriteGo.transform.SetParent(uGo.transform, false);
+            var uSr = spriteGo.AddComponent<SpriteRenderer>();
             uSr.sortingOrder = 20;
             var uCol = uGo.AddComponent<CircleCollider2D>();
             uCol.radius = 0.35f;
@@ -267,8 +285,6 @@ namespace TrollStrategy.Editor.Setup
             soU.ApplyModifiedPropertiesWithoutUndo();
 
             var uPrefab = PrefabUtility.SaveAsPrefabAsset(uGo, unitPath).GetComponent<UnitView>();
-            string resUnitPath = "Assets/Game/Resources/UnitPrefab.prefab";
-            PrefabUtility.SaveAsPrefabAsset(uGo, resUnitPath);
             UnityEngine.Object.DestroyImmediate(uGo);
 
             return (bPrefab, uPrefab);
@@ -312,7 +328,7 @@ namespace TrollStrategy.Editor.Setup
             cam.orthographicSize = 8.5f;
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.04f, 0.08f, 0.08f);
-            cam.transform.position = new Vector3(7f, 7f, -10f);
+            cam.transform.position = new Vector3(9.7f, 7f, -10f);
             camGo.AddComponent<AudioListener>();
             camGo.AddComponent<Physics2DRaycaster>();
 
@@ -359,7 +375,8 @@ namespace TrollStrategy.Editor.Setup
             whGo.name = "Building_warehouse-1";
             whGo.transform.position = whPos;
             var whView = whGo.GetComponent<BuildingView>();
-            var whSnap = new BuildingSnapshot { Id = "warehouse-1", Kind = BuildingKind.Warehouse, Name = whDef.DisplayName, Cell = new Cell(10, 8), Width = 3, Height = 3, Ore = 0, MaxOre = 500 };
+            var whSnap = new BuildingSnapshot("warehouse-1", BuildingKind.Warehouse, whDef.DisplayName,
+                new Cell(10, 8), 3, 3, 0, 500, 0, 0, 0f);
             whView.Setup(whSnap, whDef.Sprite, null);
 
             var mkPos = worldView.BuildingCenterWorld(new Cell(10, 2), 3, 2);
@@ -367,7 +384,8 @@ namespace TrollStrategy.Editor.Setup
             mkGo.name = "Building_market-1";
             mkGo.transform.position = mkPos;
             var mkView = mkGo.GetComponent<BuildingView>();
-            var mkSnap = new BuildingSnapshot { Id = "market-1", Kind = BuildingKind.Market, Name = mkDef.DisplayName, Cell = new Cell(10, 2), Width = 3, Height = 2, Ore = 0, MaxOre = 0 };
+            var mkSnap = new BuildingSnapshot("market-1", BuildingKind.Market, mkDef.DisplayName,
+                new Cell(10, 2), 3, 2, 0, 0, 0, 0, 0f);
             mkView.Setup(mkSnap, mkDef.Sprite, null);
 
             // 4. UI Canvas & HUD
@@ -398,10 +416,10 @@ namespace TrollStrategy.Editor.Setup
             soBoot.ApplyModifiedPropertiesWithoutUndo();
 
             EditorUtility.SetDirty(boot);
-            EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, scenePath);
             EditorSceneManager.OpenScene(scenePath);
-            Debug.Log($"[GameSceneBuilder] Scene saved to {scenePath}");
+            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(scenePath, true) };
+            Debug.Log($"[GameSceneBuilder] Scene saved to {scenePath} and set as primary build scene.");
         }
 
         private static GameObject CreateUIGameObject(string name, Transform parent = null)
@@ -416,6 +434,8 @@ namespace TrollStrategy.Editor.Setup
             var canvasGo = CreateUIGameObject("HUDCanvas");
             var canvas = canvasGo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 50;
+
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080);
@@ -428,210 +448,217 @@ namespace TrollStrategy.Editor.Setup
 
             var hudPresenter = canvasGo.AddComponent<HudPresenter>();
 
-            // --- 1. TOP-LEFT STATS PANEL (ResourceBar) ---
-            var statsPanel = CreatePanel(canvasGo.transform, "ResourceBarPanel",
+            var mineSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/Sprites/Buildings/Mine_01.png");
+            var goblinSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/Sprites/Units/goblin-idle.png");
+            var trollSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/Sprites/Units/troll-idle.png");
+
+            // =========================================================================
+            // 1. TOP-LEFT BANNER (Controls & Status)
+            // =========================================================================
+            var bannerPanel = CreatePanel(canvasGo.transform, "TopBanner",
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 1f),
+                new Vector2(16f, -12f), new Vector2(-368f, 38f), new Color(0.08f, 0.15f, 0.12f, 0.92f));
+            var bnHlg = bannerPanel.AddComponent<HorizontalLayoutGroup>();
+            bnHlg.childAlignment = TextAnchor.MiddleLeft;
+            bnHlg.padding = new RectOffset(16, 16, 6, 6);
+            bnHlg.childControlWidth = true;
+            bnHlg.childForceExpandWidth = true;
+
+            var bannerText = CreateText(bannerPanel.transform, "BannerText",
+                "УЧАСТОК 01   ·   ЛКМ — выбор/размещение   ·   ПКМ/Esc — отмена   ·   <color=#ffd66f>G</color> — сетка", 13, new Color(0.94f, 0.92f, 0.84f));
+            bannerText.fontStyle = FontStyles.Bold;
+            bannerText.textWrappingMode = TextWrappingModes.NoWrap;
+            bannerText.gameObject.AddComponent<LayoutElement>().flexibleWidth = 1f;
+
+            // Accessibility unit selectors under the banner
+            var accessPanel = CreatePanel(canvasGo.transform, "AccessibilityBar",
                 new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f),
-                new Vector2(24f, -24f), new Vector2(420f, 68f), new Color(0.06f, 0.1f, 0.08f, 0.92f));
+                new Vector2(16f, -56f), new Vector2(360f, 34f), new Color(0.07f, 0.13f, 0.1f, 0.88f));
+            var aHlg = accessPanel.AddComponent<HorizontalLayoutGroup>();
+            aHlg.childAlignment = TextAnchor.MiddleCenter;
+            aHlg.spacing = 8f;
+            aHlg.padding = new RectOffset(8, 8, 4, 4);
 
-            var statsHlg = statsPanel.AddComponent<HorizontalLayoutGroup>();
-            statsHlg.childAlignment = TextAnchor.MiddleCenter;
-            statsHlg.spacing = 16f;
-            statsHlg.padding = new RectOffset(14, 14, 8, 8);
+            var first3Btn = CreateButton(accessPanel.transform, "First3Btn", "Первые 3", new Vector2(85f, 26f));
+            var nextBtn = CreateButton(accessPanel.transform, "NextBtn", "Следующий", new Vector2(90f, 26f));
+            var gridBtn = CreateButton(accessPanel.transform, "GridToggleBtn", "Сетка (G)", new Vector2(80f, 26f));
 
-            var (goldBox, goldVal) = CreateStatColumn(statsPanel.transform, "GOLD", "100", new Color(1f, 0.85f, 0.2f));
-            var (minionsBox, minionsVal) = CreateStatColumn(statsPanel.transform, "MINIONS", "0", new Color(0.3f, 0.95f, 0.8f));
-            var (oreBox, oreVal) = CreateStatColumn(statsPanel.transform, "RESOURCES", "0", new Color(0.9f, 0.65f, 0.35f));
+            // =========================================================================
+            // 2. RIGHT SIDEBAR: GUILD REGISTRY ("ГИЛЬДЕЙСКИЙ РЕЕСТР")
+            // =========================================================================
+            var shopPanel = CreatePanel(canvasGo.transform, "GuildRegistryPanel",
+                new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(1f, 0.5f),
+                Vector2.zero, new Vector2(336f, 0f), new Color(0.09f, 0.16f, 0.13f, 0.98f));
 
-            var resBar = statsPanel.AddComponent<ResourceBarView>();
-            resBar.Setup(goldVal, minionsVal, oreVal);
+            var spVlg = shopPanel.AddComponent<VerticalLayoutGroup>();
+            spVlg.childAlignment = TextAnchor.UpperCenter;
+            spVlg.spacing = 8f;
+            spVlg.padding = new RectOffset(12, 12, 12, 12);
+            spVlg.childControlWidth = true;
+            spVlg.childControlHeight = false;
 
-            // --- 2. TOP-CENTER STATUS MESSAGES (StatusMessageView) ---
-            var promptPanel = CreatePanel(canvasGo.transform, "ModePromptPanel",
-                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0f, -24f), new Vector2(480f, 44f), new Color(0.12f, 0.2f, 0.15f, 0.95f));
+            // --- Registry Header ---
+            var regCap = CreatePanel(shopPanel.transform, "RegistryCap",
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
+                Vector2.zero, new Vector2(312f, 44f), new Color(0.15f, 0.24f, 0.2f, 1f));
+            regCap.AddComponent<LayoutElement>().preferredHeight = 44f;
+            var rchHlg = regCap.AddComponent<HorizontalLayoutGroup>();
+            rchHlg.childAlignment = TextAnchor.MiddleCenter;
 
-            var ppHlg = promptPanel.AddComponent<HorizontalLayoutGroup>();
-            ppHlg.childAlignment = TextAnchor.MiddleCenter;
-            ppHlg.spacing = 12f;
-            ppHlg.padding = new RectOffset(14, 14, 6, 6);
+            var regTitle = CreateText(regCap.transform, "RegTitle", "ГИЛЬДЕЙСКИЙ РЕЕСТР", 16, new Color(0.95f, 0.92f, 0.82f));
+            regTitle.fontStyle = FontStyles.Bold;
+            regTitle.alignment = TextAlignmentOptions.Center;
 
-            var promptTxt = CreateText(promptPanel.transform, "PromptText", "Режим команды", 13, new Color(0.95f, 0.9f, 0.8f));
-            var ppLe = promptTxt.gameObject.AddComponent<LayoutElement>();
-            ppLe.flexibleWidth = 1f;
+            // --- 2x2 Resource Grid ---
+            var resGridGo = CreateUIGameObject("ResourceGrid", shopPanel.transform);
+            resGridGo.AddComponent<LayoutElement>().preferredHeight = 92f;
+            var resGridGlg = resGridGo.AddComponent<GridLayoutGroup>();
+            resGridGlg.cellSize = new Vector2(152f, 42f);
+            resGridGlg.spacing = new Vector2(8f, 8f);
+            resGridGlg.childAlignment = TextAnchor.MiddleCenter;
 
-            var cancelModeBtn = CreateButton(promptPanel.transform, "CancelModeBtn", "Отмена", new Vector2(80f, 32f));
-            promptPanel.SetActive(false);
+            var (goldBox, goldVal) = CreateResourceCell(resGridGo.transform, "ЗОЛОТО", "1000", new Color(1f, 0.85f, 0.2f));
+            var (oreBox, oreVal) = CreateResourceCell(resGridGo.transform, "РУДА", "0", new Color(0.75f, 0.85f, 0.85f));
+            var (soldBox, soldVal) = CreateResourceCell(resGridGo.transform, "ПРОДАНО", "0", new Color(0.55f, 0.85f, 0.45f));
+            var (popBox, popVal) = CreateResourceCell(resGridGo.transform, "НАСЕЛЕНИЕ", "0", new Color(0.94f, 0.92f, 0.84f));
 
-            var normTxt = CreateText(canvasGo.transform, "NormalStatusText", "Постройте шахту и наймите рабочих.", 13, new Color(0.9f, 0.85f, 0.75f));
-            normTxt.alignment = TextAlignmentOptions.Center;
-            var ntRt = normTxt.GetComponent<RectTransform>();
-            ntRt.anchorMin = new Vector2(0.5f, 1f);
-            ntRt.anchorMax = new Vector2(0.5f, 1f);
-            ntRt.pivot = new Vector2(0.5f, 1f);
-            ntRt.anchoredPosition = new Vector2(0f, -24f);
-            ntRt.sizeDelta = new Vector2(600f, 30f);
+            // --- Buildings Section ---
+            var bldSecHeader = CreateSectionHeader(shopPanel.transform, "ПОСТРОЙКИ", "1 ДОСТУПНО");
+            var (mineCard, mineArt, mTitle, mSub, buildMineBtn, mineCostTxt) =
+                CreateShopCard(shopPanel.transform, "Mine", mineSprite, "Шахта", "3×3 · до 5 рабочих", "Купить", 200);
 
-            var statusMsg = canvasGo.AddComponent<StatusMessageView>();
-            statusMsg.Setup(null, promptPanel, promptTxt, cancelModeBtn, normTxt);
+            var autoPlaceBtn = CreateButton(shopPanel.transform, "AutoPlaceBtn", "Поставить автоматически", new Vector2(312f, 32f));
+            autoPlaceBtn.gameObject.AddComponent<LayoutElement>().preferredHeight = 32f;
+            autoPlaceBtn.gameObject.SetActive(false);
 
-            // --- 3. RIGHT SHOP DOCK (ShopDockView) ---
-            var shopContainer = CreateUIGameObject("ShopContainer", canvasGo.transform);
-            var scRt = shopContainer.GetComponent<RectTransform>();
-            scRt.anchorMin = new Vector2(1f, 0.5f);
-            scRt.anchorMax = new Vector2(1f, 0.5f);
-            scRt.pivot = new Vector2(1f, 0.5f);
-            scRt.anchoredPosition = new Vector2(-16f, 0f);
-            scRt.sizeDelta = new Vector2(400f, 380f);
+            // --- Hire Section ---
+            var hireSecHeader = CreateSectionHeader(shopPanel.transform, "НАЙМ", "");
+            var stepperRow = CreateUIGameObject("HireStepperRow", shopPanel.transform);
+            stepperRow.AddComponent<LayoutElement>().preferredHeight = 34f;
+            var stHlg = stepperRow.AddComponent<HorizontalLayoutGroup>();
+            stHlg.childAlignment = TextAnchor.MiddleCenter;
+            stHlg.spacing = 8f;
 
-            // Tabs panel on the far right
-            var tabsPanel = CreatePanel(shopContainer.transform, "CategoryTabs",
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-                new Vector2(0f, 0f), new Vector2(114f, 180f), new Color(0.06f, 0.1f, 0.08f, 0.95f));
+            var decHireBtn = CreateButton(stepperRow.transform, "DecHireBtn", "-", new Vector2(34f, 30f));
+            var hireAmtTxt = CreateText(stepperRow.transform, "HireAmountTxt", "1", 15, Color.white);
+            hireAmtTxt.alignment = TextAlignmentOptions.Center;
+            hireAmtTxt.fontStyle = FontStyles.Bold;
+            hireAmtTxt.rectTransform.sizeDelta = new Vector2(40f, 30f);
+            var incHireBtn = CreateButton(stepperRow.transform, "IncHireBtn", "+", new Vector2(34f, 30f));
 
-            var tabsVlg = tabsPanel.AddComponent<VerticalLayoutGroup>();
-            tabsVlg.childAlignment = TextAnchor.MiddleCenter;
-            tabsVlg.spacing = 10f;
-            tabsVlg.padding = new RectOffset(8, 8, 8, 8);
+            var (goblinCard, goblinArt, gTitle, gSub, buyGoblinBtn, goblinCostTxt) =
+                CreateShopCard(shopPanel.transform, "Goblin", goblinSprite, "Гоблин", "Скорость 5 · груз 10", "Нанять", 40);
 
-            var minionsTab = CreateButton(tabsPanel.transform, "Tab_Minions", "Миньоны", new Vector2(98f, 44f));
-            var buildingsTab = CreateButton(tabsPanel.transform, "Tab_Buildings", "Постройки", new Vector2(98f, 44f));
-            var decorationsTab = CreateButton(tabsPanel.transform, "Tab_Decorations", "Декорации", new Vector2(98f, 44f));
+            var (trollCard, trollArt, tTitle, tSub, buyTrollBtn, trollCostTxt) =
+                CreateShopCard(shopPanel.transform, "Troll", trollSprite, "Тролль", "Сила 9 · груз 30", "Нанять", 170);
 
-            // Drawer panel to the left of the tabs
-            var drawerPanel = CreatePanel(shopContainer.transform, "ShopDrawer",
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-                new Vector2(-120f, 0f), new Vector2(230f, 260f), new Color(0.08f, 0.14f, 0.12f, 0.96f));
+            // --- Placement Mode Banner ---
+            var placementBanner = CreatePanel(shopPanel.transform, "PlacementBanner",
+                new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, new Vector2(312f, 54f), new Color(0.2f, 0.32f, 0.18f, 1f));
+            placementBanner.AddComponent<LayoutElement>().preferredHeight = 54f;
+            var pbHlg = placementBanner.AddComponent<HorizontalLayoutGroup>();
+            pbHlg.childAlignment = TextAnchor.MiddleCenter;
+            pbHlg.spacing = 8f;
+            pbHlg.padding = new RectOffset(10, 10, 6, 6);
 
-            var drawerVlg = drawerPanel.AddComponent<VerticalLayoutGroup>();
-            drawerVlg.childAlignment = TextAnchor.UpperCenter;
-            drawerVlg.spacing = 10f;
-            drawerVlg.padding = new RectOffset(12, 12, 12, 12);
+            var pbTextCol = CreateUIGameObject("TextCol", placementBanner.transform);
+            var pbVlg = pbTextCol.AddComponent<VerticalLayoutGroup>();
+            pbVlg.spacing = 2f;
+            pbTextCol.GetComponent<RectTransform>().sizeDelta = new Vector2(210f, 44f);
+            var pbTitle = CreateText(pbTextCol.transform, "Title", "Гоблин ×1", 13, Color.white);
+            pbTitle.fontStyle = FontStyles.Bold;
+            var pbPrompt = CreateText(pbTextCol.transform, "Prompt", "Кликните по свободной клетке", 10, new Color(0.85f, 0.95f, 0.85f));
 
-            var drawerTitle = CreateText(drawerPanel.transform, "DrawerTitle", "МИНЬОНЫ", 15, new Color(0.9f, 0.75f, 0.4f));
-            drawerTitle.alignment = TextAlignmentOptions.Center;
-            drawerTitle.fontStyle = FontStyles.Bold;
-            var dtLe = drawerTitle.gameObject.AddComponent<LayoutElement>();
-            dtLe.preferredHeight = 24f;
+            var cancelPlaceBtn = CreateButton(placementBanner.transform, "CancelPlaceBtn", "Отмена", new Vector2(74f, 32f));
+            placementBanner.SetActive(false);
 
-            // Minions content
-            var minionsContent = CreateUIGameObject("MinionsContent", drawerPanel.transform);
-            var mcVlg = minionsContent.AddComponent<VerticalLayoutGroup>();
-            mcVlg.spacing = 10f;
-            var mcRt = minionsContent.GetComponent<RectTransform>();
-            mcRt.sizeDelta = new Vector2(206f, 180f);
+            // --- Game Status Message at bottom of shop panel ---
+            var statusBox = CreatePanel(shopPanel.transform, "StatusBox",
+                new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
+                Vector2.zero, new Vector2(312f, 56f), new Color(0.06f, 0.1f, 0.08f, 0.9f));
+            statusBox.AddComponent<LayoutElement>().preferredHeight = 56f;
+            var sbHlg = statusBox.AddComponent<HorizontalLayoutGroup>();
+            sbHlg.childAlignment = TextAnchor.MiddleLeft;
+            sbHlg.padding = new RectOffset(10, 10, 6, 6);
 
-            var buyGoblinBtn = CreateButton(minionsContent.transform, "BuyGoblinBtn", "Гоблин (25G)", new Vector2(206f, 42f));
-            var goblinCostTxt = buyGoblinBtn.GetComponentInChildren<TextMeshProUGUI>();
+            var gameStatusTxt = CreateText(statusBox.transform, "GameStatusTxt", "Постройте шахту и наймите рабочих.", 12, new Color(0.88f, 0.85f, 0.74f));
+            gameStatusTxt.alignment = TextAlignmentOptions.Left;
 
-            var buyTrollBtn = CreateButton(minionsContent.transform, "BuyTrollBtn", "Тролль (50G)", new Vector2(206f, 42f));
-            var trollCostTxt = buyTrollBtn.GetComponentInChildren<TextMeshProUGUI>();
-
-            // Buildings content
-            var buildingsContent = CreateUIGameObject("BuildingsContent", drawerPanel.transform);
-            var bcVlg = buildingsContent.AddComponent<VerticalLayoutGroup>();
-            bcVlg.spacing = 10f;
-            var bcRt = buildingsContent.GetComponent<RectTransform>();
-            bcRt.sizeDelta = new Vector2(206f, 180f);
-
-            var buildMineBtn = CreateButton(buildingsContent.transform, "BuildMineBtn", "Шахта (100G)", new Vector2(206f, 42f));
-            var mineCostTxt = buildMineBtn.GetComponentInChildren<TextMeshProUGUI>();
-
-            var autoPlaceMineBtn = CreateButton(buildingsContent.transform, "AutoPlaceMineBtn", "Авто-размещение", new Vector2(206f, 38f));
-
-            // Decorations content
-            var decorationsContent = CreateUIGameObject("DecorationsContent", drawerPanel.transform);
-            var decRt = decorationsContent.GetComponent<RectTransform>();
-            decRt.sizeDelta = new Vector2(206f, 180f);
-            var decTxt = CreateText(decorationsContent.transform, "EmptyTxt", "Пока пусто", 13, new Color(0.6f, 0.75f, 0.7f));
-            decTxt.alignment = TextAlignmentOptions.Center;
-
-            drawerPanel.SetActive(false);
-
-            var shopDock = shopContainer.AddComponent<ShopDockView>();
+            var shopDock = shopPanel.AddComponent<ShopDockView>();
             shopDock.Setup(
                 null, null,
-                minionsTab, buildingsTab, decorationsTab,
-                drawerPanel, drawerTitle,
-                minionsContent, buyGoblinBtn, buyTrollBtn, goblinCostTxt, trollCostTxt,
-                buildingsContent, buildMineBtn, autoPlaceMineBtn, mineCostTxt,
-                decorationsContent
+                goldVal, oreVal, soldVal, popVal,
+                mineArt, buildMineBtn, mineCostTxt, autoPlaceBtn,
+                decHireBtn, incHireBtn, hireAmtTxt,
+                goblinArt, buyGoblinBtn, goblinCostTxt,
+                trollArt, buyTrollBtn, trollCostTxt,
+                placementBanner, pbTitle, cancelPlaceBtn,
+                gameStatusTxt
             );
 
-            // --- 4. BOTTOM SELECTION / COMMAND DOCK (CommandDockView) ---
-            var selectionPanel = CreatePanel(canvasGo.transform, "SelectionCommandDock",
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-                new Vector2(0f, 30f), new Vector2(580f, 84f), new Color(0.06f, 0.1f, 0.08f, 0.95f));
+            // =========================================================================
+            // 3. BOTTOM COMMAND DOCK ("✦ ПРИКАЗЫ")
+            // =========================================================================
+            var cmdPanel = CreatePanel(canvasGo.transform, "CommandDockPanel",
+                new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f),
+                new Vector2(24f, 24f), new Vector2(480f, 96f), new Color(0.07f, 0.13f, 0.11f, 0.96f));
 
-            var spVlg = selectionPanel.AddComponent<VerticalLayoutGroup>();
-            spVlg.childAlignment = TextAnchor.MiddleCenter;
-            spVlg.spacing = 6f;
-            spVlg.padding = new RectOffset(14, 14, 8, 8);
+            var cpVlg = cmdPanel.AddComponent<VerticalLayoutGroup>();
+            cpVlg.childAlignment = TextAnchor.MiddleCenter;
+            cpVlg.spacing = 6f;
+            cpVlg.padding = new RectOffset(14, 14, 8, 8);
 
-            var selCountTxt = CreateText(selectionPanel.transform, "SelectedCount", "Выбрано: 0", 13, Color.yellow);
-            selCountTxt.alignment = TextAlignmentOptions.Center;
-            var scLe = selCountTxt.gameObject.AddComponent<LayoutElement>();
-            scLe.preferredHeight = 18f;
+            var cmdHeaderRow = CreateUIGameObject("HeaderRow", cmdPanel.transform);
+            var chHlg = cmdHeaderRow.AddComponent<HorizontalLayoutGroup>();
+            chHlg.childAlignment = TextAnchor.MiddleLeft;
+            cmdHeaderRow.GetComponent<RectTransform>().sizeDelta = new Vector2(452f, 20f);
 
-            // Main row (collapsed commands)
-            var mainRow = CreateUIGameObject("MainActionsRow", selectionPanel.transform);
-            var mrHlg = mainRow.AddComponent<HorizontalLayoutGroup>();
-            mrHlg.childAlignment = TextAnchor.MiddleCenter;
-            mrHlg.spacing = 14f;
-            var mrRt = mainRow.GetComponent<RectTransform>();
-            mrRt.sizeDelta = new Vector2(550f, 40f);
+            var cmdCountTxt = CreateText(cmdHeaderRow.transform, "SelectedCount", "✦ ПРИКАЗЫ", 13, new Color(0.95f, 0.85f, 0.3f));
+            cmdCountTxt.fontStyle = FontStyles.Bold;
 
-            var openCmdsBtn = CreateButton(mainRow.transform, "OpenCommandsBtn", "Команды", new Vector2(130f, 38f));
-            var sellSelectedBtn = CreateButton(mainRow.transform, "SellSelectedBtn", "Продать (50%)", new Vector2(130f, 38f));
-            var clearSelBtn = CreateButton(mainRow.transform, "ClearSelBtn", "Снять выбор", new Vector2(130f, 38f));
+            var actionsRow = CreateUIGameObject("ActionsRow", cmdPanel.transform);
+            var aRowHlg = actionsRow.AddComponent<HorizontalLayoutGroup>();
+            aRowHlg.childAlignment = TextAnchor.MiddleCenter;
+            aRowHlg.spacing = 10f;
+            actionsRow.GetComponent<RectTransform>().sizeDelta = new Vector2(452f, 38f);
 
-            // Commands row (expanded commands)
-            var cmdRow = CreateUIGameObject("CommandsRow", selectionPanel.transform);
-            var crHlg = cmdRow.AddComponent<HorizontalLayoutGroup>();
-            crHlg.childAlignment = TextAnchor.MiddleCenter;
-            crHlg.spacing = 8f;
-            var crRt = cmdRow.GetComponent<RectTransform>();
-            crRt.sizeDelta = new Vector2(550f, 40f);
+            var workBtn = CreateButton(actionsRow.transform, "WorkBtn", "Работать", new Vector2(100f, 36f));
+            var haulBtn = CreateButton(actionsRow.transform, "HaulBtn", "Переносить", new Vector2(100f, 36f));
+            var releaseBtn = CreateButton(actionsRow.transform, "ReleaseBtn", "Освободить", new Vector2(100f, 36f));
+            var cancelCmdBtn = CreateButton(actionsRow.transform, "CancelBtn", "Отмена", new Vector2(85f, 36f));
 
-            var workBtn = CreateButton(cmdRow.transform, "WorkBtn", "Работать", new Vector2(100f, 36f));
-            var haulBtn = CreateButton(cmdRow.transform, "HaulBtn", "Переносить", new Vector2(105f, 36f));
-            var barracksBtn = CreateButton(cmdRow.transform, "BarracksBtn", "В бараки", new Vector2(100f, 36f));
-            var releaseBtn = CreateButton(cmdRow.transform, "ReleaseBtn", "Освободить", new Vector2(100f, 36f));
-            var cancelCmdsBtn = CreateButton(cmdRow.transform, "CancelCmdsBtn", "Отмена", new Vector2(85f, 36f));
-            cmdRow.SetActive(false);
+            var targetChoicesRow = CreateUIGameObject("TargetChoicesRow", cmdPanel.transform);
+            var tcHlg = targetChoicesRow.AddComponent<HorizontalLayoutGroup>();
+            tcHlg.childAlignment = TextAnchor.MiddleLeft;
+            tcHlg.spacing = 8f;
+            targetChoicesRow.GetComponent<RectTransform>().sizeDelta = new Vector2(452f, 32f);
 
-            // Stack picker row
-            var stackRow = CreateUIGameObject("StackPickerRow", selectionPanel.transform);
-            var srHlg = stackRow.AddComponent<HorizontalLayoutGroup>();
-            srHlg.childAlignment = TextAnchor.MiddleCenter;
-            srHlg.spacing = 12f;
-            var srRt = stackRow.GetComponent<RectTransform>();
-            srRt.sizeDelta = new Vector2(550f, 26f);
+            var targetPromptTxt = CreateText(targetChoicesRow.transform, "TargetPrompt", "Цель:", 12, new Color(0.85f, 0.85f, 0.7f));
+            targetPromptTxt.rectTransform.sizeDelta = new Vector2(65f, 28f);
 
-            var stackLbl = CreateText(stackRow.transform, "StackLabel", "Выбрать: 1 из 1", 12, Color.white);
-            stackLbl.rectTransform.sizeDelta = new Vector2(140f, 24f);
+            var targetButtonsContainer = CreateUIGameObject("TargetBtnsContainer", targetChoicesRow.transform);
+            var tbcHlg = targetButtonsContainer.AddComponent<HorizontalLayoutGroup>();
+            tbcHlg.childAlignment = TextAnchor.MiddleLeft;
+            tbcHlg.spacing = 6f;
 
-            var sliderGo = CreateUIGameObject("Slider", stackRow.transform);
-            var slider = sliderGo.AddComponent<Slider>();
-            slider.GetComponent<RectTransform>().sizeDelta = new Vector2(180f, 20f);
+            targetChoicesRow.SetActive(false);
+            cmdPanel.SetActive(false);
 
-            var confirmStackBtn = CreateButton(stackRow.transform, "ConfirmStackBtn", "Выбрать", new Vector2(80f, 24f));
-            stackRow.SetActive(false);
-
-            selectionPanel.SetActive(false);
-
-            var cmdDock = selectionPanel.AddComponent<CommandDockView>();
+            var cmdDock = cmdPanel.AddComponent<CommandDockView>();
             cmdDock.Setup(
                 null, null,
-                selectionPanel, selCountTxt,
-                mainRow, openCmdsBtn, sellSelectedBtn, clearSelBtn,
-                cmdRow, workBtn, haulBtn, barracksBtn, releaseBtn, cancelCmdsBtn,
-                stackRow, slider, stackLbl, confirmStackBtn
+                cmdPanel, cmdCountTxt,
+                workBtn, haulBtn, releaseBtn, cancelCmdBtn,
+                targetChoicesRow, targetPromptTxt, targetButtonsContainer.transform
             );
 
-            // --- 5. BOTTOM-LEFT INSPECT CARD (InspectCardView) ---
+            // =========================================================================
+            // 4. BOTTOM-LEFT INSPECT CARD (Building/Unit details on click)
+            // =========================================================================
             var inspectPanel = CreatePanel(canvasGo.transform, "InspectCardPanel",
                 new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f),
-                new Vector2(24f, 24f), new Vector2(280f, 200f), new Color(0.06f, 0.1f, 0.08f, 0.96f));
+                new Vector2(24f, 130f), new Vector2(280f, 180f), new Color(0.06f, 0.12f, 0.1f, 0.96f));
 
             var ipVlg = inspectPanel.AddComponent<VerticalLayoutGroup>();
             ipVlg.childAlignment = TextAnchor.UpperLeft;
@@ -641,35 +668,29 @@ namespace TrollStrategy.Editor.Setup
             var inspectHeaderRow = CreateUIGameObject("HeaderRow", inspectPanel.transform);
             var ihrHlg = inspectHeaderRow.AddComponent<HorizontalLayoutGroup>();
             ihrHlg.childAlignment = TextAnchor.MiddleCenter;
-            var ihrRt = inspectHeaderRow.GetComponent<RectTransform>();
-            ihrRt.sizeDelta = new Vector2(256f, 26f);
+            inspectHeaderRow.GetComponent<RectTransform>().sizeDelta = new Vector2(256f, 26f);
 
-            var insTitle = CreateText(inspectHeaderRow.transform, "Title", "Шахта #1", 15, new Color(0.95f, 0.8f, 0.3f));
+            var insTitle = CreateText(inspectHeaderRow.transform, "Title", "Шахта", 15, new Color(0.95f, 0.8f, 0.3f));
             insTitle.fontStyle = FontStyles.Bold;
-            var itLe = insTitle.gameObject.AddComponent<LayoutElement>();
-            itLe.flexibleWidth = 1f;
+            insTitle.gameObject.AddComponent<LayoutElement>().flexibleWidth = 1f;
 
             var closeInspectBtn = CreateButton(inspectHeaderRow.transform, "CloseBtn", "X", new Vector2(28f, 24f));
+            var insSubtitle = CreateText(inspectPanel.transform, "Subtitle", "Информация", 11, new Color(0.6f, 0.8f, 0.75f));
+            insSubtitle.gameObject.AddComponent<LayoutElement>().preferredHeight = 18f;
 
-            var insSubtitle = CreateText(inspectPanel.transform, "Subtitle", "Добыча руды", 11, new Color(0.6f, 0.8f, 0.75f));
-            var isLe = insSubtitle.gameObject.AddComponent<LayoutElement>();
-            isLe.preferredHeight = 18f;
-
-            var insDetails = CreateText(inspectPanel.transform, "Details", "Руда: 10 / 50\nРабочие: 2 / 3\nДобыча: +1.0/сек", 12, Color.white);
-            var idLe = insDetails.gameObject.AddComponent<LayoutElement>();
-            idLe.preferredHeight = 60f;
+            var insDetails = CreateText(inspectPanel.transform, "Details", "", 12, Color.white);
+            insDetails.gameObject.AddComponent<LayoutElement>().preferredHeight = 55f;
 
             var inspectActionsRow = CreateUIGameObject("ActionsRow", inspectPanel.transform);
             var iarHlg = inspectActionsRow.AddComponent<HorizontalLayoutGroup>();
             iarHlg.childAlignment = TextAnchor.MiddleCenter;
             iarHlg.spacing = 8f;
-            var iarRt = inspectActionsRow.GetComponent<RectTransform>();
-            iarRt.sizeDelta = new Vector2(256f, 34f);
+            inspectActionsRow.GetComponent<RectTransform>().sizeDelta = new Vector2(256f, 34f);
 
-            var insAction1Btn = CreateButton(inspectActionsRow.transform, "Action1Btn", "Действие 1", new Vector2(120f, 32f));
+            var insAction1Btn = CreateButton(inspectActionsRow.transform, "Action1Btn", "Назначить", new Vector2(120f, 32f));
             var insAction1Txt = insAction1Btn.GetComponentInChildren<TextMeshProUGUI>();
 
-            var insAction2Btn = CreateButton(inspectActionsRow.transform, "Action2Btn", "Действие 2", new Vector2(120f, 32f));
+            var insAction2Btn = CreateButton(inspectActionsRow.transform, "Action2Btn", "Закрыть", new Vector2(120f, 32f));
             var insAction2Txt = insAction2Btn.GetComponentInChildren<TextMeshProUGUI>();
 
             inspectPanel.SetActive(false);
@@ -682,27 +703,111 @@ namespace TrollStrategy.Editor.Setup
                 closeInspectBtn
             );
 
-            return (hudPresenter, resBar, shopDock, cmdDock, inspectCard, statusMsg);
+            var statusMsg = canvasGo.AddComponent<StatusMessageView>();
+
+            return (hudPresenter, null, shopDock, cmdDock, inspectCard, statusMsg);
         }
 
-        private static (GameObject col, TextMeshProUGUI val) CreateStatColumn(Transform parent, string label, string initVal, Color valColor)
+        private static (GameObject cell, TextMeshProUGUI val) CreateResourceCell(Transform parent, string label, string initVal, Color valColor)
         {
-            var go = CreateUIGameObject("Stat_" + label, parent);
+            var go = CreateUIGameObject($"Res_{label}", parent);
             var rt = go.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(110f, 48f);
+            rt.sizeDelta = new Vector2(152f, 42f);
+
+            var bg = go.AddComponent<Image>();
+            bg.color = new Color(0.11f, 0.19f, 0.16f, 1f);
+            bg.raycastTarget = false;
 
             var vlg = go.AddComponent<VerticalLayoutGroup>();
             vlg.childAlignment = TextAnchor.MiddleCenter;
             vlg.spacing = 2f;
+            vlg.padding = new RectOffset(2, 2, 3, 3);
+            vlg.childControlHeight = true;
+            vlg.childForceExpandHeight = false;
 
-            var lbl = CreateText(go.transform, "Lbl", label, 11, new Color(0.6f, 0.75f, 0.7f));
+            var lbl = CreateText(go.transform, "Lbl", label, 10, new Color(0.68f, 0.78f, 0.72f));
             lbl.alignment = TextAlignmentOptions.Center;
+            lbl.gameObject.AddComponent<LayoutElement>().preferredHeight = 12f;
 
             var val = CreateText(go.transform, "Val", initVal, 16, valColor);
             val.alignment = TextAlignmentOptions.Center;
             val.fontStyle = FontStyles.Bold;
+            val.gameObject.AddComponent<LayoutElement>().preferredHeight = 20f;
 
             return (go, val);
+        }
+
+        private static GameObject CreateSectionHeader(Transform parent, string title, string sub)
+        {
+            var go = CreateUIGameObject($"SectionHeader_{title}", parent);
+            go.AddComponent<LayoutElement>().preferredHeight = 26f;
+
+            var hlg = go.AddComponent<HorizontalLayoutGroup>();
+            hlg.childAlignment = TextAnchor.MiddleCenter;
+            hlg.spacing = 8f;
+
+            var tTitle = CreateText(go.transform, "Title", title, 12, new Color(0.87f, 0.78f, 0.56f));
+            tTitle.fontStyle = FontStyles.Bold;
+            tTitle.gameObject.AddComponent<LayoutElement>().flexibleWidth = 1f;
+
+            if (!string.IsNullOrEmpty(sub))
+            {
+                var tSub = CreateText(go.transform, "Sub", sub, 10, new Color(0.6f, 0.7f, 0.65f));
+                tSub.alignment = TextAlignmentOptions.Right;
+            }
+            return go;
+        }
+
+        private static (GameObject card, Image artImg, TextMeshProUGUI titleTxt, TextMeshProUGUI subTxt, Button buyBtn, TextMeshProUGUI costTxt)
+            CreateShopCard(Transform parent, string name, Sprite sprite, string title, string subtitle, string btnPrefix, int initialCost)
+        {
+            var card = CreatePanel(parent, $"Card_{name}",
+                new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f),
+                Vector2.zero, new Vector2(312f, 62f), new Color(0.1f, 0.18f, 0.15f, 1f));
+            card.AddComponent<LayoutElement>().preferredHeight = 62f;
+
+            var hlg = card.AddComponent<HorizontalLayoutGroup>();
+            hlg.childAlignment = TextAnchor.MiddleCenter;
+            hlg.spacing = 10f;
+            hlg.padding = new RectOffset(8, 8, 5, 5);
+
+            // 50x50 Art Box
+            var artBox = CreateUIGameObject("ArtBox", card.transform);
+            var artRt = artBox.GetComponent<RectTransform>();
+            artRt.sizeDelta = new Vector2(50f, 50f);
+            var artBg = artBox.AddComponent<Image>();
+            artBg.color = new Color(0.06f, 0.13f, 0.1f, 1f);
+            artBg.raycastTarget = false;
+
+            var imgGo = CreateUIGameObject("Sprite", artBox.transform);
+            var imgRt = imgGo.GetComponent<RectTransform>();
+            imgRt.anchorMin = Vector2.zero;
+            imgRt.anchorMax = Vector2.one;
+            imgRt.sizeDelta = new Vector2(-4f, -4f);
+            var img = imgGo.AddComponent<Image>();
+            if (sprite != null) img.sprite = sprite;
+            img.preserveAspect = true;
+            img.raycastTarget = false;
+
+            // Text column
+            var textCol = CreateUIGameObject("TextCol", card.transform);
+            var tcRt = textCol.GetComponent<RectTransform>();
+            tcRt.sizeDelta = new Vector2(144f, 48f);
+            var tcVlg = textCol.AddComponent<VerticalLayoutGroup>();
+            tcVlg.childAlignment = TextAnchor.MiddleLeft;
+            tcVlg.spacing = 2f;
+
+            var tTitle = CreateText(textCol.transform, "Title", title, 14, new Color(0.94f, 0.92f, 0.84f));
+            tTitle.fontStyle = FontStyles.Bold;
+            var tSub = CreateText(textCol.transform, "Sub", subtitle, 10, new Color(0.68f, 0.78f, 0.72f));
+
+            // Buy Button
+            var btn = CreateButton(card.transform, "BuyBtn", $"{btnPrefix}\n{initialCost}", new Vector2(80f, 46f));
+            var costTxt = btn.GetComponentInChildren<TextMeshProUGUI>();
+            costTxt.fontSize = 11;
+            costTxt.alignment = TextAlignmentOptions.Center;
+
+            return (card, img, tTitle, tSub, btn, costTxt);
         }
 
         private static GameObject CreatePanel(Transform parent, string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 anchoredPos, Vector2 sizeDelta, Color color)
@@ -717,7 +822,6 @@ namespace TrollStrategy.Editor.Setup
 
             var img = go.AddComponent<Image>();
             img.color = color;
-            // CRITICAL: Panels should NEVER block world raycasts!
             img.raycastTarget = false;
             return go;
         }
@@ -730,7 +834,6 @@ namespace TrollStrategy.Editor.Setup
 
             var img = go.AddComponent<Image>();
             img.color = new Color(0.18f, 0.32f, 0.26f, 1f);
-            // Buttons ARE raycast targets!
             img.raycastTarget = true;
 
             var btn = go.AddComponent<Button>();
@@ -748,26 +851,25 @@ namespace TrollStrategy.Editor.Setup
             txtRt.sizeDelta = Vector2.zero;
 
             var tmp = txtGo.AddComponent<TextMeshProUGUI>();
-            if (s_fontAsset != null) tmp.font = s_fontAsset;
             tmp.text = label;
-            tmp.fontSize = 12f;
+            tmp.fontSize = 13;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = new Color(0.95f, 0.92f, 0.85f, 1f);
+            tmp.color = new Color(0.94f, 0.92f, 0.84f);
             tmp.raycastTarget = false;
+            if (s_fontAsset != null) tmp.font = s_fontAsset;
 
             return btn;
         }
 
-        private static TextMeshProUGUI CreateText(Transform parent, string name, string text, float size, Color color)
+        private static TextMeshProUGUI CreateText(Transform parent, string name, string text, int fontSize, Color color)
         {
             var go = CreateUIGameObject(name, parent);
             var tmp = go.AddComponent<TextMeshProUGUI>();
-            if (s_fontAsset != null) tmp.font = s_fontAsset;
             tmp.text = text;
-            tmp.fontSize = size;
+            tmp.fontSize = fontSize;
             tmp.color = color;
-            // Text should NEVER block world raycasts!
             tmp.raycastTarget = false;
+            if (s_fontAsset != null) tmp.font = s_fontAsset;
             return tmp;
         }
     }

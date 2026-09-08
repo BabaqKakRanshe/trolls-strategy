@@ -21,6 +21,11 @@ namespace TrollStrategy.Presentation.Visuals
 
         public bool GuidesVisible => _guidesVisible;
 
+        private void Awake()
+        {
+            EnsureGridLines();
+        }
+
         public void Init(GameSession session, TilemapWorldView worldView)
         {
             _session = session;
@@ -43,15 +48,6 @@ namespace TrollStrategy.Presentation.Visuals
             if (_session != null) _session.OnSnapshotChanged -= OnSnapshotChanged;
         }
 
-        private void Update()
-        {
-            bool gPressed = (Keyboard.current != null && Keyboard.current.gKey.wasPressedThisFrame) ||
-                            Input.GetKeyDown(KeyCode.G);
-            if (gPressed)
-            {
-                ToggleGuides();
-            }
-        }
 
         public void ToggleGuides()
         {
@@ -93,7 +89,7 @@ namespace TrollStrategy.Presentation.Visuals
 
             int width = 14;
             int height = 14;
-            float thickness = 0.025f;
+            float thickness = 0.045f;
             float halfT = thickness * 0.5f;
 
             var mesh = new Mesh();
@@ -101,8 +97,8 @@ namespace TrollStrategy.Presentation.Visuals
             var triangles = new List<int>();
             var colors = new List<Color>();
 
-            // Phaser color: 0xe2f4b0 with alpha 0.28
-            Color gridColor = new Color(0.886f, 0.957f, 0.690f, 0.28f);
+            // Crisp lime-tinted grid matching Phaser prototype (0xe2f4b0)
+            Color gridColor = new Color(0.886f, 0.957f, 0.690f, 0.42f);
 
             // Vertical lines (x = 0 to 14)
             for (int x = 0; x <= width; x++)

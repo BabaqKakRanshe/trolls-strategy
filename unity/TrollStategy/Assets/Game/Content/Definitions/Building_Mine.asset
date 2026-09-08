@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.BuildingDefinition
   _kind: 0
   _displayName: "\u0428\u0430\u0445\u0442\u0430"
-  _price: 100
-  _width: 2
-  _height: 2
-  _maxOre: 3
-  _maxWorkers: 50
+  _price: 200
+  _width: 3
+  _height: 3
+  _maxOre: 100
+  _maxWorkers: 5
   _sprite: {fileID: 21300000, guid: bb6dfc72142e86e42a2459d0413d9d28, type: 3}

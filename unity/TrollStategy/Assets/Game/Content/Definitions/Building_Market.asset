@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.BuildingDefinition
   _kind: 2
   _displayName: "\u0420\u044B\u043D\u043E\u043A"
-  _price: 150
+  _price: 0
   _width: 3
   _height: 2
   _maxOre: 0

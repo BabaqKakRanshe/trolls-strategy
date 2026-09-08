@@ -16,20 +16,24 @@ namespace TrollStrategy.Application
 
         public GameSession(GameContentCatalog catalog)
         {
-            _catalog = catalog;
-            _state = GameState.CreateInitialState();
+            _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
+            _state = GameState.CreateInitialState(_catalog.Economy.StartingGold);
             _revision = 1;
         }
 
         public GameSnapshot CurrentSnapshot => CreateSnapshot();
-        public GameState InternalState => _state;
         public GameContentCatalog Catalog => _catalog;
 
         public CommandResult Dispatch(IGameCommand command)
         {
-            var result = ColonySimulation.ApplyCommand(_state, command, _catalog);
+            if (command == null)
+                return CommandResult.Fail("Команда не задана");
+
+            var candidate = _state.Clone();
+            var result = ColonySimulation.ApplyCommand(candidate, command, _catalog);
             if (result.Ok)
             {
+                _state = candidate;
                 _revision++;
                 Emit();
             }
@@ -38,8 +42,14 @@ namespace TrollStrategy.Application
 
         public GameSnapshot Advance(float deltaSeconds)
         {
-            _remainderSeconds += deltaSeconds;
+            if (deltaSeconds <= 0f)
+                return CurrentSnapshot;
+
             float step = _catalog.Economy.EconomyStepSeconds;
+            if (step <= 0f)
+                throw new InvalidOperationException("Шаг экономики должен быть больше нуля");
+
+            _remainderSeconds += deltaSeconds;
             bool changed = false;
 
             while (_remainderSeconds >= step)
@@ -121,20 +131,18 @@ namespace TrollStrategy.Application
                         workers++;
                 }
 
-                buildingSnapshots.Add(new BuildingSnapshot
-                {
-                    Id = b.Id,
-                    Kind = b.Kind,
-                    Name = b.Kind == BuildingKind.Mine ? $"Шахта {GetIdNumber(b.Id)}" : def.DisplayName,
-                    Cell = b.Cell,
-                    Width = def.Width,
-                    Height = def.Height,
-                    Ore = b.Ore,
-                    MaxOre = def.MaxOre,
-                    WorkerCount = workers,
-                    MaxWorkers = def.MaxWorkers,
-                    ProductionPerSecond = ColonySimulation.ProductionPerSecond(_state, b.Id, _catalog)
-                });
+                buildingSnapshots.Add(new BuildingSnapshot(
+                    b.Id,
+                    b.Kind,
+                    b.Kind == BuildingKind.Mine ? $"Шахта {GetIdNumber(b.Id)}" : def.DisplayName,
+                    b.Cell,
+                    def.Width,
+                    def.Height,
+                    b.Ore,
+                    def.MaxOre,
+                    workers,
+                    def.MaxWorkers,
+                    ColonySimulation.ProductionPerSecond(_state, b.Id, _catalog)));
             }
 
             var unitSnapshots = new List<UnitSnapshot>(_state.Units.Count);
@@ -147,30 +155,26 @@ namespace TrollStrategy.Application
                 if (u.Assignment.Kind == AssignmentKind.Haul)
                     carriedOre += u.Assignment.Carried;
 
-                unitSnapshots.Add(new UnitSnapshot
-                {
-                    Id = u.Id,
-                    Number = GetIdNumber(u.Id),
-                    UnitKind = u.Kind,
-                    Name = def.DisplayName,
-                    Strength = def.Strength,
-                    Speed = def.Speed,
-                    CargoCapacity = def.CargoCapacity,
-                    Position = u.Position,
-                    Assignment = u.Assignment.Clone(),
-                    Status = FormatAssignmentStatus(u.Assignment, buildingSnapshots)
-                });
+                unitSnapshots.Add(new UnitSnapshot(
+                    u.Id,
+                    GetIdNumber(u.Id),
+                    u.Kind,
+                    def.DisplayName,
+                    def.Strength,
+                    def.Speed,
+                    def.CargoCapacity,
+                    u.Position,
+                    u.Assignment,
+                    FormatAssignmentStatus(u.Assignment, buildingSnapshots)));
             }
 
-            return new GameSnapshot
-            {
-                Revision = _revision,
-                Gold = _state.Gold,
-                SoldOre = _state.SoldOre,
-                TotalOre = totalOreInBuildings + carriedOre,
-                Buildings = buildingSnapshots,
-                Units = unitSnapshots
-            };
+            return new GameSnapshot(
+                _revision,
+                _state.Gold,
+                _state.SoldOre,
+                totalOreInBuildings + carriedOre,
+                buildingSnapshots,
+                unitSnapshots);
         }
 
         private void Emit()

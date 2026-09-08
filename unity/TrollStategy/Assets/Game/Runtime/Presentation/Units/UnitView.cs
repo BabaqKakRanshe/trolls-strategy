@@ -1,14 +1,13 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
 
 namespace TrollStrategy.Presentation.Units
 {
-    public class UnitView : MonoBehaviour, IPointerClickHandler
+    public class UnitView : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private SpriteRenderer _selectionCircle;
@@ -18,7 +17,6 @@ namespace TrollStrategy.Presentation.Units
 
         private UnitSnapshot _snapshot;
         private UnitDefinition _definition;
-        private Action<string, bool> _onClick;
         private Vector3 _targetPosition;
         private bool _isWalking;
         private float _animTimer;
@@ -33,15 +31,17 @@ namespace TrollStrategy.Presentation.Units
         {
             _snapshot = snapshot;
             _definition = definition;
-            _onClick = onClick;
+            _ = onClick;
 
             if (_spriteRenderer == null) _spriteRenderer = GetComponent<SpriteRenderer>();
+            EnsureDedicatedSpriteRenderer();
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.sortingOrder = 20;
                 if (definition != null)
                     _spriteRenderer.sprite = definition.IdleSprite;
             }
+            ApplySpriteScale();
 
             EnsureSelectionVisuals();
 
@@ -49,6 +49,43 @@ namespace TrollStrategy.Presentation.Units
             transform.position = _targetPosition;
 
             UpdateVisuals(snapshot, false);
+        }
+
+        private void EnsureDedicatedSpriteRenderer()
+        {
+            if (_spriteRenderer == null || _spriteRenderer.transform != transform) return;
+
+            var source = _spriteRenderer;
+            var spriteTransform = transform.Find("SpriteVisual");
+            if (spriteTransform == null)
+            {
+                var spriteObject = new GameObject("SpriteVisual");
+                spriteTransform = spriteObject.transform;
+                spriteTransform.SetParent(transform, false);
+            }
+
+            var dedicated = spriteTransform.GetComponent<SpriteRenderer>();
+            if (dedicated == null) dedicated = spriteTransform.gameObject.AddComponent<SpriteRenderer>();
+
+            dedicated.sprite = source.sprite;
+            dedicated.color = source.color;
+            dedicated.sharedMaterial = source.sharedMaterial;
+            dedicated.sortingLayerID = source.sortingLayerID;
+            dedicated.sortingOrder = source.sortingOrder;
+            dedicated.maskInteraction = source.maskInteraction;
+            dedicated.flipX = source.flipX;
+            dedicated.flipY = source.flipY;
+            source.enabled = false;
+            _spriteRenderer = dedicated;
+        }
+
+        public void ApplySpriteScale()
+        {
+            EnsureDedicatedSpriteRenderer();
+            if (_spriteRenderer == null) return;
+
+            float scale = _definition != null ? _definition.SpriteScale : 1f;
+            _spriteRenderer.transform.localScale = new Vector3(scale, scale, 1f);
         }
 
         private static Sprite _proceduralSelectionSprite;
@@ -142,8 +179,11 @@ namespace TrollStrategy.Presentation.Units
             if (_collider == null)
             {
                 _collider = GetComponent<CircleCollider2D>();
-                if (_collider == null) _collider = gameObject.AddComponent<CircleCollider2D>();
-                _collider.radius = 0.4f;
+                if (_collider == null)
+                {
+                    _collider = gameObject.AddComponent<CircleCollider2D>();
+                    _collider.radius = 0.4f;
+                }
             }
         }
 
@@ -153,6 +193,7 @@ namespace TrollStrategy.Presentation.Units
             _targetPosition = new Vector3(snapshot.Position.X, snapshot.Position.Y, 0f);
 
             EnsureSelectionVisuals();
+            ApplySpriteScale();
 
             if (_selectionRing != null)
                 _selectionRing.enabled = isSelected;
@@ -215,25 +256,5 @@ namespace TrollStrategy.Presentation.Units
             }
         }
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            HandleClick();
-        }
-
-        private void OnMouseDown()
-        {
-            HandleClick();
-        }
-
-        private void HandleClick()
-        {
-            if (_snapshot != null)
-            {
-                bool additive = UnityEngine.InputSystem.Keyboard.current != null &&
-                                (UnityEngine.InputSystem.Keyboard.current.leftShiftKey.isPressed ||
-                                 UnityEngine.InputSystem.Keyboard.current.rightShiftKey.isPressed);
-                _onClick?.Invoke(_snapshot.Id, additive);
-            }
-        }
     }
 }

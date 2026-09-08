@@ -170,7 +170,8 @@ namespace TrollStrategy.Domain
 
         private static CommandResult AssignWork(GameState state, IReadOnlyList<string> unitIds, string buildingId, GameContentCatalog catalog)
         {
-            if (unitIds == null || unitIds.Count == 0) return CommandResult.Fail("Сначала выберите юнитов");
+            var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
+            if (!resolveResult.Ok) return resolveResult;
 
             var building = state.Buildings.Find(b => b.Id == buildingId);
             if (building == null || building.Kind != BuildingKind.Mine)
@@ -187,14 +188,10 @@ namespace TrollStrategy.Domain
             }
 
             int availableSlots = mineDef.MaxWorkers - currentAssigned;
-            if (availableSlots <= 0)
-                return CommandResult.Fail("В шахте уже максимальное число рабочих");
-
             int assigned = 0;
-            for (int i = 0; i < unitIds.Count && assigned < availableSlots; i++)
+            for (int i = 0; i < selectedUnits.Count && assigned < Math.Max(0, availableSlots); i++)
             {
-                var u = state.Units.Find(un => un.Id == unitIds[i]);
-                if (u == null) continue;
+                var u = selectedUnits[i];
 
                 if ((u.Assignment.Kind == AssignmentKind.ToWork || u.Assignment.Kind == AssignmentKind.Work) && u.Assignment.BuildingId == buildingId)
                     continue;
@@ -209,7 +206,8 @@ namespace TrollStrategy.Domain
 
         private static CommandResult AssignHaul(GameState state, IReadOnlyList<string> unitIds, string sourceId, string destinationId, GameContentCatalog catalog)
         {
-            if (unitIds == null || unitIds.Count == 0) return CommandResult.Fail("Сначала выберите юнитов");
+            var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
+            if (!resolveResult.Ok) return resolveResult;
 
             var source = state.Buildings.Find(b => b.Id == sourceId);
             var destination = state.Buildings.Find(b => b.Id == destinationId);
@@ -218,10 +216,9 @@ namespace TrollStrategy.Domain
             if (!IsValidHaulRoute(source.Kind, destination.Kind))
                 return CommandResult.Fail("Этот маршрут не перевозит руду");
 
-            for (int i = 0; i < unitIds.Count; i++)
+            for (int i = 0; i < selectedUnits.Count; i++)
             {
-                var u = state.Units.Find(un => un.Id == unitIds[i]);
-                if (u == null) continue;
+                var u = selectedUnits[i];
 
                 ReturnCarriedOre(state, u);
                 u.Assignment = Assignment.Haul(sourceId, destinationId);
@@ -232,12 +229,12 @@ namespace TrollStrategy.Domain
 
         private static CommandResult ReleaseUnits(GameState state, IReadOnlyList<string> unitIds, GameContentCatalog catalog)
         {
-            if (unitIds == null || unitIds.Count == 0) return CommandResult.Fail("Сначала выберите юнитов");
+            var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
+            if (!resolveResult.Ok) return resolveResult;
 
-            for (int i = 0; i < unitIds.Count; i++)
+            for (int i = 0; i < selectedUnits.Count; i++)
             {
-                var u = state.Units.Find(un => un.Id == unitIds[i]);
-                if (u == null) continue;
+                var u = selectedUnits[i];
 
                 ReturnCarriedOre(state, u);
                 u.Assignment = Assignment.Idle();
@@ -249,23 +246,20 @@ namespace TrollStrategy.Domain
 
         private static CommandResult SellUnits(GameState state, IReadOnlyList<string> unitIds, GameContentCatalog catalog)
         {
-            if (unitIds == null || unitIds.Count == 0) return CommandResult.Fail("Сначала выберите юнитов");
+            var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
+            if (!resolveResult.Ok) return resolveResult;
 
             int totalRefund = 0;
             var toRemove = new HashSet<string>();
 
-            for (int i = 0; i < unitIds.Count; i++)
+            for (int i = 0; i < selectedUnits.Count; i++)
             {
-                var id = unitIds[i];
-                var u = state.Units.Find(un => un.Id == id);
-                if (u != null)
-                {
-                    ReturnCarriedOre(state, u);
-                    var def = catalog.GetUnit(u.Kind);
-                    int refund = (int)Math.Floor(def.Price * 0.5f);
-                    totalRefund += refund;
-                    toRemove.Add(id);
-                }
+                var u = selectedUnits[i];
+                ReturnCarriedOre(state, u);
+                var def = catalog.GetUnit(u.Kind);
+                int refund = (int)Math.Floor(def.Price * 0.5f);
+                totalRefund += refund;
+                toRemove.Add(u.Id);
             }
 
             state.Units.RemoveAll(u => toRemove.Contains(u.Id));
@@ -275,23 +269,20 @@ namespace TrollStrategy.Domain
 
         private static CommandResult SendToBarracks(GameState state, IReadOnlyList<string> unitIds, GameContentCatalog catalog)
         {
-            if (unitIds == null || unitIds.Count == 0) return CommandResult.Fail("Сначала выберите юнитов");
+            var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
+            if (!resolveResult.Ok) return resolveResult;
 
             var barracks = state.Buildings.Find(b => b.Kind == BuildingKind.Barracks);
             var targetPos = barracks != null 
                 ? BuildingEntrancePosition(barracks, catalog) 
                 : new WorldPosition(2.5f * catalog.Economy.CellSize, 2.5f * catalog.Economy.CellSize);
 
-            for (int i = 0; i < unitIds.Count; i++)
+            for (int i = 0; i < selectedUnits.Count; i++)
             {
-                var id = unitIds[i];
-                var u = state.Units.Find(un => un.Id == id);
-                if (u != null)
-                {
-                    ReturnCarriedOre(state, u);
-                    u.Assignment = Assignment.Idle();
-                    u.Position = targetPos;
-                }
+                var u = selectedUnits[i];
+                ReturnCarriedOre(state, u);
+                u.Assignment = Assignment.Idle();
+                u.Position = targetPos;
             }
 
             return CommandResult.Success();
@@ -378,7 +369,16 @@ namespace TrollStrategy.Domain
                     float transferTime = catalog.Economy.TransferTimeSeconds;
                     if (assignment.PhaseElapsedSeconds >= transferTime)
                     {
-                        int taken = Math.Min(source.Ore, unitDef.CargoCapacity);
+                        int destinationRoom = destination.Kind == BuildingKind.Market
+                            ? int.MaxValue
+                            : Math.Max(0, catalog.GetBuilding(destination.Kind).MaxOre - destination.Ore);
+                        int taken = Math.Min(source.Ore, Math.Min(unitDef.CargoCapacity, destinationRoom));
+                        if (taken <= 0)
+                        {
+                            assignment.PhaseElapsedSeconds = transferTime;
+                            break;
+                        }
+
                         source.Ore -= taken;
                         assignment.Carried = taken;
                         assignment.Phase = HaulPhase.ToDestination;
@@ -418,8 +418,15 @@ namespace TrollStrategy.Domain
                             assignment.Carried = 0;
                         }
 
-                        assignment.Phase = HaulPhase.ToSource;
-                        assignment.PhaseElapsedSeconds = 0f;
+                        if (assignment.Carried == 0)
+                        {
+                            assignment.Phase = HaulPhase.ToSource;
+                            assignment.PhaseElapsedSeconds = 0f;
+                        }
+                        else
+                        {
+                            assignment.PhaseElapsedSeconds = transferTime;
+                        }
                     }
                     break;
                 }
@@ -448,15 +455,35 @@ namespace TrollStrategy.Domain
 
         private static void ReturnCarriedOre(GameState state, UnitState unit)
         {
-            if (unit.Assignment.Carried > 0)
+            if (unit.Assignment.Kind != AssignmentKind.Haul || unit.Assignment.Carried == 0)
+                return;
+
+            var source = state.Buildings.Find(b => b.Id == unit.Assignment.SourceId);
+            if (source != null)
+                source.Ore += unit.Assignment.Carried;
+        }
+
+        private static CommandResult ResolveUnits(GameState state, IReadOnlyList<string> unitIds, out List<UnitState> units)
+        {
+            units = new List<UnitState>();
+            if (unitIds == null || unitIds.Count == 0)
+                return CommandResult.Fail("Сначала выберите юнитов");
+
+            var seen = new HashSet<string>();
+            for (int i = 0; i < unitIds.Count; i++)
             {
-                var warehouse = state.Buildings.Find(b => b.Kind == BuildingKind.Warehouse);
-                if (warehouse != null)
-                {
-                    warehouse.Ore += unit.Assignment.Carried;
-                }
-                unit.Assignment.Carried = 0;
+                string id = unitIds[i];
+                if (!seen.Add(id))
+                    return CommandResult.Fail("Юнит выбран дважды");
+
+                var unit = state.Units.Find(candidate => candidate.Id == id);
+                if (unit == null)
+                    return CommandResult.Fail("Юнит не найден");
+
+                units.Add(unit);
             }
+
+            return CommandResult.Success();
         }
 
         public static WorldPosition BuildingEntrancePosition(BuildingState building, GameContentCatalog catalog)
@@ -501,7 +528,7 @@ namespace TrollStrategy.Domain
             );
         }
 
-                public static float ProductionPerSecond(GameState state, string buildingId, GameContentCatalog catalog)
+        public static float ProductionPerSecond(GameState state, string buildingId, GameContentCatalog catalog)
         {
             return CalculateMineProductionPerSecond(state, buildingId, catalog);
         }
@@ -521,7 +548,7 @@ namespace TrollStrategy.Domain
             }
             return null;
         }
-public static int GetUnitNumber(string unitId)
+        public static int GetUnitNumber(string unitId)
         {
             if (string.IsNullOrEmpty(unitId)) return 1;
             int dash = unitId.LastIndexOf('-');

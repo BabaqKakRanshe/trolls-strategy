@@ -1,4 +1,4 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 using TMPro;
 
@@ -9,7 +9,8 @@ namespace TrollStrategy.Editor.Setup
         public static TMP_FontAsset CreateOrGetArial()
         {
             string path = "Assets/Game/Art/Fonts/Arial Dynamic.asset";
-            AssetDatabase.DeleteAsset(path);
+            var existing = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
+            if (existing != null) return existing;
 
             var fa = TMP_FontAsset.CreateFontAsset("Arial", "Regular");
             if (fa == null)

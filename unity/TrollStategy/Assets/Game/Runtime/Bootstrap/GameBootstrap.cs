@@ -47,9 +47,15 @@ namespace TrollStrategy.Bootstrap
         private void Awake()
         {
             if (_camera == null) _camera = Camera.main;
-            if (_catalog == null) _catalog = Resources.Load<GameContentCatalog>("GameContentCatalog");
-            if (_buildingPrefab == null) _buildingPrefab = Resources.Load<BuildingView>("BuildingPrefab");
-            if (_unitPrefab == null) _unitPrefab = Resources.Load<UnitView>("UnitPrefab");
+
+            if (_catalog == null || _buildingPrefab == null || _unitPrefab == null)
+            {
+                Debug.LogError(
+                    $"{nameof(GameBootstrap)} requires serialized references to the content catalog, building prefab, and unit prefab. Rebuild the main scene from TrollStrategy/Setup Game Scene.",
+                    this);
+                enabled = false;
+                return;
+            }
 
             if (_buildingManager == null) _buildingManager = FindAnyObjectByType<BuildingVisualsManager>();
             if (_unitManager == null) _unitManager = FindAnyObjectByType<UnitVisualsManager>();
@@ -88,6 +94,15 @@ namespace TrollStrategy.Bootstrap
 
             if (_hudPresenter != null)
                 _hudPresenter.Init(_session, _interaction, _resourceBar, _shopDockView, _commandDockView, _inspectCardView, _statusMessageView);
+
+            var first3 = GameObject.Find("First3Btn")?.GetComponent<UnityEngine.UI.Button>();
+            if (first3 != null) first3.onClick.AddListener(() => _interaction?.SelectFirstIdle(3));
+
+            var nextBtn = GameObject.Find("NextBtn")?.GetComponent<UnityEngine.UI.Button>();
+            if (nextBtn != null) nextBtn.onClick.AddListener(() => _interaction?.SelectNextIdle());
+
+            var gridBtn = GameObject.Find("GridToggleBtn")?.GetComponent<UnityEngine.UI.Button>();
+            if (gridBtn != null) gridBtn.onClick.AddListener(() => _routeVisualizer?.ToggleGuides());
         }
 
         private void Update()

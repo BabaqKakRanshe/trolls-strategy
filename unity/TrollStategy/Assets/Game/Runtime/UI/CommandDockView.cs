@@ -10,61 +10,44 @@ namespace TrollStrategy.UI
 {
     public class CommandDockView : MonoBehaviour
     {
-        [Header("Selection Panel Root")]
+        [Header("Panel Root")]
         [SerializeField] private GameObject _panelRoot;
         [SerializeField] private TextMeshProUGUI _selectedCountText;
 
-        [Header("Main Buttons (Collapsed)")]
-        [SerializeField] private GameObject _mainActionsRow;
-        [SerializeField] private Button _openCommandsBtn;
-        [SerializeField] private Button _sellSelectedBtn;
-        [SerializeField] private Button _clearSelectionBtn;
-
-        [Header("Commands Row (Expanded)")]
-        [SerializeField] private GameObject _commandsRow;
+        [Header("Command Actions")]
         [SerializeField] private Button _workBtn;
         [SerializeField] private Button _haulBtn;
-        [SerializeField] private Button _barracksBtn;
         [SerializeField] private Button _releaseBtn;
-        [SerializeField] private Button _cancelCommandsBtn;
+        [SerializeField] private Button _cancelBtn;
 
-        [Header("Stack Picker")]
-        [SerializeField] private GameObject _stackPickerRow;
-        [SerializeField] private Slider _stackSlider;
-        [SerializeField] private TextMeshProUGUI _stackLabel;
-        [SerializeField] private Button _confirmStackBtn;
+        [Header("Target Choices")]
+        [SerializeField] private GameObject _targetChoicesRow;
+        [SerializeField] private TextMeshProUGUI _targetPromptText;
+        [SerializeField] private Transform _targetButtonsContainer;
 
         private InteractionController _interaction;
         private GameSession _session;
+        private readonly List<Button> _spawnedTargetButtons = new();
+        private string _targetSignature;
 
         public void Setup(
             InteractionController interaction,
             GameSession session,
             GameObject root,
             TextMeshProUGUI countText,
-            GameObject mainRow, Button openCmdsBtn, Button sellBtn, Button clearBtn,
-            GameObject cmdRow, Button workBtn, Button haulBtn, Button barracksBtn, Button releaseBtn, Button cancelCmdsBtn,
-            GameObject stackRow, Slider stackSlider, TextMeshProUGUI stackLabel, Button confirmStackBtn)
+            Button workBtn, Button haulBtn, Button releaseBtn, Button cancelBtn,
+            GameObject targetRow, TextMeshProUGUI targetPrompt, Transform targetContainer)
         {
             _panelRoot = root;
             _selectedCountText = countText;
-
-            _mainActionsRow = mainRow;
-            _openCommandsBtn = openCmdsBtn;
-            _sellSelectedBtn = sellBtn;
-            _clearSelectionBtn = clearBtn;
-
-            _commandsRow = cmdRow;
             _workBtn = workBtn;
             _haulBtn = haulBtn;
-            _barracksBtn = barracksBtn;
             _releaseBtn = releaseBtn;
-            _cancelCommandsBtn = cancelCmdsBtn;
+            _cancelBtn = cancelBtn;
 
-            _stackPickerRow = stackRow;
-            _stackSlider = stackSlider;
-            _stackLabel = stackLabel;
-            _confirmStackBtn = confirmStackBtn;
+            _targetChoicesRow = targetRow;
+            _targetPromptText = targetPrompt;
+            _targetButtonsContainer = targetContainer;
 
             Bind(session, interaction);
         }
@@ -74,104 +57,136 @@ namespace TrollStrategy.UI
             _session = session;
             _interaction = interaction;
 
-            if (_openCommandsBtn != null)
-            {
-                _openCommandsBtn.onClick.RemoveAllListeners();
-                _openCommandsBtn.onClick.AddListener(() => _interaction?.ToggleCommands(true));
-            }
-            if (_sellSelectedBtn != null)
-            {
-                _sellSelectedBtn.onClick.RemoveAllListeners();
-                _sellSelectedBtn.onClick.AddListener(() => _interaction?.SellSelected());
-            }
-            if (_clearSelectionBtn != null)
-            {
-                _clearSelectionBtn.onClick.RemoveAllListeners();
-                _clearSelectionBtn.onClick.AddListener(() => _interaction?.CancelOrClear());
-            }
-
             if (_workBtn != null)
             {
                 _workBtn.onClick.RemoveAllListeners();
                 _workBtn.onClick.AddListener(() => _interaction?.BeginWorkTarget());
             }
+
             if (_haulBtn != null)
             {
                 _haulBtn.onClick.RemoveAllListeners();
                 _haulBtn.onClick.AddListener(() => _interaction?.BeginHaulTarget());
             }
-            if (_barracksBtn != null)
-            {
-                _barracksBtn.onClick.RemoveAllListeners();
-                _barracksBtn.onClick.AddListener(() => _interaction?.SendSelectedToBarracks());
-            }
+
             if (_releaseBtn != null)
             {
                 _releaseBtn.onClick.RemoveAllListeners();
                 _releaseBtn.onClick.AddListener(() => _interaction?.ReleaseSelected());
             }
-            if (_cancelCommandsBtn != null)
-            {
-                _cancelCommandsBtn.onClick.RemoveAllListeners();
-                _cancelCommandsBtn.onClick.AddListener(() => _interaction?.ToggleCommands(false));
-            }
 
-            if (_stackSlider != null)
+            if (_cancelBtn != null)
             {
-                _stackSlider.onValueChanged.RemoveAllListeners();
-                _stackSlider.onValueChanged.AddListener(val =>
-                {
-                    _interaction?.SetStackQuantity((int)val);
-                });
-            }
-
-            if (_confirmStackBtn != null)
-            {
-                _confirmStackBtn.onClick.RemoveAllListeners();
-                _confirmStackBtn.onClick.AddListener(() =>
-                {
-                    if (_interaction != null)
-                    {
-                        var list = new List<string>(_interaction.SelectedIds);
-                        _interaction.ConfirmStackSelection(list);
-                    }
-                });
+                _cancelBtn.onClick.RemoveAllListeners();
+                _cancelBtn.onClick.AddListener(() => _interaction?.CancelOrClear());
             }
         }
 
         public void UpdateView(int selectedCount, bool commandsOpen, int stackQuantity)
         {
-            if (_panelRoot == null) return;
+            if (_session == null || _interaction == null || _panelRoot == null) return;
 
-            bool hasSelection = selectedCount > 0;
-            _panelRoot.SetActive(hasSelection);
+            var mode = _interaction.Mode;
+            bool isTargeting = mode.Type == InteractionModeType.ChoosingWorkTarget ||
+                              mode.Type == InteractionModeType.ChoosingHaulSource ||
+                              mode.Type == InteractionModeType.ChoosingHaulDestination;
 
-            if (!hasSelection) return;
+            bool visible = selectedCount > 0 || isTargeting;
+            _panelRoot.SetActive(visible);
+
+            if (!visible)
+            {
+                ClearTargetButtons();
+                _targetSignature = null;
+                return;
+            }
 
             if (_selectedCountText != null)
-                _selectedCountText.text = "Выбрано: " + selectedCount;
+                _selectedCountText.text = selectedCount > 0 ? $"{selectedCount} выбрано" : "Приказы";
 
-            if (_mainActionsRow != null) _mainActionsRow.SetActive(!commandsOpen);
-            if (_commandsRow != null) _commandsRow.SetActive(commandsOpen);
+            if (_workBtn != null) _workBtn.interactable = selectedCount > 0;
+            if (_haulBtn != null) _haulBtn.interactable = selectedCount > 0;
+            if (_releaseBtn != null) _releaseBtn.interactable = selectedCount > 0;
 
-            if (_stackPickerRow != null)
+            // Target choices
+            if (_targetChoicesRow != null)
             {
-                bool showStack = selectedCount > 1 && !commandsOpen;
-                _stackPickerRow.SetActive(showStack);
-                if (showStack)
+                _targetChoicesRow.SetActive(isTargeting);
+                if (isTargeting)
                 {
-                    if (_stackSlider != null)
+                    if (_targetPromptText != null)
                     {
-                        _stackSlider.minValue = 1;
-                        _stackSlider.maxValue = selectedCount;
-                        _stackSlider.value = Mathf.Clamp(stackQuantity, 1, selectedCount);
+                        if (mode.Type == InteractionModeType.ChoosingHaulSource)
+                            _targetPromptText.text = "Источник:";
+                        else if (mode.Type == InteractionModeType.ChoosingHaulDestination)
+                            _targetPromptText.text = "Цель:";
+                        else
+                            _targetPromptText.text = "Шахта:";
                     }
-                    if (_stackLabel != null)
+
+                    var targetIds = _interaction.GetTargetBuildingIds();
+                    string signature = $"{mode.Type}:{string.Join("|", targetIds)}";
+
+                    if (_targetButtonsContainer != null && signature != _targetSignature)
                     {
-                        _stackLabel.text = "Выбрать: " + Mathf.Clamp(stackQuantity, 1, selectedCount) + " из " + selectedCount;
+                        ClearTargetButtons();
+                        _targetSignature = signature;
+                        var snapshot = _session.CurrentSnapshot;
+
+                        for (int i = 0; i < targetIds.Count; i++)
+                        {
+                            string bId = targetIds[i];
+                            BuildingSnapshot bSnap = null;
+                            for (int b = 0; b < snapshot.Buildings.Count; b++)
+                            {
+                                if (snapshot.Buildings[b].Id == bId) { bSnap = snapshot.Buildings[b]; break; }
+                            }
+                            string bName = bSnap != null ? bSnap.Name : bId;
+
+                            var btnGo = new GameObject($"TargetBtn_{bId}", typeof(RectTransform));
+                            btnGo.transform.SetParent(_targetButtonsContainer, false);
+                            var btnRt = btnGo.GetComponent<RectTransform>();
+                            btnRt.sizeDelta = new Vector2(100f, 32f);
+
+                            var img = btnGo.AddComponent<Image>();
+                            img.color = new Color(0.21f, 0.29f, 0.24f, 1f);
+
+                            var btn = btnGo.AddComponent<Button>();
+                            btn.onClick.AddListener(() => _interaction?.ChooseBuilding(bId));
+
+                            var txtGo = new GameObject("Text", typeof(RectTransform));
+                            txtGo.transform.SetParent(btnGo.transform, false);
+                            var txtRt = txtGo.GetComponent<RectTransform>();
+                            txtRt.anchorMin = Vector2.zero;
+                            txtRt.anchorMax = Vector2.one;
+                            txtRt.sizeDelta = Vector2.zero;
+
+                            var txt = txtGo.AddComponent<TextMeshProUGUI>();
+                            txt.text = bName;
+                            txt.fontSize = 11;
+                            txt.alignment = TextAlignmentOptions.Center;
+                            txt.color = new Color(0.94f, 0.92f, 0.84f);
+
+                            _spawnedTargetButtons.Add(btn);
+                        }
                     }
                 }
+                else
+                {
+                    ClearTargetButtons();
+                    _targetSignature = null;
+                }
             }
+        }
+
+        private void ClearTargetButtons()
+        {
+            for (int i = 0; i < _spawnedTargetButtons.Count; i++)
+            {
+                if (_spawnedTargetButtons[i] != null)
+                    Destroy(_spawnedTargetButtons[i].gameObject);
+            }
+            _spawnedTargetButtons.Clear();
         }
     }
 }

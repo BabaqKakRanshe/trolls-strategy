@@ -8,73 +8,85 @@ using TrollStrategy.Domain;
 
 namespace TrollStrategy.UI
 {
-    public enum ShopCategory
-    {
-        None,
-        Minions,
-        Buildings,
-        Decorations
-    }
-
     public class ShopDockView : MonoBehaviour
     {
-        [Header("Category Tabs")]
-        [SerializeField] private Button _minionsTab;
-        [SerializeField] private Button _buildingsTab;
-        [SerializeField] private Button _decorationsTab;
+        [Header("Resource Grid (2x2)")]
+        [SerializeField] private TextMeshProUGUI _goldValueText;
+        [SerializeField] private TextMeshProUGUI _oreValueText;
+        [SerializeField] private TextMeshProUGUI _soldValueText;
+        [SerializeField] private TextMeshProUGUI _populationValueText;
 
-        [Header("Drawer")]
-        [SerializeField] private GameObject _drawerRoot;
-        [SerializeField] private TextMeshProUGUI _drawerTitle;
+        [Header("Buildings Section")]
+        [SerializeField] private Image _mineArt;
+        [SerializeField] private Button _buildMineBtn;
+        [SerializeField] private TextMeshProUGUI _mineCostText;
+        [SerializeField] private Button _autoPlaceMineBtn;
 
-        [Header("Minions Category")]
-        [SerializeField] private GameObject _minionsContent;
+        [Header("Hire Section")]
+        [SerializeField] private Button _decreaseHireBtn;
+        [SerializeField] private Button _increaseHireBtn;
+        [SerializeField] private TextMeshProUGUI _hireAmountText;
+
+        [SerializeField] private Image _goblinArt;
         [SerializeField] private Button _buyGoblinBtn;
-        [SerializeField] private Button _buyTrollBtn;
         [SerializeField] private TextMeshProUGUI _goblinCostText;
+
+        [SerializeField] private Image _trollArt;
+        [SerializeField] private Button _buyTrollBtn;
         [SerializeField] private TextMeshProUGUI _trollCostText;
 
-        [Header("Buildings Category")]
-        [SerializeField] private GameObject _buildingsContent;
-        [SerializeField] private Button _buildMineBtn;
-        [SerializeField] private Button _autoPlaceMineBtn;
-        [SerializeField] private TextMeshProUGUI _mineCostText;
+        [Header("Unit Placement Banner")]
+        [SerializeField] private GameObject _unitPlacementBanner;
+        [SerializeField] private TextMeshProUGUI _unitPlacementTitle;
+        [SerializeField] private Button _cancelPlacementBtn;
 
-        [Header("Decorations Category")]
-        [SerializeField] private GameObject _decorationsContent;
+        [Header("Game Status")]
+        [SerializeField] private TextMeshProUGUI _gameStatusText;
 
         private InteractionController _interaction;
         private GameSession _session;
-        private ShopCategory _activeCategory = ShopCategory.None;
+        private int _hireAmount = 1;
+
+        public int HireAmount => _hireAmount;
 
         public void Setup(
             InteractionController interaction,
             GameSession session,
-            Button minionsTab, Button buildingsTab, Button decorationsTab,
-            GameObject drawerRoot, TextMeshProUGUI drawerTitle,
-            GameObject minionsContent, Button buyGoblinBtn, Button buyTrollBtn, TextMeshProUGUI goblinCost, TextMeshProUGUI trollCost,
-            GameObject buildingsContent, Button buildMineBtn, Button autoPlaceMineBtn, TextMeshProUGUI mineCost,
-            GameObject decorationsContent)
+            TextMeshProUGUI goldVal, TextMeshProUGUI oreVal, TextMeshProUGUI soldVal, TextMeshProUGUI popVal,
+            Image mineArt, Button buildMineBtn, TextMeshProUGUI mineCost, Button autoPlaceBtn,
+            Button decHireBtn, Button incHireBtn, TextMeshProUGUI hireAmountTxt,
+            Image goblinArt, Button buyGoblinBtn, TextMeshProUGUI goblinCost,
+            Image trollArt, Button buyTrollBtn, TextMeshProUGUI trollCost,
+            GameObject placementBanner, TextMeshProUGUI placementTitle, Button cancelPlacementBtn,
+            TextMeshProUGUI gameStatusText)
         {
-            _minionsTab = minionsTab;
-            _buildingsTab = buildingsTab;
-            _decorationsTab = decorationsTab;
+            _goldValueText = goldVal;
+            _oreValueText = oreVal;
+            _soldValueText = soldVal;
+            _populationValueText = popVal;
 
-            _drawerRoot = drawerRoot;
-            _drawerTitle = drawerTitle;
+            _mineArt = mineArt;
+            _buildMineBtn = buildMineBtn;
+            _mineCostText = mineCost;
+            _autoPlaceMineBtn = autoPlaceBtn;
 
-            _minionsContent = minionsContent;
+            _decreaseHireBtn = decHireBtn;
+            _increaseHireBtn = incHireBtn;
+            _hireAmountText = hireAmountTxt;
+
+            _goblinArt = goblinArt;
             _buyGoblinBtn = buyGoblinBtn;
-            _buyTrollBtn = buyTrollBtn;
             _goblinCostText = goblinCost;
+
+            _trollArt = trollArt;
+            _buyTrollBtn = buyTrollBtn;
             _trollCostText = trollCost;
 
-            _buildingsContent = buildingsContent;
-            _buildMineBtn = buildMineBtn;
-            _autoPlaceMineBtn = autoPlaceMineBtn;
-            _mineCostText = mineCost;
+            _unitPlacementBanner = placementBanner;
+            _unitPlacementTitle = placementTitle;
+            _cancelPlacementBtn = cancelPlacementBtn;
 
-            _decorationsContent = decorationsContent;
+            _gameStatusText = gameStatusText;
 
             Bind(session, interaction);
         }
@@ -84,92 +96,53 @@ namespace TrollStrategy.UI
             _session = session;
             _interaction = interaction;
 
-            if (_minionsTab != null)
+            if (_decreaseHireBtn != null)
             {
-                _minionsTab.onClick.RemoveAllListeners();
-                _minionsTab.onClick.AddListener(() => ToggleCategory(ShopCategory.Minions));
+                _decreaseHireBtn.onClick.RemoveAllListeners();
+                _decreaseHireBtn.onClick.AddListener(() => SetHireAmount(_hireAmount - 1));
             }
-            if (_buildingsTab != null)
+            if (_increaseHireBtn != null)
             {
-                _buildingsTab.onClick.RemoveAllListeners();
-                _buildingsTab.onClick.AddListener(() => ToggleCategory(ShopCategory.Buildings));
-            }
-            if (_decorationsTab != null)
-            {
-                _decorationsTab.onClick.RemoveAllListeners();
-                _decorationsTab.onClick.AddListener(() => ToggleCategory(ShopCategory.Decorations));
-            }
-
-            if (_buyGoblinBtn != null)
-            {
-                _buyGoblinBtn.onClick.RemoveAllListeners();
-                _buyGoblinBtn.onClick.AddListener(() =>
-                {
-                    _interaction?.BeginUnitPlacement(UnitKind.Goblin, 1);
-                    _activeCategory = ShopCategory.None;
-                    RefreshDrawer();
-                });
-            }
-            if (_buyTrollBtn != null)
-            {
-                _buyTrollBtn.onClick.RemoveAllListeners();
-                _buyTrollBtn.onClick.AddListener(() =>
-                {
-                    _interaction?.BeginUnitPlacement(UnitKind.Troll, 1);
-                    _activeCategory = ShopCategory.None;
-                    RefreshDrawer();
-                });
+                _increaseHireBtn.onClick.RemoveAllListeners();
+                _increaseHireBtn.onClick.AddListener(() => SetHireAmount(_hireAmount + 1));
             }
 
             if (_buildMineBtn != null)
             {
                 _buildMineBtn.onClick.RemoveAllListeners();
-                _buildMineBtn.onClick.AddListener(() =>
-                {
-                    _interaction?.BeginMinePlacement();
-                    _activeCategory = ShopCategory.None;
-                    RefreshDrawer();
-                });
+                _buildMineBtn.onClick.AddListener(() => _interaction?.BeginMinePlacement());
             }
 
             if (_autoPlaceMineBtn != null)
             {
                 _autoPlaceMineBtn.onClick.RemoveAllListeners();
-                _autoPlaceMineBtn.onClick.AddListener(() =>
-                {
-                    _interaction?.PlaceMineAutomatically();
-                });
+                _autoPlaceMineBtn.onClick.AddListener(() => _interaction?.PlaceMineAutomatically());
             }
 
-            RefreshDrawer();
-        }
-
-        public void ToggleCategory(ShopCategory cat)
-        {
-            _activeCategory = _activeCategory == cat ? ShopCategory.None : cat;
-            RefreshDrawer();
-        }
-
-        private void RefreshDrawer()
-        {
-            bool open = _activeCategory != ShopCategory.None;
-            if (_drawerRoot != null) _drawerRoot.SetActive(open);
-
-            if (!open) return;
-
-            if (_minionsContent != null) _minionsContent.SetActive(_activeCategory == ShopCategory.Minions);
-            if (_buildingsContent != null) _buildingsContent.SetActive(_activeCategory == ShopCategory.Buildings);
-            if (_decorationsContent != null) _decorationsContent.SetActive(_activeCategory == ShopCategory.Decorations);
-
-            if (_drawerTitle != null)
+            if (_buyGoblinBtn != null)
             {
-                switch (_activeCategory)
-                {
-                    case ShopCategory.Minions: _drawerTitle.text = "МИНЬОНЫ"; break;
-                    case ShopCategory.Buildings: _drawerTitle.text = "ПОСТРОЙКИ"; break;
-                    case ShopCategory.Decorations: _drawerTitle.text = "ДЕКОРАЦИИ"; break;
-                }
+                _buyGoblinBtn.onClick.RemoveAllListeners();
+                _buyGoblinBtn.onClick.AddListener(() => _interaction?.BeginUnitPlacement(UnitKind.Goblin, _hireAmount));
             }
+
+            if (_buyTrollBtn != null)
+            {
+                _buyTrollBtn.onClick.RemoveAllListeners();
+                _buyTrollBtn.onClick.AddListener(() => _interaction?.BeginUnitPlacement(UnitKind.Troll, _hireAmount));
+            }
+
+            if (_cancelPlacementBtn != null)
+            {
+                _cancelPlacementBtn.onClick.RemoveAllListeners();
+                _cancelPlacementBtn.onClick.AddListener(() => _interaction?.CancelOrClear());
+            }
+        }
+
+        public void SetHireAmount(int amount)
+        {
+            _hireAmount = Mathf.Clamp(amount, 1, 20);
+            if (_hireAmountText != null) _hireAmountText.text = _hireAmount.ToString();
+            if (_session != null) UpdateView(_session.CurrentSnapshot);
         }
 
         public void UpdateView(GameSnapshot snapshot)
@@ -179,30 +152,54 @@ namespace TrollStrategy.UI
             int gold = snapshot.Gold;
             var catalog = _session.Catalog;
 
-            var goblinDef = catalog.GetUnit(UnitKind.Goblin);
-            var trollDef = catalog.GetUnit(UnitKind.Troll);
-            var mineDef = catalog.GetBuilding(BuildingKind.Mine);
+            if (_goldValueText != null) _goldValueText.text = gold.ToString();
+            if (_oreValueText != null) _oreValueText.text = snapshot.TotalOre.ToString();
+            if (_soldValueText != null) _soldValueText.text = snapshot.SoldOre.ToString();
+            if (_populationValueText != null) _populationValueText.text = snapshot.Units.Count.ToString();
 
-            if (_goblinCostText != null && goblinDef != null)
-                _goblinCostText.text = goblinDef.Price + " золота";
+            var goblinDef = catalog?.GetUnit(UnitKind.Goblin);
+            var trollDef = catalog?.GetUnit(UnitKind.Troll);
+            var mineDef = catalog?.GetBuilding(BuildingKind.Mine);
 
-            if (_trollCostText != null && trollDef != null)
-                _trollCostText.text = trollDef.Price + " золота";
+            int goblinUnitPrice = goblinDef != null ? goblinDef.Price : 40;
+            int trollUnitPrice = trollDef != null ? trollDef.Price : 170;
+            int minePrice = mineDef != null ? mineDef.Price : 200;
 
-            if (_mineCostText != null && mineDef != null)
-                _mineCostText.text = mineDef.Price + " золота";
+            int goblinTotalCost = goblinUnitPrice * _hireAmount;
+            int trollTotalCost = trollUnitPrice * _hireAmount;
 
-            if (_buyGoblinBtn != null && goblinDef != null)
-                _buyGoblinBtn.interactable = gold >= goblinDef.Price;
+            if (_goblinCostText != null) _goblinCostText.text = goblinTotalCost.ToString();
+            if (_trollCostText != null) _trollCostText.text = trollTotalCost.ToString();
+            if (_mineCostText != null) _mineCostText.text = minePrice.ToString();
 
-            if (_buyTrollBtn != null && trollDef != null)
-                _buyTrollBtn.interactable = gold >= trollDef.Price;
+            if (_buyGoblinBtn != null) _buyGoblinBtn.interactable = gold >= goblinTotalCost;
+            if (_buyTrollBtn != null) _buyTrollBtn.interactable = gold >= trollTotalCost;
+            if (_buildMineBtn != null) _buildMineBtn.interactable = gold >= minePrice;
 
-            if (_buildMineBtn != null && mineDef != null)
-                _buildMineBtn.interactable = gold >= mineDef.Price;
+            if (_hireAmountText != null) _hireAmountText.text = _hireAmount.ToString();
 
-            if (_autoPlaceMineBtn != null && mineDef != null)
-                _autoPlaceMineBtn.interactable = gold >= mineDef.Price;
+            if (_interaction != null)
+            {
+                var mode = _interaction.Mode;
+                bool isPlacingMine = mode.Type == InteractionModeType.PlacingMine;
+                bool isPlacingUnits = mode.Type == InteractionModeType.PlacingUnits;
+
+                if (_autoPlaceMineBtn != null)
+                    _autoPlaceMineBtn.gameObject.SetActive(isPlacingMine);
+
+                if (_unitPlacementBanner != null)
+                {
+                    _unitPlacementBanner.SetActive(isPlacingUnits);
+                    if (isPlacingUnits && _unitPlacementTitle != null)
+                    {
+                        string name = mode.UnitKind == UnitKind.Goblin ? "Гоблин" : "Тролль";
+                        _unitPlacementTitle.text = $"{name} ×{mode.Amount}";
+                    }
+                }
+
+                if (_gameStatusText != null)
+                    _gameStatusText.text = _interaction.Message;
+            }
         }
     }
 }

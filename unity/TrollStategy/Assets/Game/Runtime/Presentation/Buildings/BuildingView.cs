@@ -2,12 +2,13 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 
 namespace TrollStrategy.Presentation.Buildings
 {
-    public class BuildingView : MonoBehaviour, IPointerClickHandler
+    public class BuildingView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private SpriteRenderer _selectionHighlight;
@@ -16,14 +17,13 @@ namespace TrollStrategy.Presentation.Buildings
         [SerializeField] private BoxCollider2D _collider;
 
         private BuildingSnapshot _snapshot;
-        private Action<string> _onClick;
 
         public string BuildingId => _snapshot?.Id;
 
         public void Setup(BuildingSnapshot snapshot, Sprite sprite, Action<string> onClick)
         {
             _snapshot = snapshot;
-            _onClick = onClick;
+            _ = onClick;
 
             if (_spriteRenderer == null) _spriteRenderer = GetComponent<SpriteRenderer>();
             if (_spriteRenderer != null)
@@ -78,44 +78,148 @@ namespace TrollStrategy.Presentation.Buildings
             return _proceduralBoxOutlineSprite;
         }
 
-        private void EnsureHighlightVisuals(BuildingSnapshot snapshot)
+        [SerializeField] private SpriteRenderer _spriteOutline;
+        private static readonly Vector2[] OutlineDirections =
         {
-            if (_selectionHighlight == null)
-            {
-                var hlGo = new GameObject("SelectionHighlight");
-                hlGo.transform.SetParent(transform, false);
-                hlGo.transform.localPosition = Vector3.zero;
+            Vector2.left,
+            Vector2.right,
+            Vector2.up,
+            Vector2.down,
+            new Vector2(-0.7071f, -0.7071f),
+            new Vector2(-0.7071f, 0.7071f),
+            new Vector2(0.7071f, -0.7071f),
+            new Vector2(0.7071f, 0.7071f)
+        };
 
-                _selectionHighlight = hlGo.AddComponent<SpriteRenderer>();
+        private static readonly Color OutlineColor = new(1f, 0.78f, 0.28f, 0.95f);
+        private SpriteRenderer[] _outlineRenderers;
+        private bool _isHovered;
+        private bool _isTarget;
+
+        private void Update()
+        {
+            if (_collider == null || Mouse.current == null) return;
+            var cam = Camera.main;
+            if (cam == null) return;
+
+            Vector2 mouseScreen = Mouse.current.position.ReadValue();
+            Vector3 mouseWorld = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -cam.transform.position.z));
+            bool isInside = _collider.OverlapPoint(new Vector2(mouseWorld.x, mouseWorld.y));
+            if (isInside != _isHovered)
+            {
+                _isHovered = isInside;
+                ApplyActiveHighlight();
+            }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _isHovered = true;
+            ApplyActiveHighlight();
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _isHovered = false;
+            ApplyActiveHighlight();
+        }
+
+        private void OnMouseEnter()
+        {
+            _isHovered = true;
+            ApplyActiveHighlight();
+        }
+
+        private void OnMouseExit()
+        {
+            _isHovered = false;
+            ApplyActiveHighlight();
+        }
+
+        private void ApplyActiveHighlight()
+        {
+            bool show = _isTarget || _isHovered;
+            if (_selectionHighlight != null)
+                _selectionHighlight.gameObject.SetActive(false);
+
+            SetOutlineVisible(show);
+
+            if (_label != null)
+                _label.gameObject.SetActive(show);
+
+            if (_spriteRenderer != null)
+                _spriteRenderer.color = Color.white;
+        }
+
+        private void EnsureHighlightVisuals()
+        {
+            if (_selectionHighlight != null)
+                _selectionHighlight.gameObject.SetActive(false);
+
+            if (_spriteOutline == null)
+            {
+                var soGo = new GameObject("SpriteOutline");
+                soGo.transform.SetParent(transform, false);
+                soGo.transform.localPosition = Vector3.zero;
+
+                _spriteOutline = soGo.AddComponent<SpriteRenderer>();
             }
 
-            if (_selectionHighlight.sprite == null)
+            if (_spriteRenderer == null || _spriteRenderer.sprite == null)
+                return;
+
+            EnsureOutlineRenderers();
+            float offset = 4f / _spriteRenderer.sprite.pixelsPerUnit;
+            for (int i = 0; i < _outlineRenderers.Length; i++)
             {
-                _selectionHighlight.sprite = GetBoxOutlineSprite();
+                var outline = _outlineRenderers[i];
+                outline.sprite = _spriteRenderer.sprite;
+                outline.sortingLayerID = _spriteRenderer.sortingLayerID;
+                outline.sortingOrder = _spriteRenderer.sortingOrder - 1;
+                outline.color = OutlineColor;
+                outline.transform.localScale = Vector3.one;
+                outline.transform.localPosition = (Vector3)(OutlineDirections[i] * offset);
             }
-            _selectionHighlight.sortingOrder = 14;
+        }
+
+        private void EnsureOutlineRenderers()
+        {
+            if (_outlineRenderers != null && _outlineRenderers.Length == OutlineDirections.Length)
+                return;
+
+            _outlineRenderers = new SpriteRenderer[OutlineDirections.Length];
+            _outlineRenderers[0] = _spriteOutline;
+            for (int i = 1; i < _outlineRenderers.Length; i++)
+            {
+                string objectName = $"SpriteOutline_{i}";
+                var child = transform.Find(objectName);
+                if (child == null)
+                {
+                    child = new GameObject(objectName).transform;
+                    child.SetParent(transform, false);
+                }
+
+                _outlineRenderers[i] = child.GetComponent<SpriteRenderer>();
+                if (_outlineRenderers[i] == null)
+                    _outlineRenderers[i] = child.gameObject.AddComponent<SpriteRenderer>();
+            }
+        }
+
+        private void SetOutlineVisible(bool visible)
+        {
+            if (_outlineRenderers == null) return;
+            foreach (var outline in _outlineRenderers)
+                if (outline != null) outline.gameObject.SetActive(visible);
         }
 
         public void UpdateVisuals(BuildingSnapshot snapshot, bool isTarget)
         {
             _snapshot = snapshot;
+            _isTarget = isTarget;
 
-            EnsureHighlightVisuals(snapshot);
+            EnsureHighlightVisuals();
 
-            if (_selectionHighlight != null)
-            {
-                _selectionHighlight.gameObject.SetActive(isTarget);
-                if (isTarget)
-                {
-                    _selectionHighlight.transform.localScale = new Vector3(snapshot.Width + 0.16f, snapshot.Height + 0.16f, 1f);
-                    _selectionHighlight.color = new Color(0.86f, 1f, 0.53f, 0.95f); // 0xdcff87
-                }
-            }
-
-            if (_spriteRenderer != null)
-            {
-                _spriteRenderer.color = isTarget ? new Color(1f, 1f, 0.75f, 1f) : Color.white;
-            }
+            ApplyActiveHighlight();
 
             if (_progressBar != null)
             {
@@ -133,25 +237,19 @@ namespace TrollStrategy.Presentation.Buildings
 
             if (_label != null)
             {
+                _label.sortingOrder = 25;
+                _label.transform.localPosition = new Vector3(0f, snapshot.Height * 0.5f + 0.45f, 0f);
+                _label.fontSize = 2.4f;
+                _label.color = new Color(0.965f, 0.93f, 0.79f);
+                _label.alignment = TextAlignmentOptions.Center;
                 if (snapshot.Kind == BuildingKind.Mine)
-                    _label.text = $"{snapshot.Name}\nРуда: {snapshot.Ore}/{snapshot.MaxOre}\nРаб: {snapshot.WorkerCount}/{snapshot.MaxWorkers}";
+                    _label.text = $"<b>{snapshot.Name}</b>\n<size=80%>Руда: {snapshot.Ore}/{snapshot.MaxOre} | Раб: {snapshot.WorkerCount}/{snapshot.MaxWorkers}</size>";
                 else if (snapshot.Kind == BuildingKind.Warehouse)
-                    _label.text = $"{snapshot.Name}\nРуда: {snapshot.Ore}/{snapshot.MaxOre}";
+                    _label.text = $"<b>{snapshot.Name}</b>\n<size=80%>Руда: {snapshot.Ore}/{snapshot.MaxOre}</size>";
                 else
-                    _label.text = $"{snapshot.Name}";
+                    _label.text = $"<b>{snapshot.Name}</b>";
             }
         }
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (_snapshot != null)
-                _onClick?.Invoke(_snapshot.Id);
-        }
-
-        private void OnMouseDown()
-        {
-            if (_snapshot != null)
-                _onClick?.Invoke(_snapshot.Id);
-        }
     }
 }

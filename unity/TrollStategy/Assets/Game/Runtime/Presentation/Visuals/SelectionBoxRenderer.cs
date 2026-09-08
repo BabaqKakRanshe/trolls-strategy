@@ -56,7 +56,7 @@ namespace TrollStrategy.Presentation.Visuals
 
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
-                if (UIInputUtils.IsPointerOverInteractiveUI())
+                if (UIInputUtils.IsPointerOverUI())
                     return;
 
                 _startWorldPos = mouseWorld;
@@ -104,7 +104,7 @@ namespace TrollStrategy.Presentation.Visuals
                 }
                 else
                 {
-                    bool shift = Keyboard.current != null && (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed);
+                    bool shift = Keyboard.current != null && (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed || Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed);
                     var hit = Physics2D.OverlapPoint(new Vector2(mouseWorld.x, mouseWorld.y));
                     if (hit == null)
                         hit = Physics2D.OverlapCircle(new Vector2(mouseWorld.x, mouseWorld.y), 0.45f);
