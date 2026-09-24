@@ -33,8 +33,10 @@ namespace TrollStrategy.Bootstrap
         [Header("UI")]
         [SerializeField] private HudPresenter _hudPresenter;
         [SerializeField] private ResourceBarView _resourceBar;
+        [SerializeField] private UnitRosterView _unitRosterView;
         [SerializeField] private ShopDockView _shopDockView;
         [SerializeField] private CommandDockView _commandDockView;
+        private CommandFanView _commandFanView;
         [SerializeField] private InspectCardView _inspectCardView;
         [SerializeField] private StatusMessageView _statusMessageView;
 
@@ -66,6 +68,7 @@ namespace TrollStrategy.Bootstrap
             if (_inputHandler == null) _inputHandler = FindAnyObjectByType<MapInputHandler>();
             if (_hudPresenter == null) _hudPresenter = FindAnyObjectByType<HudPresenter>();
             if (_resourceBar == null) _resourceBar = FindAnyObjectByType<ResourceBarView>();
+            if (_unitRosterView == null) _unitRosterView = FindAnyObjectByType<UnitRosterView>();
             if (_shopDockView == null) _shopDockView = FindAnyObjectByType<ShopDockView>();
             if (_commandDockView == null) _commandDockView = FindAnyObjectByType<CommandDockView>();
             if (_inspectCardView == null) _inspectCardView = FindAnyObjectByType<InspectCardView>();
@@ -78,28 +81,34 @@ namespace TrollStrategy.Bootstrap
                 _buildingManager.Init(_session, _interaction, _worldView, _catalog, _buildingPrefab);
 
             if (_unitManager != null)
-                _unitManager.Init(_session, _interaction, _catalog, _unitPrefab);
+                _unitManager.Init(_session, _interaction, _catalog, _unitPrefab, _worldView);
 
             if (_placementPreview != null)
                 _placementPreview.Init(_session, _interaction, _worldView, _catalog, _camera);
 
             if (_selectionBox != null)
-                _selectionBox.Init(_interaction, _unitManager, _camera);
+                _selectionBox.Init(_interaction, _unitManager, _camera, _worldView, _buildingManager);
 
             if (_routeVisualizer != null)
                 _routeVisualizer.Init(_session, _worldView);
 
             if (_inputHandler != null)
-                _inputHandler.Init(_interaction);
+                _inputHandler.Init(_interaction, _selectionBox);
+
+            if (_inputHandler != null && _hudPresenter != null)
+            {
+                var canvas = _hudPresenter.GetComponentInParent<Canvas>();
+                if (canvas != null)
+                {
+                    var fanObject = new GameObject("CommandFanView", typeof(RectTransform), typeof(CommandFanView));
+                    fanObject.transform.SetParent(canvas.transform, false);
+                    _commandFanView = fanObject.GetComponent<CommandFanView>();
+                    _commandFanView.Init(_interaction, _inputHandler, canvas);
+                }
+            }
 
             if (_hudPresenter != null)
-                _hudPresenter.Init(_session, _interaction, _resourceBar, _shopDockView, _commandDockView, _inspectCardView, _statusMessageView);
-
-            var first3 = GameObject.Find("First3Btn")?.GetComponent<UnityEngine.UI.Button>();
-            if (first3 != null) first3.onClick.AddListener(() => _interaction?.SelectFirstIdle(3));
-
-            var nextBtn = GameObject.Find("NextBtn")?.GetComponent<UnityEngine.UI.Button>();
-            if (nextBtn != null) nextBtn.onClick.AddListener(() => _interaction?.SelectNextIdle());
+                _hudPresenter.Init(_session, _interaction, _resourceBar, _unitRosterView, _shopDockView, _commandDockView, _inspectCardView, _statusMessageView);
 
             var gridBtn = GameObject.Find("GridToggleBtn")?.GetComponent<UnityEngine.UI.Button>();
             if (gridBtn != null) gridBtn.onClick.AddListener(() => _routeVisualizer?.ToggleGuides());
@@ -124,6 +133,7 @@ namespace TrollStrategy.Bootstrap
             UnitView unitPrefab,
             HudPresenter hudPresenter,
             ResourceBarView resourceBar,
+            UnitRosterView unitRosterView,
             ShopDockView shopDockView,
             CommandDockView commandDockView,
             InspectCardView inspectCardView,
@@ -142,6 +152,7 @@ namespace TrollStrategy.Bootstrap
             _unitPrefab = unitPrefab;
             _hudPresenter = hudPresenter;
             _resourceBar = resourceBar;
+            _unitRosterView = unitRosterView;
             _shopDockView = shopDockView;
             _commandDockView = commandDockView;
             _inspectCardView = inspectCardView;

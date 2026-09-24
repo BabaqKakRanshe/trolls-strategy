@@ -1,13 +1,63 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
+using UnityEditor.U2D.Sprites;
 using UnityEngine;
 
 namespace TrollStrategy.Editor.Setup
 {
     public static class AssetSlicer
     {
+        [MenuItem("TrollStrategy/Repair Environment Sprites")]
+        public static void RepairEnvironmentSprites()
+        {
+            SliceProps();
+            SliceTileset();
+            AssetDatabase.SaveAssets();
+        }
+
+        private static void SaveSlices(TextureImporter importer, List<SpriteRect> slices)
+        {
+            var factories = new SpriteDataProviderFactories();
+            factories.Init();
+            var provider = factories.GetSpriteEditorDataProviderFromObject(importer);
+            if (provider == null)
+                throw new InvalidOperationException($"No sprite data provider for {importer.assetPath}");
+            provider.InitSpriteEditorDataProvider();
+            var existing = provider.GetSpriteRects().ToDictionary(sprite => sprite.name);
+            foreach (var slice in slices)
+                slice.spriteID = existing.TryGetValue(slice.name, out var previous)
+                    ? previous.spriteID : GUID.Generate();
+
+            provider.SetSpriteRects(slices.ToArray());
+            provider.GetDataProvider<ISpriteNameFileIdDataProvider>().SetNameFileIdPairs(
+                slices.Select(sprite => new SpriteNameFileIdPair(sprite.name, sprite.spriteID)));
+            provider.Apply();
+            DisableSliceOnImport(importer);
+            importer.SaveAndReimport();
+        }
+
+        private static void DisableSliceOnImport(TextureImporter importer)
+        {
+            // Unity 6 keeps this setting behind an internal interface. Use its serialized
+            // importer property; keep the supported data provider for all sprite identities.
+            var serialized = new SerializedObject(importer);
+            var entries = serialized.FindProperty("m_SpriteSheet.m_SpriteCustomMetadata.m_Entries");
+            if (entries == null)
+                throw new InvalidOperationException("Unsupported Sprite Editor metadata layout.");
+            const string key = "SpriteEditor.SliceOnImport";
+            int index = 0;
+            while (index < entries.arraySize &&
+                   entries.GetArrayElementAtIndex(index).FindPropertyRelative("m_Key").stringValue != key)
+                index++;
+            if (index == entries.arraySize) entries.InsertArrayElementAtIndex(index);
+            var entry = entries.GetArrayElementAtIndex(index);
+            entry.FindPropertyRelative("m_Key").stringValue = key;
+            entry.FindPropertyRelative("m_Value").stringValue = "False";
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
         [MenuItem("TrollStrategy/Slice All Assets")]
         public static void SliceAll()
         {
@@ -38,22 +88,20 @@ namespace TrollStrategy.Editor.Setup
             importer.filterMode = FilterMode.Point;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
 
-            var metas = new List<SpriteMetaData>();
+            var metas = new List<SpriteRect>();
             for (int i = 0; i < count; i++)
             {
-                var meta = new SpriteMetaData
+                var meta = new SpriteRect
                 {
                     name = $"{prefix}_{i}",
                     rect = new Rect(i * frameW, texH - frameH, frameW, frameH),
                     pivot = new Vector2(0.5f, 0.5f),
-                    alignment = (int)SpriteAlignment.Center
+                    alignment = SpriteAlignment.Center
                 };
                 metas.Add(meta);
             }
 
-            importer.spritesheet = metas.ToArray();
-            EditorUtility.SetDirty(importer);
-            importer.SaveAndReimport();
+            SaveSlices(importer, metas);
         }
 
         private static void SliceProps()
@@ -82,22 +130,20 @@ namespace TrollStrategy.Editor.Setup
                 ("prop.stump", 208, 220, 70, 68)
             };
 
-            var metas = new List<SpriteMetaData>();
+            var metas = new List<SpriteRect>();
             foreach (var f in frames)
             {
-                var meta = new SpriteMetaData
+                var meta = new SpriteRect
                 {
                     name = f.name,
                     rect = new Rect(f.x, H - f.y - f.h, f.w, f.h),
                     pivot = new Vector2(0.5f, 0f), // Anchor at tree trunk base
-                    alignment = (int)SpriteAlignment.BottomCenter
+                    alignment = SpriteAlignment.BottomCenter
                 };
                 metas.Add(meta);
             }
 
-            importer.spritesheet = metas.ToArray();
-            EditorUtility.SetDirty(importer);
-            importer.SaveAndReimport();
+            SaveSlices(importer, metas);
         }
 
         private static void SliceTileset()
@@ -122,26 +168,24 @@ namespace TrollStrategy.Editor.Setup
                 46, 47, 110, 111, 174, 175, 238, 239, 302, 303 // detail frames: f, g, h, i ...
             };
 
-            var metas = new List<SpriteMetaData>();
+            var metas = new List<SpriteRect>();
             foreach (int f in neededFrames)
             {
                 int col = f % cols;
                 int row = f / cols; // from top
                 int unityY = texH - (row + 1) * tileSize;
 
-                var meta = new SpriteMetaData
+                var meta = new SpriteRect
                 {
                     name = $"tile_{f}",
                     rect = new Rect(col * tileSize, unityY, tileSize, tileSize),
                     pivot = new Vector2(0.5f, 0.5f),
-                    alignment = (int)SpriteAlignment.Center
+                    alignment = SpriteAlignment.Center
                 };
                 metas.Add(meta);
             }
 
-            importer.spritesheet = metas.ToArray();
-            EditorUtility.SetDirty(importer);
-            importer.SaveAndReimport();
+            SaveSlices(importer, metas);
         }
     }
 }

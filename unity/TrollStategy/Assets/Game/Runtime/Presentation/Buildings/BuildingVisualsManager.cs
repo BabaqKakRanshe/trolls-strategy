@@ -16,6 +16,7 @@ namespace TrollStrategy.Presentation.Buildings
         private GameSession _session;
         private InteractionController _interaction;
         private readonly Dictionary<string, BuildingView> _views = new();
+        public IReadOnlyDictionary<string, BuildingView> Views => _views;
 
         public void SetContainer(Transform container) => _container = container;
 
@@ -81,13 +82,15 @@ namespace TrollStrategy.Presentation.Buildings
                     }
                     var def = _catalog.GetBuilding(bSnap.Kind);
                     view.transform.position = targetPos;
-                    view.Setup(bSnap, def.Sprite, OnBuildingClicked);
+                    view.transform.rotation = _worldView.GroundRotation;
+                    view.Setup(bSnap, def.Sprite, OnBuildingClicked, _worldView);
                     _views.Add(bSnap.Id, view);
                 }
                 else
                 {
                     bool isHighlighted = targets.Contains(bSnap.Id) || (_interaction != null && bSnap.Id == _interaction.InspectedBuildingId);
                     view.transform.position = targetPos;
+                    view.transform.rotation = _worldView.GroundRotation;
                     view.UpdateVisuals(bSnap, isHighlighted);
                 }
             }

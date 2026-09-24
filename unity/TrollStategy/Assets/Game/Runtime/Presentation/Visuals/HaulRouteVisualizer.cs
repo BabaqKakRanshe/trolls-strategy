@@ -21,11 +21,6 @@ namespace TrollStrategy.Presentation.Visuals
 
         public bool GuidesVisible => _guidesVisible;
 
-        private void Awake()
-        {
-            EnsureGridLines();
-        }
-
         public void Init(GameSession session, TilemapWorldView worldView)
         {
             _session = session;
@@ -85,11 +80,12 @@ namespace TrollStrategy.Presentation.Visuals
             if (_gridContainer != null) return;
 
             _gridContainer = new GameObject("GridLines");
-            _gridContainer.transform.SetParent(transform, false);
+            _gridContainer.transform.SetParent(_worldView.Grid.transform, false);
 
-            int width = 14;
-            int height = 14;
-            float thickness = 0.045f;
+            int width = _worldView.GridWidth;
+            int height = _worldView.GridHeight;
+            float cellSize = _worldView.CellSize;
+            float thickness = 0.012f;
             float halfT = thickness * 0.5f;
 
             var mesh = new Mesh();
@@ -97,17 +93,17 @@ namespace TrollStrategy.Presentation.Visuals
             var triangles = new List<int>();
             var colors = new List<Color>();
 
-            // Crisp lime-tinted grid matching Phaser prototype (0xe2f4b0)
-            Color gridColor = new Color(0.886f, 0.957f, 0.690f, 0.42f);
+            // Keep placement cells legible without competing with buildings at rest.
+            Color gridColor = ColonyPalette.WithAlpha(ColonyPalette.GrassLight, 0.10f);
 
             // Vertical lines (x = 0 to 14)
             for (int x = 0; x <= width; x++)
             {
                 int baseIdx = vertices.Count;
-                vertices.Add(new Vector3(x - halfT, 0f, 0f));
-                vertices.Add(new Vector3(x + halfT, 0f, 0f));
-                vertices.Add(new Vector3(x + halfT, height, 0f));
-                vertices.Add(new Vector3(x - halfT, height, 0f));
+                vertices.Add(new Vector3(x * cellSize - halfT, 0f, -0.19f));
+                vertices.Add(new Vector3(x * cellSize + halfT, 0f, -0.19f));
+                vertices.Add(new Vector3(x * cellSize + halfT, height * cellSize, -0.19f));
+                vertices.Add(new Vector3(x * cellSize - halfT, height * cellSize, -0.19f));
 
                 for (int i = 0; i < 4; i++) colors.Add(gridColor);
 
@@ -123,10 +119,10 @@ namespace TrollStrategy.Presentation.Visuals
             for (int y = 0; y <= height; y++)
             {
                 int baseIdx = vertices.Count;
-                vertices.Add(new Vector3(0f, y - halfT, 0f));
-                vertices.Add(new Vector3(width, y - halfT, 0f));
-                vertices.Add(new Vector3(width, y + halfT, 0f));
-                vertices.Add(new Vector3(0f, y + halfT, 0f));
+                vertices.Add(new Vector3(0f, y * cellSize - halfT, -0.19f));
+                vertices.Add(new Vector3(width * cellSize, y * cellSize - halfT, -0.19f));
+                vertices.Add(new Vector3(width * cellSize, y * cellSize + halfT, -0.19f));
+                vertices.Add(new Vector3(0f, y * cellSize + halfT, -0.19f));
 
                 for (int i = 0; i < 4; i++) colors.Add(gridColor);
 
@@ -183,7 +179,7 @@ namespace TrollStrategy.Presentation.Visuals
                 mat.mainTexture = GetDashedTexture();
                 lr.material = mat;
 
-                Color routeColor = new Color(1f, 0.84f, 0.44f, 0.85f); // #ffd66f
+                Color routeColor = ColonyPalette.WithAlpha(ColonyPalette.Gold, 0.85f);
                 lr.startColor = routeColor;
                 lr.endColor = routeColor;
                 lr.sortingOrder = 6;
@@ -221,19 +217,19 @@ namespace TrollStrategy.Presentation.Visuals
                     var p2 = _worldView.BuildingCenterWorld(dstB.Cell, dstB.Width, dstB.Height);
 
                     _lines[index].gameObject.SetActive(true);
-                    _lines[index].SetPosition(0, p1);
-                    _lines[index].SetPosition(1, p2);
+                    _lines[index].SetPosition(0, p1 + _worldView.GroundOffset(0.22f));
+                    _lines[index].SetPosition(1, p2 + _worldView.GroundOffset(0.22f));
 
                     Vector3 dir = (p2 - p1).normalized;
-                    Vector3 normal = new Vector3(-dir.y, dir.x, 0f);
+                    Vector3 normal = Vector3.Cross(dir, _worldView.GroundRotation * Vector3.back);
                     Vector3 arrowTip = p2 - dir * 0.4f;
                     Vector3 left = arrowTip - dir * 0.25f + normal * 0.15f;
                     Vector3 right = arrowTip - dir * 0.25f - normal * 0.15f;
 
                     _arrows[index].gameObject.SetActive(true);
-                    _arrows[index].SetPosition(0, left);
-                    _arrows[index].SetPosition(1, arrowTip);
-                    _arrows[index].SetPosition(2, right);
+                    _arrows[index].SetPosition(0, left + _worldView.GroundOffset(0.22f));
+                    _arrows[index].SetPosition(1, arrowTip + _worldView.GroundOffset(0.22f));
+                    _arrows[index].SetPosition(2, right + _worldView.GroundOffset(0.22f));
 
                     index++;
                 }

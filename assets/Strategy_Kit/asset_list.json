@@ -1,0 +1,562 @@
+[
+ {
+  "asset": "Bld_Mine",
+  "category": "Buildings",
+  "tris": 688,
+  "size_unity": [
+   3.764,
+   2.002,
+   4.147
+  ]
+ },
+ {
+  "asset": "Bld_House",
+  "category": "Buildings",
+  "tris": 6432,
+  "size_unity": [
+   3.864,
+   3.597,
+   3.485
+  ]
+ },
+ {
+  "asset": "Bld_Market",
+  "category": "Buildings",
+  "tris": 1708,
+  "size_unity": [
+   3.701,
+   2.754,
+   2.371
+  ]
+ },
+ {
+  "asset": "Bld_Smelter",
+  "category": "Buildings",
+  "tris": 856,
+  "size_unity": [
+   1.979,
+   2.785,
+   2.063
+  ]
+ },
+ {
+  "asset": "Tree_Pine_A",
+  "category": "Nature",
+  "tris": 68,
+  "size_unity": [
+   1.753,
+   3.26,
+   1.796
+  ]
+ },
+ {
+  "asset": "Tree_Pine_B",
+  "category": "Nature",
+  "tris": 80,
+  "size_unity": [
+   2.322,
+   4.194,
+   2.135
+  ]
+ },
+ {
+  "asset": "Tree_Pine_C",
+  "category": "Nature",
+  "tris": 56,
+  "size_unity": [
+   1.527,
+   2.233,
+   1.388
+  ]
+ },
+ {
+  "asset": "Tree_Round_A",
+  "category": "Nature",
+  "tris": 516,
+  "size_unity": [
+   1.827,
+   2.984,
+   2.158
+  ]
+ },
+ {
+  "asset": "Tree_Round_B",
+  "category": "Nature",
+  "tris": 516,
+  "size_unity": [
+   2.392,
+   3.428,
+   2.243
+  ]
+ },
+ {
+  "asset": "Bush_A",
+  "category": "Nature",
+  "tris": 240,
+  "size_unity": [
+   1.012,
+   0.594,
+   0.701
+  ]
+ },
+ {
+  "asset": "Bush_B",
+  "category": "Nature",
+  "tris": 240,
+  "size_unity": [
+   1.441,
+   0.759,
+   0.866
+  ]
+ },
+ {
+  "asset": "Bush_Berry",
+  "category": "Nature",
+  "tris": 420,
+  "size_unity": [
+   1.156,
+   0.664,
+   0.787
+  ]
+ },
+ {
+  "asset": "Rock_Small",
+  "category": "Nature",
+  "tris": 23,
+  "size_unity": [
+   0.32,
+   0.144,
+   0.315
+  ]
+ },
+ {
+  "asset": "Rock_Medium",
+  "category": "Nature",
+  "tris": 67,
+  "size_unity": [
+   0.773,
+   0.299,
+   0.728
+  ]
+ },
+ {
+  "asset": "Rock_Large",
+  "category": "Nature",
+  "tris": 165,
+  "size_unity": [
+   1.639,
+   0.85,
+   1.629
+  ]
+ },
+ {
+  "asset": "Grass_Tuft_A",
+  "category": "Nature",
+  "tris": 18,
+  "size_unity": [
+   0.172,
+   0.225,
+   0.129
+  ]
+ },
+ {
+  "asset": "Grass_Tuft_B",
+  "category": "Nature",
+  "tris": 27,
+  "size_unity": [
+   0.153,
+   0.307,
+   0.203
+  ]
+ },
+ {
+  "asset": "Flowers_A",
+  "category": "Nature",
+  "tris": 124,
+  "size_unity": [
+   0.248,
+   0.258,
+   0.184
+  ]
+ },
+ {
+  "asset": "Tree_Stump",
+  "category": "Nature",
+  "tris": 108,
+  "size_unity": [
+   0.823,
+   0.363,
+   0.787
+  ]
+ },
+ {
+  "asset": "Prop_Crate",
+  "category": "Props",
+  "tris": 564,
+  "size_unity": [
+   0.5,
+   0.5,
+   0.506
+  ]
+ },
+ {
+  "asset": "Prop_Barrel",
+  "category": "Props",
+  "tris": 220,
+  "size_unity": [
+   0.54,
+   0.715,
+   0.54
+  ]
+ },
+ {
+  "asset": "Prop_Sack",
+  "category": "Props",
+  "tris": 169,
+  "size_unity": [
+   0.449,
+   0.53,
+   0.416
+  ]
+ },
+ {
+  "asset": "Prop_Minecart",
+  "category": "Props",
+  "tris": 284,
+  "size_unity": [
+   0.72,
+   0.6,
+   0.96
+  ]
+ },
+ {
+  "asset": "Prop_Minecart_Ore",
+  "category": "Props",
+  "tris": 1284,
+  "size_unity": [
+   0.72,
+   0.727,
+   0.96
+  ]
+ },
+ {
+  "asset": "Prop_Rails",
+  "category": "Props",
+  "tris": 156,
+  "size_unity": [
+   0.72,
+   0.11,
+   1.0
+  ]
+ },
+ {
+  "asset": "Prop_Fence",
+  "category": "Props",
+  "tris": 188,
+  "size_unity": [
+   1.0,
+   0.82,
+   0.133
+  ]
+ },
+ {
+  "asset": "Prop_Pickaxe",
+  "category": "Props",
+  "tris": 68,
+  "size_unity": [
+   0.8,
+   0.089,
+   0.578
+  ]
+ },
+ {
+  "asset": "Prop_Anvil",
+  "category": "Props",
+  "tris": 202,
+  "size_unity": [
+   0.658,
+   0.62,
+   0.477
+  ]
+ },
+ {
+  "asset": "Prop_LanternPost",
+  "category": "Props",
+  "tris": 234,
+  "size_unity": [
+   0.62,
+   1.76,
+   0.3
+  ]
+ },
+ {
+  "asset": "Res_Ore_Gold",
+  "category": "Resources",
+  "tris": 80,
+  "size_unity": [
+   0.259,
+   0.224,
+   0.306
+  ]
+ },
+ {
+  "asset": "Res_Ore_Iron",
+  "category": "Resources",
+  "tris": 80,
+  "size_unity": [
+   0.281,
+   0.253,
+   0.238
+  ]
+ },
+ {
+  "asset": "Res_Ore_Copper",
+  "category": "Resources",
+  "tris": 100,
+  "size_unity": [
+   0.283,
+   0.242,
+   0.282
+  ]
+ },
+ {
+  "asset": "Res_OrePile_Gold",
+  "category": "Resources",
+  "tris": 1428,
+  "size_unity": [
+   1.05,
+   0.391,
+   0.916
+  ]
+ },
+ {
+  "asset": "Res_OrePile_Iron",
+  "category": "Resources",
+  "tris": 1506,
+  "size_unity": [
+   1.013,
+   0.379,
+   0.949
+  ]
+ },
+ {
+  "asset": "Res_OrePile_Copper",
+  "category": "Resources",
+  "tris": 1326,
+  "size_unity": [
+   1.083,
+   0.388,
+   0.893
+  ]
+ },
+ {
+  "asset": "Res_Ingot_Gold",
+  "category": "Resources",
+  "tris": 44,
+  "size_unity": [
+   0.294,
+   0.075,
+   0.126
+  ]
+ },
+ {
+  "asset": "Res_Ingot_Iron",
+  "category": "Resources",
+  "tris": 44,
+  "size_unity": [
+   0.294,
+   0.075,
+   0.126
+  ]
+ },
+ {
+  "asset": "Res_Ingot_Copper",
+  "category": "Resources",
+  "tris": 44,
+  "size_unity": [
+   0.294,
+   0.075,
+   0.126
+  ]
+ },
+ {
+  "asset": "Res_IngotStack_Gold",
+  "category": "Resources",
+  "tris": 440,
+  "size_unity": [
+   0.546,
+   0.297,
+   0.294
+  ]
+ },
+ {
+  "asset": "Res_IngotStack_Iron",
+  "category": "Resources",
+  "tris": 440,
+  "size_unity": [
+   0.546,
+   0.297,
+   0.294
+  ]
+ },
+ {
+  "asset": "Res_IngotStack_Copper",
+  "category": "Resources",
+  "tris": 440,
+  "size_unity": [
+   0.546,
+   0.297,
+   0.294
+  ]
+ },
+ {
+  "asset": "Res_Coin",
+  "category": "Resources",
+  "tris": 92,
+  "size_unity": [
+   0.12,
+   0.014,
+   0.12
+  ]
+ },
+ {
+  "asset": "Res_CoinStack",
+  "category": "Resources",
+  "tris": 640,
+  "size_unity": [
+   0.351,
+   0.134,
+   0.249
+  ]
+ },
+ {
+  "asset": "Res_CoinPile",
+  "category": "Resources",
+  "tris": 1346,
+  "size_unity": [
+   0.895,
+   0.217,
+   0.991
+  ]
+ },
+ {
+  "asset": "Res_Crate_Ore",
+  "category": "Resources",
+  "tris": 1312,
+  "size_unity": [
+   0.5,
+   0.548,
+   0.506
+  ]
+ },
+ {
+  "asset": "Res_Stone",
+  "category": "Resources",
+  "tris": 44,
+  "size_unity": [
+   0.34,
+   0.2,
+   0.22
+  ]
+ },
+ {
+  "asset": "Res_StonePile",
+  "category": "Resources",
+  "tris": 240,
+  "size_unity": [
+   0.864,
+   0.416,
+   0.638
+  ]
+ },
+ {
+  "asset": "Res_Log",
+  "category": "Resources",
+  "tris": 92,
+  "size_unity": [
+   0.812,
+   0.19,
+   0.2
+  ]
+ },
+ {
+  "asset": "Res_LogPile",
+  "category": "Resources",
+  "tris": 552,
+  "size_unity": [
+   0.986,
+   0.606,
+   0.689
+  ]
+ },
+ {
+  "asset": "Res_Planks",
+  "category": "Resources",
+  "tris": 288,
+  "size_unity": [
+   1.056,
+   0.184,
+   0.5
+  ]
+ },
+ {
+  "asset": "Env_Island",
+  "category": "Environment",
+  "tris": 3938,
+  "size_unity": [
+   20.175,
+   1.211,
+   15.186
+  ]
+ },
+ {
+  "asset": "Env_Paths",
+  "category": "Environment",
+  "tris": 1860,
+  "size_unity": [
+   13.658,
+   0.095,
+   6.911
+  ]
+ },
+ {
+  "asset": "Set_Mine",
+  "category": "Sets",
+  "tris": 4208,
+  "size_unity": [
+   4.578,
+   2.002,
+   4.147
+  ]
+ },
+ {
+  "asset": "Set_House",
+  "category": "Sets",
+  "tris": 8457,
+  "size_unity": [
+   4.628,
+   3.597,
+   3.485
+  ]
+ },
+ {
+  "asset": "Set_Smelter",
+  "category": "Sets",
+  "tris": 2534,
+  "size_unity": [
+   3.339,
+   2.785,
+   2.792
+  ]
+ },
+ {
+  "asset": "Set_Market",
+  "category": "Sets",
+  "tris": 5093,
+  "size_unity": [
+   4.936,
+   2.754,
+   3.312
+  ]
+ }
+]

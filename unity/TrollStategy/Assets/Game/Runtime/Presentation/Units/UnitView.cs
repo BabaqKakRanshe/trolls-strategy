@@ -4,6 +4,7 @@ using UnityEngine;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
+using TrollStrategy.Presentation.Map;
 
 namespace TrollStrategy.Presentation.Units
 {
@@ -17,20 +18,23 @@ namespace TrollStrategy.Presentation.Units
 
         private UnitSnapshot _snapshot;
         private UnitDefinition _definition;
+        private TilemapWorldView _worldView;
         private Vector3 _targetPosition;
         private bool _isWalking;
         private float _animTimer;
         private int _currentFrame;
+        private float _movementSpeed;
         private LineRenderer _selectionRing;
 
         public string UnitId => _snapshot?.Id;
         public UnitSnapshot Snapshot => _snapshot;
         public UnitDefinition Definition => _definition;
 
-        public void Setup(UnitSnapshot snapshot, UnitDefinition definition, Action<string, bool> onClick)
+        public void Setup(UnitSnapshot snapshot, UnitDefinition definition, Action<string, bool> onClick, TilemapWorldView worldView = null)
         {
             _snapshot = snapshot;
             _definition = definition;
+            _worldView = worldView;
             _ = onClick;
 
             if (_spriteRenderer == null) _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -42,10 +46,11 @@ namespace TrollStrategy.Presentation.Units
                     _spriteRenderer.sprite = definition.IdleSprite;
             }
             ApplySpriteScale();
+            FaceCamera();
 
             EnsureSelectionVisuals();
 
-            _targetPosition = new Vector3(snapshot.Position.X, snapshot.Position.Y, 0f);
+            _targetPosition = MapPosition(snapshot);
             transform.position = _targetPosition;
 
             UpdateVisuals(snapshot, false);
@@ -86,6 +91,17 @@ namespace TrollStrategy.Presentation.Units
 
             float scale = _definition != null ? _definition.SpriteScale : 1f;
             _spriteRenderer.transform.localScale = new Vector3(scale, scale, 1f);
+            _spriteRenderer.transform.localPosition = new Vector3(0f, 0f, -0.65f);
+        }
+
+        private void FaceCamera()
+        {
+            var camera = Camera.main;
+            if (camera == null) return;
+            if (_spriteRenderer != null) _spriteRenderer.transform.rotation = camera.transform.rotation;
+            if (_selectionCircle != null) _selectionCircle.transform.rotation = camera.transform.rotation;
+            if (_cargoIcon != null) _cargoIcon.transform.rotation = camera.transform.rotation;
+            if (_cargoLabel != null) _cargoLabel.transform.rotation = camera.transform.rotation;
         }
 
         private static Sprite _proceduralSelectionSprite;
@@ -102,8 +118,8 @@ namespace TrollStrategy.Presentation.Units
             float innerRadius = radius - 5f;
 
             Color transparent = new Color(0, 0, 0, 0);
-            Color ringColor = new Color(0.92f, 1f, 0.45f, 1f);
-            Color fillColor = new Color(0.92f, 1f, 0.45f, 0.28f);
+            Color ringColor = ColonyPalette.Gold;
+            Color fillColor = ColonyPalette.WithAlpha(ColonyPalette.Gold, 0.28f);
 
             for (int y = 0; y < size; y++)
             {
@@ -135,7 +151,7 @@ namespace TrollStrategy.Presentation.Units
             {
                 var circleGo = new GameObject("SelectionCircle");
                 circleGo.transform.SetParent(transform, false);
-                circleGo.transform.localPosition = new Vector3(0f, -0.16f, 0f);
+                circleGo.transform.localPosition = new Vector3(0f, -0.16f, -0.20f);
                 circleGo.transform.localScale = new Vector3(1.1f, 0.65f, 1f);
 
                 _selectionCircle = circleGo.AddComponent<SpriteRenderer>();
@@ -148,7 +164,7 @@ namespace TrollStrategy.Presentation.Units
             {
                 var ringGo = new GameObject("SelectionRing");
                 ringGo.transform.SetParent(transform, false);
-                ringGo.transform.localPosition = new Vector3(0f, -0.16f, 0f);
+                ringGo.transform.localPosition = new Vector3(0f, -0.16f, -0.21f);
 
                 _selectionRing = ringGo.AddComponent<LineRenderer>();
                 _selectionRing.useWorldSpace = false;
@@ -163,7 +179,7 @@ namespace TrollStrategy.Presentation.Units
                 if (shader == null) shader = Shader.Find("Hidden/Internal-Colored");
                 if (shader != null) _selectionRing.material = new Material(shader);
 
-                var goldColor = new Color(0.95f, 1f, 0.4f, 1f);
+                var goldColor = ColonyPalette.Gold;
                 _selectionRing.startColor = goldColor;
                 _selectionRing.endColor = goldColor;
 
@@ -190,10 +206,12 @@ namespace TrollStrategy.Presentation.Units
         public void UpdateVisuals(UnitSnapshot snapshot, bool isSelected)
         {
             _snapshot = snapshot;
-            _targetPosition = new Vector3(snapshot.Position.X, snapshot.Position.Y, 0f);
+            _targetPosition = MapPosition(snapshot);
+            if (snapshot.MovementSpeed > 0f) _movementSpeed = snapshot.MovementSpeed;
 
             EnsureSelectionVisuals();
             ApplySpriteScale();
+            FaceCamera();
 
             if (_selectionRing != null)
                 _selectionRing.enabled = isSelected;
@@ -202,7 +220,7 @@ namespace TrollStrategy.Presentation.Units
                 _selectionCircle.gameObject.SetActive(isSelected);
 
             if (_spriteRenderer != null)
-                _spriteRenderer.color = isSelected ? new Color(1f, 1f, 0.6f, 1f) : Color.white;
+                _spriteRenderer.color = isSelected ? ColonyPalette.Cream : Color.white;
 
             if (snapshot.Assignment != null && snapshot.Assignment.Kind == AssignmentKind.Haul && snapshot.Assignment.Carried > 0)
             {
@@ -223,6 +241,17 @@ namespace TrollStrategy.Presentation.Units
 
         private void Update()
         {
+            AdvanceVisual(Time.deltaTime);
+        }
+
+        private Vector3 MapPosition(UnitSnapshot snapshot)
+        {
+            var mapPosition = new Vector3(snapshot.Position.X, snapshot.Position.Y, 0f);
+            return _worldView != null ? _worldView.MapToWorld(mapPosition) : mapPosition;
+        }
+
+        public void AdvanceVisual(float deltaSeconds)
+        {
             float dist = Vector3.Distance(transform.position, _targetPosition);
             _isWalking = dist > 0.05f;
 
@@ -232,7 +261,10 @@ namespace TrollStrategy.Presentation.Units
                 if (Mathf.Abs(dx) > 0.01f && _spriteRenderer != null)
                     _spriteRenderer.flipX = dx < 0f;
 
-                transform.position = Vector3.MoveTowards(transform.position, _targetPosition, 5.5f * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(
+                    transform.position,
+                    _targetPosition,
+                    _movementSpeed * Mathf.Max(0f, deltaSeconds));
             }
             else
             {
@@ -244,7 +276,7 @@ namespace TrollStrategy.Presentation.Units
                 var frames = _isWalking ? _definition.WalkFrames : _definition.IdleFrames;
                 if (frames != null && frames.Length > 0)
                 {
-                    _animTimer += Time.deltaTime;
+                    _animTimer += Mathf.Max(0f, deltaSeconds);
                     if (_animTimer >= 0.2f)
                     {
                         _animTimer -= 0.2f;

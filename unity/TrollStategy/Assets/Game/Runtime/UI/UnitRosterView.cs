@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
+using TrollStrategy.Presentation;
 
 namespace TrollStrategy.UI
 {
@@ -29,13 +30,22 @@ namespace TrollStrategy.UI
             _selectedCountText = selCountText;
             _itemsContainer = container;
 
-            if (_selectThreeButton != null) _selectThreeButton.onClick.AddListener(() => _interaction?.SelectFirstIdle(3));
-            if (_selectNextButton != null) _selectNextButton.onClick.AddListener(() => _interaction?.SelectNextIdle());
+            BindInteraction(interaction);
         }
 
         public void BindInteraction(InteractionController interaction)
         {
             _interaction = interaction;
+            if (_selectThreeButton != null)
+            {
+                _selectThreeButton.onClick.RemoveAllListeners();
+                _selectThreeButton.onClick.AddListener(() => _interaction?.SelectFirstIdle(3));
+            }
+            if (_selectNextButton != null)
+            {
+                _selectNextButton.onClick.RemoveAllListeners();
+                _selectNextButton.onClick.AddListener(() => _interaction?.SelectNextIdle());
+            }
         }
 
         public void UpdateRoster(IReadOnlyList<UnitSnapshot> units, IReadOnlyCollection<string> selectedIds)
@@ -65,7 +75,10 @@ namespace TrollStrategy.UI
 
                 var img = itemGo.AddComponent<Image>();
                 bool isSel = selectedSet.Contains(u.Id);
-                img.color = isSel ? new Color(0.22f, 0.45f, 0.62f, 0.95f) : new Color(0.12f, 0.16f, 0.22f, 0.88f);
+                img.color = isSel ? ColonyPalette.Raised : ColonyPalette.Night;
+                var outline = itemGo.AddComponent<Outline>();
+                outline.effectColor = isSel ? ColonyPalette.Gold : ColonyPalette.Stone;
+                outline.effectDistance = new Vector2(1f, -1f);
 
                 var btn = itemGo.AddComponent<Button>();
                 string capturedId = u.Id;
@@ -84,7 +97,8 @@ namespace TrollStrategy.UI
                 tmp.alignment = TextAlignmentOptions.MidlineLeft;
                 tmp.margin = new Vector4(8f, 0f, 8f, 0f);
 
-                tmp.text = $"<b>{u.Name} {u.Number}</b>  <size=9><color=#88ccbb>{u.Status}</color></size>";
+                tmp.color = ColonyPalette.Text;
+                tmp.text = $"<b>{u.Name} {u.Number}</b>  <size=9><color=#A8B5B2>{u.Status}</color></size>";
 
                 _spawnedItems.Add(itemGo);
             }

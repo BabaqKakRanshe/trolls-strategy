@@ -142,7 +142,8 @@ namespace TrollStrategy.Application
                     def.MaxOre,
                     workers,
                     def.MaxWorkers,
-                    ColonySimulation.ProductionPerSecond(_state, b.Id, _catalog)));
+                    ColonySimulation.ProductionPerSecond(_state, b.Id, _catalog),
+                    b.ProductionProgress));
             }
 
             var unitSnapshots = new List<UnitSnapshot>(_state.Units.Count);
@@ -165,7 +166,8 @@ namespace TrollStrategy.Application
                     def.CargoCapacity,
                     u.Position,
                     u.Assignment,
-                    FormatAssignmentStatus(u.Assignment, buildingSnapshots)));
+                    FormatAssignmentStatus(u.Assignment, buildingSnapshots),
+                    ColonySimulation.UnitMovementSpeed(def, _catalog)));
             }
 
             return new GameSnapshot(

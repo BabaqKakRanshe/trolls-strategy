@@ -12,8 +12,8 @@ namespace TrollStrategy.Domain
             {
                 BuildMineCommand c => BuildMine(state, c.Cell, catalog),
                 BuyUnitsCommand c => BuyUnits(state, c.UnitKind, c.Amount, c.Cell, catalog),
-                AssignWorkCommand c => AssignWork(state, c.UnitIds, c.BuildingId, catalog),
-                AssignHaulCommand c => AssignHaul(state, c.UnitIds, c.SourceId, c.DestinationId, catalog),
+                AssignWorkCommand c => AssignWork(state, c.UnitIds, c.BuildingId, c.AccessPoint, catalog),
+                AssignHaulCommand c => AssignHaul(state, c.UnitIds, c.SourceId, c.DestinationId, c.SourceAccessPoint, c.DestinationAccessPoint, catalog),
                 ReleaseUnitsCommand c => ReleaseUnits(state, c.UnitIds, catalog),
                 SellUnitsCommand c => SellUnits(state, c.UnitIds, catalog),
                 SendToBarracksCommand c => SendToBarracks(state, c.UnitIds, catalog),
@@ -168,7 +168,12 @@ namespace TrollStrategy.Domain
             return CommandResult.Success();
         }
 
-        private static CommandResult AssignWork(GameState state, IReadOnlyList<string> unitIds, string buildingId, GameContentCatalog catalog)
+        private static CommandResult AssignWork(
+            GameState state,
+            IReadOnlyList<string> unitIds,
+            string buildingId,
+            WorldPosition? accessPoint,
+            GameContentCatalog catalog)
         {
             var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
             if (!resolveResult.Ok) return resolveResult;
@@ -176,6 +181,9 @@ namespace TrollStrategy.Domain
             var building = state.Buildings.Find(b => b.Id == buildingId);
             if (building == null || building.Kind != BuildingKind.Mine)
                 return CommandResult.Fail("Работать можно только в шахте");
+
+            if (accessPoint.HasValue && !IsPointWithinBuilding(building, accessPoint.Value, catalog))
+                return CommandResult.Fail("Точка входа находится вне здания");
 
             var mineDef = catalog.GetBuilding(BuildingKind.Mine);
 
@@ -197,14 +205,21 @@ namespace TrollStrategy.Domain
                     continue;
 
                 ReturnCarriedOre(state, u);
-                u.Assignment = Assignment.ToWork(buildingId);
+                u.Assignment = Assignment.ToWork(buildingId, accessPoint);
                 assigned++;
             }
 
             return CommandResult.Success();
         }
 
-        private static CommandResult AssignHaul(GameState state, IReadOnlyList<string> unitIds, string sourceId, string destinationId, GameContentCatalog catalog)
+        private static CommandResult AssignHaul(
+            GameState state,
+            IReadOnlyList<string> unitIds,
+            string sourceId,
+            string destinationId,
+            WorldPosition? sourceAccessPoint,
+            WorldPosition? destinationAccessPoint,
+            GameContentCatalog catalog)
         {
             var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
             if (!resolveResult.Ok) return resolveResult;
@@ -216,12 +231,18 @@ namespace TrollStrategy.Domain
             if (!IsValidHaulRoute(source.Kind, destination.Kind))
                 return CommandResult.Fail("Этот маршрут не перевозит руду");
 
+            if (sourceAccessPoint.HasValue && !IsPointWithinBuilding(source, sourceAccessPoint.Value, catalog))
+                return CommandResult.Fail("Точка источника находится вне здания");
+
+            if (destinationAccessPoint.HasValue && !IsPointWithinBuilding(destination, destinationAccessPoint.Value, catalog))
+                return CommandResult.Fail("Точка назначения находится вне здания");
+
             for (int i = 0; i < selectedUnits.Count; i++)
             {
                 var u = selectedUnits[i];
 
                 ReturnCarriedOre(state, u);
-                u.Assignment = Assignment.Haul(sourceId, destinationId);
+                u.Assignment = Assignment.Haul(sourceId, destinationId, sourceAccessPoint, destinationAccessPoint);
             }
 
             return CommandResult.Success();
@@ -331,13 +352,16 @@ namespace TrollStrategy.Domain
             var building = state.Buildings.Find(b => b.Id == unit.Assignment.BuildingId);
             if (building == null) return;
 
-            var targetPos = BuildingEntrancePosition(building, catalog);
+            var assignment = unit.Assignment;
+            var targetPos = assignment.HasAccessPoint
+                ? assignment.AccessPoint
+                : BuildingEntrancePosition(building, catalog);
             var unitDef = catalog.GetUnit(unit.Kind);
-            float speedInWorldUnits = (120f + unitDef.Speed * 12f) / 48f * catalog.Economy.CellSize;
+            float speedInWorldUnits = UnitMovementSpeed(unitDef, catalog);
 
             if (MoveToward(unit, targetPos, speedInWorldUnits, deltaSeconds))
             {
-                unit.Assignment = Assignment.Work(building.Id);
+                unit.Assignment = Assignment.Work(building.Id, assignment.HasAccessPoint ? assignment.AccessPoint : (WorldPosition?)null);
             }
         }
 
@@ -348,14 +372,16 @@ namespace TrollStrategy.Domain
             if (source == null || destination == null) return;
 
             var unitDef = catalog.GetUnit(unit.Kind);
-            float speedInWorldUnits = (120f + unitDef.Speed * 12f) / 48f * catalog.Economy.CellSize;
+            float speedInWorldUnits = UnitMovementSpeed(unitDef, catalog);
             var assignment = unit.Assignment;
 
             switch (assignment.Phase)
             {
                 case HaulPhase.ToSource:
                 {
-                    var accessPos = BuildingAccessPosition(source, unit.Id, catalog);
+                    var accessPos = assignment.HasSourceAccessPoint
+                        ? assignment.SourceAccessPoint
+                        : BuildingAccessPosition(source, unit.Id, catalog);
                     if (MoveToward(unit, accessPos, speedInWorldUnits, deltaSeconds))
                     {
                         assignment.Phase = HaulPhase.Loading;
@@ -388,7 +414,9 @@ namespace TrollStrategy.Domain
                 }
                 case HaulPhase.ToDestination:
                 {
-                    var accessPos = BuildingAccessPosition(destination, unit.Id, catalog);
+                    var accessPos = assignment.HasDestinationAccessPoint
+                        ? assignment.DestinationAccessPoint
+                        : BuildingAccessPosition(destination, unit.Id, catalog);
                     if (MoveToward(unit, accessPos, speedInWorldUnits, deltaSeconds))
                     {
                         assignment.Phase = HaulPhase.Unloading;
@@ -505,6 +533,20 @@ namespace TrollStrategy.Domain
             return new WorldPosition(entrance.X + offset, entrance.Y);
         }
 
+        public static bool IsPointWithinBuilding(BuildingState building, WorldPosition point, GameContentCatalog catalog)
+        {
+            if (building == null) return false;
+            var def = catalog.GetBuilding(building.Kind);
+            float cs = catalog.Economy.CellSize;
+            float minX = building.Cell.X * cs;
+            float minY = building.Cell.Y * cs;
+            float maxX = (building.Cell.X + def.Width) * cs;
+            float maxY = (building.Cell.Y + def.Height) * cs;
+            const float epsilon = 0.001f;
+            return point.X >= minX - epsilon && point.X <= maxX + epsilon &&
+                   point.Y >= minY - epsilon && point.Y <= maxY + epsilon;
+        }
+
         public static WorldPosition IdlePosition(int unitNumber, EconomyConfig economy)
         {
             int slot = unitNumber - 1;
@@ -531,6 +573,12 @@ namespace TrollStrategy.Domain
         public static float ProductionPerSecond(GameState state, string buildingId, GameContentCatalog catalog)
         {
             return CalculateMineProductionPerSecond(state, buildingId, catalog);
+        }
+
+        public static float UnitMovementSpeed(UnitDefinition unitDefinition, GameContentCatalog catalog)
+        {
+            if (unitDefinition == null || catalog == null) return 0f;
+            return (120f + unitDefinition.Speed * 12f) / 48f * catalog.Economy.CellSize;
         }
 
         public static Cell? FindFirstValidMineCell(GameState state, GameContentCatalog catalog)

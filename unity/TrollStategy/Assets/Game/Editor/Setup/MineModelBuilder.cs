@@ -1,0 +1,115 @@
+using System.IO;
+using TrollStrategy.Domain;
+using TrollStrategy.Presentation;
+using TrollStrategy.Presentation.Buildings;
+using TrollStrategy.Presentation.Map;
+using TrollStrategy.Presentation.Visuals;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+
+namespace TrollStrategy.Editor.Setup
+{
+    public static class MineModelBuilder
+    {
+        private const string PrefabPath = "Assets/Game/Prefabs/Buildings/MineModel.prefab";
+
+        public static void RebuildAndCaptureKitPreview()
+        {
+            ThreeDSceneSetup.RefreshDiorama();
+            CaptureKitPreview();
+        }
+
+        public static void CaptureKitPreview()
+        {
+            EditorSceneManager.OpenScene("Assets/Game/Scenes/MainColonyScene.unity");
+            var camera = Camera.main;
+            var world = Object.FindAnyObjectByType<TilemapWorldView>();
+            if (camera == null || world == null)
+                throw new System.InvalidOperationException("Kit preview needs the colony camera and map.");
+
+            var buildings = new[]
+            {
+                PreviewBuilding(world, "Mine", new Cell(3, 7)),
+                PreviewBuilding(world, "Barracks", new Cell(3, 2)),
+                PreviewBuilding(world, "Warehouse", new Cell(10, 8)),
+                PreviewBuilding(world, "Market", new Cell(10, 2), 2)
+            };
+            var target = new RenderTexture(1600, 900, 24);
+            var previousTarget = camera.targetTexture;
+            var previousActive = RenderTexture.active;
+            try
+            {
+                camera.targetTexture = target;
+                // Batch render can expose shader/texture initialization in its first frames.
+                for (var frame = 0; frame < 4; frame++)
+                    camera.Render();
+                RenderTexture.active = target;
+                var image = new Texture2D(target.width, target.height, TextureFormat.RGB24, false);
+                image.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0);
+                image.Apply();
+                File.WriteAllBytes("../vitaria-preview.png", image.EncodeToPNG());
+                Object.DestroyImmediate(image);
+            }
+            finally
+            {
+                camera.targetTexture = previousTarget;
+                RenderTexture.active = previousActive;
+                Object.DestroyImmediate(target);
+                foreach (var building in buildings) Object.DestroyImmediate(building);
+            }
+        }
+
+        private static GameObject PreviewBuilding(TilemapWorldView world, string kind, Cell cell, int height = 3)
+        {
+            var source = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Game/Prefabs/Buildings/{kind}Model.prefab");
+            if (source == null) throw new System.InvalidOperationException($"Missing {kind} model prefab");
+            var instance = (GameObject)PrefabUtility.InstantiatePrefab(source);
+            instance.transform.position = world.BuildingCenterWorld(cell, 3, height);
+            instance.transform.rotation = world.GroundRotation;
+            return instance;
+        }
+
+        public static void CapturePreview()
+        {
+            EditorSceneManager.OpenScene("Assets/Game/Scenes/MainColonyScene.unity");
+            var camera = Camera.main;
+            var world = Object.FindAnyObjectByType<TilemapWorldView>();
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+            if (camera == null || world == null || prefab == null)
+                throw new System.InvalidOperationException("Mine preview needs the colony camera, map, and model prefab.");
+
+            var mine = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            mine.transform.position = world.BuildingCenterWorld(new Cell(5, 5), 3, 3);
+            mine.transform.rotation = world.GroundRotation;
+            var target = new RenderTexture(1600, 900, 24);
+            var previousTarget = camera.targetTexture;
+            var previousActive = RenderTexture.active;
+            try
+            {
+                camera.targetTexture = target;
+                camera.Render();
+                RenderTexture.active = target;
+                var image = new Texture2D(target.width, target.height, TextureFormat.RGB24, false);
+                image.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0);
+                image.Apply();
+                File.WriteAllBytes("../mine-preview.png", image.EncodeToPNG());
+                Object.DestroyImmediate(image);
+            }
+            finally
+            {
+                camera.targetTexture = previousTarget;
+                RenderTexture.active = previousActive;
+                Object.DestroyImmediate(target);
+                Object.DestroyImmediate(mine);
+            }
+        }
+
+        [MenuItem("TrollStrategy/Rebuild Mine Model")]
+        public static void Rebuild()
+        {
+            DioramaModelBuilder.Rebuild(TrollStrategy.Content.BuildingKind.Mine);
+            AssetDatabase.SaveAssets();
+        }
+    }
+}

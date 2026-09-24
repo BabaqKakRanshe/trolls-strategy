@@ -105,6 +105,96 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void AssignWork_UsesThePlayerChosenPointInsideTheMine()
+        {
+            var session = new GameSession(_catalog);
+            Assert.That(session.Dispatch(new BuildMineCommand(new Cell(3, 3))).Ok, Is.True);
+            Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 1, new Cell(7, 7))).Ok, Is.True);
+            var accessPoint = new WorldPosition(3.25f, 4.75f);
+
+            var result = session.Dispatch(new AssignWorkCommand(new[] { "unit-1" }, "mine-1", accessPoint));
+            session.Advance(10f);
+
+            var unit = session.CurrentSnapshot.Units.Single();
+            Assert.That(result.Ok, Is.True);
+            Assert.That(unit.Assignment.Kind, Is.EqualTo(AssignmentKind.Work));
+            Assert.That(unit.Assignment.HasAccessPoint, Is.True);
+            Assert.That(unit.Position, Is.EqualTo(accessPoint));
+        }
+
+        [Test]
+        public void AssignWork_RejectsAChosenPointOutsideTheBuildingWithoutMutation()
+        {
+            var session = new GameSession(_catalog);
+            Assert.That(session.Dispatch(new BuildMineCommand(new Cell(3, 3))).Ok, Is.True);
+            Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 1, new Cell(7, 7))).Ok, Is.True);
+            int revision = session.CurrentSnapshot.Revision;
+
+            var result = session.Dispatch(new AssignWorkCommand(
+                new[] { "unit-1" }, "mine-1", new WorldPosition(2.5f, 4.5f)));
+
+            Assert.That(result.Ok, Is.False);
+            Assert.That(result.Error, Is.EqualTo("Точка входа находится вне здания"));
+            Assert.That(session.CurrentSnapshot.Revision, Is.EqualTo(revision));
+            Assert.That(session.CurrentSnapshot.Units.Single().Assignment.Kind, Is.EqualTo(AssignmentKind.Idle));
+        }
+
+        [Test]
+        public void AssignHaul_UsesChosenPointsAtBothBuildings()
+        {
+            var state = GameState.CreateInitialState(_catalog.Economy.StartingGold);
+            state.Buildings.Add(new BuildingState
+            {
+                Id = "mine-1",
+                Kind = BuildingKind.Mine,
+                Cell = new Cell(3, 3)
+            });
+            state.Units.Add(new UnitState
+            {
+                Id = "unit-1",
+                Kind = UnitKind.Goblin,
+                Position = new WorldPosition(7.5f, 7.5f),
+                Assignment = Assignment.Idle()
+            });
+            var sourcePoint = new WorldPosition(5.7f, 5.8f);
+            var destinationPoint = new WorldPosition(10.2f, 9.1f);
+
+            var result = ColonySimulation.ApplyCommand(
+                state,
+                new AssignHaulCommand(new[] { "unit-1" }, "mine-1", "warehouse-1", sourcePoint, destinationPoint),
+                _catalog);
+            ColonySimulation.TickColony(state, 10f, _catalog);
+
+            var unit = state.Units.Single();
+            Assert.That(result.Ok, Is.True);
+            Assert.That(unit.Position, Is.EqualTo(sourcePoint));
+            Assert.That(unit.Assignment.Phase, Is.EqualTo(HaulPhase.Loading));
+
+            unit.Position = sourcePoint;
+            unit.Assignment.Phase = HaulPhase.ToDestination;
+            unit.Assignment.Carried = 1;
+            ColonySimulation.TickColony(state, 10f, _catalog);
+
+            Assert.That(unit.Position, Is.EqualTo(destinationPoint));
+            Assert.That(unit.Assignment.Phase, Is.EqualTo(HaulPhase.Unloading));
+        }
+
+        [Test]
+        public void InteractionSelection_ReplacesTogglesAndAddsOnlyExistingUnits()
+        {
+            var session = new GameSession(_catalog);
+            Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 3, new Cell(7, 7))).Ok, Is.True);
+            var interaction = new InteractionController(session);
+
+            interaction.ClickUnit("unit-1", false);
+            interaction.ClickUnit("unit-2", true);
+            interaction.ClickUnit("unit-1", true);
+            interaction.SelectUnits(new[] { "unit-3", "missing-unit" }, true);
+
+            Assert.That(interaction.SelectedIds, Is.EquivalentTo(new[] { "unit-2", "unit-3" }));
+        }
+
+        [Test]
         public void FullWarehouse_PreventsPickupAtSource()
         {
             var state = StateWithMineAndHauler(HaulPhase.Loading, carried: 0);

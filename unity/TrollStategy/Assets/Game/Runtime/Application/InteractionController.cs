@@ -22,13 +22,19 @@ namespace TrollStrategy.Application
         public UnitKind UnitKind { get; private set; }
         public int Amount { get; private set; }
         public string SourceId { get; private set; }
+        public WorldPosition? SourceAccessPoint { get; private set; }
 
         public static InteractionMode Neutral => new() { Type = InteractionModeType.Neutral };
         public static InteractionMode PlacingMine => new() { Type = InteractionModeType.PlacingMine };
         public static InteractionMode PlacingUnits(UnitKind kind, int amount) => new() { Type = InteractionModeType.PlacingUnits, UnitKind = kind, Amount = amount };
         public static InteractionMode ChoosingWorkTarget => new() { Type = InteractionModeType.ChoosingWorkTarget };
         public static InteractionMode ChoosingHaulSource => new() { Type = InteractionModeType.ChoosingHaulSource };
-        public static InteractionMode ChoosingHaulDestination(string sourceId) => new() { Type = InteractionModeType.ChoosingHaulDestination, SourceId = sourceId };
+        public static InteractionMode ChoosingHaulDestination(string sourceId, WorldPosition? sourceAccessPoint = null) => new()
+        {
+            Type = InteractionModeType.ChoosingHaulDestination,
+            SourceId = sourceId,
+            SourceAccessPoint = sourceAccessPoint
+        };
     }
 
     public class InteractionController
@@ -59,6 +65,7 @@ namespace TrollStrategy.Application
 
         public void ClickUnit(string unitId, bool additive)
         {
+            if (!SnapshotContainsUnit(unitId)) return;
             if (!additive) _selected.Clear();
             if (additive && _selected.Contains(unitId))
                 _selected.Remove(unitId);
@@ -66,27 +73,29 @@ namespace TrollStrategy.Application
                 _selected.Add(unitId);
 
             _mode = InteractionMode.Neutral;
+            _commandsOpen = false;
             _inspectedBuildingId = null;
             _inspectedUnitId = _selected.Count == 1 ? unitId : null;
             _message = _selected.Count == 0 ? "Выбор снят." : $"Выбрано юнитов: {_selected.Count}";
             Emit();
         }
 
-        public void SelectUnits(IEnumerable<string> unitIds)
+        public void SelectUnits(IEnumerable<string> unitIds, bool additive = false)
         {
-            _selected.Clear();
-            int count = 0;
+            if (!additive) _selected.Clear();
             if (unitIds != null)
             {
                 foreach (var id in unitIds)
                 {
-                    _selected.Add(id);
-                    count++;
+                    if (SnapshotContainsUnit(id)) _selected.Add(id);
                 }
             }
 
             _mode = InteractionMode.Neutral;
-            _message = count == 0 ? "В рамке нет юнитов." : $"Выбрано рамкой: {count}";
+            _commandsOpen = false;
+            _inspectedBuildingId = null;
+            _inspectedUnitId = _selected.Count == 1 ? _selected.First() : null;
+            _message = _selected.Count == 0 ? "В рамке нет юнитов." : $"Выбрано рамкой: {_selected.Count}";
             Emit();
         }
 
@@ -119,6 +128,7 @@ namespace TrollStrategy.Application
 
         public void BeginUnitPlacement(UnitKind kind, int amount)
         {
+            _commandsOpen = false;
             _mode = InteractionMode.PlacingUnits(kind, amount);
             _message = $"Кликните по клетке, где появятся все {amount} существ.";
             Emit();
@@ -142,6 +152,7 @@ namespace TrollStrategy.Application
 
         public void BeginMinePlacement()
         {
+            _commandsOpen = false;
             _mode = InteractionMode.PlacingMine;
             _message = "Выберите свободные клетки для шахты.";
             Emit();
@@ -177,6 +188,7 @@ namespace TrollStrategy.Application
         public void BeginWorkTarget()
         {
             if (!HasSelection()) return;
+            _commandsOpen = false;
             _mode = InteractionMode.ChoosingWorkTarget;
             _message = "Укажите шахту для выбранных рабочих.";
             Emit();
@@ -185,6 +197,7 @@ namespace TrollStrategy.Application
         public void BeginHaulTarget()
         {
             if (!HasSelection()) return;
+            _commandsOpen = false;
             _mode = InteractionMode.ChoosingHaulSource;
             _message = "Сначала укажите источник руды.";
             Emit();
@@ -210,6 +223,7 @@ namespace TrollStrategy.Application
 
         public void SelectBuilding(string buildingId)
         {
+            _commandsOpen = false;
             _inspectedBuildingId = buildingId;
             _inspectedUnitId = null;
             BuildingSnapshot b = null;
@@ -224,7 +238,7 @@ namespace TrollStrategy.Application
 
         public void ToggleCommands(bool open)
         {
-            _commandsOpen = open;
+            _commandsOpen = open && _mode.Type == InteractionModeType.Neutral && _selected.Count > 0;
             Emit();
         }
 
@@ -252,6 +266,11 @@ namespace TrollStrategy.Application
 
         public void ChooseBuilding(string buildingId)
         {
+            ChooseBuilding(buildingId, null);
+        }
+
+        public void ChooseBuilding(string buildingId, WorldPosition? accessPoint)
+        {
             if (_mode.Type == InteractionModeType.Neutral)
             {
                 SelectBuilding(buildingId);
@@ -269,7 +288,7 @@ namespace TrollStrategy.Application
             if (_mode.Type == InteractionModeType.ChoosingWorkTarget)
             {
                 var ids = new List<string>(_selected);
-                var result = _session.Dispatch(new AssignWorkCommand(ids, buildingId));
+                var result = _session.Dispatch(new AssignWorkCommand(ids, buildingId, accessPoint));
                 if (!result.Ok)
                 {
                     FinishCommand(false, result.Error);
@@ -295,8 +314,8 @@ namespace TrollStrategy.Application
 
             if (_mode.Type == InteractionModeType.ChoosingHaulSource)
             {
-                _mode = InteractionMode.ChoosingHaulDestination(buildingId);
-                _message = "Теперь укажите склад или рынок.";
+                _mode = InteractionMode.ChoosingHaulDestination(buildingId, accessPoint);
+                _message = "Теперь укажите точку на складе или рынке.";
                 Emit();
                 return;
             }
@@ -304,7 +323,12 @@ namespace TrollStrategy.Application
             if (_mode.Type == InteractionModeType.ChoosingHaulDestination)
             {
                 var ids = new List<string>(_selected);
-                var result = _session.Dispatch(new AssignHaulCommand(ids, _mode.SourceId, buildingId));
+                var result = _session.Dispatch(new AssignHaulCommand(
+                    ids,
+                    _mode.SourceId,
+                    buildingId,
+                    _mode.SourceAccessPoint,
+                    accessPoint));
                 FinishCommand(result.Ok, result.Ok ? "Постоянный маршрут назначен." : result.Error);
             }
         }
@@ -347,6 +371,7 @@ namespace TrollStrategy.Application
 
         public void CancelOrClear()
         {
+            _commandsOpen = false;
             if (_mode.Type != InteractionModeType.Neutral)
             {
                 _mode = InteractionMode.Neutral;
@@ -426,8 +451,20 @@ namespace TrollStrategy.Application
         private void FinishCommand(bool ok, string message)
         {
             _message = message;
+            _commandsOpen = false;
             if (ok) _mode = InteractionMode.Neutral;
             Emit();
+        }
+
+        private bool SnapshotContainsUnit(string unitId)
+        {
+            if (string.IsNullOrEmpty(unitId)) return false;
+            var units = _session.CurrentSnapshot.Units;
+            for (int i = 0; i < units.Count; i++)
+            {
+                if (units[i].Id == unitId) return true;
+            }
+            return false;
         }
 
         private void Emit()

@@ -17,9 +17,11 @@ namespace TrollStrategy.Application
         public int WorkerCount { get; }
         public int MaxWorkers { get; }
         public float ProductionPerSecond { get; }
+        public float ProductionProgress { get; }
 
         public BuildingSnapshot(string id, BuildingKind kind, string name, Cell cell, int width, int height,
-            int ore, int maxOre, int workerCount, int maxWorkers, float productionPerSecond)
+            int ore, int maxOre, int workerCount, int maxWorkers, float productionPerSecond,
+            float productionProgress = 0f)
         {
             Id = id;
             Kind = kind;
@@ -32,6 +34,7 @@ namespace TrollStrategy.Application
             WorkerCount = workerCount;
             MaxWorkers = maxWorkers;
             ProductionPerSecond = productionPerSecond;
+            ProductionProgress = productionProgress;
         }
     }
 
@@ -49,9 +52,11 @@ namespace TrollStrategy.Application
         public WorldPosition Position { get; }
         public Assignment Assignment => _assignment.Clone();
         public string Status { get; }
+        public float MovementSpeed { get; }
 
         public UnitSnapshot(string id, int number, UnitKind unitKind, string name, int strength, float speed,
-            int cargoCapacity, WorldPosition position, Assignment assignment, string status)
+            int cargoCapacity, WorldPosition position, Assignment assignment, string status,
+            float movementSpeed = 0f)
         {
             Id = id;
             Number = number;
@@ -63,6 +68,7 @@ namespace TrollStrategy.Application
             Position = position;
             _assignment = assignment?.Clone() ?? Domain.Assignment.Idle();
             Status = status;
+            MovementSpeed = movementSpeed;
         }
     }
 

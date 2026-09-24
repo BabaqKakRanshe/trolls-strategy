@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="23" result="Passed" total="23" passed="23" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-23 21:33:41Z" end-time="2026-09-23 21:33:42Z" duration="0,9294276">
+  <test-suite type="TestSuite" id="1000" name="TrollStategy" fullname="TrollStategy" runstate="Runnable" testcasecount="23" result="Passed" start-time="2026-09-23 21:33:41Z" end-time="2026-09-23 21:33:42Z" duration="0.929428" total="23" passed="23" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1030" name="TrollStrategy.EditModeTests.dll" fullname="F:/ClaudeGames/trollstrategy/unity/TrollStategy/Library/ScriptAssemblies/TrollStrategy.EditModeTests.dll" runstate="Runnable" testcasecount="23" result="Passed" start-time="2026-09-23 21:33:41Z" end-time="2026-09-23 21:33:42Z" duration="0.829650" total="23" passed="23" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="26020" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1031" name="TrollStrategy" fullname="TrollStrategy" runstate="Runnable" testcasecount="23" result="Passed" start-time="2026-09-23 21:33:41Z" end-time="2026-09-23 21:33:42Z" duration="0.735515" total="23" passed="23" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1032" name="Tests" fullname="TrollStrategy.Tests" runstate="Runnable" testcasecount="23" result="Passed" start-time="2026-09-23 21:33:41Z" end-time="2026-09-23 21:33:42Z" duration="0.636283" total="23" passed="23" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="AssetUniquenessTests" fullname="TrollStrategy.Tests.AssetUniquenessTests" classname="TrollStrategy.Tests.AssetUniquenessTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-23 21:33:41Z" end-time="2026-09-23 21:33:41Z" duration="0.157958" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1002" name="RuntimeAssets_HaveOneCanonicalDefinitionPerGameFact" fullname="TrollStrategy.Tests.AssetUniquenessTests.RuntimeAssets_HaveOneCanonicalDefinitionPerGameFact" methodname="RuntimeAssets_HaveOneCanonicalDefinitionPerGameFact" classname="TrollStrategy.Tests.AssetUniquenessTests" runstate="Runnable" seed="113732781" result="Passed" start-time="2026-09-23 21:33:41Z" end-time="2026-09-23 21:33:41Z" duration="0.043917" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="UnitDefinitions_KeepCompleteAnimationFrameSets" fullname="TrollStrategy.Tests.AssetUniquenessTests.UnitDefinitions_KeepCompleteAnimationFrameSets" methodname="UnitDefinitions_KeepCompleteAnimationFrameSets" classname="TrollStrategy.Tests.AssetUniquenessTests" runstate="Runnable" seed="2075209009" result="Passed" start-time="2026-09-23 21:33:41Z" end-time="2026-09-23 21:33:41Z" duration="0.005963" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1004" name="BuildingPresentationTests" fullname="TrollStrategy.Tests.BuildingPresentationTests" classname="TrollStrategy.Tests.BuildingPresentationTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-23 21:33:41Z" end-time="2026-09-23 21:33:42Z" duration="0.176477" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="ParameterizedMethod" id="1011" name="BuildingView_UsesMatchingModelPrefab" fullname="TrollStrategy.Tests.BuildingPresentationTests.BuildingView_UsesMatchingModelPrefab" classname="TrollStrategy.Tests.BuildingPresentationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.131398" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1007" name="BuildingView_UsesMatchingModelPrefab(Mine)" fullname="TrollStrategy.Tests.BuildingPresentationTests.BuildingView_UsesMatchingModelPrefab(Mine)" methodname="BuildingView_UsesMatchingModelPrefab" classname="TrollStrategy.Tests.BuildingPresentationTests" runstate="Runnable" seed="972482535" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.026529" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1008" name="BuildingView_UsesMatchingModelPrefab(Warehouse)" fullname="TrollStrategy.Tests.BuildingPresentationTests.BuildingView_UsesMatchingModelPrefab(Warehouse)" methodname="BuildingView_UsesMatchingModelPrefab" classname="TrollStrategy.Tests.BuildingPresentationTests" runstate="Runnable" seed="2081393633" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.001376" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1009" name="BuildingView_UsesMatchingModelPrefab(Market)" fullname="TrollStrategy.Tests.BuildingPresentationTests.BuildingView_UsesMatchingModelPrefab(Market)" methodname="BuildingView_UsesMatchingModelPrefab" classname="TrollStrategy.Tests.BuildingPresentationTests" runstate="Runnable" seed="595053682" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.001103" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1010" name="BuildingView_UsesMatchingModelPrefab(Barracks)" fullname="TrollStrategy.Tests.BuildingPresentationTests.BuildingView_UsesMatchingModelPrefab(Barracks)" methodname="BuildingView_UsesMatchingModelPrefab" classname="TrollStrategy.Tests.BuildingPresentationTests" runstate="Runnable" seed="1142219092" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.001701" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1006" name="ProducerProgress_GrowsFromLeftBelowBuildingAndHidesForWarehouse" fullname="TrollStrategy.Tests.BuildingPresentationTests.ProducerProgress_GrowsFromLeftBelowBuildingAndHidesForWarehouse" methodname="ProducerProgress_GrowsFromLeftBelowBuildingAndHidesForWarehouse" classname="TrollStrategy.Tests.BuildingPresentationTests" runstate="Runnable" seed="283207247" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.003572" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1005" name="SelectedBuilding_ShowsThreeDimensionalFootprintRim" fullname="TrollStrategy.Tests.BuildingPresentationTests.SelectedBuilding_ShowsThreeDimensionalFootprintRim" methodname="SelectedBuilding_ShowsThreeDimensionalFootprintRim" classname="TrollStrategy.Tests.BuildingPresentationTests" runstate="Runnable" seed="782114499" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.001105" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1012" name="ColonySimulationTests" fullname="TrollStrategy.Tests.ColonySimulationTests" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.088283" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1019" name="AssignHaul_UsesChosenPointsAtBothBuildings" fullname="TrollStrategy.Tests.ColonySimulationTests.AssignHaul_UsesChosenPointsAtBothBuildings" methodname="AssignHaul_UsesChosenPointsAtBothBuildings" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="622501914" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.009156" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1018" name="AssignWork_RejectsAChosenPointOutsideTheBuildingWithoutMutation" fullname="TrollStrategy.Tests.ColonySimulationTests.AssignWork_RejectsAChosenPointOutsideTheBuildingWithoutMutation" methodname="AssignWork_RejectsAChosenPointOutsideTheBuildingWithoutMutation" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="1391826857" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.005452" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1016" name="AssignWork_RespectsMineCapacityAsACompleteCommand" fullname="TrollStrategy.Tests.ColonySimulationTests.AssignWork_RespectsMineCapacityAsACompleteCommand" methodname="AssignWork_RespectsMineCapacityAsACompleteCommand" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="1501812008" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.001256" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1017" name="AssignWork_UsesThePlayerChosenPointInsideTheMine" fullname="TrollStrategy.Tests.ColonySimulationTests.AssignWork_UsesThePlayerChosenPointInsideTheMine" methodname="AssignWork_UsesThePlayerChosenPointInsideTheMine" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="1066000432" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.001072" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1015" name="DuplicateUnitIds_AreRejectedWithoutMutation" fullname="TrollStrategy.Tests.ColonySimulationTests.DuplicateUnitIds_AreRejectedWithoutMutation" methodname="DuplicateUnitIds_AreRejectedWithoutMutation" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="210134417" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.000570" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1021" name="FullWarehouse_PreventsPickupAtSource" fullname="TrollStrategy.Tests.ColonySimulationTests.FullWarehouse_PreventsPickupAtSource" methodname="FullWarehouse_PreventsPickupAtSource" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="2044495046" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.000976" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1020" name="InteractionSelection_ReplacesTogglesAndAddsOnlyExistingUnits" fullname="TrollStrategy.Tests.ColonySimulationTests.InteractionSelection_ReplacesTogglesAndAddsOnlyExistingUnits" methodname="InteractionSelection_ReplacesTogglesAndAddsOnlyExistingUnits" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="372543291" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.002234" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1023" name="ReassigningHauler_ReturnsCargoToItsSource" fullname="TrollStrategy.Tests.ColonySimulationTests.ReassigningHauler_ReturnsCargoToItsSource" methodname="ReassigningHauler_ReturnsCargoToItsSource" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="77306099" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.000763" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1014" name="RejectedCommand_DoesNotChangeStateOrRevision" fullname="TrollStrategy.Tests.ColonySimulationTests.RejectedCommand_DoesNotChangeStateOrRevision" methodname="RejectedCommand_DoesNotChangeStateOrRevision" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="1695446078" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.000576" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1013" name="Session_UsesCatalogStartingGoldAndCanonicalPrices" fullname="TrollStrategy.Tests.ColonySimulationTests.Session_UsesCatalogStartingGoldAndCanonicalPrices" methodname="Session_UsesCatalogStartingGoldAndCanonicalPrices" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="1550631145" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.000491" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1024" name="SnapshotAssignment_CannotMutateSessionState" fullname="TrollStrategy.Tests.ColonySimulationTests.SnapshotAssignment_CannotMutateSessionState" methodname="SnapshotAssignment_CannotMutateSessionState" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="1972367700" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.000390" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1022" name="WarehouseBecomingFull_DoesNotDiscardCarriedOre" fullname="TrollStrategy.Tests.ColonySimulationTests.WarehouseBecomingFull_DoesNotDiscardCarriedOre" methodname="WarehouseBecomingFull_DoesNotDiscardCarriedOre" classname="TrollStrategy.Tests.ColonySimulationTests" runstate="Runnable" seed="948475886" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.000367" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1025" name="RotatedGridProjectionTests" fullname="TrollStrategy.Tests.RotatedGridProjectionTests" classname="TrollStrategy.Tests.RotatedGridProjectionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.006748" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1026" name="RotatedAndTranslatedGrid_ProjectsCellsAndScreenPointsToTheSamePlane" fullname="TrollStrategy.Tests.RotatedGridProjectionTests.RotatedAndTranslatedGrid_ProjectsCellsAndScreenPointsToTheSamePlane" methodname="RotatedAndTranslatedGrid_ProjectsCellsAndScreenPointsToTheSamePlane" classname="TrollStrategy.Tests.RotatedGridProjectionTests" runstate="Runnable" seed="1708781660" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.003329" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1027" name="UnitVisualScaleTests" fullname="TrollStrategy.Tests.UnitVisualScaleTests" classname="TrollStrategy.Tests.UnitVisualScaleTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.105339" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1029" name="AdvanceVisual_UsesSnapshotSpeedWithoutArrivingEarly" fullname="TrollStrategy.Tests.UnitVisualScaleTests.AdvanceVisual_UsesSnapshotSpeedWithoutArrivingEarly" methodname="AdvanceVisual_UsesSnapshotSpeedWithoutArrivingEarly" classname="TrollStrategy.Tests.UnitVisualScaleTests" runstate="Runnable" seed="1989408085" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.006959" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1028" name="Setup_ScalesOnlyDedicatedSpriteVisual" fullname="TrollStrategy.Tests.UnitVisualScaleTests.Setup_ScalesOnlyDedicatedSpriteVisual" methodname="Setup_ScalesOnlyDedicatedSpriteVisual" classname="TrollStrategy.Tests.UnitVisualScaleTests" runstate="Runnable" seed="146427947" result="Passed" start-time="2026-09-23 21:33:42Z" end-time="2026-09-23 21:33:42Z" duration="0.001267" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/user/AppData/LocalLow/DefaultCompany/TrollStategy\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

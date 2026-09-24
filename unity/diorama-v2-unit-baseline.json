@@ -1,0 +1,20 @@
+{
+  "unity\\TrollStategy\\Assets\\Game\\Runtime\\Presentation\\Units\\UnitView.cs": "64ce527e47ed138bb1eb635ca75ad094fcba9cbd5b939b6d5a56156da369729f",
+  "unity\\TrollStategy\\Assets\\Game\\Runtime\\Presentation\\Units\\UnitView.cs.meta": "716467cf3094f46b87437746608196d171c049788192d67cea157b9d9769f39e",
+  "unity\\TrollStategy\\Assets\\Game\\Runtime\\Presentation\\Units\\UnitVisualsManager.cs": "8ca5e89c4bf3d6737b6c7c4dd527f6b13db21dd9d7da279d0934357c1c2ed7be",
+  "unity\\TrollStategy\\Assets\\Game\\Runtime\\Presentation\\Units\\UnitVisualsManager.cs.meta": "3f8e32bf11da2aee06f785ea072da83bd1cf9454ca4d9b7ebae28d70ecb1f8b5",
+  "unity\\TrollStategy\\Assets\\Game\\Art\\Sprites\\Units\\goblin-idle.png": "40cc9dbc85c07fcc639cb8780242b6adddddc36af0ea3d2777ce9870479a8c83",
+  "unity\\TrollStategy\\Assets\\Game\\Art\\Sprites\\Units\\goblin-idle.png.meta": "68e7da5c5b56dfb4d0303b6f2195bcb5804a9461907abfb7e2c7498243f334ca",
+  "unity\\TrollStategy\\Assets\\Game\\Art\\Sprites\\Units\\goblin-walk.png": "91beb63e7f9dffa14367f669d7190ecd0613c41007b55cad139649950d9469ae",
+  "unity\\TrollStategy\\Assets\\Game\\Art\\Sprites\\Units\\goblin-walk.png.meta": "169d97d33372f9d2ff7803c61e9639fa312a4e6525d9268c426adc1fc744f683",
+  "unity\\TrollStategy\\Assets\\Game\\Art\\Sprites\\Units\\troll-idle.png": "ccbcb03092e68a58a50cb5dc0d1fe89e3b036f65ca8dc14ff12b31eca4231d45",
+  "unity\\TrollStategy\\Assets\\Game\\Art\\Sprites\\Units\\troll-idle.png.meta": "152146808d062d21736a0e77b0eaf2ad3fb5b8b9268e9228778053e5ff2482d3",
+  "unity\\TrollStategy\\Assets\\Game\\Art\\Sprites\\Units\\troll-walk.png": "a80d7d2f4518517e827ffe88e3ad8bf22cf1a553de0e2d9b8cf4434f5aff802d",
+  "unity\\TrollStategy\\Assets\\Game\\Art\\Sprites\\Units\\troll-walk.png.meta": "d1c4b672d24f3b0a13e9b3ce6e6da8015161ce0ffefe98e7d41fd47507ea7a40",
+  "unity\\TrollStategy\\Assets\\Game\\Content\\Definitions\\Unit_Goblin.asset": "bd57ee7eb96e3f0475b5eaee360ee5de19a7214c1e81caf481b58aab474a01aa",
+  "unity\\TrollStategy\\Assets\\Game\\Content\\Definitions\\Unit_Goblin.asset.meta": "ef14993418d8a457c840b9f91c35defb14a4083276ffd5fa5bee86e3e811444b",
+  "unity\\TrollStategy\\Assets\\Game\\Content\\Definitions\\Unit_Troll.asset": "bf77119034295390159dbbb566e1012eb07cca373f70d898428a52d9d8095342",
+  "unity\\TrollStategy\\Assets\\Game\\Content\\Definitions\\Unit_Troll.asset.meta": "f18f45e69700e02a38e46225e0da1353c41db480efb7f1f64b0177951c7ef8e1",
+  "unity\\TrollStategy\\Assets\\Game\\Prefabs\\UnitPrefab.prefab": "46b657fd4999caf60e718872c9a2e2d3f9d99702c491ee837853660b48e8c726",
+  "unity\\TrollStategy\\Assets\\Game\\Prefabs\\UnitPrefab.prefab.meta": "85c586b6a8efb72d46bb2cdfded284ec24bbe08f69951a1faacdb7c671ffb834"
+}

@@ -47,11 +47,18 @@ namespace TrollStrategy.Domain
     {
         public IReadOnlyList<string> UnitIds { get; }
         public string BuildingId { get; }
+        public WorldPosition? AccessPoint { get; }
 
         public AssignWorkCommand(IReadOnlyList<string> unitIds, string buildingId)
+            : this(unitIds, buildingId, null)
+        {
+        }
+
+        public AssignWorkCommand(IReadOnlyList<string> unitIds, string buildingId, WorldPosition? accessPoint)
         {
             UnitIds = unitIds;
             BuildingId = buildingId;
+            AccessPoint = accessPoint;
         }
     }
 
@@ -60,12 +67,26 @@ namespace TrollStrategy.Domain
         public IReadOnlyList<string> UnitIds { get; }
         public string SourceId { get; }
         public string DestinationId { get; }
+        public WorldPosition? SourceAccessPoint { get; }
+        public WorldPosition? DestinationAccessPoint { get; }
 
         public AssignHaulCommand(IReadOnlyList<string> unitIds, string sourceId, string destinationId)
+            : this(unitIds, sourceId, destinationId, null, null)
+        {
+        }
+
+        public AssignHaulCommand(
+            IReadOnlyList<string> unitIds,
+            string sourceId,
+            string destinationId,
+            WorldPosition? sourceAccessPoint,
+            WorldPosition? destinationAccessPoint)
         {
             UnitIds = unitIds;
             SourceId = sourceId;
             DestinationId = destinationId;
+            SourceAccessPoint = sourceAccessPoint;
+            DestinationAccessPoint = destinationAccessPoint;
         }
     }
 

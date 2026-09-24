@@ -29,29 +29,47 @@ namespace TrollStrategy.Domain
         public HaulPhase Phase { get; set; }
         public int Carried { get; set; }
         public float PhaseElapsedSeconds { get; set; }
+        public bool HasAccessPoint { get; set; }
+        public WorldPosition AccessPoint { get; set; }
+        public bool HasSourceAccessPoint { get; set; }
+        public WorldPosition SourceAccessPoint { get; set; }
+        public bool HasDestinationAccessPoint { get; set; }
+        public WorldPosition DestinationAccessPoint { get; set; }
 
         public static Assignment Idle() => new() { Kind = AssignmentKind.Idle };
 
-        public static Assignment ToWork(string buildingId) => new()
+        public static Assignment ToWork(string buildingId, WorldPosition? accessPoint = null) => new()
         {
             Kind = AssignmentKind.ToWork,
-            BuildingId = buildingId
+            BuildingId = buildingId,
+            HasAccessPoint = accessPoint.HasValue,
+            AccessPoint = accessPoint.GetValueOrDefault()
         };
 
-        public static Assignment Work(string buildingId) => new()
+        public static Assignment Work(string buildingId, WorldPosition? accessPoint = null) => new()
         {
             Kind = AssignmentKind.Work,
-            BuildingId = buildingId
+            BuildingId = buildingId,
+            HasAccessPoint = accessPoint.HasValue,
+            AccessPoint = accessPoint.GetValueOrDefault()
         };
 
-        public static Assignment Haul(string sourceId, string destinationId) => new()
+        public static Assignment Haul(
+            string sourceId,
+            string destinationId,
+            WorldPosition? sourceAccessPoint = null,
+            WorldPosition? destinationAccessPoint = null) => new()
         {
             Kind = AssignmentKind.Haul,
             SourceId = sourceId,
             DestinationId = destinationId,
             Phase = HaulPhase.ToSource,
             Carried = 0,
-            PhaseElapsedSeconds = 0f
+            PhaseElapsedSeconds = 0f,
+            HasSourceAccessPoint = sourceAccessPoint.HasValue,
+            SourceAccessPoint = sourceAccessPoint.GetValueOrDefault(),
+            HasDestinationAccessPoint = destinationAccessPoint.HasValue,
+            DestinationAccessPoint = destinationAccessPoint.GetValueOrDefault()
         };
 
         public Assignment Clone() => new()
@@ -62,7 +80,13 @@ namespace TrollStrategy.Domain
             DestinationId = DestinationId,
             Phase = Phase,
             Carried = Carried,
-            PhaseElapsedSeconds = PhaseElapsedSeconds
+            PhaseElapsedSeconds = PhaseElapsedSeconds,
+            HasAccessPoint = HasAccessPoint,
+            AccessPoint = AccessPoint,
+            HasSourceAccessPoint = HasSourceAccessPoint,
+            SourceAccessPoint = SourceAccessPoint,
+            HasDestinationAccessPoint = HasDestinationAccessPoint,
+            DestinationAccessPoint = DestinationAccessPoint
         };
     }
 

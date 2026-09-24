@@ -46,8 +46,60 @@ namespace TrollStrategy.UI
         private InteractionController _interaction;
         private GameSession _session;
         private int _hireAmount = 1;
+        [SerializeField] private RectTransform _drawer;
+        [SerializeField] private Button _catalogToggle;
+        [SerializeField] private Button _creaturesButton;
+        [SerializeField] private Button _buildingsButton;
+        [SerializeField] private GameObject _creaturesPage;
+        [SerializeField] private GameObject _buildingsPage;
+        private bool _drawerOpen;
 
         public int HireAmount => _hireAmount;
+
+        public void SetupDrawer(Button toggle, Button creatures, Button buildings,
+            GameObject creaturesPage, GameObject buildingsPage)
+        {
+            _drawer = GetComponent<RectTransform>();
+            _catalogToggle = toggle;
+            _creaturesButton = creatures;
+            _buildingsButton = buildings;
+            _creaturesPage = creaturesPage;
+            _buildingsPage = buildingsPage;
+            _drawerOpen = false;
+            _drawer.anchoredPosition = new Vector2(_drawer.rect.width + 12f, _drawer.anchoredPosition.y);
+            BindDrawer();
+            ShowCategory(true);
+        }
+
+        private void BindDrawer()
+        {
+            if (_catalogToggle == null) return;
+            _catalogToggle.onClick.RemoveAllListeners();
+            _catalogToggle.onClick.AddListener(() =>
+            {
+                _drawerOpen = !_drawerOpen;
+                _catalogToggle.GetComponentInChildren<TextMeshProUGUI>().text = _drawerOpen ? "КАТАЛОГ  ▶" : "КАТАЛОГ  ◀";
+            });
+            _creaturesButton.onClick.RemoveAllListeners();
+            _creaturesButton.onClick.AddListener(() => ShowCategory(true));
+            _buildingsButton.onClick.RemoveAllListeners();
+            _buildingsButton.onClick.AddListener(() => ShowCategory(false));
+        }
+
+        private void ShowCategory(bool creatures)
+        {
+            if (_creaturesPage != null) _creaturesPage.SetActive(creatures);
+            if (_buildingsPage != null) _buildingsPage.SetActive(!creatures);
+        }
+
+        private void Update()
+        {
+            if (_drawer == null) return;
+            var position = _drawer.anchoredPosition;
+            float target = _drawerOpen ? -12f : _drawer.rect.width + 12f;
+            position.x = Mathf.MoveTowards(position.x, target, 1400f * Time.unscaledDeltaTime);
+            _drawer.anchoredPosition = position;
+        }
 
         public void Setup(
             InteractionController interaction,
@@ -95,6 +147,7 @@ namespace TrollStrategy.UI
         {
             _session = session;
             _interaction = interaction;
+            BindDrawer();
 
             if (_decreaseHireBtn != null)
             {
@@ -168,9 +221,9 @@ namespace TrollStrategy.UI
             int goblinTotalCost = goblinUnitPrice * _hireAmount;
             int trollTotalCost = trollUnitPrice * _hireAmount;
 
-            if (_goblinCostText != null) _goblinCostText.text = goblinTotalCost.ToString();
-            if (_trollCostText != null) _trollCostText.text = trollTotalCost.ToString();
-            if (_mineCostText != null) _mineCostText.text = minePrice.ToString();
+            if (_goblinCostText != null) _goblinCostText.text = $"Нанять ×{_hireAmount}\n{goblinTotalCost} зол.";
+            if (_trollCostText != null) _trollCostText.text = $"Нанять ×{_hireAmount}\n{trollTotalCost} зол.";
+            if (_mineCostText != null) _mineCostText.text = $"Построить\n{minePrice} зол.";
 
             if (_buyGoblinBtn != null) _buyGoblinBtn.interactable = gold >= goblinTotalCost;
             if (_buyTrollBtn != null) _buyTrollBtn.interactable = gold >= trollTotalCost;

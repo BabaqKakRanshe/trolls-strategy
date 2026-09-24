@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TrollStrategy.Application;
 using TrollStrategy.Domain;
+using TrollStrategy.Presentation;
 
 namespace TrollStrategy.UI
 {
@@ -91,7 +92,7 @@ namespace TrollStrategy.UI
                               mode.Type == InteractionModeType.ChoosingHaulSource ||
                               mode.Type == InteractionModeType.ChoosingHaulDestination;
 
-            bool visible = selectedCount > 0 || isTargeting;
+            bool visible = true;
             _panelRoot.SetActive(visible);
 
             if (!visible)
@@ -102,7 +103,7 @@ namespace TrollStrategy.UI
             }
 
             if (_selectedCountText != null)
-                _selectedCountText.text = selectedCount > 0 ? $"{selectedCount} выбрано" : "Приказы";
+                _selectedCountText.text = selectedCount > 0 ? $"{selectedCount} ВЫБРАНО" : "НИКТО НЕ ВЫБРАН";
 
             if (_workBtn != null) _workBtn.interactable = selectedCount > 0;
             if (_haulBtn != null) _haulBtn.interactable = selectedCount > 0;
@@ -149,7 +150,7 @@ namespace TrollStrategy.UI
                             btnRt.sizeDelta = new Vector2(100f, 32f);
 
                             var img = btnGo.AddComponent<Image>();
-                            img.color = new Color(0.21f, 0.29f, 0.24f, 1f);
+                            img.color = ColonyPalette.Raised;
 
                             var btn = btnGo.AddComponent<Button>();
                             btn.onClick.AddListener(() => _interaction?.ChooseBuilding(bId));
@@ -165,7 +166,7 @@ namespace TrollStrategy.UI
                             txt.text = bName;
                             txt.fontSize = 11;
                             txt.alignment = TextAlignmentOptions.Center;
-                            txt.color = new Color(0.94f, 0.92f, 0.84f);
+                            txt.color = ColonyPalette.Text;
 
                             _spawnedTargetButtons.Add(btn);
                         }

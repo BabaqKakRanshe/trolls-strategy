@@ -1,0 +1,355 @@
+// Vitaria low-poly kit — Unity editor tooling.
+// Put this file under Assets/Vitaria/Editor/. Works with URP and the Built-in pipeline (Unity 2021.3+).
+//
+// Menu: Tools > Vitaria
+//   1. Setup Material        — creates Assets/Vitaria/Materials/Vitaria_Palette.mat and remaps every model to it
+//   2. Create Prefabs        — prefab variant per model in Assets/Vitaria/Prefabs (+ BoxCollider / MeshCollider)
+//   3. Build Scene From Layout — instantiates every object of the Blender scene at its place, grouped by category
+//   4. Setup Lighting        — directional sun with soft shadows, gradient ambient, URP shadow distance/resolution
+//   5. Align Main Camera     — camera position / FOV / background identical to the Blender preview
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
+
+namespace Vitaria.EditorTools
+{
+    public static class VitariaTools
+    {
+        public const string Root = "Assets/Vitaria";
+        public const string ModelsRoot = Root + "/Models";
+        public const string PrefabsRoot = Root + "/Prefabs";
+        public const string MaterialPath = Root + "/Materials/Vitaria_Palette.mat";
+        public const string SourceMaterialName = "Vitaria_Palette";
+        const string AlbedoPath = Root + "/Textures/Vitaria_Palette.png";
+        const string EmissionPath = Root + "/Textures/Vitaria_Palette_Emission.png";
+        const string LayoutPath = Root + "/Layout/vitaria_layout.json";
+
+        // ------------------------------------------------------------------ layout json
+        [Serializable] public class LItem { public string name; public string asset; public string group; public float[] p; public float[] r; public float[] s; }
+        [Serializable] public class LCam { public float[] position; public float[] forward; public float[] up; public float fov; }
+        [Serializable] public class LSun { public float[] forward; public float[] color; public float intensity; }
+        [Serializable] public class LAmb { public float[] sky; public float[] equator; public float[] ground; }
+        [Serializable] public class VLayout { public LItem[] objects; public LCam camera; public LSun sun; public LAmb ambient; public float[] background; }
+
+        static Vector3 V(float[] a) { return new Vector3(a[0], a[1], a[2]); }
+        static Color C(float[] a) { return new Color(a[0], a[1], a[2], 1f); }
+
+        static VLayout LoadLayout()
+        {
+            var ta = AssetDatabase.LoadAssetAtPath<TextAsset>(LayoutPath);
+            if (ta == null)
+            {
+                Debug.LogError("[Vitaria] Layout not found: " + LayoutPath);
+                return null;
+            }
+            return JsonUtility.FromJson<VLayout>(ta.text);
+        }
+
+        // ------------------------------------------------------------------ 1. material
+        [MenuItem("Tools/Vitaria/1. Setup Material", false, 1)]
+        public static void SetupMaterial()
+        {
+            var mat = GetOrCreateMaterial();
+            if (mat == null) return;
+            int n = 0;
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                foreach (var guid in AssetDatabase.FindAssets("t:Model", new[] { ModelsRoot }))
+                {
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var mi = AssetImporter.GetAtPath(path) as ModelImporter;
+                    if (mi == null) continue;
+                    mi.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), SourceMaterialName), mat);
+                    mi.SaveAndReimport();
+                    n++;
+                }
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+            }
+            Debug.Log("[Vitaria] Material ready (" + mat.shader.name + "), remapped " + n + " models.");
+        }
+
+        public static Material GetOrCreateMaterial()
+        {
+            var shader = FindLitShader();
+            if (shader == null)
+            {
+                Debug.LogError("[Vitaria] No lit shader found.");
+                return null;
+            }
+            EnsureFolder(Root, "Materials");
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
+            if (mat == null)
+            {
+                mat = new Material(shader) { name = SourceMaterialName };
+                AssetDatabase.CreateAsset(mat, MaterialPath);
+            }
+            else if (mat.shader != shader)
+            {
+                mat.shader = shader;
+            }
+            var albedo = AssetDatabase.LoadAssetAtPath<Texture2D>(AlbedoPath);
+            var emission = AssetDatabase.LoadAssetAtPath<Texture2D>(EmissionPath);
+            SetTex(mat, albedo, "_BaseMap", "_MainTex");
+            SetColor(mat, Color.white, "_BaseColor", "_Color");
+            SetFloat(mat, 0.12f, "_Smoothness", "_Glossiness");
+            SetFloat(mat, 0f, "_Metallic");
+            if (emission != null)
+            {
+                SetTex(mat, emission, "_EmissionMap");
+                SetColor(mat, Color.white * 2.5f, "_EmissionColor");
+                mat.EnableKeyword("_EMISSION");
+                mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.BakedEmissive;
+            }
+            mat.enableInstancing = true;
+            EditorUtility.SetDirty(mat);
+            AssetDatabase.SaveAssets();
+            return mat;
+        }
+
+        static Shader FindLitShader()
+        {
+            Shader s = null;
+            if (GraphicsSettings.currentRenderPipeline != null)
+                s = Shader.Find("Universal Render Pipeline/Lit");
+            if (s == null) s = Shader.Find("Standard");
+            return s;
+        }
+
+        static void SetTex(Material m, Texture t, params string[] props)
+        {
+            if (t == null) return;
+            foreach (var p in props) if (m.HasProperty(p)) m.SetTexture(p, t);
+        }
+        static void SetColor(Material m, Color c, params string[] props)
+        {
+            foreach (var p in props) if (m.HasProperty(p)) m.SetColor(p, c);
+        }
+        static void SetFloat(Material m, float v, params string[] props)
+        {
+            foreach (var p in props) if (m.HasProperty(p)) m.SetFloat(p, v);
+        }
+
+        static void EnsureFolder(string parent, string child)
+        {
+            if (!AssetDatabase.IsValidFolder(parent + "/" + child))
+                AssetDatabase.CreateFolder(parent, child);
+        }
+
+        // ------------------------------------------------------------------ 2. prefabs
+        [MenuItem("Tools/Vitaria/2. Create Prefabs", false, 2)]
+        public static void CreatePrefabs()
+        {
+            EnsureFolder(Root, "Prefabs");
+            int n = 0;
+            foreach (var guid in AssetDatabase.FindAssets("t:Model", new[] { ModelsRoot }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var name = Path.GetFileNameWithoutExtension(path);
+                if (name == "Vitaria_Scene") continue;
+                var model = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (model == null) continue;
+                var category = Path.GetFileName(Path.GetDirectoryName(path));
+                EnsureFolder(PrefabsRoot, category);
+                var inst = (GameObject)PrefabUtility.InstantiatePrefab(model);
+                if (name.StartsWith("Env_Island"))
+                {
+                    inst.AddComponent<MeshCollider>();
+                }
+                else if (!name.StartsWith("Grass_") && !name.StartsWith("Flowers_") && !name.StartsWith("Env_Paths"))
+                {
+                    if (inst.GetComponent<Collider>() == null) inst.AddComponent<BoxCollider>();
+                }
+                PrefabUtility.SaveAsPrefabAsset(inst, PrefabsRoot + "/" + category + "/" + name + ".prefab");
+                UnityEngine.Object.DestroyImmediate(inst);
+                n++;
+            }
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Vitaria] Created/updated " + n + " prefab variants in " + PrefabsRoot);
+        }
+
+        // ------------------------------------------------------------------ 3. scene
+        [MenuItem("Tools/Vitaria/3. Build Scene From Layout", false, 3)]
+        public static void BuildScene()
+        {
+            var layout = LoadLayout();
+            if (layout == null) return;
+            var sources = new Dictionary<string, GameObject>();
+            foreach (var guid in AssetDatabase.FindAssets("t:Model", new[] { ModelsRoot }))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (go != null) sources[Path.GetFileNameWithoutExtension(path)] = go;
+            }
+            if (AssetDatabase.IsValidFolder(PrefabsRoot))
+            {
+                foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new[] { PrefabsRoot }))
+                {
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                    if (go != null) sources[Path.GetFileNameWithoutExtension(path)] = go;   // prefabs win over raw models
+                }
+            }
+
+            var root = new GameObject("Vitaria_Scene");
+            Undo.RegisterCreatedObjectUndo(root, "Build Vitaria Scene");
+            var groups = new Dictionary<string, Transform>();
+            int placed = 0, missing = 0;
+            foreach (var it in layout.objects)
+            {
+                GameObject src;
+                if (!sources.TryGetValue(it.asset, out src)) { missing++; continue; }
+                Transform parent;
+                if (!groups.TryGetValue(it.group, out parent))
+                {
+                    parent = new GameObject(it.group).transform;
+                    parent.SetParent(root.transform, false);
+                    groups[it.group] = parent;
+                }
+                var inst = (GameObject)PrefabUtility.InstantiatePrefab(src, parent);
+                inst.name = it.name;
+                inst.transform.localPosition = V(it.p);
+                inst.transform.localRotation = new Quaternion(it.r[0], it.r[1], it.r[2], it.r[3]);
+                inst.transform.localScale = V(it.s);
+                GameObjectUtility.SetStaticEditorFlags(inst, StaticEditorFlags.BatchingStatic);
+                placed++;
+            }
+            Selection.activeGameObject = root;
+            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            Debug.Log("[Vitaria] Placed " + placed + " objects" + (missing > 0 ? (", missing models: " + missing) : ""));
+        }
+
+        // ------------------------------------------------------------------ 4. lighting
+        [MenuItem("Tools/Vitaria/4. Setup Lighting", false, 4)]
+        public static void SetupLighting()
+        {
+            var layout = LoadLayout();
+            if (layout == null) return;
+
+            var sun = RenderSettings.sun;
+            if (sun == null)
+            {
+                var go = new GameObject("Sun");
+                Undo.RegisterCreatedObjectUndo(go, "Vitaria Sun");
+                sun = go.AddComponent<Light>();
+                sun.type = LightType.Directional;
+            }
+            else
+            {
+                Undo.RecordObject(sun, "Vitaria Sun");
+                Undo.RecordObject(sun.transform, "Vitaria Sun");
+            }
+            sun.transform.rotation = Quaternion.LookRotation(V(layout.sun.forward));
+            sun.color = C(layout.sun.color);
+            sun.intensity = layout.sun.intensity;
+            sun.shadows = LightShadows.Soft;
+            sun.shadowStrength = 0.8f;
+            sun.shadowBias = 0.03f;
+            sun.shadowNormalBias = 0.25f;
+            RenderSettings.sun = sun;
+
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = C(layout.ambient.sky);
+            RenderSettings.ambientEquatorColor = C(layout.ambient.equator);
+            RenderSettings.ambientGroundColor = C(layout.ambient.ground);
+            RenderSettings.fog = false;
+
+            // URP asset: soft shadows, enough distance for the whole island, sharper shadow map.
+            // Done through SerializedObject, so this file needs no URP assembly reference.
+            var rp = GraphicsSettings.currentRenderPipeline;
+            if (rp != null)
+            {
+                var so = new SerializedObject(rp);
+                var p = so.FindProperty("m_ShadowDistance"); if (p != null) p.floatValue = 45f;
+                p = so.FindProperty("m_SoftShadowsSupported"); if (p != null) p.boolValue = true;
+                p = so.FindProperty("m_MainLightShadowmapResolution"); if (p != null) p.intValue = 2048;
+                p = so.FindProperty("m_MainLightShadowsSupported"); if (p != null) p.boolValue = true;
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(rp);
+            }
+            else
+            {
+                QualitySettings.shadows = ShadowQuality.All;
+                QualitySettings.shadowDistance = 45f;
+            }
+            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            Debug.Log("[Vitaria] Lighting set. For contact shadows add Screen Space Ambient Occlusion to the URP renderer.");
+        }
+
+        // ------------------------------------------------------------------ 5. camera
+        [MenuItem("Tools/Vitaria/5. Align Main Camera To Preview", false, 5)]
+        public static void AlignCamera()
+        {
+            var layout = LoadLayout();
+            if (layout == null) return;
+            var cam = Camera.main;
+            if (cam == null)
+            {
+                var go = new GameObject("Main Camera");
+                go.tag = "MainCamera";
+                Undo.RegisterCreatedObjectUndo(go, "Vitaria Camera");
+                cam = go.AddComponent<Camera>();
+            }
+            else
+            {
+                Undo.RecordObject(cam, "Vitaria Camera");
+                Undo.RecordObject(cam.transform, "Vitaria Camera");
+            }
+            cam.transform.position = V(layout.camera.position);
+            cam.transform.rotation = Quaternion.LookRotation(V(layout.camera.forward), V(layout.camera.up));
+            cam.fieldOfView = layout.camera.fov;
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = C(layout.background);
+            cam.farClipPlane = Mathf.Max(cam.farClipPlane, 200f);
+            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+        }
+    }
+
+    // Keeps import settings right for anything dropped into Assets/Vitaria/Models.
+    public class VitariaModelPostprocessor : AssetPostprocessor
+    {
+        void OnPreprocessModel()
+        {
+            if (!assetPath.StartsWith(VitariaTools.ModelsRoot)) return;
+            var mi = assetImporter as ModelImporter;
+            if (mi == null) return;
+            mi.importCameras = false;
+            mi.importLights = false;
+            mi.importAnimation = false;
+            mi.animationType = ModelImporterAnimationType.None;
+            mi.importBlendShapes = false;
+            mi.importNormals = ModelImporterNormals.Import;
+            mi.importTangents = ModelImporterTangents.None;
+            mi.generateSecondaryUV = true;      // lightmap UVs, in case you bake GI
+            mi.isReadable = false;
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(VitariaTools.MaterialPath);
+            if (mat != null)
+                mi.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), VitariaTools.SourceMaterialName), mat);
+        }
+    }
+
+    // Palette textures: no mipmaps, no compression — swatches and gradients stay exact.
+    public class VitariaTexturePostprocessor : AssetPostprocessor
+    {
+        void OnPreprocessTexture()
+        {
+            if (!assetPath.StartsWith(VitariaTools.Root + "/Textures")) return;
+            var ti = assetImporter as TextureImporter;
+            if (ti == null) return;
+            ti.mipmapEnabled = false;
+            ti.filterMode = FilterMode.Bilinear;
+            ti.wrapMode = TextureWrapMode.Clamp;
+            ti.textureCompression = TextureImporterCompression.Uncompressed;
+            ti.sRGBTexture = true;
+        }
+    }
+}

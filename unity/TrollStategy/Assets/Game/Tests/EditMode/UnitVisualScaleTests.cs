@@ -60,5 +60,38 @@ namespace TrollStrategy.Tests
                 Object.DestroyImmediate(definition);
             }
         }
+
+        [Test]
+        public void AdvanceVisual_UsesSnapshotSpeedWithoutArrivingEarly()
+        {
+            var definition = ScriptableObject.CreateInstance<UnitDefinition>();
+            definition.Init(UnitKind.Goblin, "Гоблин", 40, 3, 5f, 10, "", null, null, null);
+            var root = new GameObject("MovingUnitUnderTest");
+            root.AddComponent<SpriteRenderer>();
+            var view = root.AddComponent<UnitView>();
+            var initial = new UnitSnapshot(
+                "unit-1", 1, UnitKind.Goblin, "Гоблин", 3, 5f, 10,
+                new WorldPosition(0f, 0f), Assignment.Idle(), "Свободен", 4f);
+            var nextStep = new UnitSnapshot(
+                "unit-1", 1, UnitKind.Goblin, "Гоблин", 3, 5f, 10,
+                new WorldPosition(1f, 0f), Assignment.ToWork("mine-1"), "Идёт", 4f);
+
+            try
+            {
+                view.Setup(initial, definition, null);
+                view.UpdateVisuals(nextStep, false);
+
+                view.AdvanceVisual(0.125f);
+                Assert.That(root.transform.position.x, Is.EqualTo(0.5f).Within(0.0001f));
+
+                view.AdvanceVisual(0.125f);
+                Assert.That(root.transform.position.x, Is.EqualTo(1f).Within(0.0001f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+                Object.DestroyImmediate(definition);
+            }
+        }
     }
 }

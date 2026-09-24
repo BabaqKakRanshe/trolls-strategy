@@ -15,6 +15,18 @@ namespace TrollStrategy.Presentation.Map
         public Grid Grid => _grid;
         public Tilemap GroundTilemap => _groundTilemap;
         public Tilemap OverlayTilemap => _overlayTilemap;
+        public int GridWidth => _economy != null ? _economy.GridWidth : 0;
+        public int GridHeight => _economy != null ? _economy.GridHeight : 0;
+        public float CellSize => _economy != null ? _economy.CellSize : 1f;
+        public Quaternion GroundRotation => _grid != null ? _grid.transform.rotation : Quaternion.identity;
+
+        public Vector3 MapToWorld(Vector3 mapPosition) =>
+            _grid != null ? _grid.transform.TransformPoint(mapPosition) : mapPosition;
+
+        public Vector3 WorldToMap(Vector3 worldPosition) =>
+            _grid != null ? _grid.transform.InverseTransformPoint(worldPosition) : worldPosition;
+
+        public Vector3 GroundOffset(float height) => GroundRotation * (Vector3.back * height);
 
         public void Init(Grid grid, Tilemap ground, Tilemap overlay, EconomyConfig economy)
         {
@@ -26,21 +38,19 @@ namespace TrollStrategy.Presentation.Map
 
         public Vector3 CellToWorld(Cell cell)
         {
-            float cs = _economy != null ? _economy.CellSize : 1f;
-            return new Vector3(cell.X * cs, cell.Y * cs, 0f);
+            return MapToWorld(new Vector3(cell.X * CellSize, cell.Y * CellSize, 0f));
         }
 
         public Vector3 BuildingCenterWorld(Cell cell, int width, int height)
         {
-            float cs = _economy != null ? _economy.CellSize : 1f;
-            return new Vector3((cell.X + width * 0.5f) * cs, (cell.Y + height * 0.5f) * cs, 0f);
+            return MapToWorld(new Vector3((cell.X + width * 0.5f) * CellSize, (cell.Y + height * 0.5f) * CellSize, 0f));
         }
 
         public Cell WorldToCell(Vector3 worldPos)
         {
-            float cs = _economy != null ? _economy.CellSize : 1f;
-            int x = Mathf.FloorToInt(worldPos.x / cs);
-            int y = Mathf.FloorToInt(worldPos.y / cs);
+            var mapPosition = WorldToMap(worldPos);
+            int x = Mathf.FloorToInt(mapPosition.x / CellSize);
+            int y = Mathf.FloorToInt(mapPosition.y / CellSize);
             return new Cell(x, y);
         }
 

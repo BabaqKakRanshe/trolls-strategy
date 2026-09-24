@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
+using TrollStrategy.Presentation.Map;
 
 namespace TrollStrategy.Presentation.Units
 {
@@ -13,16 +14,18 @@ namespace TrollStrategy.Presentation.Units
 
         private GameSession _session;
         private InteractionController _interaction;
+        private TilemapWorldView _worldView;
         private readonly Dictionary<string, UnitView> _views = new();
 
         public IReadOnlyDictionary<string, UnitView> Views => _views;
 
-        public void Init(GameSession session, InteractionController interaction, GameContentCatalog catalog, UnitView prefab)
+        public void Init(GameSession session, InteractionController interaction, GameContentCatalog catalog, UnitView prefab, TilemapWorldView worldView = null)
         {
             _session = session;
             _interaction = interaction;
             _catalog = catalog;
             _unitPrefab = prefab;
+            _worldView = worldView;
 
             if (_container == null)
             {
@@ -65,8 +68,12 @@ namespace TrollStrategy.Presentation.Units
                 if (!_views.TryGetValue(uSnap.Id, out var view))
                 {
                     view = Instantiate(_unitPrefab, _container);
+                    if (_worldView != null) view.transform.rotation = _worldView.GroundRotation;
                     var def = _catalog.GetUnit(uSnap.UnitKind);
-                    view.Setup(uSnap, def, OnUnitClicked);
+                    view.Setup(uSnap, def, OnUnitClicked, _worldView);
+                    bool isSelected = selected.Contains(uSnap.Id) ||
+                                      (_interaction != null && uSnap.Id == _interaction.InspectedUnitId);
+                    view.UpdateVisuals(uSnap, isSelected);
                     _views.Add(uSnap.Id, view);
                 }
                 else

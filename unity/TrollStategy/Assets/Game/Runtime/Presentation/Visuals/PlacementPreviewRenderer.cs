@@ -4,6 +4,7 @@ using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Map;
+using TrollStrategy.Presentation.Buildings;
 
 namespace TrollStrategy.Presentation.Visuals
 {
@@ -14,10 +15,14 @@ namespace TrollStrategy.Presentation.Visuals
         [SerializeField] private LineRenderer _crossRenderer;
         [SerializeField] private TilemapWorldView _worldView;
         [SerializeField] private GameContentCatalog _catalog;
+        [SerializeField] private PrimitiveBuilding _mineModelPrefab;
 
         private GameSession _session;
         private InteractionController _interaction;
         private Camera _camera;
+        private PrimitiveBuilding _mineGhost;
+        private static readonly BuildingSnapshot MinePreview = new BuildingSnapshot(
+            "preview-mine", BuildingKind.Mine, "Шахта", new Cell(0, 0), 3, 3, 0, 100, 0, 0, 0f);
 
         public void Init(GameSession session, InteractionController interaction, TilemapWorldView worldView, GameContentCatalog catalog, Camera cam)
         {
@@ -26,6 +31,13 @@ namespace TrollStrategy.Presentation.Visuals
             _worldView = worldView;
             _catalog = catalog;
             _camera = cam != null ? cam : Camera.main;
+            if (_mineModelPrefab != null)
+            {
+                _mineGhost = Instantiate(_mineModelPrefab, transform);
+                _mineGhost.name = "MinePreview3D";
+                _mineGhost.Sync(MinePreview, false);
+                _mineGhost.gameObject.SetActive(false);
+            }
 
             if (_boxOutlineRenderer == null)
             {
@@ -54,8 +66,8 @@ namespace TrollStrategy.Presentation.Visuals
                 _crossRenderer.startWidth = 0.06f;
                 _crossRenderer.endWidth = 0.06f;
                 _crossRenderer.material = new Material(Shader.Find("Sprites/Default"));
-                _crossRenderer.startColor = new Color(0.95f, 0.3f, 0.3f, 0.9f);
-                _crossRenderer.endColor = new Color(0.95f, 0.3f, 0.3f, 0.9f);
+                _crossRenderer.startColor = ColonyPalette.WithAlpha(ColonyPalette.Clay, 0.9f);
+                _crossRenderer.endColor = ColonyPalette.WithAlpha(ColonyPalette.Clay, 0.9f);
                 _crossRenderer.sortingOrder = 101;
             }
 
@@ -86,12 +98,13 @@ namespace TrollStrategy.Presentation.Visuals
                     _boxOutlineRenderer.gameObject.SetActive(false);
                 if (_crossRenderer != null && _crossRenderer.gameObject.activeSelf)
                     _crossRenderer.gameObject.SetActive(false);
+                if (_mineGhost != null) _mineGhost.gameObject.SetActive(false);
                 return;
             }
 
             if (Mouse.current == null) return;
             Vector2 mouseScreen = Mouse.current.position.ReadValue();
-            Vector3 mouseWorld = _camera.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -_camera.transform.position.z));
+            if (!WorldProjection.TryGroundPoint(_camera, mouseScreen, _worldView, out var mouseWorld)) return;
             var cell = _worldView.WorldToCell(mouseWorld);
 
             if (!_worldView.IsInBounds(cell))
@@ -99,6 +112,7 @@ namespace TrollStrategy.Presentation.Visuals
                 if (_ghostRenderer != null) _ghostRenderer.gameObject.SetActive(false);
                 if (_boxOutlineRenderer != null) _boxOutlineRenderer.gameObject.SetActive(false);
                 if (_crossRenderer != null) _crossRenderer.gameObject.SetActive(false);
+                if (_mineGhost != null) _mineGhost.gameObject.SetActive(false);
                 return;
             }
 
@@ -106,41 +120,45 @@ namespace TrollStrategy.Presentation.Visuals
             float size = mode.Type == InteractionModeType.PlacingMine ? 3f : 1f;
             Vector3 centerPos = mode.Type == InteractionModeType.PlacingMine
                 ? _worldView.BuildingCenterWorld(cell, 3, 3)
-                : _worldView.CellToWorld(cell) + new Vector3(0.5f, 0.5f, 0f);
+                : _worldView.MapToWorld(new Vector3(cell.X + 0.5f, cell.Y + 0.5f, 0f));
 
             bool valid = mode.Type == InteractionModeType.PlacingMine
                 ? _session.CanBuildMine(cell).Ok
                 : _session.CanBuyUnits(mode.UnitKind, mode.Amount, cell).Ok;
 
-            Color themeColor = valid
-                ? new Color(0.553f, 0.941f, 0.424f, 0.95f) // #8df06c
-                : new Color(0.941f, 0.392f, 0.341f, 0.95f); // #f06457
+            Color themeColor = ColonyPalette.WithAlpha(
+                valid ? ColonyPalette.GrassLight : ColonyPalette.Clay, 0.95f);
 
             if (_boxOutlineRenderer != null)
             {
                 _boxOutlineRenderer.gameObject.SetActive(true);
                 _boxOutlineRenderer.transform.position = centerPos;
+                _boxOutlineRenderer.transform.position += _worldView.GroundOffset(0.19f);
+                _boxOutlineRenderer.transform.rotation = _worldView.GroundRotation;
                 _boxOutlineRenderer.transform.localScale = new Vector3(size, size, 1f);
                 _boxOutlineRenderer.color = themeColor;
             }
 
             if (_ghostRenderer != null)
             {
-                _ghostRenderer.gameObject.SetActive(true);
+                _ghostRenderer.gameObject.SetActive(mode.Type == InteractionModeType.PlacingUnits);
                 _ghostRenderer.transform.position = centerPos;
-                if (mode.Type == InteractionModeType.PlacingMine)
-                {
-                    var mineDef = _catalog.GetBuilding(BuildingKind.Mine);
-                    _ghostRenderer.sprite = mineDef.Sprite;
-                    _ghostRenderer.transform.localScale = Vector3.one;
-                }
-                else
+                _ghostRenderer.transform.position += _worldView.GroundOffset(0.55f);
+                _ghostRenderer.transform.rotation = _camera.transform.rotation;
+                if (mode.Type == InteractionModeType.PlacingUnits)
                 {
                     var unitDef = _catalog.GetUnit(mode.UnitKind);
                     _ghostRenderer.sprite = unitDef.IdleSprite;
                     _ghostRenderer.transform.localScale = Vector3.one * unitDef.SpriteScale;
                 }
                 _ghostRenderer.color = new Color(themeColor.r, themeColor.g, themeColor.b, 0.75f);
+            }
+            if (_mineGhost != null)
+            {
+                _mineGhost.gameObject.SetActive(mode.Type == InteractionModeType.PlacingMine);
+                _mineGhost.transform.position = centerPos;
+                _mineGhost.transform.rotation = _worldView.GroundRotation;
+                _mineGhost.Sync(MinePreview, true);
             }
 
             if (_crossRenderer != null)
@@ -149,13 +167,13 @@ namespace TrollStrategy.Presentation.Visuals
                 {
                     _crossRenderer.gameObject.SetActive(true);
                     float half = size * 0.5f;
-                    Vector3 origin = _worldView.CellToWorld(cell);
+                    Vector3 origin = new Vector3(cell.X, cell.Y, 0f);
                     // Draw X cross inside footprint
-                    _crossRenderer.SetPosition(0, origin);
-                    _crossRenderer.SetPosition(1, origin + new Vector3(size, size, 0f));
-                    _crossRenderer.SetPosition(2, origin + new Vector3(half, half, 0f));
-                    _crossRenderer.SetPosition(3, origin + new Vector3(size, 0f, 0f));
-                    _crossRenderer.SetPosition(4, origin + new Vector3(0f, size, 0f));
+                    _crossRenderer.SetPosition(0, _worldView.MapToWorld(origin) + _worldView.GroundOffset(0.2f));
+                    _crossRenderer.SetPosition(1, _worldView.MapToWorld(origin + new Vector3(size, size, 0f)) + _worldView.GroundOffset(0.2f));
+                    _crossRenderer.SetPosition(2, _worldView.MapToWorld(origin + new Vector3(half, half, 0f)) + _worldView.GroundOffset(0.2f));
+                    _crossRenderer.SetPosition(3, _worldView.MapToWorld(origin + new Vector3(size, 0f, 0f)) + _worldView.GroundOffset(0.2f));
+                    _crossRenderer.SetPosition(4, _worldView.MapToWorld(origin + new Vector3(0f, size, 0f)) + _worldView.GroundOffset(0.2f));
                     _crossRenderer.startColor = themeColor;
                     _crossRenderer.endColor = themeColor;
                 }
