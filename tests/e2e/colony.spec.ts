@@ -1,8 +1,24 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+const WORLD_WIDTH = 1070;
+const WORLD_HEIGHT = 900;
+
+async function clickOpenCenterCell(page: Page): Promise<void> {
+  const canvas = page.locator('#game-canvas canvas');
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error('Game canvas is not visible');
+  await canvas.click({
+    position: {
+      x: (559 / WORLD_WIDTH) * box.width,
+      y: (472 / WORLD_HEIGHT) * box.height,
+    },
+  });
+}
 
 test('runs the mine to market loop using visible controls', async ({ page }) => {
   await page.setViewportSize({ width: 1262, height: 1274 });
   await page.goto('/?fast=1');
+  await expect(page.locator('#game-canvas canvas')).toHaveAttribute('data-ready', 'true');
 
   await page.keyboard.press('F1');
   const collisionDebug = page.getByRole('region', { name: 'Отладка коллизий' });
@@ -18,12 +34,12 @@ test('runs the mine to market loop using visible controls', async ({ page }) => 
   await page.getByRole('button', { name: 'Выбрать клетку: гоблин, количество 5, стоимость 200 золота' }).click();
   await expect(page.getByLabel('Столбец')).toHaveCount(0);
   await expect(page.getByLabel('Строка')).toHaveCount(0);
-  await page.locator('#game-canvas canvas').click({ position: { x: 290, y: 295 } });
+  await clickOpenCenterCell(page);
   await expect(page.getByRole('button', { name: 'Выбрать гоблина 5' })).toHaveCount(1);
 
   await page.getByLabel('За один клик').fill('1');
   await page.getByRole('button', { name: 'Выбрать клетку: тролль, количество 1, стоимость 170 золота' }).click();
-  await page.locator('#game-canvas canvas').click({ position: { x: 325, y: 295 } });
+  await clickOpenCenterCell(page);
   await expect(page.getByRole('button', { name: 'Выбрать тролля 6' })).toHaveCount(1);
 
   const selectThree = page.getByRole('button', { name: 'Выбрать первых 3 свободных' });

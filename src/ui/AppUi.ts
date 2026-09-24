@@ -1,13 +1,6 @@
-import manifest from '../../assets/curated-assets.json';
-import { BUILDING_CATALOG, UNIT_CATALOG, type UnitKind } from '../content/catalog';
 import { MapInteractionController } from '../application/MapInteractionController';
 import { GameSession, type GameSnapshot } from '../application/GameSession';
-
-const SHOP_IMAGES = {
-  mine: assetUrl('building.mine'),
-  goblin: assetUrl('unit.goblin.idle'),
-  troll: assetUrl('unit.troll.idle'),
-};
+import { BUILDING_CATALOG, UNIT_CATALOG, type UnitKind } from '../content/catalog';
 
 export class AppUi {
   #snapshot: GameSnapshot;
@@ -24,12 +17,6 @@ export class AppUi {
     this.root.addEventListener('click', (event) => this.#handleClick(event));
     this.root.addEventListener('input', (event) => {
       if ((event.target as Element | null)?.matches('#hire-amount')) this.#updateShop();
-    });
-    this.root.addEventListener('pointerover', (event) => {
-      this.#positionShopTooltip(event.target as Element | null);
-    });
-    this.root.addEventListener('focusin', (event) => {
-      this.#positionShopTooltip(event.target as Element | null);
     });
     this.root.addEventListener('change', (event) => {
       const input = event.target as HTMLInputElement | null;
@@ -55,7 +42,10 @@ export class AppUi {
     setText(this.root, '#sold-value', formatNumber(this.#snapshot.soldOre));
     setText(this.root, '#population-value', String(this.#snapshot.units.length));
     setText(this.root, '#selected-value', String(this.interactions.selectedIds().length));
+    setText(this.root, '#production-value', `${formatNumber(this.#productionPerSecond())}/с`);
+    setText(this.root, '#selection-summary', this.#selectionSummary());
     setText(this.root, '#game-status', this.interactions.message);
+    this.#renderObjective();
     this.#updateShop();
     this.#renderRoster();
     this.#renderCommandDock();
@@ -110,8 +100,7 @@ export class AppUi {
     setText(this.root, '[data-hire-cost="goblin"]', validAmount ? formatNumber(goblinCost) : '—');
     setText(this.root, '[data-hire-cost="troll"]', validAmount ? formatNumber(trollCost) : '—');
 
-    const autoButton = query<HTMLButtonElement>(this.root, '[data-action="place-automatically"]');
-    autoButton.hidden = this.interactions.mode.kind !== 'placing-mine';
+    query<HTMLButtonElement>(this.root, '[data-action="place-automatically"]').hidden = this.interactions.mode.kind !== 'placing-mine';
     const placement = query<HTMLElement>(this.root, '#unit-placement');
     const mode = this.interactions.mode;
     placement.hidden = mode.kind !== 'placing-units';
@@ -124,27 +113,37 @@ export class AppUi {
     return query<HTMLInputElement>(this.root, '#hire-amount').valueAsNumber;
   }
 
-  #positionShopTooltip(target: Element | null): void {
-    const card = target?.closest<HTMLElement>('.shop-card');
-    const tooltip = card?.querySelector<HTMLElement>('.shop-tooltip');
-    if (!card || !tooltip) return;
+  #productionPerSecond(): number {
+    return this.#snapshot.buildings.reduce((total, building) => total + building.productionPerSecond, 0);
+  }
 
-    const cardRect = card.getBoundingClientRect();
-    const width = tooltip.offsetWidth || 272;
-    const height = tooltip.offsetHeight || 80;
-    const edge = 12;
-    tooltip.style.left = `${Math.max(edge, cardRect.left - width - edge)}px`;
-    tooltip.style.top = `${Math.min(
-      window.innerHeight - height - edge,
-      Math.max(edge, cardRect.top + (cardRect.height - height) / 2),
-    )}px`;
+  #selectionSummary(): string {
+    const selectedIds = new Set(this.interactions.selectedIds());
+    const selected = this.#snapshot.units.filter((unit) => selectedIds.has(unit.id));
+    if (selected.length === 0) return 'Никто не выбран';
+    const goblins = selected.filter((unit) => unit.unitKind === 'goblin').length;
+    const trolls = selected.length - goblins;
+    const parts = [goblins > 0 ? `${goblins} гобл.` : '', trolls > 0 ? `${trolls} тролл.` : ''].filter(Boolean);
+    return `${selected.length} выбрано · ${parts.join(' + ')}`;
+  }
+
+  #renderObjective(): void {
+    const hasMine = this.#snapshot.buildings.some((building) => building.kind === 'mine');
+    const hasUnits = this.#snapshot.units.length > 0;
+    const hasWorkers = this.#snapshot.units.some(
+      (unit) => unit.assignment.kind === 'to-work' || unit.assignment.kind === 'work',
+    );
+    setTaskState(this.root, '#objective-mine', hasMine);
+    setTaskState(this.root, '#objective-hire', hasUnits);
+    setTaskState(this.root, '#objective-work', hasWorkers);
+    const completed = Number(hasMine) + Number(hasUnits) + Number(hasWorkers);
+    setText(this.root, '#objective-progress', `${completed} / 3`);
+    query<HTMLElement>(this.root, '#objective-panel').dataset.complete = String(completed === 3);
   }
 
   #renderRoster(): void {
     const selected = new Set(this.interactions.selectedIds());
-    const signature = this.#snapshot.units
-      .map((unit) => `${unit.id}:${unit.status}:${selected.has(unit.id)}`)
-      .join('|');
+    const signature = this.#snapshot.units.map((unit) => `${unit.id}:${unit.status}:${selected.has(unit.id)}`).join('|');
     if (signature === this.#rosterSignature) return;
     this.#rosterSignature = signature;
 
@@ -152,7 +151,7 @@ export class AppUi {
     if (this.#snapshot.units.length === 0) {
       const empty = document.createElement('li');
       empty.className = 'empty-state';
-      empty.textContent = 'Наймите первого работника в магазине.';
+      empty.textContent = 'В отряде пока никого нет. Наймите первого рабочего справа.';
       list.replaceChildren(empty);
       return;
     }
@@ -221,17 +220,42 @@ export class AppUi {
 
 function shellMarkup(): string {
   return `
-    <div class="game-app" style="--shop-mine-image: url('${SHOP_IMAGES.mine}'); --shop-goblin-image: url('${SHOP_IMAGES.goblin}'); --shop-troll-image: url('${SHOP_IMAGES.troll}')">
+    <div class="game-app">
+      <header class="top-bar">
+        <div class="settlement-id"><span class="eyebrow">Колония</span><strong>Участок 01</strong></div>
+        <dl class="resource-strip" aria-label="Ресурсы поселения">
+          <div><dt>Золото</dt><dd><span class="primitive-icon primitive-icon--coin" aria-hidden="true"></span><span id="gold-value">0</span></dd></div>
+          <div><dt>Руда</dt><dd><span class="primitive-icon primitive-icon--ore" aria-hidden="true"></span><span id="ore-value">0</span></dd></div>
+          <div><dt>Население</dt><dd><span class="primitive-icon primitive-icon--unit" aria-hidden="true"></span><span id="population-value">0</span></dd></div>
+          <div><dt>Добыча</dt><dd><span id="production-value">0/с</span></dd></div>
+        </dl>
+        <div class="utility-hints" aria-label="Горячие клавиши"><span><kbd>G</kbd> Сетка</span><span><kbd>F1</kbd> Отладка</span></div>
+      </header>
+
       <div class="game-layout">
-        <section class="accessibility-controls" aria-label="Управление юнитами с клавиатуры">
-          <span><span id="selected-value">0</span> выбрано</span>
-          <button type="button" data-action="select-three" aria-label="Выбрать первых 3 свободных">Первые 3</button>
-          <button type="button" data-action="select-next" aria-label="Выбрать следующего свободного">Следующий</button>
-          <ul id="unit-roster" class="unit-roster"></ul>
-        </section>
+        <aside class="left-rail" aria-label="Задача и отряд">
+          <section id="objective-panel" class="panel objective-panel" data-complete="false" aria-labelledby="objective-title">
+            <div class="panel-heading"><div><span class="eyebrow">Первый контракт</span><h2 id="objective-title">Запустить добычу</h2></div><strong id="objective-progress">0 / 3</strong></div>
+            <ol class="objective-list">
+              <li id="objective-mine"><span aria-hidden="true"></span><p><strong>Постройте шахту</strong><small>Выберите место на поле</small></p></li>
+              <li id="objective-hire"><span aria-hidden="true"></span><p><strong>Наймите рабочего</strong><small>Гоблина или тролля</small></p></li>
+              <li id="objective-work"><span aria-hidden="true"></span><p><strong>Назначьте в шахту</strong><small>Выделите и отдайте приказ</small></p></li>
+            </ol>
+          </section>
+
+          <section class="panel roster-panel" aria-labelledby="roster-title">
+            <div class="panel-heading panel-heading--compact"><div><span class="eyebrow">Управление</span><h2 id="roster-title">Отряд</h2></div><strong><span id="selected-value">0</span> выбрано</strong></div>
+            <div class="quick-select" aria-label="Быстрое выделение юнитов">
+              <button type="button" data-action="select-three" aria-label="Выбрать первых 3 свободных">Первые 3</button>
+              <button type="button" data-action="select-next" aria-label="Выбрать следующего свободного">Следующий</button>
+            </div>
+            <ul id="unit-roster" class="unit-roster"></ul>
+          </section>
+        </aside>
+
         <main class="world-panel" tabindex="-1">
           <div class="world-frame">
-            <div class="world-frame__label"><span>Участок 01</span><small>ЛКМ — выбор · Ctrl — группа · ПКМ — приказы · <kbd>G</kbd> — сетка и маршруты · <kbd>F1</kbd> — коллизии</small></div>
+            <div class="world-frame__label"><span>Поле поселения</span><small>ЛКМ — выбор / размещение · Ctrl — группа · ПКМ / Esc — отмена</small></div>
             <div id="game-canvas" class="game-canvas" aria-label="Игровое поле поселения"></div>
             <section id="collision-debug-panel" class="debug-panel" aria-labelledby="collision-debug-title" hidden>
               <div class="debug-panel__head"><h2 id="collision-debug-title">Отладка коллизий</h2><button type="button" data-action="toggle-debug" aria-label="Закрыть окно отладки">F1</button></div>
@@ -239,33 +263,18 @@ function shellMarkup(): string {
               <p><i class="debug-swatch debug-swatch--building" aria-hidden="true"></i>Здания — занятые клетки</p>
               <p><i class="debug-swatch debug-swatch--unit" aria-hidden="true"></i>Существа — область выбора</p>
             </section>
-            <section id="game-controls" class="command-dock" data-active="false" aria-labelledby="commands-title">
-              <div class="command-dock__title"><span aria-hidden="true">✦</span><h2 id="commands-title">Приказы</h2></div>
-              <div class="command-actions">
-                <button type="button" data-action="work">Работать</button>
-                <button type="button" data-action="haul">Переносить</button>
-                <button type="button" data-action="release">Освободить</button>
-                <button type="button" data-action="cancel" class="button-muted">Отмена</button>
-              </div>
-              <div id="target-choices" class="target-choices" hidden></div>
-            </section>
+            <div id="game-status" class="game-status" aria-live="polite"></div>
           </div>
         </main>
+
         <aside class="panel shop-panel" aria-labelledby="shop-title">
-          <div class="panel__cap panel__cap--copper"><span aria-hidden="true">▰</span><h2 id="shop-title">Гильдейский реестр</h2></div>
-          <dl class="resource-grid" aria-label="Ресурсы поселения">
-            <div><dt>Золото</dt><dd><span class="resource-icon resource-icon--gold" aria-hidden="true"></span><span id="gold-value">0</span></dd></div>
-            <div><dt>Руда</dt><dd><span class="resource-icon resource-icon--ore" aria-hidden="true"></span><span id="ore-value">0</span></dd></div>
-            <div><dt>Продано</dt><dd><span class="resource-icon resource-icon--sold" aria-hidden="true"></span><span id="sold-value" data-testid="sold-ore">0</span></dd></div>
-            <div><dt>Население</dt><dd><span aria-hidden="true">♟</span><span id="population-value">0</span></dd></div>
-          </dl>
+          <div class="panel-heading shop-heading"><div><span class="eyebrow">Каталог</span><h2 id="shop-title">Развитие</h2></div><span>Доступно сейчас</span></div>
           <section class="shop-section">
-            <div class="shop-section__header"><h3>Постройки</h3><span>1 доступно</span></div>
+            <div class="shop-section__header"><h3>Постройки</h3><span>1 вариант</span></div>
             <article class="shop-card shop-card--mine">
-              <div class="shop-card__art" aria-hidden="true"></div>
-              <div class="shop-card__copy"><strong>Шахта</strong><small>3×3 · до 5 рабочих</small></div>
-              <button type="button" data-action="build-mine" aria-label="Купить шахту за 200 золота"><span>Купить</span><b>200</b></button>
-              <div class="shop-tooltip">Производит железную руду. Скорость зависит от суммы силы рабочих.</div>
+              <div class="shop-card__art shop-card__art--building" aria-hidden="true"><i></i><i></i><i></i></div>
+              <div class="shop-card__copy"><strong>Шахта</strong><span>Добывает руду</span><small>3×3 клетки · до 5 рабочих</small></div>
+              <button type="button" data-action="build-mine" aria-label="Купить шахту за 200 золота"><span>Построить</span><b>200</b></button>
             </article>
             <button type="button" class="auto-place" data-action="place-automatically" hidden>Поставить автоматически</button>
           </section>
@@ -279,33 +288,39 @@ function shellMarkup(): string {
               </div>
             </div>
             <article class="shop-card shop-card--goblin">
-              <div class="shop-card__art" aria-hidden="true"></div>
-              <div class="shop-card__copy"><strong>Гоблин</strong><small>Скорость 5 · груз 10</small></div>
+              <div class="shop-card__art shop-card__art--goblin" aria-hidden="true"><i></i></div>
+              <div class="shop-card__copy"><strong>Гоблин</strong><span>Быстрый носильщик</span><small>Сила 3 · скорость 5 · груз 10</small></div>
               <button type="button" data-action="buy-unit" data-unit-kind="goblin"><span>Нанять</span><b data-hire-cost="goblin">40</b></button>
-              <div class="shop-tooltip"><span><small>Сила</small><b>3</b></span><span><small>Скорость</small><b>5</b></span><span><small>Груз</small><b>10</b></span></div>
             </article>
             <article class="shop-card shop-card--troll">
-              <div class="shop-card__art" aria-hidden="true"></div>
-              <div class="shop-card__copy"><strong>Тролль</strong><small>Сила 9 · груз 30</small></div>
+              <div class="shop-card__art shop-card__art--troll" aria-hidden="true"><i></i></div>
+              <div class="shop-card__copy"><strong>Тролль</strong><span>Сильный шахтёр</span><small>Сила 9 · скорость 2 · груз 30</small></div>
               <button type="button" data-action="buy-unit" data-unit-kind="troll"><span>Нанять</span><b data-hire-cost="troll">170</b></button>
-              <div class="shop-tooltip"><span><small>Сила</small><b>9</b></span><span><small>Скорость</small><b>2</b></span><span><small>Груз</small><b>30</b></span></div>
             </article>
             <div id="unit-placement" class="unit-placement" hidden>
               <p><strong id="unit-placement-title"></strong><span>Кликните по нужной клетке поля</span></p>
               <button type="button" data-action="cancel" class="button-muted">Отмена</button>
             </div>
           </section>
-          <div id="game-status" class="game-status" aria-live="polite"></div>
         </aside>
       </div>
+
+      <section id="game-controls" class="command-dock" data-active="false" aria-labelledby="commands-title">
+        <div class="selection-readout"><span class="eyebrow">Текущее выделение</span><strong id="selection-summary">Никто не выбран</strong></div>
+        <div class="command-dock__commands">
+          <h2 id="commands-title">Приказы</h2>
+          <div class="command-actions">
+            <button type="button" data-action="work" aria-label="Работать"><span aria-hidden="true">01</span>Работать</button>
+            <button type="button" data-action="haul" aria-label="Переносить"><span aria-hidden="true">02</span>Переносить</button>
+            <button type="button" data-action="release" aria-label="Освободить"><span aria-hidden="true">03</span>Освободить</button>
+            <button type="button" data-action="cancel" class="button-muted" aria-label="Отмена"><span aria-hidden="true">Esc</span>Отмена</button>
+          </div>
+          <div id="target-choices" class="target-choices" hidden></div>
+        </div>
+        <dl class="session-totals"><div><dt>Продано руды</dt><dd id="sold-value" data-testid="sold-ore">0</dd></div></dl>
+      </section>
       <footer class="credits">Прототип · спрайты и тайлы: Krishna Palacio / Minifantasy (некоммерческая лицензия)</footer>
     </div>`;
-}
-
-function assetUrl(key: string): string {
-  const asset = manifest.assets.find((entry) => entry.key === key);
-  if (!asset) throw new Error(`Missing curated asset: ${key}`);
-  return `${import.meta.env.BASE_URL}${asset.output.replace(/^public\//, '')}`;
 }
 
 function query<T extends Element>(root: ParentNode, selector: string): T {
@@ -316,6 +331,12 @@ function query<T extends Element>(root: ParentNode, selector: string): T {
 
 function setText(root: ParentNode, selector: string, value: string): void {
   query<HTMLElement>(root, selector).textContent = value;
+}
+
+function setTaskState(root: ParentNode, selector: string, completed: boolean): void {
+  const item = query<HTMLElement>(root, selector);
+  item.dataset.complete = String(completed);
+  query<HTMLElement>(item, ':scope > span').textContent = completed ? '✓' : '';
 }
 
 function formatNumber(value: number): string {

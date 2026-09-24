@@ -20,7 +20,7 @@ new Phaser.Game({
   parent: 'game-canvas',
   width: 1070,
   height: 900,
-  backgroundColor: '#0b1715',
+  backgroundColor: '#141414',
   pixelArt: true,
   antialias: false,
   roundPixels: true,

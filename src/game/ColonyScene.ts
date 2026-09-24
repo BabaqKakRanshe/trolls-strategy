@@ -56,7 +56,7 @@ export class ColonyScene extends Phaser.Scene {
   #objectPointerDown = false;
   #pointerCell: { x: number; y: number } | null = null;
   #hoverTarget: HoverTarget | null = null;
-  #guidesVisible = true;
+  #guidesVisible = false;
 
   constructor(
     private readonly session: GameSession,
@@ -102,7 +102,9 @@ export class ColonyScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       unsubscribeSession();
       unsubscribeInteraction();
+      delete this.game.canvas.dataset.ready;
     });
+    this.game.canvas.dataset.ready = 'true';
   }
 
   update(time: number, delta: number): void {
@@ -234,7 +236,7 @@ export class ColonyScene extends Phaser.Scene {
         GRID_LINE_SIZE,
       );
     }
-    this.#grid.setAlpha(0.55);
+    this.#grid.setAlpha(0.55).setVisible(this.#guidesVisible);
   }
 
   #createAnimations(): void {
@@ -451,7 +453,9 @@ export class ColonyScene extends Phaser.Scene {
 
   #syncInteraction(): void {
     const hasActiveCommand = this.interactions.mode.kind !== 'neutral';
-    this.#grid.setAlpha(hasActiveCommand ? 1 : 0.55);
+    const isPlacing = this.interactions.mode.kind === 'placing-mine' || this.interactions.mode.kind === 'placing-units';
+    this.#grid.setAlpha(isPlacing ? 1 : 0.55).setVisible(this.#guidesVisible || isPlacing);
+    this.#routes.setVisible(this.#guidesVisible);
     if (hasActiveCommand || this.interactions.selectedIds().length === 0) this.#hideCommandFan();
     this.#drawPlacementPreview();
     for (const unit of this.#snapshot.units) {
