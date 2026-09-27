@@ -8,7 +8,7 @@
 
 **Tech Stack:** Unity 6000.6, C#, Unity Input System, uGUI/TextMeshPro, NUnit EditMode tests.
 
-**Spec:** The three numbered requirements in the 2026-09-08 user request; the previous Phaser fan behavior is documented in `docs/superpowers/plans/2026-09-05-grid-crowd-command-fan.md`.
+**Spec:** The three numbered requirements in the 2026-09-08 user request.
 
 ## Global Constraints
 

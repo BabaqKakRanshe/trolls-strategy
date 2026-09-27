@@ -8,7 +8,7 @@
 
 **Tech Stack:** Unity 6000.6.0f1, C#, Unity Input System, uGUI/TextMeshPro, Unity Test Framework 1.8, URP 2D.
 
-**Spec:** `docs/superpowers/specs/2026-09-05-troll-strategy-vertical-slice-v2.md`
+**Spec:** `docs/GDD.md`
 
 ## Global Constraints
 

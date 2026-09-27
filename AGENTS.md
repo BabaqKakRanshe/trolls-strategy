@@ -1,69 +1,49 @@
 # Project Architecture Rules
 
-These rules apply to every change in this repository.
+These rules apply to every change in the Unity project at `unity/TrollStategy`.
 
-## Scope before structure
+## Scope and ownership
 
-- Confirm that a feature belongs to the current playable scope before adding runtime code for it.
-- Prefer the smallest complete vertical slice over speculative frameworks or parallel implementations.
-- For build, module-boundary, persistence, or state-ownership changes, perform an impact analysis and design the complete change before editing.
+- Confirm that a feature belongs to the current playable scope before adding runtime code.
+- Prefer the smallest complete vertical slice over speculative frameworks.
+- For build, persistence, or state-ownership changes, analyze affected dependencies before editing.
+- `GameSession` owns mutable campaign state. Gameplay changes enter through validated commands and commit atomically.
+- `Runtime/Domain` contains deterministic game rules and has no Unity presentation or wall-clock dependencies.
+- `Runtime/Application` coordinates commands and exposes snapshots; presentation does not own gameplay outcomes.
+- `Runtime/Content` and its ScriptableObjects own gameplay values. Do not duplicate them in UI or simulation.
+- `Runtime/Presentation` renders game state; `Runtime/UI` reads snapshots and submits commands.
+- `Runtime/Bootstrap` composes the Unity scene and services. Keep gameplay rules out of it.
 
-## Ownership and dependency direction
+## State, simulation, and assets
 
-- `GameSession` is the single owner of mutable campaign state.
-- Domain rules live in `src/domain` and must remain deterministic and independent of Phaser, DOM, storage, and wall-clock APIs.
-- `src/application` coordinates domain commands and exposes immutable snapshots; it must not import browser adapters.
-- `src/persistence` owns save validation and storage coordination. Browser APIs stay behind `SavePort` adapters.
-- `src/game` renders only manifest-approved sprites from `assets/sprites/sources`; geometry remains the fallback for missing textures. Do not load the rest of `assets` or introduce audio unless the user explicitly changes this constraint.
-- `src/ui` contains the counters and native shop buttons. It reads immutable snapshots and submits typed commands; it never mutates domain state or recomputes gameplay outcomes.
-- `src/main.ts` is only the composition root. Do not move business rules into it.
-- Dependencies flow inward: presentation/adapters → application → domain. Content definitions may be consumed by all inner gameplay layers but must not depend on presentation.
+- Grid coordinates, capacity, building footprints, and placement validity are domain rules. Previews and purchase commands use the same validation.
+- Selection and target modes are transient application state, never a second owner of units, buildings, gold, or assignments.
+- Economy advances in fixed 250 ms simulation steps. Do not couple domain results to render frame rate.
+- Randomness and derived IDs must be explicit and repeatable when new systems require them.
+- Keep save data serializable and versioned if persistence is added. Reject invalid references and ownership rather than silently repairing them.
+- Unity project assets live under `unity/TrollStategy/Assets`. The shared `assets/Strategy_Kit` is source art; imported assets must be checked against it when changed.
+- Preserve license evidence and the commercial-release gate for third-party art.
 
-## One source of truth
+## Presentation and validation
 
-- Each game fact has one canonical owner. Put unit/item/building values in `src/content/catalog.ts` and mission values in `src/content/missionCatalog.ts`.
-- Do not duplicate rules, identifiers, timings, limits, reward values, or save schemas across UI and simulation.
-- Do not keep two implementations of the same system during a migration. Use a strangler transition and remove the superseded path in the same completed change.
-- Documentation must distinguish current facts, accepted decisions, and future intentions.
+- Scene-local state controls presentation only. Gameplay rules remain in domain/application code.
+- Required player actions must remain available through the Unity UI and input flow.
+- Test behavior at the narrowest correct boundary with Unity EditMode tests and relevant scene or player checks.
+- Architecture-significant work is done when focused and full relevant Unity tests, compilation, and the applicable player build pass. `TrollStrategy/Build Windows Player` builds into `Builds/Windows` and writes `build-result.txt` there.
+- Stop and redesign if fixes reveal errors one by one, ownership becomes ambiguous, or a second source of truth appears.
 
-## Commands, snapshots, and transactions
+## Screen UI
 
-- All state changes enter through the typed `GameCommandContractMap` and `GameSession.dispatch`.
-- Validate an entire command before mutation and commit it atomically.
-- Grid coordinates and cell-capacity rules are domain state in `src/domain/map`; Phaser only projects them to pixels.
-- Building footprints and the central buildable zone are canonical domain rules; placement previews must call the same validator as purchase commands.
-- Selection, drag rectangles, stack pickers, and target modes are transient application state in `MapInteractionController`; they must never become a second owner of units, buildings, gold, or assignments.
-- Rich Phaser scenes, if reintroduced, receive a narrow runtime facade and immutable snapshots. Scene-local state may control presentation only.
-- Mission start accepts only a formation. `GameSession` derives and stores the canonical run ID, seed, combat input, and combat report.
-- Mission resolve/abort accepts only a run ID and settles the stored report exactly once. Leaving playback must never cancel casualties or rewards.
+- The colony HUD is UI Toolkit: layout in `Assets/Game/UI/Uxml`, look in `Assets/Game/UI/Styles`. Colours, fonts and button styles live only in `Theme.uss`; screens add layout.
+- `Runtime/UI/Colony` screen parts are plain classes over a cloned UXML tree, so EditMode tests drive them without a scene; `ColonyHud` only connects the `UIDocument`, session and input. `TrollStrategy/Setup Colony HUD` installs the document into the scene.
+- Bind every HUD button with `UiFeel.Bind` and mark unaffordable ones with `UiFeel.SetAvailable`, so a press always answers with a sound or a refusal.
+- A button that holds a badge or other child needs its caption as a child label (`Ui.CaptionButton`); a text element with children stops measuring its own text.
+- Layout containers are `picking-mode="Ignore"`; only panels and buttons catch the pointer, and `UIInputUtils` asks the HUD documents before a map click.
+- The battle HUD is still uGUI inside `BattleSceneController`; its move is stage 2 of `docs/superpowers/plans/2026-09-27-ui-toolkit-hud.md`.
 
-## Determinism and time
+## Art handoff pipeline
 
-- Economy advances in fixed 250 ms simulation steps; do not couple domain outcomes to render frame rate.
-- Combat is a pure seeded simulation. Playback consumes recorded frames and never recalculates damage, targeting, deaths, or rewards.
-- Random streams and ID/seed derivation are explicit, serializable, and covered by repeatability tests.
-- Test-only clock acceleration belongs at the composition boundary and must feed normal simulation steps without changing production behavior.
-
-## Persistence
-
-- Save state must remain serializable and versioned.
-- Decode through the single schema-aware codec; reject structural corruption, dangling references, forged mission identity, invalid ownership, and unknown future versions.
-- Repair only explicitly safe economy counters. Never silently repair invalid assignments, formations, equipment ownership, combat reports, or haul state.
-- Active missions restore the same canonical input/report and continue without generating a second run.
-- Autosave follows successful commands and foreground simulation intervals; rejected commands never save.
-
-## Presentation and accessibility
-
-- Phaser renders the world; accessible native DOM controls expose every required gameplay action.
-- Canvas-only interaction must have a keyboard-accessible DOM equivalent.
-- Preserve focus and scroll across HUD updates; avoid rebuilding unchanged DOM on simulation ticks.
-- Scene transitions must explicitly stop the outgoing scene before starting the incoming scene.
-- Missing optional audio or visual assets degrade safely and never alter domain state or stop gameplay.
-- Use the curated runtime manifest only. Keep license evidence and the commercial-release gate current.
-
-## Testing and definition of done
-
-- Test behavior at the narrowest correct boundary: pure domain rules with unit tests, adapters with contract tests, and the player journey with Playwright.
-- Do not make tests depend on private implementation details when an observable command/result contract exists.
-- Architecture-significant work is done only when focused tests, the full unit suite, lint, production build, and relevant browser E2E all pass.
-- Stop and redesign if fixes reveal errors one by one, ownership becomes ambiguous, a second source of truth appears, or a presentation module begins owning gameplay decisions.
+- Follow `docs/art-asset-pipeline.md` for resource and building icon work.
+- Put individual source PNGs under `assets/sprites/sources`; the user packs them into TexturePacker atlases under `assets/sprites/Atlases` and supplies the PNG and JSON files.
+- Keep the current Unity sprites working until the supplied atlas is imported, references are migrated, and the scene is checked. Then remove superseded Unity imports; keep source PNGs and TexturePacker project files for future rebuilds.
+- Keep resource output sprites configurable on building prefabs and semantic building icons configurable in `BuildingDefinition`.
