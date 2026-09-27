@@ -1,15 +1,3 @@
-# Dependencies
-node_modules/
-
-# Build and test output
-dist/
-coverage/
-playwright-report/
-test-results/
-
-# Generated runtime assets
-public/assets/
-
 # Local environment and editor files
 .env
 .env.*
@@ -17,7 +5,6 @@ public/assets/
 .idea/
 .vscode/
 *.log
-*.tsbuildinfo
 __pycache__/
 .DS_Store
 # Unity
@@ -49,3 +36,8 @@ __pycache__/
 # Archives
 *.rar
 *.zip
+
+# Temporary Unity project clones
+.tmp-*/
+tmp/
+.jevrouter/
