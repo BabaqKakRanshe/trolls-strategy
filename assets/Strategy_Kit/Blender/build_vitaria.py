@@ -51,41 +51,78 @@ def parse_args():
 # ----------------------------------------------------------------------------------------
 TEX = 256
 NCELL = 16                      # 16x16 swatches of 16px
+# Гамма KayKit: высокая насыщенность, холодный камень, синяя кровля, тёплое дерево.
+# Каждая грань берёт ровно один сэмпл, поэтому контраст «верх светлее бока» задаётся выбором
+# swatch-а в билдерах (by_normal), а не освещением.
 PALETTE = [
     # foliage / ground cover
-    ("pine_dark", "#315a35"), ("pine_mid", "#407040"), ("pine_light", "#56884a"),
-    ("leaf_dark", "#4a7a3a"), ("leaf_mid", "#5d9046"), ("leaf_light", "#79a756"),
-    ("bush", "#55863f"), ("blade", "#6a9a45"), ("blade_dark", "#4c7a36"), ("moss", "#6f8f45"),
-    ("berry", "#c23a2e"), ("flower_w", "#f3efe2"), ("flower_y", "#f2c94c"), ("flower_p", "#c47bbd"),
-    ("grass_lip", "#4d7a36"), ("leaf_autumn", "#c98a3a"),
+    ("pine_dark", "#1e5a4a"), ("pine_mid", "#2b7a5c"), ("pine_light", "#3e9b6b"),
+    ("leaf_dark", "#3d8a38"), ("leaf_mid", "#52a83f"), ("leaf_light", "#71c44b"),
+    ("bush", "#4a9b3c"), ("blade", "#8fc63d"), ("blade_dark", "#6da72e"), ("moss", "#7fb83a"),
+    ("berry", "#d94a3d"), ("flower_w", "#ffffff"), ("flower_y", "#ffd447"), ("flower_p", "#d97bc8"),
+    ("grass_lip", "#7fb83a"), ("leaf_autumn", "#e2732a"),
     # wood
-    ("wood_dark", "#583822"), ("wood_mid", "#7b5031"), ("wood_mid2", "#8a5b37"), ("wood_light", "#a57549"),
-    ("wood_pale", "#caa47b"), ("wood_yellow", "#c49a52"), ("bark", "#664630"), ("bark_dark", "#4e3524"),
-    # stone
-    ("stone_dark", "#5d5e5c"), ("stone_mid", "#81827e"), ("stone_light", "#a4a49d"), ("stone_warm", "#958b7d"),
-    ("rock", "#8a8983"), ("rock_dark", "#6a6964"), ("coal", "#2b2a2c"), ("soil_rock", "#6c665e"),
-    # roof / cloth
-    ("roof", "#b4462f"), ("roof_dark", "#933620"), ("roof_light", "#c85a3d"), ("stripe_red", "#b8422e"),
-    ("cream", "#efe4c9"), ("burlap", "#b59c6c"), ("burlap_dark", "#8e7750"), ("rope", "#c9b27e"),
+    ("wood_dark", "#5a3a28"), ("wood_mid", "#8a5636"), ("wood_mid2", "#99613d"), ("wood_light", "#b3794c"),
+    ("wood_pale", "#d3a877"), ("wood_yellow", "#c9954e"), ("bark", "#6b4630"), ("bark_dark", "#4e3524"),
+    # stone — холодный серый с синим подтоном
+    ("stone_dark", "#5f6773"), ("stone_mid", "#838d99"), ("stone_light", "#a9b2bd"), ("stone_warm", "#98a0a9"),
+    ("rock", "#8a94a0"), ("rock_dark", "#636c78"), ("coal", "#2a2e35"), ("soil_rock", "#8a7a66"),
+    # roof / cloth — синяя черепица, холодное белое полотно
+    ("roof", "#3e72b8"), ("roof_dark", "#2c5691"), ("roof_light", "#5a90d2"), ("stripe", "#3e72b8"),
+    ("cream", "#f2f4f7"), ("burlap", "#c0a472"), ("burlap_dark", "#977c50"), ("rope", "#d2ba85"),
     # metal
-    ("iron_dark", "#3b3e44"), ("iron", "#6d737c"), ("iron_light", "#a6adb6"), ("rail", "#575c64"),
-    ("gold", "#e2ae30"), ("gold_dark", "#b0801c"), ("gold_light", "#f9dd74"),
-    ("copper", "#c8703a"), ("copper_dark", "#94502a"), ("copper_light", "#eb9c63"),
+    ("iron_dark", "#363c46"), ("iron", "#6c7684"), ("iron_light", "#a6b0be"), ("rail", "#545c68"),
+    ("gold", "#f2b830"), ("gold_dark", "#c08a18"), ("gold_light", "#ffe07a"),
+    ("copper", "#d4763a"), ("copper_dark", "#9e5128"), ("copper_light", "#f2a268"),
     # ore
-    ("ore_rock", "#5d5961"), ("ore_rock_dk", "#46434a"), ("ore_gold", "#f4c63e"),
-    ("iron_ore_rock", "#6a5249"), ("iron_ore_vein", "#b45a35"), ("copper_ore_vein", "#dc7b3a"), ("malachite", "#3e9d85"),
+    ("ore_rock", "#626b78"), ("ore_rock_dk", "#4a515c"), ("ore_gold", "#ffc93c"),
+    ("iron_ore_rock", "#6e5a4e"), ("iron_ore_vein", "#c05f33"), ("copper_ore_vein", "#e8833a"), ("malachite", "#34b09a"),
     # soil (island sides)
-    ("soil_light", "#7a5638"), ("soil_mid", "#624430"), ("soil_dark", "#4a3323"),
+    ("soil_light", "#9a6b41"), ("soil_mid", "#7b5433"), ("soil_dark", "#5c3e27"),
     # misc
-    ("black", "#16110e"), ("glass", "#3b4b57"), ("glow", "#ff7f24"), ("glow_hot", "#ffd06a"), ("lantern_glow", "#ffc160"),
+    ("black", "#14181e"), ("glass", "#4a7391"), ("glow", "#ff8a2b"), ("glow_hot", "#ffd675"), ("lantern_glow", "#ffc34d"),
     ("label", "#1d231b"),
+    # --- производственные здания (vitaria_buildings). Только дописывать в конец:
+    # индекс swatch-а = его ячейка в текстуре, перестановка сдвинет цвета у всего набора.
+    # Светящиеся arcane/rune/ember темнее соседних: эмиссия x4 (x2.5 в Unity) иначе выжигает
+    # их в белый, а так кристалл остаётся фиолетовым, руны — голубыми.
+    ("wheat", "#ebbd4a"), ("wheat_dark", "#c48f2c"), ("wheat_light", "#f7da7c"),
+    ("hide", "#c98f5d"), ("hide_light", "#e5c294"), ("hide_dark", "#8e5838"),
+    ("leather", "#8a4428"), ("leather_dark", "#5e2d19"),
+    ("pig", "#f2a3a0"), ("pig_dark", "#d27f7c"), ("wool", "#f3efe6"),
+    ("water", "#55a3dc"), ("water_dark", "#3a7db6"), ("steel", "#d6dde7"),
+    ("crystal", "#8d5bea"), ("crystal_light", "#c3a1ff"), ("crystal_dark", "#5a37b0"),
+    ("arcane", "#5b34e0"), ("rune", "#27b9ee"), ("ember", "#ff5b22"),
+    # --- арена (vitaria_arena): кромки и бока гекс-плиток, голубоватый камень скал, полотно, пена.
+    # hex_rim_blue/red — тёмная кайма зон расстановки (не светлый обод): зона читается в ч/б и
+    # у дальтоников рисунком, а светлая подсветка клетки видна на ней лучше всего.
+    ("hex_rim", "#cfdd96"), ("hex_side", "#5f8c2f"),
+    ("hex_rim_blue", "#265b82"), ("hex_side_blue", "#4a7a86"),
+    ("hex_rim_red", "#8a3e2b"), ("hex_side_red", "#9a5a3d"),
+    ("cliff_light", "#97a1b6"), ("cliff_mid", "#6f7a96"), ("cliff_dark", "#535d79"), ("cliff_deep", "#3f475e"),
+    ("canvas", "#d6c09e"), ("canvas_dark", "#b39c7c"), ("foam", "#d8ecf6"),
+    ("sod", "#7a9a3a"), ("sod_dark", "#587a2c"),
+    # --- эффекты арены (vitaria_arena/fx.py): пыль и дым — непрозрачные меши, исчезают масштабом
+    ("dust", "#d8cbb2"), ("dust_dark", "#b3a288"), ("smoke", "#b4bac2"), ("smoke_dark", "#8e959f"),
 ]
-EMISSIVE = {"glow", "glow_hot", "lantern_glow"}
+EMISSIVE = {"glow", "glow_hot", "lantern_glow", "arcane", "rune", "ember"}
+# Рампы узкие: у KayKit земля читается как плоский тайл, а не как градиент.
 RAMPS = [
-    ("grass", [(0.0, "#46652f"), (0.35, "#5b7d3c"), (0.7, "#7b9a4e"), (1.0, "#a2b769")]),
-    ("dirt", [(0.0, "#6e4d33"), (0.3, "#936a47"), (0.7, "#b58658"), (1.0, "#cda172")]),
+    ("grass", [(0.0, "#6faf35"), (0.35, "#7fbc3a"), (0.7, "#93c942"), (1.0, "#a8d44b")]),
+    ("dirt", [(0.0, "#8a6038"), (0.3, "#a2764a"), (0.7, "#b98c5c"), (1.0, "#cba272")]),
+    # арена: трава гекс-плиток тусклее и оливковее травы плато (зелёные гоблины на ней не тонут);
+    # зоны расстановки темнее поля на ~14 L*
+    ("hex_grass", [(0.0, "#8da042"), (0.35, "#97aa4b"), (0.7, "#a1b455"), (1.0, "#abbe5e")]),
+    ("zone_blue", [(0.0, "#30769b"), (0.35, "#4083a9"), (0.7, "#4e90b6"), (1.0, "#5d9dc4")]),
+    ("zone_red", [(0.0, "#a05738"), (0.35, "#ae6343"), (0.7, "#bc704f"), (1.0, "#cb7d5b")]),
+    # трава арены: оливковая, как луг на макете боя, светлее и желтее травы плиток
+    ("arena_grass", [(0.0, "#8aa942"), (0.35, "#98b44a"), (0.7, "#a6be52"), (1.0, "#b4c85c")]),
 ]
-RAMP_ROW0 = NCELL - len(RAMPS)   # ramps occupy the bottom rows
+# Рампы занимают нижние строки текстуры. Первые две стоят на своих местах (14, 15) с самого
+# начала — на них сидят UV острова и дорожек; новые рампы растут вверх от 13-й строки,
+# поэтому дописывание рампы не сдвигает уже выгруженные модели.
+_RAMP_ROWS = [14, 15] + [13 - i for i in range(len(RAMPS) - 2)]
+RAMP_ROW0 = min(_RAMP_ROWS)      # выше этой строки — только swatch-и
 
 def hex2rgb(h):
     return tuple(int(h[i:i + 2], 16) / 255.0 for i in (1, 3, 5))
@@ -96,7 +133,7 @@ for _i, (_n, _h) in enumerate(PALETTE):
     assert _r < RAMP_ROW0, "palette overflow"
     SW_UV[_n] = ((_c + 0.5) / NCELL, 1.0 - (_r + 0.5) / NCELL)
 for _i, (_n, _s) in enumerate(RAMPS):
-    RAMP_ROW[_n] = RAMP_ROW0 + _i
+    RAMP_ROW[_n] = _RAMP_ROWS[_i]
 
 def clamp(x, a=0.0, b=1.0):
     return a if x < a else b if x > b else x
@@ -172,8 +209,9 @@ def _place(b, loc, rot, mat):
     b.normal_update()
     return b
 
-def p_box(size, loc=(0, 0, 0), rot=(0, 0, 0), bevel=0.0, mat=None):
-    """Box centred on loc."""
+def p_box(size, loc=(0, 0, 0), rot=(0, 0, 0), bevel=0.03, mat=None):
+    """Box centred on loc. Фаска ненулевая по умолчанию: у KayKit скруглён каждый блок,
+    острых рёбер в наборе нет. На тонких деталях bmesh сам зажмёт её по clamp_overlap."""
     b = bmesh.new()
     bmesh.ops.create_cube(b, size=1.0)
     bmesh.ops.scale(b, vec=Vector(size), verts=b.verts)
@@ -260,11 +298,32 @@ class Asset:
                 l[self.uv].uv = uv
         part.free()
 
+    def add_mesh(self, me, mat=None):
+        """Влить уже собранный ассет набора: UV остаются, поэтому цвета не пересчитываются."""
+        tmp = bmesh.new()
+        tmp.from_mesh(me)
+        if mat is not None:
+            bmesh.ops.transform(tmp, matrix=mat, verts=tmp.verts)
+        suv = tmp.loops.layers.uv.active
+        vmap = {v: self.bm.verts.new(v.co) for v in tmp.verts}
+        for f in tmp.faces:
+            try:
+                nf = self.bm.faces.new([vmap[v] for v in f.verts])
+            except ValueError:
+                continue
+            nf.smooth = f.smooth
+            for l, sl in zip(nf.loops, f.loops):
+                l[self.uv].uv = sl[suv].uv
+        tmp.free()
+
 
 # ----------------------------------------------------------------------------------------
 # island & paths
 # ----------------------------------------------------------------------------------------
-IW, ID = 20.0, 15.0
+# Игровое поле — 14x14 клеток по 1 м, поэтому плоская середина обязана быть больше 14x14 м:
+# здания шире своего следа (шахта 3.7 м на 3 клетки) и свисают за край поля.
+# Отступ кромки 2.4 м при острове 20x20 даёт плоскую зону 15x15 м — по 0.5 м запаса с каждой стороны.
+IW, ID = 20.0, 20.0
 
 def smoothstep(e0, e1, x):
     t = clamp((x - e0) / (e1 - e0))
@@ -275,16 +334,16 @@ def edge_dist(x, y):
 
 def ground_h(x, y):
     e = edge_dist(x, y)
-    w = smoothstep(2.9, 1.2, e)                       # flat build area, gentle bumps near the rim
-    z = w * (0.07 + 0.09 * noise.noise(Vector((x * 0.45, y * 0.45, 1.7))))
-    z -= smoothstep(0.45, 0.0, e) * 0.10              # rounded top edge
+    w = smoothstep(2.4, 1.0, e)                       # flat build area, low swell near the rim
+    z = w * (0.04 + 0.05 * noise.noise(Vector((x * 0.45, y * 0.45, 1.7))))
+    z -= smoothstep(0.35, 0.0, e) * 0.05              # почти прямая кромка: тайл держит фаску
     return z
 
 def grass_t(x, y):
     n1 = noise.noise(Vector((x * 0.16, y * 0.16, 4.2)))
     n2 = noise.noise(Vector((x * 0.55, y * 0.55, 8.1)))
     e = edge_dist(x, y)
-    return 0.58 + 0.42 * n1 + 0.14 * n2 - 0.3 * smoothstep(1.8, 0.0, e)
+    return 0.64 + 0.24 * n1 + 0.07 * n2 - 0.18 * smoothstep(1.8, 0.0, e)
 
 def build_island(a):
     bm, uv = a.bm, a.uv
@@ -298,8 +357,8 @@ def build_island(a):
             z = ground_h(x, y)
             px, py = x, y
             on_b = i in (0, nx) or j in (0, ny)
-            if on_b:                                    # slightly irregular outline
-                n = noise.noise(Vector((x * 0.7, y * 0.7, 2.0))) * 0.09
+            if on_b:                                    # почти прямой контур тайла
+                n = noise.noise(Vector((x * 0.7, y * 0.7, 2.0))) * 0.035
                 if i in (0, nx): px += math.copysign(n, x)
                 if j in (0, ny): py += math.copysign(n, y)
             grid[i, j] = bm.verts.new((px, py, z))
@@ -311,9 +370,10 @@ def build_island(a):
     # perimeter loop (counter-clockwise from above)
     loop = [(i, 0) for i in range(nx)] + [(nx, j) for j in range(ny)] + \
            [(i, ny) for i in range(nx, 0, -1)] + [(0, j) for j in range(ny, 0, -1)]
+    # Бок тайла KayKit: тонкая травяная губа, один земляной пояс, тёмное основание.
     # soil rings: (depth, outward offset, colour of band above this ring)
-    rings_spec = [(0.13, 0.03, "grass_lip"), (0.24, -0.02, "soil_light"), (0.52, 0.05, "soil_mid"),
-                  (0.80, 0.14, "soil_dark"), (1.05, 0.30, "soil_dark")]
+    rings_spec = [(0.10, 0.02, "grass_lip"), (0.17, 0.0, "soil_light"), (0.62, 0.03, "soil_mid"),
+                  (1.05, 0.10, "soil_dark")]
     prev = [grid[k] for k in loop]
     for ri, (depth, inset, col) in enumerate(rings_spec):
         ring = []
@@ -324,8 +384,8 @@ def build_island(a):
             oy = -1 if j == 0 else 1 if j == ny else 0
             n = Vector((ox, oy, 0)).normalized()
             wob = noise.noise(Vector((v0.co.x * 0.9, v0.co.y * 0.9, 5 + ri)))
-            d = depth + 0.06 * wob * (1 if ri else 0.4)
-            off = -inset + 0.05 * rng.uniform(-1, 1) * (1 if ri else 0.3)
+            d = depth + 0.025 * wob * (1 if ri else 0.4)
+            off = -inset + 0.02 * rng.uniform(-1, 1) * (1 if ri else 0.3)
             ring.append(bm.verts.new((v0.co.x + n.x * off, v0.co.y + n.y * off, -d)))
         L = len(loop)
         for idx in range(L):
@@ -414,64 +474,58 @@ def build_paths(a):
 # nature
 # ----------------------------------------------------------------------------------------
 def build_pine(a, seed, height=3.4, radius=1.0, tiers=4):
+    """Ель KayKit: чистые шестигранные ярусы без дрожания вершин, разрыв между ярусами виден."""
     rng = random.Random(seed)
     trunk_h = height * 0.22
-    a.add(p_cyl(0.13 * radius, 0.08 * radius, trunk_h + 0.15, 6, loc=(0, 0, -0.12)), "bark")
-    z = trunk_h * 0.7
-    tier_h = (height - z) / (1 + (tiers - 1) * 0.5) * 1.02
+    a.add(p_cyl(0.15 * radius, 0.11 * radius, trunk_h + 0.15, 6, loc=(0, 0, -0.12)), "bark")
+    z = trunk_h * 0.62
+    tier_h = (height - z) / (1 + (tiers - 1) * 0.58) * 1.02
     cols = ["pine_dark", "pine_mid", "pine_mid", "pine_light", "pine_light"]
     for i in range(tiers):
         f = i / max(1, tiers - 1)
-        r = radius * (1.0 - 0.6 * f) * rng.uniform(0.92, 1.08)
-        h = tier_h * (1.0 - 0.18 * f)
+        r = radius * (1.0 - 0.62 * f) * rng.uniform(0.96, 1.04)
+        h = tier_h * (1.0 - 0.14 * f)
         b = bmesh.new()
-        bmesh.ops.create_cone(b, cap_ends=True, cap_tris=False, segments=7, radius1=r, radius2=0, depth=h)
+        bmesh.ops.create_cone(b, cap_ends=True, cap_tris=False, segments=6, radius1=r, radius2=0, depth=h)
         bmesh.ops.translate(b, vec=(0, 0, h / 2), verts=b.verts)
-        for v in b.verts:
-            if v.co.z < 1e-4:
-                s = rng.uniform(0.86, 1.12)
-                v.co.x *= s; v.co.y *= s; v.co.z += rng.uniform(-0.07, 0.05)
-        _place(b, None, None, TM((rng.uniform(-.03, .03), rng.uniform(-.03, .03), z),
-                                 (rng.uniform(-4, 4), rng.uniform(-4, 4), rng.uniform(0, 360))))
+        _place(b, None, None, TM((0, 0, z), (0, 0, rng.uniform(0, 360))))
         col = cols[min(i, len(cols) - 1)]
         a.add(b, lambda fc, c=col: "pine_dark" if fc.normal.z < -0.5 else c)
-        z += h * 0.5
+        z += h * 0.58
 
 def build_round_tree(a, seed, height=2.9, spread=1.0):
+    """Лиственное KayKit: четыре крупных гранёных кома, плоское затенение вместо сглаживания."""
     rng = random.Random(seed)
-    a.add(p_cyl(0.15, 0.09, height * 0.62, 6, loc=(0, 0, -0.12)), "bark")
-    a.add(p_cyl(0.06, 0.035, 0.6, 5, loc=(0.02, 0, height * 0.3), rot=(0, 38, 20)), "bark")
+    a.add(p_cyl(0.17, 0.12, height * 0.58, 6, loc=(0, 0, -0.12)), "bark")
     c = Vector((0, 0, height * 0.66))
-    blobs = [((0, 0, 0.05), 0.72, "leaf_mid")]
-    for k in range(4):
-        ang = k * 90 + rng.uniform(-25, 25)
-        d = rng.uniform(0.42, 0.58) * spread
-        blobs.append(((math.cos(math.radians(ang)) * d, math.sin(math.radians(ang)) * d, rng.uniform(-0.25, 0.1)),
-                      rng.uniform(0.45, 0.58), rng.choice(["leaf_dark", "leaf_mid"])))
-    blobs.append(((rng.uniform(-.15, .15), rng.uniform(-.15, .15), 0.5), 0.5, "leaf_light"))
+    blobs = [((0, 0, 0.02), 0.82, "leaf_mid"),
+             ((0.42, 0.12, -0.22), 0.56, "leaf_dark"),
+             ((-0.36, -0.18, -0.14), 0.58, "leaf_dark"),
+             ((rng.uniform(-.12, .12), rng.uniform(-.12, .12), 0.46), 0.52, "leaf_light")]
     for off, r, col in blobs:
-        a.add(p_ico(r * spread, 2, loc=c + Vector(off), jitter=0.07, rng=rng, scl=(1, 1, 0.92)), col, smooth=True)
+        a.add(p_ico(r * spread, 1, loc=c + Vector(off) * spread, jitter=0.1, rng=rng, scl=(1, 1, 0.94)), col)
 
 def build_bush(a, seed, size=1.0, berries=False):
     rng = random.Random(seed)
-    parts = [((0, 0, 0.18), 0.34, "bush"), ((0.3, 0.08, 0.12), 0.26, "leaf_mid"), ((-0.26, -0.05, 0.1), 0.24, "leaf_dark")]
+    parts = [((0, 0, 0.18), 0.36, "bush"), ((0.3, 0.08, 0.1), 0.27, "leaf_mid"), ((-0.26, -0.05, 0.08), 0.25, "leaf_dark")]
     for off, r, col in parts:
-        a.add(p_ico(r * size, 2, loc=Vector(off) * size, jitter=0.08, rng=rng, scl=(1, 1, 0.85)), col, smooth=True)
+        a.add(p_ico(r * size, 1, loc=Vector(off) * size, jitter=0.1, rng=rng, scl=(1, 1, 0.88)), col)
     if berries:
-        for k in range(9):
+        for k in range(7):
             d = Vector((rng.uniform(-1, 1), rng.uniform(-1, 1), rng.uniform(0.1, 0.9))).normalized()
             base, r = parts[k % 3][0], parts[k % 3][1]
             p = (Vector(base) + Vector((d.x, d.y, d.z * 0.85)) * r * 0.97) * size
-            a.add(p_ico(0.035 * size, 1, loc=p), "berry")
+            a.add(p_ico(0.045 * size, 1, loc=p), "berry")
 
 def build_rock(a, seed, size=0.3, flat=0.6, n=1):
+    """Валун KayKit: всегда 20 граней, крупная огранка, светлая площадка сверху."""
     rng = random.Random(seed)
     for k in range(n):
-        s = size * (1.0 if k == 0 else rng.uniform(0.45, 0.65))
-        off = (0, 0, 0) if k == 0 else (rng.uniform(-1, 1) * size * 0.9, rng.uniform(-1, 1) * size * 0.9, 0)
-        a.add(p_ico(s, 1 if size < 0.4 else 2, loc=(off[0], off[1], s * flat * 0.35), jitter=0.22, rng=rng,
-                    scl=(1, rng.uniform(0.8, 1.0), flat), rot=(0, 0, rng.uniform(0, 360)), cut=-s * flat * 0.4),
-              by_normal("stone_light", "rock", "rock_dark", 0.7))
+        s = size * (1.0 if k == 0 else rng.uniform(0.5, 0.72))
+        off = (0, 0, 0) if k == 0 else (rng.uniform(-1, 1) * size * 0.85, rng.uniform(-1, 1) * size * 0.85, 0)
+        a.add(p_ico(s, 1, loc=(off[0], off[1], s * flat * 0.3), jitter=0.3, rng=rng,
+                    scl=(1, rng.uniform(0.85, 1.0), flat), rot=(0, 0, rng.uniform(0, 360)), cut=-s * flat * 0.35),
+              by_normal("stone_light", "rock", "rock_dark", 0.6))
 
 def build_grass(a, seed, n=6, h=0.22, col="blade"):
     rng = random.Random(seed)
@@ -508,76 +562,34 @@ def build_stump(a):
 # buildings
 # ----------------------------------------------------------------------------------------
 def rock_face_color(seed):
+    """Скала KayKit чисто серая: мха нет, верхние грани всегда светлее боковых."""
     def f(face):
-        if face.normal.z > 0.74:
-            return "moss"
+        if face.normal.z > 0.7:
+            return "stone_light"
         c = face.calc_center_median()
-        n = noise.noise(c * 3.1 + Vector((seed, 0, 0)))
-        return "stone_light" if n > 0.35 else ("rock_dark" if n < -0.4 else "rock")
+        n = noise.noise(c * 2.2 + Vector((seed, 0, 0)))
+        return "stone_mid" if n > 0.25 else ("rock_dark" if n < -0.35 else "rock")
     return f
 
-def build_mine(a):
-    rng = random.Random(11)
-    b = bmesh.new()
-    bmesh.ops.create_icosphere(b, subdivisions=2, radius=1.0)
-    for v in b.verts:
-        v.co *= 1 + 0.15 * noise.noise(v.co * 1.6 + Vector((3, 1, 7))) + rng.uniform(-0.05, 0.05)
-    bmesh.ops.scale(b, vec=(1.95, 1.5, 1.95), verts=b.verts)
-    bmesh.ops.bisect_plane(b, geom=b.verts[:] + b.edges[:] + b.faces[:], plane_co=(0, 0, -0.08),
-                           plane_no=(0, 0, 1), clear_inner=True)
-    bmesh.ops.translate(b, vec=(0, 0.4, 0), verts=b.verts)
-    for v in b.verts:                               # flat rock face for the portal
-        if v.co.y < -0.76 and abs(v.co.x) < 1.2:
-            v.co.y = -0.76 + rng.uniform(0, 0.05)
-    b.normal_update()
-    a.add(b, rock_face_color(1.0))
-    # a couple of boulders at the foot
-    a.add(p_ico(0.32, 1, loc=(-1.45, -0.55, 0.12), jitter=0.2, rng=rng, scl=(1, 0.9, 0.75)), rock_face_color(2.0))
-    a.add(p_ico(0.22, 1, loc=(1.35, -0.75, 0.08), jitter=0.2, rng=rng, scl=(1, 0.9, 0.7)), rock_face_color(3.0))
-    # dark tunnel
-    a.add(p_box((1.08, 0.3, 1.32), loc=(0, -0.73, 0.62)), "black")
-    # timber portal
-    for sx in (-1, 1):
-        a.add(p_box((0.17, 0.17, 1.45), loc=(sx * 0.63, -0.93, 0.66), bevel=0.02), "wood_mid")
-        a.add(p_box((0.42, 0.09, 0.09), loc=(sx * 0.44, -0.95, 1.2), rot=(0, sx * 45, 0), bevel=0.012), "wood_dark")
-    a.add(p_box((1.75, 0.22, 0.2), loc=(0, -0.94, 1.45), bevel=0.02), "wood_yellow")
-    a.add(p_box((1.95, 0.75, 0.07), loc=(0, -0.92, 1.64), rot=(14, 0, 0), bevel=0.012), "wood_light")
-    for x in (-0.8, -0.4, 0.0, 0.4, 0.8):
-        a.add(p_box((0.035, 0.7, 0.02), loc=(x, -0.92, 1.685), rot=(14, 0, 0)), "wood_mid")
-    # rails coming out
-    for sx in (-1, 1):
-        a.add(p_box((0.05, 1.5, 0.06), loc=(sx * 0.25, -1.4, 0.075)), by_normal("iron_light", "rail"))
-    for y in (-0.8, -1.15, -1.5, -1.85):
-        a.add(p_box((0.72, 0.13, 0.05), loc=(0, y, 0.025), bevel=0.01), "wood_dark")
-    # lantern on the right post
-    a.add(p_box((0.26, 0.04, 0.04), loc=(0.8, -1.0, 1.2)), "iron_dark")
-    a.add(p_box((0.11, 0.11, 0.15), loc=(0.9, -1.0, 1.04)), "lantern_glow")
-    a.add(p_cyl(0.1, 0.0, 0.08, 4, loc=(0.9, -1.0, 1.115), spin=45), "iron_dark")
-    a.add(p_box((0.14, 0.14, 0.025), loc=(0.9, -1.0, 0.955)), "iron_dark")
-
 def build_house(a):
-    W, D, H, F = 3.0, 2.6, 1.75, 0.22
+    # Корпус ниже и шире прежнего, цоколь выше: у KayKit дом читается как приземистый
+    # блок под крупной кровлей. Обшивка венцами убрана — вместо неё сплошной объём,
+    # толстые угловые стойки и один широкий пояс.
+    W, D, H, F = 3.05, 2.70, 1.50, 0.34
     zt = F + H
-    a.add(p_box((W + 0.26, D + 0.26, F + 0.15), loc=(0, 0, (F - 0.15) / 2), bevel=0.03), "stone_mid")
-    a.add(p_box((W - 0.12, D - 0.12, H), loc=(0, 0, F + H / 2)), "wood_dark")
-    nb = 6; bh = H / nb
-    for k in range(nb):
-        z = F + bh * (k + 0.5)
-        col = "wood_mid" if k % 2 == 0 else "wood_mid2"
-        for sy in (-1, 1):
-            a.add(p_box((W, 0.1, bh), loc=(0, sy * (D / 2 - 0.05), z), bevel=0.018), col)
-        for sx in (-1, 1):
-            a.add(p_box((0.1, D - 0.2, bh), loc=(sx * (W / 2 - 0.05), 0, z), bevel=0.018), col)
+    a.add(p_box((W + 0.3, D + 0.3, F + 0.15), loc=(0, 0, (F - 0.15) / 2), bevel=0.07), "stone_mid")
+    a.add(p_box((W, D, H), loc=(0, 0, F + H / 2), bevel=0.05), "wood_mid")
+    a.add(p_box((W + 0.07, D + 0.07, 0.2), loc=(0, 0, F + H * 0.54), bevel=0.05), "wood_dark")
     for sx in (-1, 1):
         for sy in (-1, 1):
-            a.add(p_box((0.2, 0.2, H + 0.06), loc=(sx * W / 2, sy * D / 2, F + H / 2), bevel=0.02), "wood_dark")
+            a.add(p_box((0.3, 0.3, H + 0.06), loc=(sx * W / 2, sy * D / 2, F + H / 2), bevel=0.055), "wood_dark")
     for sy in (-1, 1):
-        a.add(p_box((W + 0.12, 0.16, 0.14), loc=(0, sy * D / 2, zt), bevel=0.02), "wood_dark")
+        a.add(p_box((W + 0.18, 0.24, 0.2), loc=(0, sy * D / 2, zt), bevel=0.05), "wood_dark")
     for sx in (-1, 1):
-        a.add(p_box((0.16, D + 0.12, 0.14), loc=(sx * W / 2, 0, zt), bevel=0.02), "wood_dark")
+        a.add(p_box((0.24, D + 0.18, 0.2), loc=(sx * W / 2, 0, zt), bevel=0.05), "wood_dark")
     # roof geometry
-    pitch = math.radians(38)
-    ox, oy = 0.35, 0.3
+    pitch = math.radians(34)
+    ox, oy = 0.28, 0.3
     zr = zt + 0.08 + (W / 2) * math.tan(pitch)
     L = (W / 2 + ox) / math.cos(pitch)
     Ly = D + 2 * oy
@@ -585,148 +597,58 @@ def build_house(a):
     for sy in (-1, 1):
         a.add(p_prism([(-W / 2, zt + 0.07), (W / 2, zt + 0.07), (0, zr - 0.02)], 0.12, loc=(0, sy * (D / 2 - 0.06), 0)),
               "wood_light")
-        for x in (-0.75, 0.0, 0.75):
+        for x in (-0.68, 0.68):
             hh = (zr - zt) * (1 - abs(x) / (W / 2)) - 0.1
-            a.add(p_box((0.05, 0.04, hh), loc=(x, sy * (D / 2 - 0.0), zt + 0.07 + hh / 2)), "wood_mid")
-    a.add(p_cyl(0.17, 0.17, 0.05, 8, loc=(0, -D / 2 - 0.02, zt + 0.52), rot=(90, 0, 0)), "wood_dark")
-    a.add(p_cyl(0.12, 0.12, 0.05, 8, loc=(0, -D / 2 - 0.04, zt + 0.52), rot=(90, 0, 0)), "black")
-    rng = random.Random(5)
-    R_ = 5
+            a.add(p_box((0.13, 0.1, hh), loc=(x, sy * (D / 2 - 0.0), zt + 0.07 + hh / 2), bevel=0.03), "wood_mid")
+    a.add(p_cyl(0.23, 0.23, 0.12, 8, loc=(0, -D / 2 - 0.06, zt + 0.5), rot=(90, 0, 0)), "wood_dark")
+    a.add(p_cyl(0.16, 0.16, 0.1, 8, loc=(0, -D / 2 - 0.1, zt + 0.5), rot=(90, 0, 0)), "black")
+    R_ = 2
     for sx in (-1, 1):
         nrm = Vector((sx * math.sin(pitch), 0, math.cos(pitch)))
         down = Vector((sx * math.cos(pitch), 0, -math.sin(pitch)))
         ridge = Vector((0, 0, zr))
         # underlay
         c = ridge + down * (L / 2) - nrm * 0.03
-        a.add(p_box((L, Ly, 0.06), loc=c, rot=(0, sx * math.degrees(pitch), 0)), "wood_dark")
-        # tile rows (shingled: each row slightly shallower so the lower edge lifts)
+        a.add(p_box((L, Ly, 0.1), loc=c, rot=(0, sx * math.degrees(pitch), 0), bevel=0.03), "wood_dark")
+        # Кровля KayKit: три сплошных пояса на скат вместо россыпи черепиц.
+        # Раньше здесь было 5x8 плиток на скат — 80 боксов и 6432 треугольника на дом.
         rl = L / R_
         for k in range(R_):
             s = (k + 0.5) * rl
-            cc = ridge + down * s + nrm * 0.05
-            n = 8; tw = Ly / n
-            shift = tw / 2 if k % 2 else 0.0
-            i = 0
-            y0 = -Ly / 2 - shift
-            while y0 < Ly / 2 - 1e-4:
-                ya, yb = max(y0, -Ly / 2), min(y0 + tw, Ly / 2)
-                if yb - ya > 0.05:
-                    col = "roof" if (i + k) % 2 == 0 else "roof_dark"
-                    if rng.random() < 0.12:
-                        col = "roof_light"
-                    a.add(p_box((rl + 0.07, yb - ya - 0.014, 0.05), loc=(cc.x, (ya + yb) / 2, cc.z),
-                                rot=(0, sx * (math.degrees(pitch) - 6), 0), bevel=0.012), col)
-                y0 += tw; i += 1
-        # barge boards
+            cc = ridge + down * s + nrm * 0.06
+            col = "roof" if k == 0 else "roof_dark"   # верх светлее, свес уходит в тень
+            a.add(p_box((rl + 0.1, Ly, 0.17), loc=(cc.x, 0, cc.z),
+                        rot=(0, sx * math.degrees(pitch), 0), bevel=0.05), col)
+        # причелина по торцу ската
         for sy in (-1, 1):
-            cb = ridge + down * (L / 2) + nrm * 0.03
-            a.add(p_box((L + 0.06, 0.06, 0.15), loc=(cb.x, sy * (Ly / 2 + 0.03), cb.z),
-                        rot=(0, sx * math.degrees(pitch), 0), bevel=0.01), "wood_dark")
-    a.add(p_box((0.24, Ly + 0.1, 0.24), loc=(0, 0, zr + 0.07), rot=(0, 45, 0), bevel=0.02), "roof_dark")
-    # chimney
-    a.add(p_box((0.42, 0.42, 1.5), loc=(-0.78, 0.5, zt + 0.55), bevel=0.02), "stone_mid")
-    a.add(p_box((0.52, 0.52, 0.1), loc=(-0.78, 0.5, zt + 1.33), bevel=0.02), "stone_dark")
-    a.add(p_box((0.3, 0.3, 0.02), loc=(-0.78, 0.5, zt + 1.385)), "black")
+            cb = ridge + down * (L / 2) + nrm * 0.05
+            a.add(p_box((L + 0.08, 0.12, 0.24), loc=(cb.x, sy * (Ly / 2 + 0.04), cb.z),
+                        rot=(0, sx * math.degrees(pitch), 0), bevel=0.035), "wood_dark")
+    a.add(p_box((0.42, Ly + 0.16, 0.42), loc=(0, 0, zr + 0.1), rot=(0, 45, 0), bevel=0.06), "roof_dark")
+    # труба
+    a.add(p_box((0.52, 0.52, 1.4), loc=(-0.78, 0.5, zt + 0.5), bevel=0.05), "stone_mid")
+    a.add(p_box((0.66, 0.66, 0.16), loc=(-0.78, 0.5, zt + 1.28), bevel=0.05), "stone_dark")
+    a.add(p_box((0.34, 0.34, 0.03), loc=(-0.78, 0.5, zt + 1.37), bevel=0.0), "black")
     # double door + frame + step
     yd = -D / 2
     for sx in (-1, 1):
-        a.add(p_box((0.11, 0.13, 1.42), loc=(sx * 0.64, yd - 0.03, F + 0.71), bevel=0.012), "wood_dark")
-        a.add(p_box((0.57, 0.06, 1.34), loc=(sx * 0.295, yd - 0.02, F + 0.67), bevel=0.01), "wood_light")
-        for z in (F + 0.2, F + 1.15):
-            a.add(p_box((0.5, 0.04, 0.09), loc=(sx * 0.295, yd - 0.06, z)), "wood_dark")
-        a.add(p_box((0.08, 0.04, 1.04), loc=(sx * 0.295, yd - 0.065, F + 0.675), rot=(0, sx * 26, 0)), "wood_dark")
-        a.add(p_box((0.05, 0.04, 0.12), loc=(sx * 0.08, yd - 0.08, F + 0.7)), "iron_dark")
-    a.add(p_box((1.4, 0.13, 0.13), loc=(0, yd - 0.03, F + 1.42), bevel=0.012), "wood_dark")
-    a.add(p_box((1.5, 0.45, 0.16), loc=(0, yd - 0.3, 0.03), bevel=0.02), "stone_light")
+        a.add(p_box((0.18, 0.2, 1.3), loc=(sx * 0.66, yd - 0.04, F + 0.65), bevel=0.04), "wood_dark")
+        a.add(p_box((0.56, 0.12, 1.2), loc=(sx * 0.3, yd - 0.02, F + 0.6), bevel=0.035), "wood_light")
+        for z in (F + 0.2, F + 1.02):
+            a.add(p_box((0.52, 0.09, 0.15), loc=(sx * 0.3, yd - 0.08, z), bevel=0.03), "wood_dark")
+        a.add(p_box((0.14, 0.09, 0.92), loc=(sx * 0.3, yd - 0.085, F + 0.61), rot=(0, sx * 26, 0), bevel=0.025), "wood_dark")
+        a.add(p_box((0.09, 0.09, 0.18), loc=(sx * 0.1, yd - 0.12, F + 0.64), bevel=0.025), "iron_dark")
+    a.add(p_box((1.55, 0.22, 0.22), loc=(0, yd - 0.04, F + 1.32), bevel=0.05), "wood_dark")
+    a.add(p_box((1.62, 0.52, 0.26), loc=(0, yd - 0.32, 0.06), bevel=0.055), "stone_light")
     # side windows with open shutters
+    # окно без переплёта: крестовины из планок 4 см на игровой дистанции превращались в шум
     for sx in (-1, 1):
         xw = sx * (W / 2 + 0.02)
-        a.add(p_box((0.1, 0.64, 0.56), loc=(xw, 0.25, F + 1.05), bevel=0.012), "wood_dark")
-        a.add(p_box((0.11, 0.5, 0.43), loc=(xw + sx * 0.005, 0.25, F + 1.05)), "glass")
-        a.add(p_box((0.13, 0.04, 0.43), loc=(xw + sx * 0.01, 0.25, F + 1.05)), "wood_dark")
-        a.add(p_box((0.13, 0.5, 0.04), loc=(xw + sx * 0.01, 0.25, F + 1.05)), "wood_dark")
+        a.add(p_box((0.16, 0.7, 0.6), loc=(xw, 0.25, F + 0.95), bevel=0.04), "wood_dark")
+        a.add(p_box((0.17, 0.52, 0.44), loc=(xw + sx * 0.02, 0.25, F + 0.95), bevel=0.03), "glass")
         for sy in (-1, 1):
-            a.add(p_box((0.05, 0.27, 0.52), loc=(xw + sx * 0.03, 0.25 + sy * 0.47, F + 1.05), bevel=0.01), "roof_dark")
-        a.add(p_box((0.18, 0.72, 0.06), loc=(xw + sx * 0.05, 0.25, F + 0.76), bevel=0.01), "wood_light")
-
-def build_market(a):
-    W, D = 3.0, 2.0
-    a.add(p_box((W, D, 0.22), loc=(0, 0, 0.06), bevel=0.02), "wood_dark")
-    n = 6; pw = D / n
-    for i in range(n):
-        a.add(p_box((W + 0.05, pw - 0.02, 0.06), loc=(0, -D / 2 + pw * (i + 0.5), 0.2), bevel=0.012),
-              "wood_light" if i % 2 else "wood_mid2")
-    cz, ch, cy = 0.23, 0.82, -0.62
-    a.add(p_box((W - 0.12, 0.44, ch - 0.02), loc=(0, cy + 0.26, cz + ch / 2)), "wood_dark")
-    nb = 10; bw = (W - 0.1) / nb
-    for i in range(nb):
-        a.add(p_box((bw - 0.016, 0.08, ch), loc=(-W / 2 + 0.05 + bw * (i + 0.5), cy, cz + ch / 2), bevel=0.012),
-              "wood_mid" if i % 2 else "wood_mid2")
-    for sx in (-1, 1):
-        a.add(p_box((0.08, 0.5, ch), loc=(sx * (W / 2 - 0.06), cy + 0.25, cz + ch / 2), bevel=0.012), "wood_mid")
-    a.add(p_box((W + 0.1, 0.64, 0.07), loc=(0, cy + 0.2, cz + ch + 0.035), bevel=0.015), "wood_light")
-    a.add(p_box((W + 0.04, 0.1, 0.1), loc=(0, cy - 0.02, cz + 0.08), bevel=0.012), "wood_dark")
-    # posts
-    for sx in (-1, 1):
-        a.add(p_box((0.13, 0.13, 1.95), loc=(sx * W / 2, -0.95, 0.17 + 0.975), bevel=0.015), "wood_dark")
-        a.add(p_box((0.13, 0.13, 2.38), loc=(sx * W / 2, 0.9, 0.17 + 1.19), bevel=0.015), "wood_dark")
-    # back shelf
-    a.add(p_box((W - 0.2, 0.34, 0.05), loc=(0, 0.74, 1.05), bevel=0.01), "wood_mid")
-    a.add(p_box((W - 0.2, 0.34, 0.05), loc=(0, 0.74, 0.55), bevel=0.01), "wood_mid")
-    # beams
-    a.add(p_box((W + 0.12, 0.11, 0.11), loc=(0, -0.95, 2.06), bevel=0.012), "wood_dark")
-    a.add(p_box((W + 0.12, 0.11, 0.11), loc=(0, 0.9, 2.5), bevel=0.012), "wood_dark")
-    y_back, z_back, y_front, z_front = 1.02, 2.62, -1.32, 2.02
-    ang = math.degrees(math.atan2(z_back - z_front, y_back - y_front))
-    L = math.hypot(z_back - z_front, y_back - y_front)
-    for sx in (-1, 1):
-        a.add(p_box((0.08, 1.95, 0.08), loc=(sx * W / 2, -0.02, 2.26), rot=(ang, 0, 0)), "wood_dark")
-    # striped awning + flaps
-    Wa, ns = W + 0.4, 8
-    sw = Wa / ns
-    cyy, czz = (y_back + y_front) / 2, (z_back + z_front) / 2 + 0.06
-    for i in range(ns):
-        x = -Wa / 2 + sw * (i + 0.5)
-        col = "stripe_red" if i % 2 == 0 else "cream"
-        a.add(p_box((sw + 0.002, L, 0.05), loc=(x, cyy, czz), rot=(ang, 0, 0)), col)
-        a.add(p_prism([(-sw / 2, 0.0), (sw / 2, 0.0), (sw / 2, -0.14), (0, -0.23), (-sw / 2, -0.14)], 0.03,
-                      loc=(x, y_front - 0.01, z_front + 0.05)), col)
-    # hanging sign with a coin
-    a.add(p_box((0.5, 0.05, 0.05), loc=(-W / 2 - 0.22, -0.95, 1.85)), "wood_dark")
-    for x in (-W / 2 - 0.16, -W / 2 - 0.42):
-        a.add(p_box((0.015, 0.015, 0.14), loc=(x, -0.95, 1.76)), "rope")
-    a.add(p_box((0.42, 0.05, 0.3), loc=(-W / 2 - 0.29, -0.95, 1.55), bevel=0.015), "wood_light")
-    a.add(p_cyl(0.09, 0.09, 0.02, 12, loc=(-W / 2 - 0.29, -0.975, 1.55), rot=(90, 0, 0), bevel=0.005), "gold")
-
-def build_smelter(a):
-    rng = random.Random(21)
-    a.add(p_cyl(0.98, 0.95, 0.3, 8, loc=(0, 0, -0.1), bevel=0.03, spin=22.5), "stone_dark")
-    z = 0.2
-    rings = [(0.84, 0.8, 0.38, "stone_mid"), (0.8, 0.74, 0.36, "stone_light"), (0.74, 0.64, 0.34, "stone_mid")]
-    for i, (r1, r2, h, col) in enumerate(rings):
-        a.add(p_cyl(r1, r2, h, 8, loc=(0, 0, z), bevel=0.04, spin=22.5 + rng.uniform(-4, 4)), col)
-        z += h
-    a.add(p_cyl(0.64, 0.3, 0.48, 8, loc=(0, 0, z), bevel=0.03, spin=22.5), "stone_dark")
-    z += 0.46
-    a.add(p_cyl(0.24, 0.22, 0.9, 8, loc=(0, 0, z - 0.05), bevel=0.02, spin=22.5), "stone_mid")
-    a.add(p_cyl(0.31, 0.31, 0.11, 8, loc=(0, 0, z + 0.82), bevel=0.02, spin=22.5), "stone_light")
-    a.add(p_cyl(0.19, 0.19, 0.02, 8, loc=(0, 0, z + 0.925), spin=22.5), "black")
-    # fire mouth
-    a.add(p_box((0.64, 0.3, 0.52), loc=(0, -0.72, 0.56)), "black")
-    a.add(p_box((0.46, 0.1, 0.3), loc=(0, -0.84, 0.51)), "glow")
-    a.add(p_box((0.34, 0.08, 0.07), loc=(0, -0.88, 0.39)), "glow_hot")
-    a.add(p_box((0.84, 0.22, 0.15), loc=(0, -0.86, 0.85), bevel=0.02), "stone_light")
-    for sx in (-1, 1):
-        a.add(p_box((0.15, 0.22, 0.52), loc=(sx * 0.38, -0.86, 0.54), bevel=0.02), "stone_light")
-    a.add(p_box((0.95, 0.38, 0.13), loc=(0, -0.97, 0.26), bevel=0.02), "stone_dark")
-    # ingot mould with molten metal
-    a.add(p_box((0.44, 0.22, 0.06), loc=(0, -1.02, 0.35), bevel=0.01), "iron_dark")
-    a.add(p_box((0.36, 0.15, 0.01), loc=(0, -1.02, 0.382)), "glow_hot")
-    # coal heap on the side
-    for k in range(7):
-        a.add(p_ico(rng.uniform(0.07, 0.11), 1, loc=(0.85 + rng.uniform(-.14, .14), -0.45 + rng.uniform(-.14, .14),
-                                                   0.05 + k * 0.012), jitter=0.2, rng=rng), "coal")
-
+            a.add(p_box((0.1, 0.3, 0.58), loc=(xw + sx * 0.06, 0.25 + sy * 0.5, F + 0.95), bevel=0.03), "roof_dark")
+        a.add(p_box((0.26, 0.86, 0.12), loc=(xw + sx * 0.07, 0.25, F + 0.62), bevel=0.035), "wood_light")
 
 # ----------------------------------------------------------------------------------------
 # props
@@ -779,9 +701,9 @@ def build_minecart(a, filled=False):
 
 def build_rails(a):
     for sx in (-1, 1):
-        a.add(p_box((0.05, 1.0, 0.06), loc=(sx * 0.25, 0, 0.08)), by_normal("iron_light", "rail"))
+        a.add(p_box((0.09, 1.0, 0.09), loc=(sx * 0.26, 0, 0.1), bevel=0.02), by_normal("iron_light", "rail"))
     for y in (-0.33, 0.0, 0.33):
-        a.add(p_box((0.72, 0.13, 0.05), loc=(0, y, 0.025), bevel=0.01), "wood_dark")
+        a.add(p_box((0.78, 0.19, 0.09), loc=(0, y, 0.04), bevel=0.025), "wood_dark")
 
 def build_sack(a, loc=(0, 0, 0), seed=0):
     rng = random.Random(seed)
@@ -793,14 +715,14 @@ def build_sack(a, loc=(0, 0, 0), seed=0):
     a.add(p_cyl(0.07, 0.11, 0.07, 8, loc=o + Vector((0, 0, 0.47))), "burlap_dark")
 
 def build_fence(a):
-    for x in (-0.44, 0.44):
-        a.add(p_box((0.1, 0.1, 0.72), loc=(x, 0, 0.3), bevel=0.012), "wood_mid")
-        a.add(p_cyl(0.075, 0.0, 0.1, 4, loc=(x, 0, 0.66), spin=45), "wood_mid")
-    for z in (0.25, 0.52):
-        a.add(p_box((1.0, 0.05, 0.1), loc=(0, -0.055, z), bevel=0.01), "wood_light")
+    for x in (-0.42, 0.42):
+        a.add(p_box((0.18, 0.18, 0.72), loc=(x, 0, 0.3), bevel=0.045), "wood_mid")
+        a.add(p_cyl(0.13, 0.0, 0.16, 4, loc=(x, 0, 0.66), spin=45), "wood_mid")
+    for z in (0.24, 0.53):
+        a.add(p_box((1.0, 0.11, 0.17), loc=(0, -0.08, z), bevel=0.04), "wood_light")
 
 def build_pickaxe(a):
-    a.add(p_cyl(0.024, 0.02, 0.78, 6, loc=(-0.39, 0, 0.03), rot=(0, 90, 0)), "wood_light")
+    a.add(p_cyl(0.042, 0.036, 0.78, 6, loc=(-0.39, 0, 0.03), rot=(0, 90, 0)), "wood_light")
     for sy in (-1, 1):
         a.add(p_box((0.05, 0.22, 0.05), loc=(0.37, sy * 0.1, 0.05), rot=(sy * 10, 0, 0)), "iron")
         a.add(p_cyl(0.028, 0.0, 0.08, 4, loc=(0.37, sy * 0.21, 0.07), rot=(-sy * 80, 0, 0), spin=45), "iron_light")
@@ -816,17 +738,15 @@ def build_anvil(a):
     a.add(p_box((0.06, 0.12, 0.05), loc=(0.25 - 0.05, 0.14, 0.565), rot=(0, 0, 25)), "iron_dark")
 
 def build_lantern_post(a):
-    a.add(p_box((0.3, 0.3, 0.16), loc=(0, 0, 0.04), bevel=0.02), "stone_mid")
-    a.add(p_box((0.1, 0.1, 1.72), loc=(0, 0, 0.86), bevel=0.015), "wood_dark")
-    a.add(p_box((0.5, 0.07, 0.07), loc=(0.2, 0, 1.64), bevel=0.01), "wood_dark")
-    a.add(p_box((0.3, 0.05, 0.05), loc=(0.1, 0, 1.5), rot=(0, 45, 0)), "wood_dark")
-    a.add(p_box((0.02, 0.02, 0.1), loc=(0.39, 0, 1.56)), "iron_dark")
-    a.add(p_cyl(0.11, 0.0, 0.09, 4, loc=(0.39, 0, 1.43), spin=45), "iron_dark")
-    a.add(p_box((0.12, 0.12, 0.17), loc=(0.39, 0, 1.345)), "lantern_glow")
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            a.add(p_box((0.02, 0.02, 0.18), loc=(0.39 + sx * 0.065, sy * 0.065, 1.345)), "iron_dark")
-    a.add(p_box((0.16, 0.16, 0.03), loc=(0.39, 0, 1.255)), "iron_dark")
+    # Прутки клетки по 2 см убраны: вместо них сам фонарь стал крупнее, а низ и верх
+    # держат толстые оковки — на дистанции читается тот же объект, но без сыпи.
+    a.add(p_box((0.38, 0.38, 0.2), loc=(0, 0, 0.06), bevel=0.05), "stone_mid")
+    a.add(p_box((0.18, 0.18, 1.7), loc=(0, 0, 0.88), bevel=0.045), "wood_dark")
+    a.add(p_box((0.54, 0.14, 0.14), loc=(0.22, 0, 1.62), bevel=0.04), "wood_dark")
+    a.add(p_box((0.34, 0.1, 0.1), loc=(0.12, 0, 1.46), rot=(0, 45, 0), bevel=0.03), "wood_dark")
+    a.add(p_cyl(0.17, 0.0, 0.14, 4, loc=(0.42, 0, 1.4), spin=45), "iron_dark")
+    a.add(p_box((0.2, 0.2, 0.26), loc=(0.42, 0, 1.27), bevel=0.04), "lantern_glow")
+    a.add(p_box((0.25, 0.25, 0.06), loc=(0.42, 0, 1.11), bevel=0.02), "iron_dark")
 
 
 # ----------------------------------------------------------------------------------------
@@ -967,10 +887,7 @@ def crate_ore(a):
 # kit registry  (category, name, builder)
 # ----------------------------------------------------------------------------------------
 KIT = [
-    ("Buildings", "Bld_Mine", build_mine),
     ("Buildings", "Bld_House", build_house),
-    ("Buildings", "Bld_Market", build_market),
-    ("Buildings", "Bld_Smelter", build_smelter),
 
     ("Nature", "Tree_Pine_A", lambda a: build_pine(a, 1, 3.4, 1.0, 4)),
     ("Nature", "Tree_Pine_B", lambda a: build_pine(a, 2, 4.4, 1.05, 5)),
@@ -980,9 +897,9 @@ KIT = [
     ("Nature", "Bush_A", lambda a: build_bush(a, 6, 1.0)),
     ("Nature", "Bush_B", lambda a: build_bush(a, 7, 1.35)),
     ("Nature", "Bush_Berry", lambda a: build_bush(a, 8, 1.1, berries=True)),
-    ("Nature", "Rock_Small", lambda a: build_rock(a, 9, 0.2, 0.6)),
-    ("Nature", "Rock_Medium", lambda a: build_rock(a, 10, 0.38, 0.65, n=3)),
-    ("Nature", "Rock_Large", lambda a: build_rock(a, 11, 0.75, 0.7, n=2)),
+    ("Nature", "Rock_Small", lambda a: build_rock(a, 9, 0.22, 0.78)),
+    ("Nature", "Rock_Medium", lambda a: build_rock(a, 10, 0.4, 0.8, n=3)),
+    ("Nature", "Rock_Large", lambda a: build_rock(a, 11, 0.8, 0.85, n=2)),
     ("Nature", "Grass_Tuft_A", lambda a: build_grass(a, 12, 6, 0.22)),
     ("Nature", "Grass_Tuft_B", lambda a: build_grass(a, 13, 9, 0.3, "blade_dark")),
     ("Nature", "Flowers_A", lambda a: build_flowers(a, 14)),
@@ -1023,12 +940,26 @@ KIT = [
 ]
 
 
+def ext_kit():
+    """Здания из пакета vitaria_buildings рядом с этим файлом: шахта, рынок, кузница, ферма и др.
+    Пакета нет или он сломан — набор собирается без них, в консоли одна строка."""
+    try:
+        here = os.path.dirname(os.path.abspath(__file__))
+        if here not in sys.path:
+            sys.path.insert(0, here)
+        import vitaria_buildings
+        return vitaria_buildings.kit_entries()
+    except Exception as ex:
+        print("vitaria_buildings не подключён:", ex)
+        return []
+
+
 # ----------------------------------------------------------------------------------------
-# scene layout (recreates the screenshot, plus a smelter between the mine and the storehouse)
+# scene layout: остров с дорожками, реквизитом и природой. Зданий на острове нет — их ставит
+# игра (или руками в Scene_Buildings). FOOTPRINTS — площадки под здания: там не растут
+# деревья и трава, а реквизит вокруг остаётся на своих местах.
 # ----------------------------------------------------------------------------------------
-BUILDINGS = [
-    ("Bld_Mine", -3.0, 3.2, 0), ("Bld_House", 4.8, 3.35, 0), ("Bld_Market", 4.6, -2.15, 0), ("Bld_Smelter", 0.9, 4.25, 0),
-]
+BUILDINGS = []          # (asset, x, y, rot_z)
 FOOTPRINTS = [(-5.1, 0.9, -0.9, 5.4), (3.0, 1.5, 6.6, 5.1), (2.7, -3.5, 6.5, -0.8), (-0.3, 2.9, 2.1, 5.6)]
 PROPS = [
     # (asset, x, y, rot_z, z_override)
@@ -1039,8 +970,9 @@ PROPS = [
     ("Prop_Anvil", 2.3, 4.5, 30, None), ("Res_LogPile", -0.3, 5.15, 80, None), ("Res_Ingot_Gold", 0.35, 3.0, 60, None),
     ("Prop_Barrel", 2.9, 3.0, 0, None), ("Prop_Barrel", 2.8, 3.58, 40, None), ("Prop_Sack", 2.95, 4.15, 20, None),
     ("Prop_Crate", 6.75, 2.3, 15, None), ("Prop_Crate", 6.8, 2.86, -5, None), ("Res_Planks", 6.9, 4.2, 88, None),
-    ("Res_CoinStack", 3.75, -2.6, 0, 1.12), ("Res_Ingot_Gold", 4.35, -2.62, 10, 1.12), ("Res_Ingot_Gold", 4.42, -2.55, -5, 1.195),
-    ("Res_Ore_Gold", 5.0, -2.62, 30, 1.12), ("Res_Ingot_Copper", 5.55, -2.6, -15, 1.12),
+    # товары бывшего рынка лежат на земле (прилавка больше нет); один слиток — на соседнем
+    ("Res_CoinStack", 3.75, -2.6, 0, 0.0), ("Res_Ingot_Gold", 4.35, -2.62, 10, 0.0), ("Res_Ingot_Gold", 4.42, -2.55, -5, 0.075),
+    ("Res_Ore_Gold", 5.0, -2.62, 30, 0.0), ("Res_Ingot_Copper", 5.55, -2.6, -15, 0.0),
     ("Res_CoinPile", 6.6, -3.3, 0, None), ("Prop_Sack", 6.55, -1.35, -30, None), ("Prop_Barrel", 2.75, -1.35, 0, None),
     ("Prop_Crate", 2.85, -0.8, 20, None),
     ("Res_StonePile", -5.6, -0.55, 10, None), ("Res_Planks", -4.4, -0.35, -35, None), ("Res_LogPile", -6.35, 0.25, 70, None),
@@ -1111,17 +1043,22 @@ def main():
         return o
 
     # --- kit
-    kit_objs, kit_cat = {}, {}
-    for cat, name, fn in KIT:
-        a = Asset(name)
-        fn(a)
-        kit_objs[name] = finish(a, kit_c[cat])
+    kit_objs, kit_cat, cat_names = {}, {}, {}
+
+    def register(name, obj, cat):
+        kit_objs[name] = obj
         kit_cat[name] = cat
+        cat_names.setdefault(cat, []).append(name)
         try:
-            kit_objs[name].asset_mark()
-            kit_objs[name].asset_data.tags.new(cat)
+            obj.asset_mark()
+            obj.asset_data.tags.new(cat)
         except Exception as ex:
             print("asset mark skipped:", ex)
+
+    for cat, name, fn in KIT + ext_kit():
+        a = Asset(name)
+        fn(a)
+        register(name, finish(a, kit_c[cat]), cat)
         print("built", name)
 
     # --- environment (lives only in the scene)
@@ -1165,11 +1102,11 @@ def main():
     tries = 0
     while tries < 6000:
         tries += 1
-        x, y = rng.uniform(-9.55, 9.55), rng.uniform(-7.05, 7.05)
+        x, y = rng.uniform(-9.55, 9.55), rng.uniform(-9.55, 9.55)
         e = edge_dist(x, y)
         if e > 2.5:
             continue
-        front = y < -4.6
+        front = y < -7.0
         if front and abs(x) < 7.2:
             continue
         if near_path(x, y, 1.3) or in_footprint(x, y, 0.6):
@@ -1199,7 +1136,7 @@ def main():
         n = 0; t = 0
         while n < count and t < 8000:
             t += 1
-            x, y = rng.uniform(-9.3, 9.3), rng.uniform(-6.9, 6.9)
+            x, y = rng.uniform(-9.3, 9.3), rng.uniform(-9.3, 9.3)
             if near_path(x, y, 0.75) or in_footprint(x, y, 0.2) or not free_at(x, y, rr):
                 continue
             place(rng.choice(assets), x, y, rng.uniform(0, 360), s=rng.uniform(0.8, 1.25), r=rr)
@@ -1211,12 +1148,13 @@ def main():
     lab_mat.use_nodes = True
     lab_mat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = hex2rgb("#262b24") + (1,)
     # category: (x0, y0, gap, label size, items per line, line spacing)
-    rows = {"Buildings": (60.0, 0.0, 1.2, 0.3, 99, 6.0), "Nature": (60.0, -12.0, 0.8, 0.2, 8, 5.2),
+    rows = {"Buildings": (60.0, 0.0, 1.2, 0.3, 99, 6.0),
+            "Nature": (60.0, -12.0, 0.8, 0.2, 8, 5.2),
             "Props": (60.0, -25.0, 0.6, 0.11, 5, 2.6), "Resources": (60.0, -33.0, 0.42, 0.075, 6, 1.6)}
     show_members = {}
     show_bounds = {}
     for cat, (x0, y0, gap, lsize, per_row, lsp) in rows.items():
-        names = [n for c, n, _ in KIT if c == cat]
+        names = cat_names[cat]
         x = x0
         mins, maxs = [], []
         line = 0
@@ -1276,8 +1214,8 @@ def main():
     cam_d = bpy.data.cameras.new("Camera")
     cam_d.lens = 35
     cam = bpy.data.objects.new("Camera", cam_d)
-    cam.location = (0.0, -21.0, 19.0)
-    target = Vector((0.0, 0.3, 0.0))
+    cam.location = (0.0, -24.5, 21.5)               # остров стал глубже: 20x20 вместо 20x15
+    target = Vector((0.0, 0.0, 0.0))
     cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
     light_coll.objects.link(cam)
     scn.camera = cam
@@ -1403,23 +1341,35 @@ def render_previews(scn, cam, show_bounds, show_members, prev_dir):
     composite_bg(os.path.join(prev_dir, "scene_hero.png"))
 
 
+BG_TOP, BG_BOTTOM = "#3a4656", "#242c37"        # холодная подложка под герой-кадр
+
+
 def composite_bg(path):
-    try:
-        from PIL import Image
-    except ImportError:
-        return
-    im = Image.open(path).convert("RGBA")
-    w, h = im.size
-    bg = Image.new("RGBA", (w, h))
-    top, bot = (52, 64, 48), (33, 41, 31)
-    px = bg.load()
-    for y in range(h):
-        k = y / (h - 1)
-        c = tuple(int(top[i] + (bot[i] - top[i]) * k) for i in range(3)) + (255,)
-        for x in range(w):
-            px[x, y] = c
-    bg.alpha_composite(im)
-    bg.convert("RGB").save(path)
+    """Подложить градиент под прозрачный герой-кадр.
+
+    Через bpy, а не PIL: PIL в поставку Blender не входит, и раньше эта функция
+    молча выходила, оставляя кадр прозрачным. У 8-битного PNG `pixels` отдаёт
+    значения уже в sRGB, поэтому цвета подложки берём из палитры как есть.
+    """
+    import numpy as np
+    img = bpy.data.images.load(path)
+    w, h = img.size
+    buf = np.empty(w * h * 4, dtype=np.float32)
+    img.pixels.foreach_get(buf)
+    buf = buf.reshape(h, w, 4)                   # строка 0 — низ кадра
+    top = np.array(hex2rgb(BG_TOP), dtype=np.float32)
+    bot = np.array(hex2rgb(BG_BOTTOM), dtype=np.float32)
+    k = np.linspace(0.0, 1.0, h, dtype=np.float32)[:, None, None]
+    grad = bot + (top - bot) * k
+    a = buf[..., 3:4]
+    buf[..., :3] = buf[..., :3] * a + grad * (1.0 - a)
+    buf[..., 3] = 1.0
+    img.pixels.foreach_set(buf.ravel())
+    img.filepath_raw = path
+    img.file_format = "PNG"
+    img.save()
+    bpy.data.images.remove(img)
+    print("background composited", path)
 
 
 if __name__ == "__main__":

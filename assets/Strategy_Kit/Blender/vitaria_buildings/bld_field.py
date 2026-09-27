@@ -1,0 +1,207 @@
+"""
+Поле: приподнятая вспаханная делянка, семь гребней вдоль фасада и пугало среди колосьев.
+
+Главный приём — прогрессия спереди назад: голые гребни, зелёные пучки всходов, затем три
+ряда высокой золотой пшеницы. Высокое стоит сзади, поэтому игровая камера (с -Y под ~40°)
+видит все стадии сразу, а пугало в синей рубахе поднимается над колосьями и даёт силуэт.
+"""
+import math, random
+import bmesh
+from build_vitaria import p_box, p_cyl, p_ico, by_normal
+from vitaria_buildings.common import Frame, fence_line
+
+NAME = "Bld_Field"
+TITLE = "Поле"
+TARGET = (4.4, 4.0, 1.7)
+
+PW, PD = 3.90, 3.40          # делянка
+PY = 0.15                    # центр делянки сдвинут назад: спереди место под тачку и снопы
+ZP = 0.13                    # верх делянки
+ROWS = [-1.25 + i * 0.46 for i in range(7)]   # 2 борозды, 2 ряда всходов, 3 ряда пшеницы
+RX = PW / 2 - 0.17           # концы гребней
+SC = (0.55, 0.80)            # пугало — между первым и вторым рядом пшеницы
+FX = 2.12                    # линия изгороди по бокам
+EAR = by_normal("wheat_light", "wheat", "wheat", 0.2)
+SOIL = by_normal("soil_light", "soil_mid", "soil_mid", 0.85)
+
+
+def _ridge(a, x0, x1, y, h=0.10, hw=0.23, slope=1.8):
+    """Гребень под посадками: профиль-шестиугольник со светлым верхом, торцы пологие.
+    Плоская трапеция читалась доской настила, а прямой торец скруглённого профиля — бревном;
+    пологий торец уходит в землю, и гребень читается насыпью. Низ утоплен на 2 см в делянку."""
+    prof = [(-hw, -0.02), (hw, -0.02), (hw * 0.62, h * 0.62), (hw * 0.24, h),
+            (-hw * 0.24, h), (-hw * 0.62, h * 0.62)]
+    b = bmesh.new()
+    ends = [[b.verts.new((xe + sg * slope * (z + 0.02), y + py, ZP + z)) for py, z in prof]
+            for xe, sg in ((x0, 1), (x1, -1))]
+    b.faces.new(ends[0])
+    b.faces.new(ends[1])
+    n = len(prof)
+    for i in range(n):
+        j = (i + 1) % n
+        b.faces.new((ends[0][i], ends[1][i], ends[1][j], ends[0][j]))
+    bmesh.ops.recalc_face_normals(b, faces=b.faces[:])
+    b.normal_update()
+    a.add(b, SOIL)
+
+
+def _clod_row(a, y, rng, n=6):
+    """Свежая пахота: сплошной гребень и гранёные комья, вдавленные в него через неравный шаг.
+    Голый ровный гребень читался брусом, отдельные бугры без гребня — мощёной дорожкой."""
+    _ridge(a, -RX, RX, y, h=0.12, hw=0.24)
+    xs = [-RX + 0.35 + k * (2 * RX - 0.7) / (n - 1) + rng.uniform(-0.12, 0.12) for k in range(n)]
+    for k, x in enumerate(xs):
+        r = rng.uniform(0.10, 0.15)
+        a.add(p_ico(r, 1, loc=(x, y + rng.uniform(-0.05, 0.05), ZP + 0.08),
+                    scl=(1.35, 1.0, 0.72), jitter=0.2, rng=rng, rot=(0, 0, rng.uniform(0, 72)),
+                    cut=-0.2 * r),
+              by_normal("soil_light", "soil_mid", "soil_mid", 0.72))
+
+
+def _ear(a, e, L, r=0.064, col=EAR):
+    """Колос: короткий низ, прямое тело, острый верх; трёхгранный — две грани видно всегда.
+    Бипирамида без «тела» читалась наконечником копья, а не колосом."""
+    e.cyl(a, 0.0, r, L * 0.22, 3, col=col, cap=False)
+    e.cyl(a, r, r * 0.85, L * 0.5, 3, loc=(0, 0, L * 0.22), col=col, cap=False)
+    e.cyl(a, r * 0.85, 0.0, L * 0.28, 3, loc=(0, 0, L * 0.72), col=col, cap=False)
+
+
+def _leaf(a, x, y, z0, rng, h, col, psi, tilt, r=0.06):
+    """Лист: сплюснутый открытый 4-гранный конус, наклонённый наружу."""
+    fr = Frame((x, y, z0), rot=(tilt, 0, psi + 90), s=(1.0, 0.4, 1.0))
+    fr.cyl(a, r, 0.0, h, 4, col=col, cap=False)
+
+
+def _wheat_bush(a, x, y, z0, rng, hmax, n):
+    """Куст: n почти вертикальных стеблей с колосьями, чуть разведённых от центра.
+    Колос на вертикальном стебле читается пшеницей; веер из наклонных стеблей — звездой."""
+    for k in range(n):
+        psi = rng.uniform(0, 360)
+        d = rng.uniform(0.0, 0.08)
+        c, s = math.cos(math.radians(psi)), math.sin(math.radians(psi))
+        fr = Frame((x + c * d, y + s * d, z0), rot=(rng.uniform(3, 12), 0, psi + 90))
+        h = hmax * rng.uniform(0.85, 1.0)
+        L = 0.32
+        fr.cyl(a, 0.026, 0.02, h - L + 0.03, 3, col="wheat_dark", cap=False)
+        e = fr.sub((0, 0, h - L), rot=(rng.uniform(0, 10), 0, rng.uniform(0, 360)))
+        _ear(a, e, L, col=EAR if k % 2 else "wheat")
+
+
+def _sprout(a, x, y, z0, rng, h, n=4):
+    """Пучок всходов: центральный лист прямо, остальные веером наружу."""
+    a0 = rng.uniform(0, 360)
+    for k in range(n):
+        tilt = rng.uniform(16, 30) if k else rng.uniform(0, 8)
+        _leaf(a, x, y, z0, rng, h * (1.1 if k == 0 else rng.uniform(0.7, 0.95)),
+              "leaf_light" if k % 2 else "blade", a0 + k * 360.0 / n + rng.uniform(-20, 20), tilt,
+              r=0.065)
+
+
+def _sheaf(a, fr):
+    """Сноп: связка стеблей с перетяжкой, наверху расходятся колосья."""
+    fr.cyl(a, 0.14, 0.085, 0.30, 7, col="wheat_dark", cap=False)
+    fr.cyl(a, 0.105, 0.105, 0.065, 7, loc=(0, 0, 0.25), col="rope")
+    fr.cyl(a, 0.085, 0.15, 0.20, 7, loc=(0, 0, 0.30), col="wheat")
+    fr.cyl(a, 0.15, 0.06, 0.07, 7, loc=(0, 0, 0.50), col="wheat_light")
+    for k in range(5):
+        psi = k * 72 + 20
+        c, s = math.cos(math.radians(psi)), math.sin(math.radians(psi))
+        _ear(a, fr.sub((c * 0.08, s * 0.08, 0.40), rot=(22, 0, psi + 90)), 0.28, r=0.058,
+             col=EAR if k % 2 else "wheat")
+
+
+def _scarecrow(a, fr):
+    """Пугало: шест с перекладиной, синяя рубаха, голова-мешок, соломенная шляпа, ворона на руке."""
+    fr.box(a, (0.09, 0.09, 1.36), (0, 0, 0.60), col="wood_mid", bevel=0.02)       # низ в земле на 8 см
+    fr.box(a, (1.12, 0.08, 0.08), (0, 0, 1.06), col="wood_mid", bevel=0.02)
+    # рубаха расширяется книзу — висит на перекладине
+    fr.taper(a, (0.46, 0.27), (0.38, 0.23), 0.48, loc=(0, 0, 0.66), col="roof", bevel=0.03)
+    fr.box(a, (0.46, 0.29, 0.06), (0, 0, 0.78), col="rope", bevel=0.015)            # верёвка-пояс
+    fr.box(a, (0.12, 0.03, 0.12), (-0.09, -0.135, 0.98), rot=(0, 12, 0), col="berry", bevel=0.0)  # заплата
+    for sx in (-1, 1):
+        fr.box(a, (0.30, 0.17, 0.16), (sx * 0.33, 0, 1.06), col="roof", bevel=0.03)   # рукава
+        for dz, spread in ((0.04, 22), (-0.03, -8), (0.0, 8)):
+            fr.cyl(a, 0.045, 0.0, 0.15, 4, loc=(sx * 0.47, 0, 1.06 + dz),
+                   rot=(0, sx * (90 - spread), 0), col="wheat_light")
+    for x, y in ((-0.15, -0.06), (-0.05, -0.10), (0.06, -0.09), (0.16, -0.04), (0.0, 0.08)):
+        fr.cyl(a, 0.045, 0.0, 0.14, 4, loc=(x, y, 0.70), rot=(180, 0, 0), col="wheat_light")
+    # голова-мешок, перетянутая верёвкой
+    fr.cyl(a, 0.08, 0.08, 0.06, 8, loc=(0, 0, 1.14), col="rope")
+    fr.ico(a, 0.165, loc=(0, 0, 1.33), scl=(1.0, 0.92, 1.08), col="burlap")
+    for sx in (-1, 1):
+        fr.cyl(a, 0.032, 0.032, 0.07, 6, loc=(sx * 0.065, -0.10, 1.36), rot=(90, 0, 0), col="coal")
+    fr.box(a, (0.12, 0.03, 0.03), (0, -0.14, 1.26), col="coal", bevel=0.0)
+    # соломенная шляпа, чуть набекрень
+    h = fr.sub((0.0, 0.0, 1.45), rot=(6, -9, 0))
+    h.cyl(a, 0.29, 0.29, 0.045, 10, col=by_normal("wheat_light", "wheat", "wheat_dark", 0.6))
+    h.cyl(a, 0.15, 0.12, 0.17, 8, loc=(0, 0, 0.03), col=by_normal("wheat_light", "wheat", "wheat_dark", 0.6))
+    h.cyl(a, 0.155, 0.15, 0.05, 8, loc=(0, 0, 0.045), col="roof_dark")
+    # ворона на левой руке — сразу объясняет, зачем тут пугало
+    c = fr.sub((-0.50, 0.0, 1.10), rz=-35)
+    c.box(a, (0.05, 0.03, 0.06), (0.0, 0.0, 0.02), col="flower_y", bevel=0.0)
+    c.ico(a, 0.075, loc=(0, 0, 0.10), scl=(1.0, 1.35, 0.9), col="coal")
+    c.ico(a, 0.05, loc=(0, -0.10, 0.16), col="coal")
+    c.cyl(a, 0.025, 0.0, 0.07, 4, loc=(0, -0.14, 0.155), rot=(90, 0, 0), col="flower_y")
+    c.box(a, (0.07, 0.10, 0.03), (0, 0.13, 0.13), rot=(-25, 0, 0), col="coal", bevel=0.0)
+
+
+def _wheelbarrow(a, fr):
+    """Тачка: колесо в +X, ручки в -X. Кузов — призма со скошенным передом, как у настоящей
+    тачки; прямоугольный ящик на ножках читался тележкой."""
+    tray = lambda f: "wood_dark" if f.normal.z < -0.5 else "wood_mid"
+    # кузов стоит на ручках: низ на 1 см ниже их верха — пересечение, а не общая плоскость
+    fr.prism(a, [(-0.34, 0.0), (0.16, 0.0), (0.44, 0.30), (-0.40, 0.30)], 0.54,
+             loc=(0, 0, 0.30), col=tray)
+    fr.box(a, (0.86, 0.60, 0.07), (0.02, 0, 0.61), col="wood_dark", bevel=0.02)      # борт-обвязка
+    fr.box(a, (0.78, 0.48, 0.06), (0.02, 0, 0.625), col="wheat", bevel=0.0)         # зерно вровень с бортом
+    fr.ico(a, 0.24, loc=(-0.04, 0, 0.64), scl=(1.25, 0.9, 0.55), col=EAR, cut=0.0)   # горка колосьев
+    for sy in (-1, 1):
+        fr.box(a, (1.30, 0.07, 0.08), (-0.15, sy * 0.24, 0.27), col="wood_dark", bevel=0.02)
+        fr.box(a, (0.07, 0.07, 0.28), (-0.30, sy * 0.22, 0.14), col="wood_dark", bevel=0.02)
+    fr.cyl(a, 0.21, 0.21, 0.09, 10, loc=(0.52, 0.045, 0.21), rot=(90, 0, 0), col="wood_mid")
+    fr.cyl(a, 0.07, 0.07, 0.14, 6, loc=(0.52, 0.07, 0.21), rot=(90, 0, 0), col="iron_dark")
+    for k, (y, rz) in enumerate(((-0.12, 16), (0.1, -12))):
+        _ear(a, fr.sub((0.10, y, 0.68), rot=(0, 72 + 8 * k, rz)), 0.30)
+
+
+def build(a):
+    rng = random.Random(7)
+
+    # делянка: верх земли светлее боков — как срез тайла острова
+    a.add(p_box((PW, PD, 0.19), loc=(0, PY, ZP - 0.095), bevel=0.06),
+          by_normal("soil_mid", "soil_dark", "soil_dark", 0.8))
+
+    # голые борозды: свежая пахота комьями
+    for i in (0, 1):
+        _clod_row(a, ROWS[i], rng)
+
+    # всходы: второй ряд выше первого — рост читается и внутри зелёной полосы
+    for i, h in ((2, 0.24), (3, 0.36)):
+        _ridge(a, -RX, RX, ROWS[i])
+        for k in range(12):
+            x = -1.60 + k * 0.29 + rng.uniform(-0.03, 0.03)
+            _sprout(a, x, ROWS[i] + rng.uniform(-0.03, 0.03), ZP + 0.08, rng, h)
+
+    # пшеница: к заднему ряду выше, силуэт поднимается ступенькой
+    for i, hmax in ((4, 0.78), (5, 0.88), (6, 0.96)):
+        _ridge(a, -RX, RX, ROWS[i])
+        for k in range(11):
+            x = -1.64 + k * 0.328 + rng.uniform(-0.03, 0.03)
+            y = ROWS[i] + rng.uniform(-0.04, 0.04)
+            if i in (4, 5) and abs(x - SC[0]) < 0.24:
+                continue                      # место под пугало
+            _wheat_bush(a, x, y, ZP + 0.06, rng, hmax, 5 if (k + i) % 2 else 4)
+
+    _scarecrow(a, Frame((SC[0], SC[1], ZP), rz=-8, s=0.94))
+
+    # изгородь по бокам и сзади, фасад открыт — камера смотрит на ряды
+    yb, yf = PY + PD / 2 + 0.14, PY - PD / 2 + 0.05
+    fence_line(a, (-FX, yf), (-FX, yb), h=0.62, posts=4, rails=(0.24, 0.46), post_s=0.12)
+    fence_line(a, (-FX, yb), (FX, yb), h=0.62, posts=4, rails=(0.24, 0.46), post_s=0.12,
+               end_posts=(False, False))
+    fence_line(a, (FX, yb), (FX, yf), h=0.62, posts=4, rails=(0.24, 0.46), post_s=0.12)
+
+    # передние углы: справа тачка с колосьями, слева суслон из двух снопов
+    _wheelbarrow(a, Frame((1.40, -1.84, 0.0), rz=-150, s=0.9))
+    _sheaf(a, Frame((-1.64, -1.84, 0.0), rot=(0, 10, 0), s=1.12))
+    _sheaf(a, Frame((-1.30, -1.90, 0.0), rot=(0, -10, 8), s=1.12))

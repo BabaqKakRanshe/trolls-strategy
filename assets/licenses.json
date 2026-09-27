@@ -1,8 +1,20 @@
 {
   "schemaVersion": 1,
   "commercialReleaseBlocked": true,
-  "commercialReleaseBlockReason": "The checked-in Minifantasy archives contain no local commercial-license proof. Their free licenses permit non-commercial projects only. Replace the license records with purchase evidence before a commercial release.",
+  "commercialReleaseBlockReason": "The checked-in Minifantasy and Raven Fantasy Icons free archives lack commercial-license proof. Their free versions are restricted to non-commercial projects. Record commercial-license evidence or replace these assets before a commercial release.",
   "licenses": [
+    {
+      "id": "raven-fantasy-icons-free",
+      "pack": "Free - Raven Fantasy Icons",
+      "author": "Clockwork Raven",
+      "sourceUrl": "https://clockworkraven.itch.io/raven-fantasy-icons",
+      "licenseName": "Raven Fantasy Icons Free (non-commercial only)",
+      "attribution": "Clockwork Raven",
+      "attributionRequired": false,
+      "commercialUseAllowed": false,
+      "licenseEvidence": "Official publisher's replies on the pack page distinguish the free personal/non-profit version from the premium commercial version; verified 2026-09-25. The checked-in free archive includes no license text.",
+      "releaseRequirement": "Acquire and record the premium commercial license, or replace the 14 building catalog icons, before commercial release."
+    },
     {
       "id": "minifantasy-creatures-free",
       "pack": "Minifantasy Creatures",

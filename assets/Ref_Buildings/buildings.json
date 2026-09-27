@@ -1,0 +1,110 @@
+[
+  {
+    "name": "Bld_Castle",
+    "tris": 5068,
+    "size_unity": [
+      6.851,
+      7.6,
+      4.68
+    ]
+  },
+  {
+    "name": "Bld_Barracks",
+    "tris": 4538,
+    "size_unity": [
+      6.095,
+      4.235,
+      3.795
+    ]
+  },
+  {
+    "name": "Bld_WatchTower",
+    "tris": 3274,
+    "size_unity": [
+      2.256,
+      6.253,
+      2.717
+    ]
+  },
+  {
+    "name": "Bld_Sawmill",
+    "tris": 3281,
+    "size_unity": [
+      5.112,
+      3.875,
+      3.6
+    ]
+  },
+  {
+    "name": "Bld_Warehouse",
+    "tris": 3756,
+    "size_unity": [
+      5.323,
+      4.416,
+      4.36
+    ]
+  },
+  {
+    "name": "Bld_House_Timber",
+    "tris": 3712,
+    "size_unity": [
+      3.429,
+      4.105,
+      3.06
+    ]
+  },
+  {
+    "name": "Bld_Cottage",
+    "tris": 2260,
+    "size_unity": [
+      3.17,
+      3.085,
+      2.78
+    ]
+  },
+  {
+    "name": "Bld_Keep",
+    "tris": 4188,
+    "size_unity": [
+      2.72,
+      5.9,
+      3.0
+    ]
+  },
+  {
+    "name": "Bld_Tower_Round",
+    "tris": 3562,
+    "size_unity": [
+      2.774,
+      6.42,
+      2.837
+    ]
+  },
+  {
+    "name": "Bld_Barn",
+    "tris": 2712,
+    "size_unity": [
+      4.483,
+      3.861,
+      4.2
+    ]
+  },
+  {
+    "name": "Bld_MineHoist",
+    "tris": 3483,
+    "size_unity": [
+      4.364,
+      4.083,
+      3.23
+    ]
+  },
+  {
+    "name": "Bld_House_Stone",
+    "tris": 3006,
+    "size_unity": [
+      3.279,
+      3.725,
+      2.96
+    ]
+  }
+]
