@@ -1,4 +1,5 @@
 using TrollStrategy.Content;
+using TrollStrategy.Presentation;
 using TrollStrategy.Presentation.Units;
 using UnityEditor;
 using UnityEngine;
@@ -77,27 +78,34 @@ namespace TrollStrategy.Editor.Tools
             {
                 EditorGUILayout.LabelField(definition.DisplayName, definition.Kind.ToString(), EditorStyles.boldLabel);
 
-                var serializedDefinition = new SerializedObject(definition);
-                serializedDefinition.Update();
-                var scaleProperty = serializedDefinition.FindProperty("_spriteScale");
+                var view = ContentPrefabs.Unit(definition);
+                if (view == null)
+                {
+                    EditorGUILayout.HelpBox("У существа не назначен префаб с UnitView.", MessageType.Warning);
+                    return;
+                }
+
+                var serializedView = new SerializedObject(view);
+                serializedView.Update();
+                var scaleProperty = serializedView.FindProperty("_spriteScale");
                 float currentScale = scaleProperty != null && scaleProperty.floatValue > 0f
                     ? Mathf.Max(MinScale, scaleProperty.floatValue)
                     : 1f;
 
                 var previewRect = GUILayoutUtility.GetRect(120f, 128f, GUILayout.ExpandWidth(true));
-                DrawCellPreview(previewRect, definition.IdleSprite, currentScale, cellSize);
+                DrawCellPreview(previewRect, view.IdleSprite, currentScale, cellSize);
 
                 EditorGUI.BeginChangeCheck();
                 float nextScale = EditorGUILayout.Slider("Масштаб", currentScale, MinScale, SliderMaxScale);
                 nextScale = EditorGUILayout.FloatField("Точное значение", nextScale);
                 if (EditorGUI.EndChangeCheck())
-                    SaveScale(serializedDefinition, scaleProperty, definition, nextScale);
+                    SaveScale(serializedView, scaleProperty, view, definition, nextScale);
 
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Сбросить до 1", GUILayout.Width(120f)))
-                        SaveScale(serializedDefinition, scaleProperty, definition, 1f);
+                        SaveScale(serializedView, scaleProperty, view, definition, 1f);
                 }
             }
         }
@@ -132,8 +140,9 @@ namespace TrollStrategy.Editor.Tools
         }
 
         private void SaveScale(
-            SerializedObject serializedDefinition,
+            SerializedObject serializedView,
             SerializedProperty scaleProperty,
+            UnitView prefabView,
             UnitDefinition definition,
             float requestedScale)
         {
@@ -143,28 +152,29 @@ namespace TrollStrategy.Editor.Tools
                 ? 1f
                 : Mathf.Max(MinScale, requestedScale);
             scaleProperty.floatValue = scale;
-            serializedDefinition.ApplyModifiedProperties();
-            EditorUtility.SetDirty(definition);
-            RefreshLiveViews(definition);
+            serializedView.ApplyModifiedProperties();
+            EditorUtility.SetDirty(prefabView);
+            AssetDatabase.SaveAssetIfDirty(prefabView.gameObject);
+            RefreshLiveViews(definition, scale);
             SceneView.RepaintAll();
             Repaint();
         }
 
-        private static void RefreshLiveViews(UnitDefinition changedDefinition = null)
+        // Spawned creatures keep their own copy of the prefab value, so push the new scale to them.
+        private static void RefreshLiveViews(UnitDefinition changedDefinition, float scale)
         {
             if (!UnityEngine.Application.isPlaying) return;
 
             var views = Object.FindObjectsByType<UnitView>(FindObjectsInactive.Exclude);
             for (int i = 0; i < views.Length; i++)
             {
-                if (changedDefinition == null || views[i].Definition == changedDefinition)
-                    views[i].ApplySpriteScale();
+                if (views[i].Definition == changedDefinition)
+                    views[i].SetSpriteScale(scale);
             }
         }
 
         private void HandleUndoRedo()
         {
-            RefreshLiveViews();
             Repaint();
         }
 

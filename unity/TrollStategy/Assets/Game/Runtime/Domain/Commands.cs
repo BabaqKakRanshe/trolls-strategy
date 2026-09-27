@@ -23,10 +23,55 @@ namespace TrollStrategy.Domain
     {
     }
 
+    public sealed class StartBattleCommand : IGameCommand
+    {
+        public string MissionId { get; }
+        public IReadOnlyList<BattlePlacement> Placements { get; }
+        public IReadOnlyList<BattleEquipmentAssignment> Equipment { get; }
+
+        public StartBattleCommand(string missionId, IReadOnlyList<BattlePlacement> placements,
+            IReadOnlyList<BattleEquipmentAssignment> equipment = null)
+        {
+            MissionId = missionId;
+            Placements = placements;
+            Equipment = equipment;
+        }
+    }
+
+    public sealed class AcknowledgeBattleCommand : IGameCommand
+    {
+    }
+
     public class BuildMineCommand : IGameCommand
     {
         public Cell Cell { get; }
         public BuildMineCommand(Cell cell) => Cell = cell;
+    }
+
+    public class BuildBuildingCommand : IGameCommand
+    {
+        public BuildingKind Kind { get; }
+        public Cell Cell { get; }
+        public BuildBuildingCommand(BuildingKind kind, Cell cell) { Kind = kind; Cell = cell; }
+    }
+
+    public class UpgradeBuildingCommand : IGameCommand
+    {
+        public string BuildingId { get; }
+        public UpgradeBuildingCommand(string buildingId) => BuildingId = buildingId;
+    }
+
+    public class DemolishBuildingCommand : IGameCommand
+    {
+        public string BuildingId { get; }
+        public DemolishBuildingCommand(string buildingId) => BuildingId = buildingId;
+    }
+
+    public class MoveBuildingCommand : IGameCommand
+    {
+        public string BuildingId { get; }
+        public Cell Cell { get; }
+        public MoveBuildingCommand(string buildingId, Cell cell) { BuildingId = buildingId; Cell = cell; }
     }
 
     public class BuyUnitsCommand : IGameCommand
@@ -47,18 +92,11 @@ namespace TrollStrategy.Domain
     {
         public IReadOnlyList<string> UnitIds { get; }
         public string BuildingId { get; }
-        public WorldPosition? AccessPoint { get; }
 
         public AssignWorkCommand(IReadOnlyList<string> unitIds, string buildingId)
-            : this(unitIds, buildingId, null)
-        {
-        }
-
-        public AssignWorkCommand(IReadOnlyList<string> unitIds, string buildingId, WorldPosition? accessPoint)
         {
             UnitIds = unitIds;
             BuildingId = buildingId;
-            AccessPoint = accessPoint;
         }
     }
 
@@ -67,26 +105,12 @@ namespace TrollStrategy.Domain
         public IReadOnlyList<string> UnitIds { get; }
         public string SourceId { get; }
         public string DestinationId { get; }
-        public WorldPosition? SourceAccessPoint { get; }
-        public WorldPosition? DestinationAccessPoint { get; }
 
         public AssignHaulCommand(IReadOnlyList<string> unitIds, string sourceId, string destinationId)
-            : this(unitIds, sourceId, destinationId, null, null)
-        {
-        }
-
-        public AssignHaulCommand(
-            IReadOnlyList<string> unitIds,
-            string sourceId,
-            string destinationId,
-            WorldPosition? sourceAccessPoint,
-            WorldPosition? destinationAccessPoint)
         {
             UnitIds = unitIds;
             SourceId = sourceId;
             DestinationId = destinationId;
-            SourceAccessPoint = sourceAccessPoint;
-            DestinationAccessPoint = destinationAccessPoint;
         }
     }
 

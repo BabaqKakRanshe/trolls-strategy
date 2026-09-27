@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TrollStrategy.Content
 {
@@ -17,8 +18,9 @@ namespace TrollStrategy.Content
 
         [Header("Economy Values")]
         [SerializeField] private int _startingGold = 1000;
-        [SerializeField] private float _orePerStrengthSecond = 0.1f;
-        [SerializeField] private int _oreSellPrice = 3;
+        [Tooltip("Работы в секунду за одно очко Силы работника. Рецепт с Work = 1 даёт одну единицу за такую работу.")]
+        [FormerlySerializedAs("_orePerStrengthSecond")]
+        [SerializeField] private float _workPerStrengthSecond = 0.1f;
 
         public int GridWidth => _gridWidth;
         public int GridHeight => _gridHeight;
@@ -28,10 +30,9 @@ namespace TrollStrategy.Content
         public float EconomyStepSeconds => _stepTimeSeconds;
         public float TransferTimeSeconds => _transferTimeSeconds;
         public int StartingGold => _startingGold;
-        public float OrePerStrengthSecond => _orePerStrengthSecond;
-        public int OreSellPrice => _oreSellPrice;
+        public float WorkPerStrengthSecond => _workPerStrengthSecond;
 
-        public void Init(int gridWidth, int gridHeight, float cellSize, int startingGold, int maxUnitsPerCell, float tickIntervalSeconds, int oreSellPrice, float orePerStrengthSecond, float transferTimeSeconds)
+        public void Init(int gridWidth, int gridHeight, float cellSize, int startingGold, int maxUnitsPerCell, float tickIntervalSeconds, float workPerStrengthSecond, float transferTimeSeconds)
         {
             _gridWidth = gridWidth;
             _gridHeight = gridHeight;
@@ -39,8 +40,7 @@ namespace TrollStrategy.Content
             _startingGold = startingGold;
             _maxUnitsPerCell = maxUnitsPerCell;
             _stepTimeSeconds = tickIntervalSeconds;
-            _oreSellPrice = oreSellPrice;
-            _orePerStrengthSecond = orePerStrengthSecond;
+            _workPerStrengthSecond = workPerStrengthSecond;
             _transferTimeSeconds = transferTimeSeconds;
         }
     }

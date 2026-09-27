@@ -1,4 +1,5 @@
 using System.IO;
+using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation;
 using TrollStrategy.Presentation.Buildings;
@@ -7,12 +8,13 @@ using TrollStrategy.Presentation.Visuals;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TrollStrategy.Editor.Setup
 {
     public static class MineModelBuilder
     {
-        private const string PrefabPath = "Assets/Game/Prefabs/Buildings/MineModel.prefab";
+        private const string CatalogPath = "Assets/Game/Content/Definitions/GameContentCatalog.asset";
 
         public static void RebuildAndCaptureKitPreview()
         {
@@ -30,10 +32,10 @@ namespace TrollStrategy.Editor.Setup
 
             var buildings = new[]
             {
-                PreviewBuilding(world, "Mine", new Cell(3, 7)),
-                PreviewBuilding(world, "Barracks", new Cell(3, 2)),
-                PreviewBuilding(world, "Warehouse", new Cell(10, 8)),
-                PreviewBuilding(world, "Market", new Cell(10, 2), 2)
+                PreviewBuilding(world, BuildingKind.Mine, new Cell(3, 7)),
+                PreviewBuilding(world, BuildingKind.Barracks, new Cell(3, 2)),
+                PreviewBuilding(world, BuildingKind.Warehouse, new Cell(10, 8)),
+                PreviewBuilding(world, BuildingKind.Market, new Cell(10, 2), 2)
             };
             var target = new RenderTexture(1600, 900, 24);
             var previousTarget = camera.targetTexture;
@@ -50,6 +52,36 @@ namespace TrollStrategy.Editor.Setup
                 image.Apply();
                 File.WriteAllBytes("../vitaria-preview.png", image.EncodeToPNG());
                 Object.DestroyImmediate(image);
+
+                var canvas = GameObject.Find("HUDCanvas")?.GetComponent<Canvas>();
+                var drawer = GameObject.Find("CatalogDrawer")?.GetComponent<RectTransform>();
+                if (canvas != null && drawer != null)
+                {
+                    var previousMode = canvas.renderMode;
+                    var previousCamera = canvas.worldCamera;
+                    var previousPosition = drawer.anchoredPosition;
+                    try
+                    {
+                        drawer.anchoredPosition = new Vector2(-22f, previousPosition.y);
+                        canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                        canvas.worldCamera = camera;
+                        canvas.planeDistance = 1f;
+                        Canvas.ForceUpdateCanvases();
+                        for (var frame = 0; frame < 4; frame++) camera.Render();
+                        RenderTexture.active = target;
+                        var hudImage = new Texture2D(target.width, target.height, TextureFormat.RGB24, false);
+                        hudImage.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0);
+                        hudImage.Apply();
+                        File.WriteAllBytes("../vitaria-hud-preview.png", hudImage.EncodeToPNG());
+                        Object.DestroyImmediate(hudImage);
+                    }
+                    finally
+                    {
+                        canvas.renderMode = previousMode;
+                        canvas.worldCamera = previousCamera;
+                        drawer.anchoredPosition = previousPosition;
+                    }
+                }
             }
             finally
             {
@@ -60,10 +92,17 @@ namespace TrollStrategy.Editor.Setup
             }
         }
 
-        private static GameObject PreviewBuilding(TilemapWorldView world, string kind, Cell cell, int height = 3)
+        private static GameObject BuildingPrefab(BuildingKind kind)
         {
-            var source = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Game/Prefabs/Buildings/{kind}Model.prefab");
-            if (source == null) throw new System.InvalidOperationException($"Missing {kind} model prefab");
+            var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath);
+            var source = catalog != null ? catalog.GetBuilding(kind).Prefab : null;
+            if (source == null) throw new System.InvalidOperationException($"Missing {kind} building prefab");
+            return source;
+        }
+
+        private static GameObject PreviewBuilding(TilemapWorldView world, BuildingKind kind, Cell cell, int height = 3)
+        {
+            var source = BuildingPrefab(kind);
             var instance = (GameObject)PrefabUtility.InstantiatePrefab(source);
             instance.transform.position = world.BuildingCenterWorld(cell, 3, height);
             instance.transform.rotation = world.GroundRotation;
@@ -75,9 +114,9 @@ namespace TrollStrategy.Editor.Setup
             EditorSceneManager.OpenScene("Assets/Game/Scenes/MainColonyScene.unity");
             var camera = Camera.main;
             var world = Object.FindAnyObjectByType<TilemapWorldView>();
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
-            if (camera == null || world == null || prefab == null)
-                throw new System.InvalidOperationException("Mine preview needs the colony camera, map, and model prefab.");
+            var prefab = BuildingPrefab(BuildingKind.Mine);
+            if (camera == null || world == null)
+                throw new System.InvalidOperationException("Mine preview needs the colony camera and map.");
 
             var mine = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
             mine.transform.position = world.BuildingCenterWorld(new Cell(5, 5), 3, 3);
@@ -103,13 +142,6 @@ namespace TrollStrategy.Editor.Setup
                 Object.DestroyImmediate(target);
                 Object.DestroyImmediate(mine);
             }
-        }
-
-        [MenuItem("TrollStrategy/Rebuild Mine Model")]
-        public static void Rebuild()
-        {
-            DioramaModelBuilder.Rebuild(TrollStrategy.Content.BuildingKind.Mine);
-            AssetDatabase.SaveAssets();
         }
     }
 }

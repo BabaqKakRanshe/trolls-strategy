@@ -715,72 +715,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
     nameFileIdTable:
-      goblin-idle_0: -3041552050115924206
-      goblin-idle_1: -7103582190743073792
-      goblin-idle_10: 3211847467113557624
-      goblin-idle_11: -9211185379471674161
-      goblin-idle_12: 5656144356149340613
-      goblin-idle_13: 3809495092103588673
-      goblin-idle_14: 3414638054002762950
-      goblin-idle_15: 4092680802490466265
-      goblin-idle_16: 8298419077262814276
-      goblin-idle_17: 8878486790996540610
-      goblin-idle_18: 4715362180568340212
-      goblin-idle_19: 1606623457483258739
-      goblin-idle_2: 7632703689998003652
-      goblin-idle_20: -1101770769128010294
-      goblin-idle_21: -7676545660389235812
-      goblin-idle_22: 7740671895251864555
-      goblin-idle_23: -4295767359230306649
-      goblin-idle_24: -1318550616616886908
-      goblin-idle_25: 6232678882770965920
-      goblin-idle_26: -1907398145644667435
-      goblin-idle_27: 2375808177462443440
-      goblin-idle_28: -3679334950033609712
-      goblin-idle_29: 6320899685618540798
-      goblin-idle_3: 5573738310580646734
-      goblin-idle_30: -7826980594012659992
-      goblin-idle_31: -5447693996026857788
-      goblin-idle_32: 739862883276503765
-      goblin-idle_33: -5019635719378256752
-      goblin-idle_34: -5002709294013875871
-      goblin-idle_35: 5315129509334251619
-      goblin-idle_36: -6764021124216157534
-      goblin-idle_37: -2908179583863281242
-      goblin-idle_38: -5113970697938558297
-      goblin-idle_39: 6044219599093799836
-      goblin-idle_4: -4890965365761210833
-      goblin-idle_40: 998265729958859305
-      goblin-idle_41: -9146304758104375573
-      goblin-idle_42: -3394724467197118801
-      goblin-idle_43: 1068119647091272510
-      goblin-idle_44: -636471613525191530
-      goblin-idle_45: -4805019683823016531
-      goblin-idle_46: 3090193655200309784
-      goblin-idle_47: 3109694756463370724
-      goblin-idle_48: 5458232769125794184
-      goblin-idle_49: 6204964246767397995
-      goblin-idle_5: -254590580228348667
-      goblin-idle_50: -6372710803069499199
-      goblin-idle_51: -7074268236078730747
-      goblin-idle_52: -3710462109786676021
-      goblin-idle_53: 2430111273523684752
-      goblin-idle_54: 2913474806800489776
-      goblin-idle_55: -5690632531231554303
-      goblin-idle_56: -3030223966042490663
-      goblin-idle_57: -5766572885134809816
-      goblin-idle_58: 8895359466055729772
-      goblin-idle_59: -1423942360530800581
-      goblin-idle_6: -4867630464666160621
-      goblin-idle_60: 1623348320201000651
-      goblin-idle_61: -2792834781690976953
-      goblin-idle_62: 9198243550005498134
-      goblin-idle_63: -5646911101344990827
-      goblin-idle_7: -6075437741274082779
-      goblin-idle_8: 4980141222850733371
-      goblin-idle_9: 5542420759059925863
       goblin_idle_0: -4004981323987347463
       goblin_idle_1: 1188879964842525537
       goblin_idle_10: -5181009194790058764

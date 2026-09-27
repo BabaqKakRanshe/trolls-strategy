@@ -15,8 +15,30 @@ MonoBehaviour:
   _kind: 0
   _displayName: "\u0428\u0430\u0445\u0442\u0430"
   _price: 200
+  _constructible: 1
   _width: 3
   _height: 3
-  _maxOre: 100
+  _entrance: {x: 1.5, y: 0.273}
+  _crowdSpacing: 0.2
+  _capacity: 100
   _maxWorkers: 5
+  _upgradeCosts: 96000000fa0000005e010000i
+  _capacityPerLevel: 50
+  _workersPerLevel: 2
+  _saleBonusPerLevel: 0
+  _recipes:
+  - _inputs: []
+    _outputs:
+    - _resource: 0
+      _amount: 1
+    _work: 1
+    _bonusEveryCycles: 25
+    _bonusOutput:
+      _resource: 10
+      _amount: 1
+  _storageRole: 0
+  _storedResources: 
+  _slotStackSize: 0
   _sprite: {fileID: 21300000, guid: bb6dfc72142e86e42a2459d0413d9d28, type: 3}
+  _prefab: {fileID: 6561534162790706797, guid: 9d07f0d0180e99746ade4f030ec46ebb, type: 3}
+  _icon: {fileID: -1832827240, guid: 09bbd4ccc6c7bd240abbcc21ca5c3aa2, type: 3}

@@ -10,10 +10,16 @@ namespace TrollStrategy.Content
         [SerializeField] private EconomyConfig _economy;
         [SerializeField] private List<BuildingDefinition> _buildings = new();
         [SerializeField] private List<UnitDefinition> _units = new();
+        [SerializeField] private List<BattleMissionDefinition> _missions = new();
+        [SerializeField] private List<EquipmentDefinition> _equipment = new();
+        [SerializeField] private List<ResourceDefinition> _resources = new();
 
         public EconomyConfig Economy => _economy;
         public IReadOnlyList<BuildingDefinition> Buildings => _buildings;
         public IReadOnlyList<UnitDefinition> Units => _units;
+        public IReadOnlyList<BattleMissionDefinition> Missions => _missions;
+        public IReadOnlyList<EquipmentDefinition> Equipment => _equipment;
+        public IReadOnlyList<ResourceDefinition> Resources => _resources;
 
         public void SetContent(EconomyConfig economy, List<BuildingDefinition> buildings, List<UnitDefinition> units)
         {
@@ -22,12 +28,21 @@ namespace TrollStrategy.Content
             _units = units;
         }
 
-        public void Init(EconomyConfig economy, IEnumerable<UnitDefinition> units, IEnumerable<BuildingDefinition> buildings)
+        public void Init(EconomyConfig economy, IEnumerable<UnitDefinition> units, IEnumerable<BuildingDefinition> buildings,
+            IEnumerable<BattleMissionDefinition> missions = null,
+            IEnumerable<EquipmentDefinition> equipment = null,
+            IEnumerable<ResourceDefinition> resources = null)
         {
             _economy = economy;
             _units = new List<UnitDefinition>(units);
             _buildings = new List<BuildingDefinition>(buildings);
+            _missions = missions != null ? new List<BattleMissionDefinition>(missions) : new List<BattleMissionDefinition>();
+            _equipment = equipment != null ? new List<EquipmentDefinition>(equipment) : new List<EquipmentDefinition>();
+            _resources = resources != null ? new List<ResourceDefinition>(resources) : new List<ResourceDefinition>();
         }
+
+        public void SetResources(IEnumerable<ResourceDefinition> resources) =>
+            _resources = new List<ResourceDefinition>(resources);
 
         public BuildingDefinition GetBuilding(BuildingKind kind)
         {
@@ -47,6 +62,33 @@ namespace TrollStrategy.Content
                     return _units[i];
             }
             throw new ArgumentOutOfRangeException(nameof(kind), $"Unit definition for {kind} not found");
+        }
+
+        public ResourceDefinition GetResource(ResourceKind kind) =>
+            TryGetResource(kind) ?? throw new ArgumentOutOfRangeException(nameof(kind), $"Resource definition for {kind} not found");
+
+        public ResourceDefinition TryGetResource(ResourceKind kind)
+        {
+            for (int i = 0; i < _resources.Count; i++)
+            {
+                if (_resources[i] != null && _resources[i].Kind == kind)
+                    return _resources[i];
+            }
+            return null;
+        }
+
+        public BattleMissionDefinition GetMission(string id)
+        {
+            foreach (var mission in _missions)
+                if (mission != null && mission.MissionId == id) return mission;
+            throw new ArgumentOutOfRangeException(nameof(id), $"Mission definition for {id} not found");
+        }
+
+        public EquipmentDefinition GetEquipment(string id)
+        {
+            foreach (var item in _equipment)
+                if (item != null && item.ItemId == id) return item;
+            throw new ArgumentOutOfRangeException(nameof(id), $"Equipment definition for {id} not found");
         }
     }
 }

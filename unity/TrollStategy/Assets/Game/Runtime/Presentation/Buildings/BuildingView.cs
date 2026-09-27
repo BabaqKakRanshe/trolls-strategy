@@ -12,22 +12,36 @@ namespace TrollStrategy.Presentation.Buildings
 {
     public class BuildingView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
+        [Tooltip("Building this prefab renders; also identifies instances placed in the scene as starting buildings.")]
+        [SerializeField] private BuildingKind _kind;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private SpriteRenderer _selectionHighlight;
-        [SerializeField] private SpriteRenderer _progressBar;
-        [SerializeField] private SpriteRenderer _progressTrack;
+        [Tooltip("Production bar; move it in the prefab to place it.")]
+        [SerializeField] private BuildingProgressBar _productionProgress;
         [SerializeField] private TextMeshPro _label;
         [SerializeField] private BoxCollider2D _collider;
-        [SerializeField] private PrimitiveBuilding _mineModelPrefab;
-        [SerializeField] private PrimitiveBuilding _warehouseModelPrefab;
-        [SerializeField] private PrimitiveBuilding _marketModelPrefab;
-        [SerializeField] private PrimitiveBuilding _barracksModelPrefab;
+        [Tooltip("Model child of this building variant.")]
+        [SerializeField] private BuildingModel _model;
 
         private BuildingSnapshot _snapshot;
-        private PrimitiveBuilding _model;
         private TilemapWorldView _worldView;
 
+        public BuildingKind Kind => _kind;
         public string BuildingId => _snapshot?.Id;
+        public BuildingModel Model => _model;
+        public Sprite OutgoingProductSprite => _model != null ? _model.OutgoingProductSprite : null;
+
+        public void PlaySale(Sprite productSprite, int gold)
+        {
+            if (gold <= 0) return;
+            var anchor = _model != null ? _model.SaleFeedbackAnchor : null;
+            if (anchor == null)
+            {
+                Debug.LogError($"{name} has no sale feedback anchor", this);
+                return;
+            }
+            SaleFeedback.Spawn(anchor.position, productSprite, _model.SaleIncomeSprite, gold);
+        }
 
         public void Setup(BuildingSnapshot snapshot, Sprite sprite, Action<string> onClick, TilemapWorldView worldView = null)
         {
@@ -42,8 +56,9 @@ namespace TrollStrategy.Presentation.Buildings
                 if (sprite != null) _spriteRenderer.sprite = sprite;
                 _spriteRenderer.enabled = false;
             }
-            EnsureModel(snapshot.Kind);
-            if (_model != null && _worldView != null)
+            if (_model == null)
+                Debug.LogError($"{name} has no building model", this);
+            else if (_worldView != null)
             {
                 _model.transform.localPosition = Vector3.zero;
                 _model.transform.localRotation = Quaternion.identity;
@@ -57,7 +72,8 @@ namespace TrollStrategy.Presentation.Buildings
                 _collider.enabled = _worldView == null;
             }
 
-            EnsureProgressVisuals();
+            if (_productionProgress == null)
+                Debug.LogError($"{name} has no production progress bar", this);
 
             if (_label != null)
             {
@@ -68,40 +84,6 @@ namespace TrollStrategy.Presentation.Buildings
         }
 
         private static Sprite _proceduralBoxOutlineSprite;
-
-        private void EnsureModel(BuildingKind kind)
-        {
-            var prefab = kind switch
-            {
-                BuildingKind.Mine => _mineModelPrefab,
-                BuildingKind.Warehouse => _warehouseModelPrefab,
-                BuildingKind.Market => _marketModelPrefab,
-                BuildingKind.Barracks => _barracksModelPrefab,
-                _ => null
-            };
-            if (prefab == null)
-            {
-                Debug.LogError($"Missing model prefab for {kind}", this);
-                return;
-            }
-
-            if (_model == null)
-                _model = transform.Find("PrimitiveModel")?.GetComponent<PrimitiveBuilding>();
-            if (_model != null && _model.Kind == kind) return;
-            if (_model != null)
-            {
-                if (UnityEngine.Application.isPlaying) Destroy(_model.gameObject);
-                else DestroyImmediate(_model.gameObject);
-            }
-#if UNITY_EDITOR
-            _model = !UnityEngine.Application.isPlaying
-                ? (PrimitiveBuilding)UnityEditor.PrefabUtility.InstantiatePrefab(prefab, transform)
-                : Instantiate(prefab, transform);
-#else
-            _model = Instantiate(prefab, transform);
-#endif
-            _model.name = "PrimitiveModel";
-        }
 
         public static Sprite GetBoxOutlineSprite()
         {
@@ -141,9 +123,6 @@ namespace TrollStrategy.Presentation.Buildings
         };
 
         private static readonly Color OutlineColor = ColonyPalette.Gold;
-        private static readonly Color ProgressFillColor = ColonyPalette.Gold;
-        private static readonly Color ProgressTrackColor = ColonyPalette.WithAlpha(ColonyPalette.Night, 0.9f);
-        private static Sprite _solidSprite;
         private SpriteRenderer[] _outlineRenderers;
         private bool _isHovered;
         private bool _isTarget;
@@ -200,7 +179,7 @@ namespace TrollStrategy.Presentation.Buildings
         private void ApplyActiveHighlight()
         {
             bool show = _isTarget || _isHovered;
-            if (_model != null && _snapshot != null) _model.Sync(_snapshot, show);
+            if (_model != null) _model.SetHighlighted(show);
             if (_selectionHighlight != null)
                 _selectionHighlight.gameObject.SetActive(false);
 
@@ -281,79 +260,18 @@ namespace TrollStrategy.Presentation.Buildings
                 if (outline != null) outline.gameObject.SetActive(visible);
         }
 
-        private void EnsureProgressVisuals()
-        {
-            if (_progressBar == null)
-            {
-                var fillTransform = transform.Find("ProductionProgressFill") ?? transform.Find("ProgressBar");
-                if (fillTransform == null)
-                {
-                    fillTransform = new GameObject("ProductionProgressFill").transform;
-                    fillTransform.SetParent(transform, false);
-                }
-
-                _progressBar = fillTransform.GetComponent<SpriteRenderer>();
-                if (_progressBar == null) _progressBar = fillTransform.gameObject.AddComponent<SpriteRenderer>();
-            }
-
-            if (_progressTrack == null)
-            {
-                var trackTransform = transform.Find("ProductionProgressTrack");
-                if (trackTransform == null)
-                {
-                    trackTransform = new GameObject("ProductionProgressTrack").transform;
-                    trackTransform.SetParent(transform, false);
-                }
-
-                _progressTrack = trackTransform.GetComponent<SpriteRenderer>();
-                if (_progressTrack == null) _progressTrack = trackTransform.gameObject.AddComponent<SpriteRenderer>();
-            }
-
-            var solidSprite = GetSolidSprite();
-            _progressBar.sprite = solidSprite;
-            _progressBar.color = ProgressFillColor;
-            _progressBar.sortingOrder = 13;
-            _progressTrack.sprite = solidSprite;
-            _progressTrack.color = ProgressTrackColor;
-            _progressTrack.sortingOrder = 12;
-        }
-
         private void UpdateProductionProgress(BuildingSnapshot snapshot)
         {
-            EnsureProgressVisuals();
+            if (_productionProgress == null) return;
             bool supportsProduction = snapshot.MaxWorkers > 0;
-            _progressTrack.gameObject.SetActive(supportsProduction);
-            _progressBar.gameObject.SetActive(supportsProduction);
-            if (!supportsProduction) return;
-
-            float fullWidth = Mathf.Max(0.8f, snapshot.Width * 0.8f);
-            float fill = Mathf.Clamp01(snapshot.ProductionProgress);
-            float fillWidth = fullWidth * fill;
-            float y = -snapshot.Height * 0.5f - 0.24f;
-
-            _progressTrack.transform.localPosition = new Vector3(0f, y, -2.1f);
-            _progressTrack.transform.localScale = new Vector3(fullWidth + 0.08f, 0.22f, 1f);
-            _progressBar.transform.localPosition = new Vector3(-fullWidth * 0.5f + fillWidth * 0.5f, y, -2.11f);
-            _progressBar.transform.localScale = new Vector3(fillWidth, 0.14f, 1f);
-        }
-
-        private static Sprite GetSolidSprite()
-        {
-            if (_solidSprite != null) return _solidSprite;
-            var texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-            texture.name = "BuildingProgressSolidTexture";
-            texture.SetPixel(0, 0, Color.white);
-            texture.Apply();
-            _solidSprite = Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
-            return _solidSprite;
+            _productionProgress.gameObject.SetActive(supportsProduction);
+            if (supportsProduction) _productionProgress.SetProgress(snapshot.ProductionProgress);
         }
 
         public void UpdateVisuals(BuildingSnapshot snapshot, bool isTarget)
         {
             _snapshot = snapshot;
             _isTarget = isTarget;
-
-            if (_model != null) _model.Sync(snapshot, isTarget || _isHovered);
 
             EnsureHighlightVisuals();
 
@@ -369,14 +287,25 @@ namespace TrollStrategy.Presentation.Buildings
                 _label.fontSize = 2.4f;
                 _label.color = ColonyPalette.Text;
                 _label.alignment = TextAlignmentOptions.Center;
-                if (snapshot.Kind == BuildingKind.Mine)
-                    _label.text = $"<b>{snapshot.Name}</b>\n<size=80%>Руда: {snapshot.Ore}/{snapshot.MaxOre} | Раб: {snapshot.WorkerCount}/{snapshot.MaxWorkers}</size>";
-                else if (snapshot.Kind == BuildingKind.Warehouse)
-                    _label.text = $"<b>{snapshot.Name}</b>\n<size=80%>Руда: {snapshot.Ore}/{snapshot.MaxOre}</size>";
-                else
-                    _label.text = $"<b>{snapshot.Name}</b>";
+                string info = LabelInfo(snapshot);
+                _label.text = info.Length > 0
+                    ? $"<b>{snapshot.Name}</b>\n<size=80%>{info}</size>"
+                    : $"<b>{snapshot.Name}</b>";
             }
         }
 
+        private static string LabelInfo(BuildingSnapshot snapshot)
+        {
+            var parts = new System.Collections.Generic.List<string>();
+            if (snapshot.IsWorkplace) parts.Add($"Раб: {snapshot.WorkerCount}/{snapshot.MaxWorkers}");
+            if (snapshot.Slots.Count > 0) parts.Add($"Товары: {snapshot.TotalStock}/{snapshot.Capacity}");
+            else if (snapshot.Stock.Count > 0)
+            {
+                // Show the last good in the list: outputs follow inputs in ResourceKind order along each chain.
+                var shown = snapshot.Stock[snapshot.Stock.Count - 1];
+                parts.Add($"{shown.Name}: {shown.Amount}/{snapshot.Capacity}");
+            }
+            return string.Join(" | ", parts);
+        }
     }
 }

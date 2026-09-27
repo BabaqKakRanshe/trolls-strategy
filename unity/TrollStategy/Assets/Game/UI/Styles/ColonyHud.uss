@@ -1,0 +1,455 @@
+/* Colony HUD layout: top bar, left inspect card, right catalog, bottom status and context bar. */
+
+.hud-root {
+    flex-grow: 1;
+    padding: 14px 16px;
+}
+
+.layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Top bar */
+
+.top-bar {
+    flex-direction: row;
+    align-items: stretch;
+    flex-shrink: 0;
+}
+
+.brand {
+    justify-content: center;
+    margin-right: 10px;
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+.brand__title {
+    font-size: 22px;
+    letter-spacing: 2px;
+}
+
+.brand__subtitle {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+}
+
+.resources {
+    flex-direction: row;
+    padding: 7px 1px 7px 7px;
+}
+
+.stat--gold {
+    border-color: var(--gold-deep);
+}
+
+.stat--gold .stat__value {
+    color: var(--gold);
+}
+
+.top-actions {
+    flex-direction: row;
+    align-items: center;
+}
+
+.top-actions > .btn {
+    margin-left: 10px;
+    min-height: 54px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.battle-button {
+    min-width: 150px;
+}
+
+/* Middle band: left card, free map, right catalog */
+
+/* Columns stretch to the band's height so the catalog's max-height has something to resolve against. */
+.middle {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: stretch;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.left-column {
+    width: 430px;
+    flex-shrink: 0;
+    align-items: stretch;
+}
+
+.right-column {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+/* Inspect card */
+
+.inspect__header {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.inspect__titles {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.inspect__title {
+    font-size: 26px;
+    white-space: normal;
+}
+
+.inspect__subtitle {
+    margin-top: 2px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+}
+
+.slots-header {
+    margin-top: 12px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--gold);
+}
+
+.slots {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.slot {
+    width: 36px;
+    height: 36px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: var(--edge);
+    background-color: var(--surface-sunken);
+}
+
+.slot.is-filled {
+    background-color: var(--surface-raised);
+}
+
+.slot__icon {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    right: 4px;
+    bottom: 4px;
+}
+
+.slot__count {
+    position: absolute;
+    right: 2px;
+    bottom: -1px;
+    font-size: 12px;
+    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(0, 0, 0);
+}
+
+.slot.is-full .slot__count {
+    color: var(--gold);
+}
+
+.actions {
+    flex-direction: row;
+    margin-top: 14px;
+    margin-right: -6px;
+}
+
+.action {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-height: 60px;
+    margin-right: 6px;
+    padding-left: 6px;
+    padding-right: 6px;
+    white-space: normal;
+}
+
+/* Catalog drawer */
+
+.catalog {
+    width: 450px;
+    max-height: 100%;
+    transition-property: translate, opacity;
+    transition-duration: 0.25s, 0.25s;
+    transition-timing-function: ease-out-cubic, ease-out-cubic;
+}
+
+.catalog.is-closed {
+    translate: 500px 0;
+    opacity: 0;
+}
+
+.catalog__header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.catalog__title {
+    flex-grow: 1;
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+.tabs {
+    flex-direction: row;
+    margin-bottom: 10px;
+    margin-right: -8px;
+}
+
+.tab {
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-right: 8px;
+}
+
+.tab.is-active {
+    background-color: var(--wood-deep);
+    border-color: var(--gold);
+}
+
+.catalog__page {
+    flex-shrink: 1;
+}
+
+.stepper {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stepper__label {
+    flex-grow: 1;
+    color: var(--ink-muted);
+}
+
+.stepper__value {
+    width: 52px;
+    font-size: 22px;
+    -unity-text-align: middle-center;
+}
+
+.card {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: var(--edge);
+    background-color: var(--surface-raised);
+}
+
+.card.is-suggested {
+    border-color: var(--gold);
+    border-width: 2px;
+}
+
+.card__art {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    margin-right: 12px;
+    border-radius: 8px;
+    background-color: var(--surface-sunken);
+    align-items: center;
+    justify-content: center;
+}
+
+.card__art--small {
+    width: 48px;
+    height: 48px;
+    margin-right: 10px;
+}
+
+.card__image {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    right: 4px;
+    bottom: 4px;
+}
+
+.card__monogram {
+    font-size: 28px;
+    color: var(--ink-muted);
+    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+}
+
+.card__body {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.card__title {
+    font-size: 18px;
+    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
+}
+
+.card__text {
+    font-size: 13px;
+    color: var(--ink-muted);
+    white-space: normal;
+}
+
+.card__buy {
+    min-width: 118px;
+    margin-left: 10px;
+}
+
+.card__look {
+    min-width: 58px;
+    margin-left: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 14px;
+}
+
+/* Model preview beside the catalog */
+
+.showcase {
+    width: 380px;
+    height: 380px;
+    margin-right: 12px;
+}
+
+.showcase__header {
+    flex-direction: row;
+    align-items: center;
+}
+
+.showcase__title {
+    flex-grow: 1;
+    font-size: 20px;
+}
+
+.showcase__image {
+    flex-grow: 1;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background-color: var(--surface-sunken);
+}
+
+.showcase__caption {
+    font-size: 13px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* Bottom band */
+
+.bottom {
+    flex-direction: row;
+    align-items: flex-end;
+    min-height: 64px;
+    flex-shrink: 0;
+}
+
+.status {
+    max-width: 460px;
+    min-height: 48px;
+    justify-content: center;
+    transition-property: opacity;
+    transition-duration: 0.8s;
+}
+
+.status.is-faded {
+    opacity: 0;
+}
+
+.status__text {
+    font-size: 16px;
+    white-space: normal;
+}
+
+.context {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    translate: -50% 0;
+    max-width: 1080px;
+    align-items: center;
+    padding: 10px 12px 10px 18px;
+}
+
+.context__targets {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.context__row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.context__text {
+    flex-shrink: 1;
+    margin-right: 14px;
+    max-width: 420px;
+}
+
+.context__title {
+    font-size: 18px;
+    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+}
+
+.context__prompt {
+    font-size: 14px;
+    color: var(--ink-muted);
+    white-space: normal;
+}
+
+.context__actions {
+    flex-direction: row;
+    align-items: center;
+}
+
+.context__actions > .btn {
+    margin-left: 8px;
+}
+
+.chip {
+    min-height: 36px;
+    margin: 0 4px 4px 4px;
+    padding: 4px 14px;
+    font-size: 14px;
+}
+
+/* Right-click command fan */
+
+.fan {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+/* left/top come from code and mark the button's centre */
+.fan__button {
+    position: absolute;
+    translate: -50% -50%;
+    width: 118px;
+    height: 54px;
+    min-height: 54px;
+    border-radius: 27px;
+    border-color: var(--gold);
+}

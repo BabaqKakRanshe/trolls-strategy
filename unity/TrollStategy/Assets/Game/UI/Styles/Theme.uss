@@ -1,0 +1,339 @@
+/*
+ * HUD theme shared by every screen: colours, type and the building blocks (panels, buttons, captions).
+ * Warm cream text and gold accents over the cool slate of the diorama's stone; greens and clays
+ * follow ColonyPalette. Screens add layout only and use these variables instead of their own colours.
+ */
+
+:root {
+    --ink: #F1E8D5;
+    --ink-muted: #B7BAA6;
+    --ink-dark: #251B10;
+    --gold: #E8C170;
+    --gold-light: #F4D48E;
+    --gold-deep: #A9782F;
+    --surface: rgba(19, 27, 35, 0.94);
+    --surface-raised: #25333E;
+    --surface-sunken: #111820;
+    --surface-hover: #30424F;
+    --edge: #465A66;
+    --edge-dark: #0A0F14;
+    --grass: #6FA544;
+    --grass-deep: #3E6E26;
+    --grass-dark: #203F16;
+    --grass-light: #A8CA58;
+    --wood: #9A6446;
+    --wood-deep: #6A3F2E;
+    --clay: #CF573C;
+    --clay-deep: #8C3322;
+    --clay-light: #FF9A84;
+    --water: #73BED3;
+}
+
+/* Root of every HUD document: type and text colour inherit from here. */
+.hud-screen {
+    flex-grow: 1;
+    -unity-font-definition: url("../Fonts/Rubik-Regular.ttf");
+    font-size: 17px;
+    color: var(--ink);
+}
+
+.t-medium {
+    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
+}
+
+.t-bold {
+    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+}
+
+.t-caption {
+    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: var(--ink-muted);
+}
+
+.t-muted {
+    color: var(--ink-muted);
+}
+
+.t-gold {
+    color: var(--gold);
+}
+
+.t-good {
+    color: var(--grass-light);
+}
+
+.t-warn {
+    color: var(--gold);
+}
+
+.t-bad {
+    color: var(--clay-light);
+}
+
+.t-wrap {
+    white-space: normal;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+/* A slab of stone: dark fill, light rim and a heavier bottom edge for the low-poly bevel. */
+.panel {
+    background-color: var(--surface);
+    border-width: 2px;
+    border-color: var(--edge);
+    border-bottom-width: 4px;
+    border-bottom-color: var(--edge-dark);
+    border-radius: 12px;
+    padding: 10px 14px;
+}
+
+.divider {
+    height: 2px;
+    flex-shrink: 0;
+    background-color: var(--edge);
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Buttons. The hover lift and press dip are transitions; UiFeel adds sound and the refusal wobble. */
+.btn {
+    flex-direction: row;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 6px 16px;
+    background-color: var(--surface-raised);
+    border-width: 2px;
+    border-color: var(--edge);
+    border-bottom-width: 4px;
+    border-bottom-color: var(--edge-dark);
+    border-radius: 10px;
+    color: var(--ink);
+    font-size: 16px;
+    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    transition-property: scale, background-color, opacity;
+    transition-duration: 0.12s, 0.12s, 0.2s;
+    transition-timing-function: ease-out, ease-out, ease-out;
+}
+
+.btn:hover {
+    background-color: var(--surface-hover);
+    scale: 1.04 1.04;
+}
+
+.btn:active {
+    scale: 0.95 0.95;
+}
+
+.btn--primary {
+    background-color: var(--grass-deep);
+    border-color: var(--grass);
+    border-bottom-color: var(--grass-dark);
+}
+
+.btn--primary:hover {
+    background-color: var(--grass);
+}
+
+.btn--gold {
+    background-color: var(--gold);
+    border-color: var(--gold-light);
+    border-bottom-color: var(--gold-deep);
+    color: var(--ink-dark);
+    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+}
+
+.btn--gold:hover {
+    background-color: var(--gold-light);
+}
+
+.btn--danger {
+    background-color: var(--clay-deep);
+    border-color: var(--clay);
+    border-bottom-color: #4A170D;
+}
+
+.btn--danger:hover {
+    background-color: #A6402C;
+}
+
+.btn.is-on {
+    background-color: var(--wood-deep);
+    border-color: var(--gold);
+}
+
+.btn.is-unavailable {
+    opacity: 0.5;
+}
+
+.btn.is-unavailable:hover {
+    scale: 1 1;
+}
+
+.btn.is-suggested {
+    border-color: var(--gold-light);
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    font-size: 24px;
+}
+
+.btn-close {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0;
+    font-size: 22px;
+    background-color: rgba(0, 0, 0, 0);
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.btn-close:hover {
+    background-color: var(--surface-hover);
+}
+
+/* Caption of a button that also carries a badge; inherits the button's type. */
+.btn__caption {
+    -unity-text-align: middle-center;
+}
+
+/* Two-line button: what it does, then its price or hint. */
+.btn-stack {
+    flex-direction: column;
+}
+
+.btn__title {
+    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
+    font-size: 15px;
+    -unity-text-align: middle-center;
+}
+
+.btn__hint {
+    font-size: 12px;
+    color: var(--ink-muted);
+    -unity-text-align: middle-center;
+}
+
+.btn--gold .btn__hint {
+    color: var(--ink-dark);
+}
+
+.btn.is-unavailable .btn__hint {
+    color: var(--clay-light);
+}
+
+/* Keyboard shortcut badge in a button's corner. */
+.hotkey {
+    position: absolute;
+    top: -9px;
+    right: -7px;
+    padding: 1px 6px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: var(--edge);
+    background-color: var(--surface-sunken);
+    font-size: 11px;
+    color: var(--gold);
+    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+}
+
+/* Small label-and-number block used for counters. */
+.stat {
+    flex-direction: column;
+    justify-content: center;
+    min-width: 118px;
+    padding: 4px 14px;
+    margin-right: 6px;
+    background-color: var(--surface-raised);
+    border-radius: 9px;
+    border-width: 1px;
+    border-color: var(--edge);
+}
+
+.stat__value {
+    font-size: 25px;
+    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+}
+
+.stat__note {
+    font-size: 12px;
+    color: var(--ink-muted);
+}
+
+/* Key and value rows in cards. */
+.kv {
+    flex-direction: row;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.kv__key {
+    width: 42%;
+    flex-shrink: 0;
+    font-size: 15px;
+    color: var(--ink-muted);
+}
+
+.kv__value {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 15px;
+    white-space: normal;
+}
+
+.note {
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--ink-muted);
+    white-space: normal;
+}
+
+/* Full-screen dim behind a dialog. */
+.overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(6, 10, 14, 0.72);
+}
+
+.dialog {
+    width: 580px;
+    padding: 20px 24px;
+}
+
+.dialog__header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.dialog__title {
+    flex-grow: 1;
+    font-size: 24px;
+}
+
+.dialog__text {
+    font-size: 16px;
+    white-space: normal;
+    margin-bottom: 12px;
+}
+
+.dialog .btn {
+    margin-bottom: 10px;
+    min-height: 52px;
+}

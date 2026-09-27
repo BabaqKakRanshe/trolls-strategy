@@ -39,7 +39,6 @@ namespace TrollStrategy.Editor.Setup
                 throw new System.InvalidOperationException("Colony map view is missing");
             EnsureRenderer();
             SetupKitMaterial();
-            DioramaModelBuilder.RebuildAll();
             RefreshPrimitiveMaterials();
             var environment = grid.GetComponent<PrimitiveEnvironment>();
             if (environment == null) environment = grid.gameObject.AddComponent<PrimitiveEnvironment>();
@@ -120,20 +119,6 @@ namespace TrollStrategy.Editor.Setup
             if (environment == null) environment = grid.gameObject.AddComponent<PrimitiveEnvironment>();
             BindKitEnvironment(environment);
             if (!preserveLayout) environment.Rebuild();
-
-            foreach (var building in Object.FindObjectsByType<BuildingView>())
-            {
-                BuildingSnapshot preview = null;
-                if (building.name == "Building_warehouse-1")
-                    preview = new BuildingSnapshot("warehouse-1", BuildingKind.Warehouse, "Склад", new Cell(10, 8), 3, 3, 0, 500, 0, 0, 0f);
-                else if (building.name == "Building_market-1")
-                    preview = new BuildingSnapshot("market-1", BuildingKind.Market, "Рынок", new Cell(10, 2), 3, 2, 0, 0, 0, 0, 0f);
-                if (preview == null) continue;
-                building.transform.position = worldView.BuildingCenterWorld(preview.Cell, preview.Width, preview.Height);
-                building.transform.rotation = worldView.GroundRotation;
-                building.Setup(preview, null, null, worldView);
-            }
-
         }
 
         private static void ConfigureDiorama(Camera camera, TilemapWorldView worldView)

@@ -9,7 +9,8 @@ namespace TrollStrategy.Application
     public enum InteractionModeType
     {
         Neutral,
-        PlacingMine,
+        PlacingBuilding,
+        MovingBuilding,
         PlacingUnits,
         ChoosingWorkTarget,
         ChoosingHaulSource,
@@ -20,20 +21,26 @@ namespace TrollStrategy.Application
     {
         public InteractionModeType Type { get; private set; }
         public UnitKind UnitKind { get; private set; }
+        public BuildingKind BuildingKind { get; private set; }
         public int Amount { get; private set; }
         public string SourceId { get; private set; }
-        public WorldPosition? SourceAccessPoint { get; private set; }
+        public string BuildingId { get; private set; }
 
         public static InteractionMode Neutral => new() { Type = InteractionModeType.Neutral };
-        public static InteractionMode PlacingMine => new() { Type = InteractionModeType.PlacingMine };
+        public static InteractionMode PlacingBuilding(BuildingKind kind) => new() { Type = InteractionModeType.PlacingBuilding, BuildingKind = kind };
+        public static InteractionMode MovingBuilding(string buildingId, BuildingKind kind) => new()
+        {
+            Type = InteractionModeType.MovingBuilding,
+            BuildingId = buildingId,
+            BuildingKind = kind
+        };
         public static InteractionMode PlacingUnits(UnitKind kind, int amount) => new() { Type = InteractionModeType.PlacingUnits, UnitKind = kind, Amount = amount };
         public static InteractionMode ChoosingWorkTarget => new() { Type = InteractionModeType.ChoosingWorkTarget };
         public static InteractionMode ChoosingHaulSource => new() { Type = InteractionModeType.ChoosingHaulSource };
-        public static InteractionMode ChoosingHaulDestination(string sourceId, WorldPosition? sourceAccessPoint = null) => new()
+        public static InteractionMode ChoosingHaulDestination(string sourceId) => new()
         {
             Type = InteractionModeType.ChoosingHaulDestination,
-            SourceId = sourceId,
-            SourceAccessPoint = sourceAccessPoint
+            SourceId = sourceId
         };
     }
 
@@ -49,6 +56,8 @@ namespace TrollStrategy.Application
         private int _stackQuantity = 1;
 
         public event Action OnInteractionChanged;
+        /// <summary>The player's intent was refused before reaching the session (no selection, wrong target…).</summary>
+        public event Action<string> OnRefused;
 
         public InteractionController(GameSession session)
         {
@@ -75,12 +84,36 @@ namespace TrollStrategy.Application
             _mode = InteractionMode.Neutral;
             _commandsOpen = false;
             _inspectedBuildingId = null;
-            _inspectedUnitId = _selected.Count == 1 ? unitId : null;
+            _inspectedUnitId = null;
             _message = _selected.Count == 0 ? "Выбор снят." : $"Выбрано юнитов: {_selected.Count}";
             Emit();
         }
 
-        public void SelectUnits(IEnumerable<string> unitIds, bool additive = false)
+        public void InspectSquad(string unitId, IEnumerable<string> squadIds)
+        {
+            if (!SnapshotContainsUnit(unitId)) return;
+            _selected.Clear();
+            _selected.Add(unitId);
+            if (squadIds != null)
+            {
+                foreach (var id in squadIds)
+                {
+                    if (SnapshotContainsUnit(id)) _selected.Add(id);
+                }
+            }
+
+            _mode = InteractionMode.Neutral;
+            _commandsOpen = false;
+            _inspectedBuildingId = null;
+            _inspectedUnitId = unitId;
+            _message = $"Выбрано юнитов: {_selected.Count}";
+            Emit();
+        }
+
+        public void SelectUnits(IEnumerable<string> unitIds, bool additive = false) =>
+            Select(unitIds, additive, "В рамке нет юнитов.", "Выбрано рамкой: {0}");
+
+        private void Select(IEnumerable<string> unitIds, bool additive, string noneMessage, string countMessage)
         {
             if (!additive) _selected.Clear();
             if (unitIds != null)
@@ -94,8 +127,8 @@ namespace TrollStrategy.Application
             _mode = InteractionMode.Neutral;
             _commandsOpen = false;
             _inspectedBuildingId = null;
-            _inspectedUnitId = _selected.Count == 1 ? _selected.First() : null;
-            _message = _selected.Count == 0 ? "В рамке нет юнитов." : $"Выбрано рамкой: {_selected.Count}";
+            _inspectedUnitId = null;
+            _message = _selected.Count == 0 ? noneMessage : string.Format(countMessage, _selected.Count);
             Emit();
         }
 
@@ -108,7 +141,7 @@ namespace TrollStrategy.Application
                 if (units[i].Assignment.Kind == AssignmentKind.Idle)
                     ids.Add(units[i].Id);
             }
-            SelectUnits(ids);
+            Select(ids, false, "Свободных существ нет.", "Выбрано свободных: {0}");
         }
 
         public void SelectNextIdle()
@@ -123,7 +156,8 @@ namespace TrollStrategy.Application
                     break;
                 }
             }
-            SelectUnits(foundId != null ? new[] { foundId } : Array.Empty<string>());
+            Select(foundId != null ? new[] { foundId } : Array.Empty<string>(), false,
+                "Свободных существ нет.", "Выбрано свободное существо.");
         }
 
         public void BeginUnitPlacement(UnitKind kind, int amount)
@@ -150,20 +184,24 @@ namespace TrollStrategy.Application
             Emit();
         }
 
-        public void BeginMinePlacement()
+        public void BeginBuildingPlacement(BuildingKind kind)
         {
             _commandsOpen = false;
-            _mode = InteractionMode.PlacingMine;
-            _message = "Выберите свободные клетки для шахты.";
+            _mode = InteractionMode.PlacingBuilding(kind);
+            _message = $"Выберите свободные клетки: {_session.Catalog.GetBuilding(kind).DisplayName}.";
             Emit();
         }
 
-        public void PlaceMine(Cell cell)
+        public void PlaceBuilding(Cell cell)
         {
-            var result = _session.Dispatch(new BuildMineCommand(cell));
+            if (_mode.Type != InteractionModeType.PlacingBuilding) return;
+            var kind = _mode.BuildingKind;
+            var result = _session.Dispatch(new BuildBuildingCommand(kind, cell));
             if (result.Ok)
             {
-                _message = "Шахта построена. Теперь назначьте рабочих.";
+                _message = kind == BuildingKind.Mine
+                    ? "Шахта построена. Теперь назначьте рабочих."
+                    : $"Построено: {_session.Catalog.GetBuilding(kind).DisplayName}.";
                 _mode = InteractionMode.Neutral;
             }
             else
@@ -173,16 +211,14 @@ namespace TrollStrategy.Application
             Emit();
         }
 
-        public void PlaceMineAutomatically()
+        public void PlaceBuildingAutomatically()
         {
-            var cell = _session.FindFirstMineCell();
+            if (_mode.Type != InteractionModeType.PlacingBuilding) return;
+            var cell = _session.FindFirstBuildingCell(_mode.BuildingKind);
             if (cell.HasValue)
-                PlaceMine(cell.Value);
+                PlaceBuilding(cell.Value);
             else
-            {
-                _message = "На поле не осталось места для шахты.";
-                Emit();
-            }
+                Refuse("На поле не осталось места для этой постройки.");
         }
 
         public void BeginWorkTarget()
@@ -190,7 +226,7 @@ namespace TrollStrategy.Application
             if (!HasSelection()) return;
             _commandsOpen = false;
             _mode = InteractionMode.ChoosingWorkTarget;
-            _message = "Укажите шахту для выбранных рабочих.";
+            _message = "Укажите производство для выбранных рабочих.";
             Emit();
         }
 
@@ -199,7 +235,7 @@ namespace TrollStrategy.Application
             if (!HasSelection()) return;
             _commandsOpen = false;
             _mode = InteractionMode.ChoosingHaulSource;
-            _message = "Сначала укажите источник руды.";
+            _message = "Сначала укажите, откуда носить товар.";
             Emit();
         }
 
@@ -264,12 +300,57 @@ namespace TrollStrategy.Application
             SelectUnits(subset);
         }
 
-        public void ChooseBuilding(string buildingId)
+
+        public void UpgradeInspectedBuilding()
         {
-            ChooseBuilding(buildingId, null);
+            if (string.IsNullOrEmpty(_inspectedBuildingId)) return;
+            var result = _session.Dispatch(new UpgradeBuildingCommand(_inspectedBuildingId));
+            _message = result.Ok ? "Постройка улучшена." : result.Error;
+            Emit();
         }
 
-        public void ChooseBuilding(string buildingId, WorldPosition? accessPoint)
+        public void DemolishInspectedBuilding()
+        {
+            if (string.IsNullOrEmpty(_inspectedBuildingId)) return;
+            var result = _session.Dispatch(new DemolishBuildingCommand(_inspectedBuildingId));
+            if (result.Ok) _inspectedBuildingId = null;
+            _message = result.Ok ? "Постройка разобрана." : result.Error;
+            Emit();
+        }
+
+        public void BeginMoveInspectedBuilding()
+        {
+            BuildingSnapshot building = null;
+            var buildings = _session.CurrentSnapshot.Buildings;
+            for (int i = 0; i < buildings.Count; i++)
+            {
+                if (buildings[i].Id == _inspectedBuildingId) { building = buildings[i]; break; }
+            }
+            if (building == null) return;
+
+            _commandsOpen = false;
+            _mode = InteractionMode.MovingBuilding(building.Id, building.Kind);
+            _message = $"Кликните по новому месту: {building.Name}.";
+            Emit();
+        }
+
+        public void MoveBuilding(Cell cell)
+        {
+            if (_mode.Type != InteractionModeType.MovingBuilding) return;
+            var result = _session.Dispatch(new MoveBuildingCommand(_mode.BuildingId, cell));
+            if (result.Ok)
+            {
+                _message = "Постройка перенесена.";
+                _mode = InteractionMode.Neutral;
+            }
+            else
+            {
+                _message = result.Error;
+            }
+            Emit();
+        }
+
+        public void ChooseBuilding(string buildingId)
         {
             if (_mode.Type == InteractionModeType.Neutral)
             {
@@ -280,15 +361,14 @@ namespace TrollStrategy.Application
             var validTargets = GetTargetBuildingIds();
             if (!validTargets.Contains(buildingId))
             {
-                _message = "Это здание нельзя выбрать для текущего шага.";
-                Emit();
+                Refuse("Это здание нельзя выбрать для текущего шага.");
                 return;
             }
 
             if (_mode.Type == InteractionModeType.ChoosingWorkTarget)
             {
                 var ids = new List<string>(_selected);
-                var result = _session.Dispatch(new AssignWorkCommand(ids, buildingId, accessPoint));
+                var result = _session.Dispatch(new AssignWorkCommand(ids, buildingId));
                 if (!result.Ok)
                 {
                     FinishCommand(false, result.Error);
@@ -308,14 +388,14 @@ namespace TrollStrategy.Application
                 }
 
                 string suffix = assignedCount < ids.Count ? " Остальные остались на прежних задачах." : "";
-                FinishCommand(true, $"В шахту назначено {assignedCount} из {ids.Count}.{suffix}");
+                FinishCommand(true, $"На работу назначено {assignedCount} из {ids.Count}.{suffix}");
                 return;
             }
 
             if (_mode.Type == InteractionModeType.ChoosingHaulSource)
             {
-                _mode = InteractionMode.ChoosingHaulDestination(buildingId, accessPoint);
-                _message = "Теперь укажите точку на складе или рынке.";
+                _mode = InteractionMode.ChoosingHaulDestination(buildingId);
+                _message = "Теперь укажите, куда доставлять товар.";
                 Emit();
                 return;
             }
@@ -323,12 +403,7 @@ namespace TrollStrategy.Application
             if (_mode.Type == InteractionModeType.ChoosingHaulDestination)
             {
                 var ids = new List<string>(_selected);
-                var result = _session.Dispatch(new AssignHaulCommand(
-                    ids,
-                    _mode.SourceId,
-                    buildingId,
-                    _mode.SourceAccessPoint,
-                    accessPoint));
+                var result = _session.Dispatch(new AssignHaulCommand(ids, _mode.SourceId, buildingId));
                 FinishCommand(result.Ok, result.Ok ? "Постоянный маршрут назначен." : result.Error);
             }
         }
@@ -337,13 +412,14 @@ namespace TrollStrategy.Application
         {
             if (!HasSelection()) return;
             var ids = new List<string>(_selected);
+            int refund = SaleRefund(ids);
             var result = _session.Dispatch(new SellUnitsCommand(ids));
             if (result.Ok)
             {
                 _selected.Clear();
                 _inspectedUnitId = null;
                 _commandsOpen = false;
-                FinishCommand(true, "Юниты проданы за 50% стоимости.");
+                FinishCommand(true, $"Продано существ: {ids.Count}, получено {refund} зол.");
             }
             else
             {
@@ -394,7 +470,7 @@ namespace TrollStrategy.Application
             {
                 for (int i = 0; i < buildings.Count; i++)
                 {
-                    if (buildings[i].Kind == BuildingKind.Mine)
+                    if (buildings[i].IsWorkplace)
                         list.Add(buildings[i].Id);
                 }
             }
@@ -406,7 +482,7 @@ namespace TrollStrategy.Application
                     bool hasDest = false;
                     for (int j = 0; j < buildings.Count; j++)
                     {
-                        if (ColonySimulation.IsValidHaulRoute(src.Kind, buildings[j].Kind))
+                        if (j != i && ColonySimulation.IsValidHaulRoute(src.Kind, buildings[j].Kind, _session.Catalog))
                         {
                             hasDest = true;
                             break;
@@ -431,7 +507,7 @@ namespace TrollStrategy.Application
                     for (int i = 0; i < buildings.Count; i++)
                     {
                         var dest = buildings[i];
-                        if (dest.Id != src.Id && ColonySimulation.IsValidHaulRoute(src.Kind, dest.Kind))
+                        if (dest.Id != src.Id && ColonySimulation.IsValidHaulRoute(src.Kind, dest.Kind, _session.Catalog))
                             list.Add(dest.Id);
                     }
                 }
@@ -440,12 +516,28 @@ namespace TrollStrategy.Application
             return list;
         }
 
+        private int SaleRefund(ICollection<string> unitIds)
+        {
+            int refund = 0;
+            foreach (var unit in _session.CurrentSnapshot.Units)
+                if (unitIds.Contains(unit.Id))
+                    refund += ColonySimulation.UnitSaleRefund(_session.Catalog.GetUnit(unit.UnitKind));
+            return refund;
+        }
+
         private bool HasSelection()
         {
             if (_selected.Count > 0) return true;
-            _message = "Сначала выберите хотя бы одного юнита.";
-            Emit();
+            Refuse("Сначала выберите хотя бы одного юнита.");
             return false;
+        }
+
+        /// <summary>An intent refused before any command was dispatched; presentation says no at once.</summary>
+        private void Refuse(string message)
+        {
+            _message = message;
+            OnRefused?.Invoke(message);
+            Emit();
         }
 
         private void FinishCommand(bool ok, string message)

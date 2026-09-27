@@ -271,24 +271,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
     nameFileIdTable:
-      goblin-walk_0: 3358807528797208710
-      goblin-walk_1: -2348995275354257674
-      goblin-walk_10: 3132302354654999950
-      goblin-walk_11: -5413536345056930186
-      goblin-walk_12: 7893693863329963913
-      goblin-walk_13: 611174412428262433
-      goblin-walk_14: 6364382642506742443
-      goblin-walk_15: -7016872225494380943
-      goblin-walk_2: 7112183010473844602
-      goblin-walk_3: 4848499988328324548
-      goblin-walk_4: -4850521051183270334
-      goblin-walk_5: -8812160464830493893
-      goblin-walk_6: 6663081717764238678
-      goblin-walk_7: -2804998316271736981
-      goblin-walk_8: 8720243162004263965
-      goblin-walk_9: -650413889192354641
       goblin_walk_0: -4257342873450878135
       goblin_walk_1: -390892230489485837
       goblin_walk_2: -1106248194141385487

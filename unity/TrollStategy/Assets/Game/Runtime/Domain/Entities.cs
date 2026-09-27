@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TrollStrategy.Content;
 
 namespace TrollStrategy.Domain
@@ -6,6 +7,8 @@ namespace TrollStrategy.Domain
     public enum HaulPhase
     {
         ToSource,
+        QueuedAtSource,
+        ToDock,
         Loading,
         ToDestination,
         Unloading
@@ -28,48 +31,36 @@ namespace TrollStrategy.Domain
         public string DestinationId { get; set; }
         public HaulPhase Phase { get; set; }
         public int Carried { get; set; }
+        public ResourceKind CarriedResource { get; set; }
+        public int CarryCreditPercent { get; set; }
         public float PhaseElapsedSeconds { get; set; }
-        public bool HasAccessPoint { get; set; }
-        public WorldPosition AccessPoint { get; set; }
-        public bool HasSourceAccessPoint { get; set; }
-        public WorldPosition SourceAccessPoint { get; set; }
-        public bool HasDestinationAccessPoint { get; set; }
-        public WorldPosition DestinationAccessPoint { get; set; }
+        public int QueueTicket { get; set; }
+        // Place held in the group in front of the door the hauler waits at (queued at its source,
+        // or delivering to its destination); -1 when it is not waiting.
+        public int CrowdSlot { get; set; } = -1;
 
         public static Assignment Idle() => new() { Kind = AssignmentKind.Idle };
 
-        public static Assignment ToWork(string buildingId, WorldPosition? accessPoint = null) => new()
+        public static Assignment ToWork(string buildingId) => new()
         {
             Kind = AssignmentKind.ToWork,
-            BuildingId = buildingId,
-            HasAccessPoint = accessPoint.HasValue,
-            AccessPoint = accessPoint.GetValueOrDefault()
+            BuildingId = buildingId
         };
 
-        public static Assignment Work(string buildingId, WorldPosition? accessPoint = null) => new()
+        public static Assignment Work(string buildingId) => new()
         {
             Kind = AssignmentKind.Work,
-            BuildingId = buildingId,
-            HasAccessPoint = accessPoint.HasValue,
-            AccessPoint = accessPoint.GetValueOrDefault()
+            BuildingId = buildingId
         };
 
-        public static Assignment Haul(
-            string sourceId,
-            string destinationId,
-            WorldPosition? sourceAccessPoint = null,
-            WorldPosition? destinationAccessPoint = null) => new()
+        public static Assignment Haul(string sourceId, string destinationId) => new()
         {
             Kind = AssignmentKind.Haul,
             SourceId = sourceId,
             DestinationId = destinationId,
             Phase = HaulPhase.ToSource,
             Carried = 0,
-            PhaseElapsedSeconds = 0f,
-            HasSourceAccessPoint = sourceAccessPoint.HasValue,
-            SourceAccessPoint = sourceAccessPoint.GetValueOrDefault(),
-            HasDestinationAccessPoint = destinationAccessPoint.HasValue,
-            DestinationAccessPoint = destinationAccessPoint.GetValueOrDefault()
+            PhaseElapsedSeconds = 0f
         };
 
         public Assignment Clone() => new()
@@ -80,13 +71,11 @@ namespace TrollStrategy.Domain
             DestinationId = DestinationId,
             Phase = Phase,
             Carried = Carried,
+            CarriedResource = CarriedResource,
+            CarryCreditPercent = CarryCreditPercent,
             PhaseElapsedSeconds = PhaseElapsedSeconds,
-            HasAccessPoint = HasAccessPoint,
-            AccessPoint = AccessPoint,
-            HasSourceAccessPoint = HasSourceAccessPoint,
-            SourceAccessPoint = SourceAccessPoint,
-            HasDestinationAccessPoint = HasDestinationAccessPoint,
-            DestinationAccessPoint = DestinationAccessPoint
+            QueueTicket = QueueTicket,
+            CrowdSlot = CrowdSlot
         };
     }
 
@@ -96,16 +85,49 @@ namespace TrollStrategy.Domain
         public string Id { get; set; }
         public BuildingKind Kind { get; set; }
         public Cell Cell { get; set; }
-        public int Ore { get; set; }
+        public Dictionary<ResourceKind, int> Stock { get; set; } = new();
         public float ProductionProgress { get; set; }
+        public int CompletedCycles { get; set; }
+        public int Level { get; set; } = 1;
+        public int InvestedGold { get; set; }
+
+        // Iron ore held by the building; a view over Stock, not a separate counter.
+        public int Ore
+        {
+            get => GetStock(ResourceKind.IronOre);
+            set => SetStock(ResourceKind.IronOre, value);
+        }
+
+        public int GetStock(ResourceKind resource) => Stock.TryGetValue(resource, out int amount) ? amount : 0;
+
+        public void SetStock(ResourceKind resource, int amount)
+        {
+            if (amount > 0) Stock[resource] = amount;
+            else Stock.Remove(resource);
+        }
+
+        public void AddStock(ResourceKind resource, int amount) => SetStock(resource, GetStock(resource) + amount);
+
+        public int TotalStock
+        {
+            get
+            {
+                int total = 0;
+                foreach (var amount in Stock.Values) total += amount;
+                return total;
+            }
+        }
 
         public BuildingState Clone() => new()
         {
             Id = Id,
             Kind = Kind,
             Cell = Cell,
-            Ore = Ore,
-            ProductionProgress = ProductionProgress
+            Stock = new Dictionary<ResourceKind, int>(Stock),
+            ProductionProgress = ProductionProgress,
+            CompletedCycles = CompletedCycles,
+            Level = Level,
+            InvestedGold = InvestedGold
         };
     }
 
@@ -117,12 +139,35 @@ namespace TrollStrategy.Domain
         public WorldPosition Position { get; set; }
         public Assignment Assignment { get; set; }
 
+        // Remaining waypoints of the current walk; valid for RouteGoal under RouteLayoutVersion.
+        public List<WorldPosition> Route { get; set; } = new();
+        public bool HasRoute { get; set; }
+        public WorldPosition RouteGoal { get; set; }
+        public int RouteLayoutVersion { get; set; }
+
+        /// <summary>Moves the unit without walking; any planned route no longer starts here.</summary>
+        public void PlaceAt(WorldPosition position)
+        {
+            Position = position;
+            ClearRoute();
+        }
+
+        public void ClearRoute()
+        {
+            Route.Clear();
+            HasRoute = false;
+        }
+
         public UnitState Clone() => new()
         {
             Id = Id,
             Kind = Kind,
             Position = Position,
-            Assignment = Assignment?.Clone() ?? Assignment.Idle()
+            Assignment = Assignment?.Clone() ?? Assignment.Idle(),
+            Route = new List<WorldPosition>(Route),
+            HasRoute = HasRoute,
+            RouteGoal = RouteGoal,
+            RouteLayoutVersion = RouteLayoutVersion
         };
     }
 }

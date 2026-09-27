@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a09b53d96beac6489c03d204e536d7d, type: 3}
+  m_Name: Building_Tannery
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.BuildingDefinition
+  _kind: 9
+  _displayName: "\u041A\u043E\u0436\u0435\u0432\u043D\u044F"
+  _price: 150
+  _constructible: 1
+  _width: 2
+  _height: 2
+  _entrance: {x: 1, y: 0.35}
+  _crowdSpacing: 0.2
+  _capacity: 50
+  _maxWorkers: 4
+  _upgradeCosts: 
+  _capacityPerLevel: 0
+  _workersPerLevel: 0
+  _saleBonusPerLevel: 0
+  _recipes:
+  - _inputs:
+    - _resource: 3
+      _amount: 1
+    _outputs:
+    - _resource: 4
+      _amount: 1
+    _work: 2
+    _bonusEveryCycles: 0
+    _bonusOutput:
+      _resource: 0
+      _amount: 0
+  _storageRole: 0
+  _storedResources: 
+  _slotStackSize: 0
+  _sprite: {fileID: 0}
+  _prefab: {fileID: 6494250834709687517, guid: e3ce06a8625bdfd40803d2dcc6c79d61, type: 3}
+  _icon: {fileID: -431204425, guid: 09bbd4ccc6c7bd240abbcc21ca5c3aa2, type: 3}

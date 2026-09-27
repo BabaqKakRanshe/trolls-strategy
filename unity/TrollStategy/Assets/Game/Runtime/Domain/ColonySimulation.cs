@@ -4,6 +4,16 @@ using TrollStrategy.Content;
 
 namespace TrollStrategy.Domain
 {
+    // Why a producing building is or is not advancing its current cycle.
+    public enum ProductionState
+    {
+        NotProducer,
+        NoWorkers,
+        MissingInputs,
+        OutputFull,
+        Working
+    }
+
     public static class ColonySimulation
     {
         public static CommandResult ApplyCommand(GameState state, IGameCommand command, GameContentCatalog catalog)
@@ -11,9 +21,13 @@ namespace TrollStrategy.Domain
             return command switch
             {
                 BuildMineCommand c => BuildMine(state, c.Cell, catalog),
+                BuildBuildingCommand c => BuildBuilding(state, c.Kind, c.Cell, catalog),
+                UpgradeBuildingCommand c => UpgradeBuilding(state, c.BuildingId, catalog),
+                DemolishBuildingCommand c => DemolishBuilding(state, c.BuildingId),
+                MoveBuildingCommand c => MoveBuilding(state, c.BuildingId, c.Cell, catalog),
                 BuyUnitsCommand c => BuyUnits(state, c.UnitKind, c.Amount, c.Cell, catalog),
-                AssignWorkCommand c => AssignWork(state, c.UnitIds, c.BuildingId, c.AccessPoint, catalog),
-                AssignHaulCommand c => AssignHaul(state, c.UnitIds, c.SourceId, c.DestinationId, c.SourceAccessPoint, c.DestinationAccessPoint, catalog),
+                AssignWorkCommand c => AssignWork(state, c.UnitIds, c.BuildingId, catalog),
+                AssignHaulCommand c => AssignHaul(state, c.UnitIds, c.SourceId, c.DestinationId, catalog),
                 ReleaseUnitsCommand c => ReleaseUnits(state, c.UnitIds, catalog),
                 SellUnitsCommand c => SellUnits(state, c.UnitIds, catalog),
                 SendToBarracksCommand c => SendToBarracks(state, c.UnitIds, catalog),
@@ -23,7 +37,7 @@ namespace TrollStrategy.Domain
 
         public static void TickColony(GameState state, float deltaSeconds, GameContentCatalog catalog)
         {
-            ProduceOre(state, deltaSeconds, catalog);
+            ProduceGoods(state, deltaSeconds, catalog);
 
             for (int i = 0; i < state.Units.Count; i++)
             {
@@ -35,21 +49,30 @@ namespace TrollStrategy.Domain
             }
         }
 
-        public static CommandResult ValidateMinePlacement(GameState state, Cell cell, GameContentCatalog catalog)
+        public static CommandResult ValidateBuildingPlacement(GameState state, BuildingKind kind, Cell cell, GameContentCatalog catalog, string ignoredId = null)
         {
-            var mine = catalog.GetBuilding(BuildingKind.Mine);
+            var definition = catalog.GetBuilding(kind);
             var economy = catalog.Economy;
 
-            if (cell.X < 0 || cell.Y < 0 || cell.X + mine.Width > economy.GridWidth || cell.Y + mine.Height > economy.GridHeight)
-                return CommandResult.Fail("Шахта выходит за границу поля");
+            if (cell.X < 0 || cell.Y < 0 || cell.X + definition.Width > economy.GridWidth || cell.Y + definition.Height > economy.GridHeight)
+                return CommandResult.Fail("Постройка выходит за границу поля");
 
             for (int i = 0; i < state.Buildings.Count; i++)
             {
                 var b = state.Buildings[i];
+                if (b.Id == ignoredId) continue;
                 var bDef = catalog.GetBuilding(b.Kind);
-                if (FootprintsOverlap(cell, mine.Width, mine.Height, b.Cell, bDef.Width, bDef.Height))
+                if (FootprintsOverlap(cell, definition.Width, definition.Height, b.Cell, bDef.Width, bDef.Height))
                     return CommandResult.Fail("Здесь уже стоит здание");
+                if (BuildingOccupiesCell(cell, definition.Width, definition.Height,
+                        ColonyNavigation.ApproachCell(b.Kind, b.Cell, catalog)))
+                    return CommandResult.Fail("Постройка перекроет вход в другое здание");
             }
+
+            // Units reach a building only through the open cell in front of its door.
+            var approach = ColonyNavigation.ApproachCell(kind, cell, catalog);
+            if (!ColonyNavigation.IsWalkable(state, approach, catalog, ignoredId))
+                return CommandResult.Fail("Вход в постройку будет перекрыт");
 
             return CommandResult.Success();
         }
@@ -112,28 +135,109 @@ namespace TrollStrategy.Domain
                    testCell.Y >= bCell.Y && testCell.Y < bCell.Y + h;
         }
 
-        public static bool IsValidHaulRoute(BuildingKind source, BuildingKind destination)
+        private static readonly ResourceKind[] AllResources = (ResourceKind[])Enum.GetValues(typeof(ResourceKind));
+
+        // A route is valid when the source hands out at least one good the destination takes.
+        public static bool IsValidHaulRoute(BuildingKind source, BuildingKind destination, GameContentCatalog catalog)
         {
-            return (source == BuildingKind.Mine && (destination == BuildingKind.Warehouse || destination == BuildingKind.Market)) ||
-                   (source == BuildingKind.Warehouse && destination == BuildingKind.Market);
+            var sourceDef = catalog.GetBuilding(source);
+            var destinationDef = catalog.GetBuilding(destination);
+            foreach (var resource in AllResources)
+                if (Provides(sourceDef, resource) && Accepts(destinationDef, resource, catalog))
+                    return true;
+            return false;
         }
+
+        // Goods haulers may pick up: a stockpile's stored goods or a producer's outputs, never its inputs.
+        public static bool Provides(BuildingDefinition definition, ResourceKind resource) =>
+            definition.Stores(resource) || definition.ProducesInRecipe(resource);
+
+        public static bool Accepts(BuildingDefinition definition, ResourceKind resource, GameContentCatalog catalog)
+        {
+            switch (definition.StorageRole)
+            {
+                case StorageRole.Market:
+                    return catalog.TryGetResource(resource) != null;
+                case StorageRole.Armory:
+                    return catalog.TryGetResource(resource)?.IsEquipment == true;
+                default:
+                    return definition.Stores(resource) || definition.ConsumesInRecipe(resource);
+            }
+        }
+
+        // How many units of a good the building can still take; markets and armories never fill up.
+        public static int Room(BuildingState building, ResourceKind resource, GameContentCatalog catalog)
+        {
+            var definition = catalog.GetBuilding(building.Kind);
+            if (!Accepts(definition, resource, catalog)) return 0;
+            if (definition.StorageRole == StorageRole.Market || definition.StorageRole == StorageRole.Armory)
+                return int.MaxValue;
+            int capacity = definition.Capacity(building.Level);
+            if (definition.StorageRole == StorageRole.Stockpile)
+            {
+                return definition.SlotStackSize > 0
+                    ? StorageSlots.Room(building.Stock, resource, capacity, definition.SlotStackSize)
+                    : Math.Max(0, capacity - building.TotalStock);
+            }
+            return Math.Max(0, capacity - building.GetStock(resource));
+        }
+
+        public static int SalePrice(GameContentCatalog catalog, ResourceKind resource, int marketLevel) =>
+            catalog.GetResource(resource).SellPrice + catalog.GetBuilding(BuildingKind.Market).SaleBonus(marketLevel);
 
         private static CommandResult BuildMine(GameState state, Cell cell, GameContentCatalog catalog)
         {
-            var validation = ValidateMinePlacement(state, cell, catalog);
+            return BuildBuilding(state, BuildingKind.Mine, cell, catalog);
+        }
+
+        // Places a pre-built colony building: no price or constructible check, same placement rules as building.
+        // Ids are numbered per kind ("market-1", "market-2") so a layout yields the same ids every run.
+        public static CommandResult PlaceStartingBuilding(GameState state, BuildingKind kind, Cell cell,
+            GameContentCatalog catalog, out string buildingId)
+        {
+            buildingId = null;
+            var validation = ValidateBuildingPlacement(state, kind, cell, catalog);
             if (!validation.Ok) return validation;
 
-            var mineDef = catalog.GetBuilding(BuildingKind.Mine);
-            if (state.Gold < mineDef.Price) return CommandResult.Fail("Недостаточно золота");
+            string prefix = kind.ToString().ToLowerInvariant();
+            int number = 1;
+            while (state.Buildings.Exists(b => b.Id == $"{prefix}-{number}")) number++;
+            buildingId = $"{prefix}-{number}";
+            state.LayoutVersion++;
+            state.Buildings.Add(new BuildingState
+            {
+                Id = buildingId,
+                Kind = kind,
+                Cell = cell,
+                Level = 1,
+                ProductionProgress = 0f
+            });
+            return CommandResult.Success();
+        }
 
-            state.Gold -= mineDef.Price;
-            string newId = $"mine-{state.NextBuildingId++}";
+        private static CommandResult BuildBuilding(GameState state, BuildingKind kind, Cell cell, GameContentCatalog catalog)
+        {
+            var definition = catalog.GetBuilding(kind);
+            if (!definition.Constructible)
+                return CommandResult.Fail("Эту постройку нельзя построить");
+            var validation = ValidateBuildingPlacement(state, kind, cell, catalog);
+            if (!validation.Ok) return validation;
+
+            if (state.Gold < definition.Price) return CommandResult.Fail("Недостаточно золота");
+
+            state.Gold -= definition.Price;
+            string prefix = kind.ToString().ToLowerInvariant();
+            string newId;
+            do { newId = $"{prefix}-{state.NextBuildingId++}"; }
+            while (state.Buildings.Exists(b => b.Id == newId));
+            state.LayoutVersion++;
             state.Buildings.Add(new BuildingState
             {
                 Id = newId,
-                Kind = BuildingKind.Mine,
+                Kind = kind,
                 Cell = cell,
-                Ore = 0,
+                Level = 1,
+                InvestedGold = definition.Price,
                 ProductionProgress = 0f
             });
 
@@ -172,20 +276,16 @@ namespace TrollStrategy.Domain
             GameState state,
             IReadOnlyList<string> unitIds,
             string buildingId,
-            WorldPosition? accessPoint,
             GameContentCatalog catalog)
         {
             var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
             if (!resolveResult.Ok) return resolveResult;
 
             var building = state.Buildings.Find(b => b.Id == buildingId);
-            if (building == null || building.Kind != BuildingKind.Mine)
-                return CommandResult.Fail("Работать можно только в шахте");
+            if (building == null || !catalog.GetBuilding(building.Kind).IsWorkplace)
+                return CommandResult.Fail("Работать можно только на производстве");
 
-            if (accessPoint.HasValue && !IsPointWithinBuilding(building, accessPoint.Value, catalog))
-                return CommandResult.Fail("Точка входа находится вне здания");
-
-            var mineDef = catalog.GetBuilding(BuildingKind.Mine);
+            var workplaceDef = catalog.GetBuilding(building.Kind);
 
             int currentAssigned = 0;
             for (int i = 0; i < state.Units.Count; i++)
@@ -195,7 +295,7 @@ namespace TrollStrategy.Domain
                     currentAssigned++;
             }
 
-            int availableSlots = mineDef.MaxWorkers - currentAssigned;
+            int availableSlots = workplaceDef.WorkerCapacity(building.Level) - currentAssigned;
             int assigned = 0;
             for (int i = 0; i < selectedUnits.Count && assigned < Math.Max(0, availableSlots); i++)
             {
@@ -204,8 +304,8 @@ namespace TrollStrategy.Domain
                 if ((u.Assignment.Kind == AssignmentKind.ToWork || u.Assignment.Kind == AssignmentKind.Work) && u.Assignment.BuildingId == buildingId)
                     continue;
 
-                ReturnCarriedOre(state, u);
-                u.Assignment = Assignment.ToWork(buildingId, accessPoint);
+                ReturnCarriedCargo(state, u);
+                u.Assignment = Assignment.ToWork(buildingId);
                 assigned++;
             }
 
@@ -217,8 +317,6 @@ namespace TrollStrategy.Domain
             IReadOnlyList<string> unitIds,
             string sourceId,
             string destinationId,
-            WorldPosition? sourceAccessPoint,
-            WorldPosition? destinationAccessPoint,
             GameContentCatalog catalog)
         {
             var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
@@ -228,21 +326,15 @@ namespace TrollStrategy.Domain
             var destination = state.Buildings.Find(b => b.Id == destinationId);
             if (source == null || destination == null) return CommandResult.Fail("Здание не найдено");
 
-            if (!IsValidHaulRoute(source.Kind, destination.Kind))
-                return CommandResult.Fail("Этот маршрут не перевозит руду");
-
-            if (sourceAccessPoint.HasValue && !IsPointWithinBuilding(source, sourceAccessPoint.Value, catalog))
-                return CommandResult.Fail("Точка источника находится вне здания");
-
-            if (destinationAccessPoint.HasValue && !IsPointWithinBuilding(destination, destinationAccessPoint.Value, catalog))
-                return CommandResult.Fail("Точка назначения находится вне здания");
+            if (source.Id == destination.Id || !IsValidHaulRoute(source.Kind, destination.Kind, catalog))
+                return CommandResult.Fail("Этот маршрут не перевозит подходящий товар");
 
             for (int i = 0; i < selectedUnits.Count; i++)
             {
                 var u = selectedUnits[i];
 
-                ReturnCarriedOre(state, u);
-                u.Assignment = Assignment.Haul(sourceId, destinationId, sourceAccessPoint, destinationAccessPoint);
+                ReturnCarriedCargo(state, u);
+                u.Assignment = Assignment.Haul(sourceId, destinationId);
             }
 
             return CommandResult.Success();
@@ -257,9 +349,9 @@ namespace TrollStrategy.Domain
             {
                 var u = selectedUnits[i];
 
-                ReturnCarriedOre(state, u);
+                ReturnCarriedCargo(state, u);
                 u.Assignment = Assignment.Idle();
-                u.Position = IdlePosition(GetUnitNumber(u.Id), catalog.Economy);
+                u.PlaceAt(IdlePosition(GetUnitNumber(u.Id), catalog.Economy));
             }
 
             return CommandResult.Success();
@@ -276,14 +368,17 @@ namespace TrollStrategy.Domain
             for (int i = 0; i < selectedUnits.Count; i++)
             {
                 var u = selectedUnits[i];
-                ReturnCarriedOre(state, u);
+                ReturnCarriedCargo(state, u);
                 var def = catalog.GetUnit(u.Kind);
-                int refund = (int)Math.Floor(def.Price * 0.5f);
+                int refund = UnitSaleRefund(def);
                 totalRefund += refund;
                 toRemove.Add(u.Id);
             }
 
             state.Units.RemoveAll(u => toRemove.Contains(u.Id));
+            foreach (var item in state.Equipment)
+                if (item.OwnerUnitId != null && toRemove.Contains(item.OwnerUnitId))
+                    item.OwnerUnitId = null;
             state.Gold += totalRefund;
             return CommandResult.Success();
         }
@@ -301,38 +396,84 @@ namespace TrollStrategy.Domain
             for (int i = 0; i < selectedUnits.Count; i++)
             {
                 var u = selectedUnits[i];
-                ReturnCarriedOre(state, u);
+                ReturnCarriedCargo(state, u);
                 u.Assignment = Assignment.Idle();
-                u.Position = targetPos;
+                u.PlaceAt(targetPos);
             }
 
             return CommandResult.Success();
         }
 
-        private static void ProduceOre(GameState state, float deltaSeconds, GameContentCatalog catalog)
+        private static void ProduceGoods(GameState state, float deltaSeconds, GameContentCatalog catalog)
         {
-            var mineDef = catalog.GetBuilding(BuildingKind.Mine);
-
             for (int i = 0; i < state.Buildings.Count; i++)
             {
                 var b = state.Buildings[i];
-                if (b.Kind != BuildingKind.Mine) continue;
+                var def = catalog.GetBuilding(b.Kind);
+                if (def.Recipes.Count == 0) continue;
 
-                float prodPerSec = CalculateMineProductionPerSecond(state, b.Id, catalog);
-                b.ProductionProgress += prodPerSec * deltaSeconds;
-
-                int produced = (int)Math.Floor(b.ProductionProgress);
-                if (produced > 0)
+                var recipe = NextRecipe(b, def, catalog);
+                if (recipe == null)
                 {
-                    int room = mineDef.MaxOre - b.Ore;
-                    int added = Math.Min(room, produced);
-                    b.Ore += added;
-                    b.ProductionProgress = b.Ore >= mineDef.MaxOre ? 0f : b.ProductionProgress - produced;
+                    // A stalled building does not bank work while it waits.
+                    b.ProductionProgress = 0f;
+                    continue;
                 }
+
+                b.ProductionProgress += WorkPerSecond(state, b.Id, catalog) * deltaSeconds;
+                while (recipe != null && b.ProductionProgress >= recipe.Work)
+                {
+                    RunCycle(b, recipe);
+                    b.ProductionProgress -= recipe.Work;
+                    recipe = NextRecipe(b, def, catalog);
+                }
+                if (recipe == null) b.ProductionProgress = 0f;
             }
         }
 
-        private static float CalculateMineProductionPerSecond(GameState state, string buildingId, GameContentCatalog catalog)
+        private static ProductionRecipe NextRecipe(BuildingState building, BuildingDefinition definition, GameContentCatalog catalog)
+        {
+            foreach (var recipe in definition.Recipes)
+                if (HasInputs(building, recipe) && HasOutputRoom(building, recipe, catalog))
+                    return recipe;
+            return null;
+        }
+
+        private static bool HasInputs(BuildingState building, ProductionRecipe recipe)
+        {
+            foreach (var input in recipe.Inputs)
+                if (building.GetStock(input.Resource) < input.Amount) return false;
+            return true;
+        }
+
+        private static bool HasOutputRoom(BuildingState building, ProductionRecipe recipe, GameContentCatalog catalog)
+        {
+            int capacity = catalog.GetBuilding(building.Kind).Capacity(building.Level);
+            foreach (var output in recipe.Outputs)
+                if (building.GetStock(output.Resource) + output.Amount > capacity) return false;
+            if (IsBonusCycle(building, recipe) &&
+                building.GetStock(recipe.BonusOutput.Resource) + recipe.BonusOutput.Amount > capacity)
+                return false;
+            return true;
+        }
+
+        private static bool IsBonusCycle(BuildingState building, ProductionRecipe recipe) =>
+            recipe.HasBonus && (building.CompletedCycles + 1) % recipe.BonusEveryCycles == 0;
+
+        // Inputs are consumed and outputs released together, so a cycle never half-completes.
+        private static void RunCycle(BuildingState building, ProductionRecipe recipe)
+        {
+            bool bonus = IsBonusCycle(building, recipe);
+            foreach (var input in recipe.Inputs)
+                building.AddStock(input.Resource, -input.Amount);
+            foreach (var output in recipe.Outputs)
+                building.AddStock(output.Resource, output.Amount);
+            if (bonus)
+                building.AddStock(recipe.BonusOutput.Resource, recipe.BonusOutput.Amount);
+            building.CompletedCycles++;
+        }
+
+        private static float WorkPerSecond(GameState state, string buildingId, GameContentCatalog catalog)
         {
             float total = 0f;
             for (int i = 0; i < state.Units.Count; i++)
@@ -341,10 +482,23 @@ namespace TrollStrategy.Domain
                 if (u.Assignment.Kind == AssignmentKind.Work && u.Assignment.BuildingId == buildingId)
                 {
                     var uDef = catalog.GetUnit(u.Kind);
-                    total += uDef.Strength * catalog.Economy.OrePerStrengthSecond;
+                    total += uDef.Strength * catalog.Economy.WorkPerStrengthSecond;
                 }
             }
             return total;
+        }
+
+        public static ProductionState DescribeProduction(GameState state, BuildingState building, GameContentCatalog catalog)
+        {
+            var def = catalog.GetBuilding(building.Kind);
+            if (!def.IsWorkplace) return ProductionState.NotProducer;
+            if (NextRecipe(building, def, catalog) == null)
+            {
+                foreach (var recipe in def.Recipes)
+                    if (HasInputs(building, recipe)) return ProductionState.OutputFull;
+                return ProductionState.MissingInputs;
+            }
+            return WorkPerSecond(state, building.Id, catalog) > 0f ? ProductionState.Working : ProductionState.NoWorkers;
         }
 
         private static void TickWorkerArrival(GameState state, UnitState unit, float deltaSeconds, GameContentCatalog catalog)
@@ -352,16 +506,13 @@ namespace TrollStrategy.Domain
             var building = state.Buildings.Find(b => b.Id == unit.Assignment.BuildingId);
             if (building == null) return;
 
-            var assignment = unit.Assignment;
-            var targetPos = assignment.HasAccessPoint
-                ? assignment.AccessPoint
-                : BuildingEntrancePosition(building, catalog);
+            var targetPos = BuildingEntrancePosition(building, catalog);
             var unitDef = catalog.GetUnit(unit.Kind);
             float speedInWorldUnits = UnitMovementSpeed(unitDef, catalog);
 
-            if (MoveToward(unit, targetPos, speedInWorldUnits, deltaSeconds))
+            if (Travel(state, unit, targetPos, building, speedInWorldUnits, deltaSeconds, catalog))
             {
-                unit.Assignment = Assignment.Work(building.Id, assignment.HasAccessPoint ? assignment.AccessPoint : (WorldPosition?)null);
+                unit.Assignment = Assignment.Work(building.Id);
             }
         }
 
@@ -379,10 +530,41 @@ namespace TrollStrategy.Domain
             {
                 case HaulPhase.ToSource:
                 {
-                    var accessPos = assignment.HasSourceAccessPoint
-                        ? assignment.SourceAccessPoint
-                        : BuildingAccessPosition(source, unit.Id, catalog);
-                    if (MoveToward(unit, accessPos, speedInWorldUnits, deltaSeconds))
+                    var dockPos = SourceDockPosition(source, unit, catalog);
+                    if (Travel(state, unit, dockPos, source, speedInWorldUnits, deltaSeconds, catalog))
+                    {
+                        if (!IsSourceDockBusy(state, unit) && !HasSourceQueue(state, source.Id))
+                        {
+                            assignment.Phase = HaulPhase.Loading;
+                        }
+                        else
+                        {
+                            assignment.Phase = HaulPhase.QueuedAtSource;
+                            assignment.QueueTicket = state.NextHaulQueueTicket++;
+                        }
+                        assignment.PhaseElapsedSeconds = 0f;
+                    }
+                    break;
+                }
+                case HaulPhase.QueuedAtSource:
+                {
+                    int rank = SourceQueueRank(state, unit);
+                    if (rank == 0 && !IsSourceDockBusy(state, unit))
+                    {
+                        assignment.Phase = HaulPhase.ToDock;
+                        assignment.QueueTicket = 0;
+                        assignment.CrowdSlot = -1;
+                        break;
+                    }
+                    // Tickets keep the loading order; the waiters themselves stand as a loose group.
+                    if (assignment.CrowdSlot < 0 && !TryClaimCrowdSlot(state, unit, source, catalog)) break;
+                    Travel(state, unit, ColonyNavigation.CrowdSlotPosition(source, assignment.CrowdSlot, catalog), null,
+                        speedInWorldUnits, deltaSeconds, catalog);
+                    break;
+                }
+                case HaulPhase.ToDock:
+                {
+                    if (Travel(state, unit, SourceDockPosition(source, unit, catalog), source, speedInWorldUnits, deltaSeconds, catalog))
                     {
                         assignment.Phase = HaulPhase.Loading;
                         assignment.PhaseElapsedSeconds = 0f;
@@ -395,18 +577,21 @@ namespace TrollStrategy.Domain
                     float transferTime = catalog.Economy.TransferTimeSeconds;
                     if (assignment.PhaseElapsedSeconds >= transferTime)
                     {
-                        int destinationRoom = destination.Kind == BuildingKind.Market
-                            ? int.MaxValue
-                            : Math.Max(0, catalog.GetBuilding(destination.Kind).MaxOre - destination.Ore);
-                        int taken = Math.Min(source.Ore, Math.Min(unitDef.CargoCapacity, destinationRoom));
-                        if (taken <= 0)
+                        if (!TryPickCargo(source, destination, catalog, out var resource, out int destinationRoom))
                         {
                             assignment.PhaseElapsedSeconds = transferTime;
                             break;
                         }
+                        int carryBudget = assignment.CarryCreditPercent + unitDef.Stamina;
+                        int capacity = TripCarryCapacity(carryBudget);
+                        int taken = Math.Min(source.GetStock(resource), Math.Min(capacity, destinationRoom));
 
-                        source.Ore -= taken;
+                        source.AddStock(resource, -taken);
                         assignment.Carried = taken;
+                        assignment.CarriedResource = resource;
+                        assignment.CarryCreditPercent = carryBudget >= StaminaPercentPerOre
+                            ? carryBudget % StaminaPercentPerOre
+                            : 0;
                         assignment.Phase = HaulPhase.ToDestination;
                         assignment.PhaseElapsedSeconds = 0f;
                     }
@@ -414,10 +599,10 @@ namespace TrollStrategy.Domain
                 }
                 case HaulPhase.ToDestination:
                 {
-                    var accessPos = assignment.HasDestinationAccessPoint
-                        ? assignment.DestinationAccessPoint
-                        : BuildingAccessPosition(destination, unit.Id, catalog);
-                    if (MoveToward(unit, accessPos, speedInWorldUnits, deltaSeconds))
+                    // Deliveries gather as a loose group in front of the door, one place per hauler.
+                    if (assignment.CrowdSlot < 0 && !TryClaimCrowdSlot(state, unit, destination, catalog)) break;
+                    var place = ColonyNavigation.CrowdSlotPosition(destination, assignment.CrowdSlot, catalog);
+                    if (Travel(state, unit, place, null, speedInWorldUnits, deltaSeconds, catalog))
                     {
                         assignment.Phase = HaulPhase.Unloading;
                         assignment.PhaseElapsedSeconds = 0f;
@@ -430,24 +615,11 @@ namespace TrollStrategy.Domain
                     float transferTime = catalog.Economy.TransferTimeSeconds;
                     if (assignment.PhaseElapsedSeconds >= transferTime)
                     {
-                        if (destination.Kind == BuildingKind.Warehouse)
-                        {
-                            var whDef = catalog.GetBuilding(BuildingKind.Warehouse);
-                            int room = whDef.MaxOre - destination.Ore;
-                            int deposited = Math.Min(room, assignment.Carried);
-                            destination.Ore += deposited;
-                            assignment.Carried -= deposited;
-                        }
-                        else if (destination.Kind == BuildingKind.Market)
-                        {
-                            int sold = assignment.Carried;
-                            state.SoldOre += sold;
-                            state.Gold += sold * catalog.Economy.OreSellPrice;
-                            assignment.Carried = 0;
-                        }
+                        Unload(state, destination, assignment, catalog);
 
                         if (assignment.Carried == 0)
                         {
+                            assignment.CrowdSlot = -1;
                             assignment.Phase = HaulPhase.ToSource;
                             assignment.PhaseElapsedSeconds = 0f;
                         }
@@ -461,34 +633,187 @@ namespace TrollStrategy.Domain
             }
         }
 
-        private static bool MoveToward(UnitState unit, WorldPosition target, float speed, float deltaSeconds)
+        // The first good in ResourceKind order that the source holds and the destination still has room for.
+        private static bool TryPickCargo(BuildingState source, BuildingState destination, GameContentCatalog catalog,
+            out ResourceKind resource, out int destinationRoom)
         {
-            float dx = target.X - unit.Position.X;
-            float dy = target.Y - unit.Position.Y;
-            float dist = (float)Math.Sqrt(dx * dx + dy * dy);
-
-            float step = speed * deltaSeconds;
-            if (dist <= step || dist < 0.001f)
+            var sourceDef = catalog.GetBuilding(source.Kind);
+            foreach (var candidate in AllResources)
             {
-                unit.Position = target;
+                if (source.GetStock(candidate) <= 0 || !Provides(sourceDef, candidate)) continue;
+                int room = Room(destination, candidate, catalog);
+                if (room <= 0) continue;
+                resource = candidate;
+                destinationRoom = room;
                 return true;
             }
-
-            unit.Position = new WorldPosition(
-                unit.Position.X + (dx / dist) * step,
-                unit.Position.Y + (dy / dist) * step
-            );
+            resource = default;
+            destinationRoom = 0;
             return false;
         }
 
-        private static void ReturnCarriedOre(GameState state, UnitState unit)
+        // Anything that does not fit stays with the hauler, who retries next step instead of dropping it.
+        private static void Unload(GameState state, BuildingState destination, Assignment assignment, GameContentCatalog catalog)
+        {
+            var resource = assignment.CarriedResource;
+            var role = catalog.GetBuilding(destination.Kind).StorageRole;
+            if (role == StorageRole.Market)
+            {
+                state.SoldGoods += assignment.Carried;
+                state.Gold += assignment.Carried * SalePrice(catalog, resource, destination.Level);
+                assignment.Carried = 0;
+            }
+            else if (role == StorageRole.Armory)
+            {
+                string equipmentId = catalog.GetResource(resource).EquipmentId;
+                for (int i = 0; i < assignment.Carried; i++)
+                    state.Equipment.Add(new EquipmentState { Id = NextEquipmentId(state), DefinitionId = equipmentId });
+                assignment.Carried = 0;
+            }
+            else
+            {
+                int deposited = Math.Min(Room(destination, resource, catalog), assignment.Carried);
+                destination.AddStock(resource, deposited);
+                assignment.Carried -= deposited;
+            }
+        }
+
+        private static string NextEquipmentId(GameState state)
+        {
+            for (int n = state.Equipment.Count + 1; ; n++)
+            {
+                string id = $"item-{n:D3}";
+                if (!state.Equipment.Exists(item => item.Id == id)) return id;
+            }
+        }
+
+        // Each source building loads one hauler at a time; the rest wait as a group at its door and
+        // leave one transfer apart.
+        private const int MaxCrowdSlots = 64;
+
+        // One hauler loads at a time, so the dock is the entrance itself.
+        private static WorldPosition SourceDockPosition(BuildingState source, UnitState unit, GameContentCatalog catalog)
+        {
+            return BuildingEntrancePosition(source, catalog);
+        }
+
+        // Lowest free place in the group at this building's door whose ground is open.
+        // Queued and delivering haulers share one group, so nobody is given a place already taken.
+        private static bool TryClaimCrowdSlot(GameState state, UnitState unit, BuildingState building,
+            GameContentCatalog catalog)
+        {
+            var taken = new HashSet<int>();
+            foreach (var other in state.Units)
+                if (other != unit && other.Assignment.CrowdSlot >= 0 && CrowdBuildingId(other.Assignment) == building.Id)
+                    taken.Add(other.Assignment.CrowdSlot);
+            for (int slot = 0; slot < MaxCrowdSlots; slot++)
+            {
+                if (taken.Contains(slot)) continue;
+                if (!ColonyNavigation.IsWalkablePoint(state, ColonyNavigation.CrowdSlotPosition(building, slot, catalog), catalog))
+                    continue;
+                unit.Assignment.CrowdSlot = slot;
+                return true;
+            }
+            return false;
+        }
+
+        private static string CrowdBuildingId(Assignment assignment) =>
+            assignment.Kind != AssignmentKind.Haul ? null
+            : assignment.Phase == HaulPhase.QueuedAtSource ? assignment.SourceId
+            : assignment.Phase == HaulPhase.ToDestination || assignment.Phase == HaulPhase.Unloading ? assignment.DestinationId
+            : null;
+
+        private static bool IsSourceDockBusy(GameState state, UnitState unit)
+        {
+            string sourceId = unit.Assignment.SourceId;
+            for (int i = 0; i < state.Units.Count; i++)
+            {
+                var other = state.Units[i];
+                if (other == unit) continue;
+                var a = other.Assignment;
+                if (a.Kind == AssignmentKind.Haul && a.SourceId == sourceId &&
+                    (a.Phase == HaulPhase.ToDock || a.Phase == HaulPhase.Loading))
+                    return true;
+            }
+            return false;
+        }
+
+        private static bool HasSourceQueue(GameState state, string sourceId)
+        {
+            for (int i = 0; i < state.Units.Count; i++)
+            {
+                var a = state.Units[i].Assignment;
+                if (a.Kind == AssignmentKind.Haul && a.SourceId == sourceId && a.Phase == HaulPhase.QueuedAtSource)
+                    return true;
+            }
+            return false;
+        }
+
+        private static int SourceQueueRank(GameState state, UnitState unit)
+        {
+            var own = unit.Assignment;
+            int rank = 0;
+            for (int i = 0; i < state.Units.Count; i++)
+            {
+                var a = state.Units[i].Assignment;
+                if (a.Kind == AssignmentKind.Haul && a.SourceId == own.SourceId &&
+                    a.Phase == HaulPhase.QueuedAtSource && a.QueueTicket < own.QueueTicket)
+                    rank++;
+            }
+            return rank;
+        }
+
+        /// <summary>
+        /// Walks the unit toward <paramref name="goal"/> around footprints; a goal inside
+        /// <paramref name="goalBuilding"/> is entered through its door. Returns true on arrival.
+        /// With no open route the unit waits and replans next tick.
+        /// </summary>
+        private static bool Travel(GameState state, UnitState unit, WorldPosition goal, BuildingState goalBuilding,
+            float speed, float deltaSeconds, GameContentCatalog catalog)
+        {
+            if (!unit.HasRoute || !unit.RouteGoal.Equals(goal) || unit.RouteLayoutVersion != state.LayoutVersion)
+            {
+                var route = ColonyNavigation.FindRoute(state, unit.Position, goal, goalBuilding, catalog);
+                if (route == null)
+                {
+                    unit.ClearRoute();
+                    return false;
+                }
+                unit.Route = route;
+                unit.HasRoute = true;
+                unit.RouteGoal = goal;
+                unit.RouteLayoutVersion = state.LayoutVersion;
+            }
+
+            float budget = speed * deltaSeconds;
+            while (unit.Route.Count > 0)
+            {
+                var next = unit.Route[0];
+                float dx = next.X - unit.Position.X;
+                float dy = next.Y - unit.Position.Y;
+                float dist = (float)Math.Sqrt(dx * dx + dy * dy);
+                if (dist > budget)
+                {
+                    unit.Position = new WorldPosition(unit.Position.X + dx / dist * budget, unit.Position.Y + dy / dist * budget);
+                    return false;
+                }
+                unit.Position = next;
+                budget -= dist;
+                unit.Route.RemoveAt(0);
+            }
+
+            unit.ClearRoute();
+            return true;
+        }
+
+        private static void ReturnCarriedCargo(GameState state, UnitState unit)
         {
             if (unit.Assignment.Kind != AssignmentKind.Haul || unit.Assignment.Carried == 0)
                 return;
 
             var source = state.Buildings.Find(b => b.Id == unit.Assignment.SourceId);
             if (source != null)
-                source.Ore += unit.Assignment.Carried;
+                source.AddStock(unit.Assignment.CarriedResource, unit.Assignment.Carried);
         }
 
         private static CommandResult ResolveUnits(GameState state, IReadOnlyList<string> unitIds, out List<UnitState> units)
@@ -514,23 +839,73 @@ namespace TrollStrategy.Domain
             return CommandResult.Success();
         }
 
+        private static CommandResult UpgradeBuilding(GameState state, string buildingId, GameContentCatalog catalog)
+        {
+            var building = state.Buildings.Find(b => b.Id == buildingId);
+            if (building == null) return CommandResult.Fail("Здание не найдено");
+            int cost = catalog.GetBuilding(building.Kind).UpgradeCost(building.Level);
+            if (cost < 0) return CommandResult.Fail("Достигнут максимальный уровень");
+            if (state.Gold < cost) return CommandResult.Fail("Недостаточно золота");
+            state.Gold -= cost;
+            building.Level++;
+            building.InvestedGold += cost;
+            return CommandResult.Success();
+        }
+
+        private static CommandResult DemolishBuilding(GameState state, string buildingId)
+        {
+            var building = state.Buildings.Find(b => b.Id == buildingId);
+            if (building == null) return CommandResult.Fail("Здание не найдено");
+            if (building.TotalStock > 0) return CommandResult.Fail("Сначала вывезите товары из постройки");
+            foreach (var unit in state.Units)
+            {
+                var a = unit.Assignment;
+                if (a.Kind == AssignmentKind.Haul && a.Carried > 0 && (a.SourceId == buildingId || a.DestinationId == buildingId))
+                    return CommandResult.Fail("Сначала завершите перевозку груза");
+            }
+            foreach (var unit in state.Units)
+            {
+                var a = unit.Assignment;
+                if (((a.Kind == AssignmentKind.Work || a.Kind == AssignmentKind.ToWork) && a.BuildingId == buildingId) ||
+                    (a.Kind == AssignmentKind.Haul && (a.SourceId == buildingId || a.DestinationId == buildingId)))
+                    unit.Assignment = Assignment.Idle();
+            }
+            state.Buildings.Remove(building);
+            state.LayoutVersion++;
+            state.Gold += building.InvestedGold / 2;
+            return CommandResult.Success();
+        }
+
+        private static CommandResult MoveBuilding(GameState state, string buildingId, Cell cell, GameContentCatalog catalog)
+        {
+            var building = state.Buildings.Find(b => b.Id == buildingId);
+            if (building == null) return CommandResult.Fail("Здание не найдено");
+            var validation = ValidateBuildingPlacement(state, building.Kind, cell, catalog, buildingId);
+            if (!validation.Ok) return validation;
+            var oldEntrance = BuildingEntrancePosition(building, catalog);
+            building.Cell = cell;
+            state.LayoutVersion++;
+            foreach (var unit in state.Units)
+            {
+                var a = unit.Assignment;
+                if (a.Kind == AssignmentKind.Work && a.BuildingId == buildingId)
+                {
+                    unit.PlaceAt(oldEntrance);
+                    unit.Assignment = Assignment.ToWork(buildingId);
+                }
+
+            }
+            return CommandResult.Success();
+        }
+
         public static WorldPosition BuildingEntrancePosition(BuildingState building, GameContentCatalog catalog)
         {
             var def = catalog.GetBuilding(building.Kind);
             float cs = catalog.Economy.CellSize;
             return new WorldPosition(
-                (building.Cell.X + def.Width * 0.5f) * cs,
-                (building.Cell.Y + def.Height - 0.35f) * cs
+                (building.Cell.X + def.EntranceX) * cs,
+                (building.Cell.Y + def.EntranceY) * cs
             );
-        }
-
-        public static WorldPosition BuildingAccessPosition(BuildingState building, string unitId, GameContentCatalog catalog)
-        {
-            var def = catalog.GetBuilding(building.Kind);
-            var entrance = BuildingEntrancePosition(building, catalog);
-            int unitNum = GetUnitNumber(unitId);
-            float offset = ((unitNum % 5) - 2) * 0.18f * catalog.Economy.CellSize;
-            return new WorldPosition(entrance.X + offset, entrance.Y);
         }
 
         public static bool IsPointWithinBuilding(BuildingState building, WorldPosition point, GameContentCatalog catalog)
@@ -570,9 +945,31 @@ namespace TrollStrategy.Domain
             );
         }
 
+        // Cycles per second of the building's first recipe at its current staffing.
         public static float ProductionPerSecond(GameState state, string buildingId, GameContentCatalog catalog)
         {
-            return CalculateMineProductionPerSecond(state, buildingId, catalog);
+            var building = state.Buildings.Find(b => b.Id == buildingId);
+            if (building == null) return 0f;
+            var recipes = catalog.GetBuilding(building.Kind).Recipes;
+            return recipes.Count > 0 ? WorkPerSecond(state, buildingId, catalog) / recipes[0].Work : 0f;
+        }
+
+        // 100% stamina carries one unit per trip; the fractional remainder is banked for the next trip.
+        public const int StaminaPercentPerOre = 100;
+
+        /// <summary>Gold a sold creature returns: half its hiring price, rounded down.</summary>
+        public static int UnitSaleRefund(UnitDefinition definition) =>
+            definition != null ? (int)Math.Floor(definition.Price * 0.5f) : 0;
+
+        public static float CarryCapacity(int staminaPercent)
+        {
+            return staminaPercent / (float)StaminaPercentPerOre;
+        }
+
+        // A hauler always lifts at least one unit, even below 100% stamina.
+        private static int TripCarryCapacity(int carryBudgetPercent)
+        {
+            return Math.Max(1, carryBudgetPercent / StaminaPercentPerOre);
         }
 
         public static float UnitMovementSpeed(UnitDefinition unitDefinition, GameContentCatalog catalog)
@@ -581,16 +978,16 @@ namespace TrollStrategy.Domain
             return (120f + unitDefinition.Speed * 12f) / 48f * catalog.Economy.CellSize;
         }
 
-        public static Cell? FindFirstValidMineCell(GameState state, GameContentCatalog catalog)
+        public static Cell? FindFirstValidBuildingCell(GameState state, BuildingKind kind, GameContentCatalog catalog)
         {
             var economy = catalog.Economy;
-            var mineDef = catalog.GetBuilding(BuildingKind.Mine);
-            for (int y = 0; y <= economy.GridHeight - mineDef.Height; y++)
+            var definition = catalog.GetBuilding(kind);
+            for (int y = 0; y <= economy.GridHeight - definition.Height; y++)
             {
-                for (int x = 0; x <= economy.GridWidth - mineDef.Width; x++)
+                for (int x = 0; x <= economy.GridWidth - definition.Width; x++)
                 {
                     var cell = new Cell(x, y);
-                    if (ValidateMinePlacement(state, cell, catalog).Ok)
+                    if (ValidateBuildingPlacement(state, kind, cell, catalog).Ok)
                         return cell;
                 }
             }

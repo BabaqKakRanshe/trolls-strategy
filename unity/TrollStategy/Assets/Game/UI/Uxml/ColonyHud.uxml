@@ -1,0 +1,126 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../Styles/Theme.uss" />
+    <ui:Style src="../Styles/ColonyHud.uss" />
+    <ui:VisualElement name="hud-screen" class="hud-screen" picking-mode="Ignore">
+        <ui:VisualElement name="hud-root" class="hud-root" picking-mode="Ignore">
+            <ui:VisualElement name="top-bar" class="top-bar" picking-mode="Ignore">
+                <ui:VisualElement name="brand" class="panel brand">
+                    <ui:Label text="ПОСЕЛЕНИЕ" class="brand__title t-bold" />
+                    <ui:Label text="ЛЕСНАЯ ДОЛИНА" class="brand__subtitle t-medium" />
+                </ui:VisualElement>
+                <ui:VisualElement name="resources" class="panel resources">
+                    <ui:VisualElement class="stat stat--gold">
+                        <ui:Label text="ЗОЛОТО" class="t-caption" />
+                        <ui:Label name="gold-value" text="0" class="stat__value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="stat">
+                        <ui:Label text="РУДА" class="t-caption" />
+                        <ui:Label name="ore-value" text="0" class="stat__value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="stat">
+                        <ui:Label text="НАСЕЛЕНИЕ" class="t-caption" />
+                        <ui:Label name="population-value" text="0" class="stat__value" />
+                        <ui:Label name="population-idle" text="" class="stat__note" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="stat">
+                        <ui:Label text="ПРОДАНО" class="t-caption" />
+                        <ui:Label name="sold-value" text="0" class="stat__value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="spacer" picking-mode="Ignore" />
+                <ui:VisualElement name="top-actions" class="top-actions" picking-mode="Ignore">
+                    <ui:Button name="idle-button" class="btn">
+                        <ui:Label text="Свободный" class="btn__caption" picking-mode="Ignore" />
+                        <ui:Label text="1" class="hotkey" picking-mode="Ignore" />
+                    </ui:Button>
+                    <ui:Button name="grid-button" class="btn">
+                        <ui:Label text="Сетка" class="btn__caption" picking-mode="Ignore" />
+                        <ui:Label text="G" class="hotkey" picking-mode="Ignore" />
+                    </ui:Button>
+                    <ui:Button name="battle-button" text="В БОЙ" class="btn btn--gold battle-button" />
+                    <ui:Button name="catalog-button" text="Каталог" class="btn" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="middle" class="middle" picking-mode="Ignore">
+                <ui:VisualElement name="left-column" class="left-column" picking-mode="Ignore">
+                    <ui:VisualElement name="inspect" class="panel inspect">
+                        <ui:VisualElement class="inspect__header">
+                            <ui:VisualElement class="inspect__titles">
+                                <ui:Label name="inspect-title" class="inspect__title t-bold" />
+                                <ui:Label name="inspect-subtitle" class="inspect__subtitle t-medium" />
+                            </ui:VisualElement>
+                            <ui:Button name="inspect-close" text="×" class="btn btn-close" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="divider" />
+                        <ui:VisualElement name="inspect-rows" />
+                        <ui:Label name="inspect-note" class="note" />
+                        <ui:Label name="inspect-slots-header" class="slots-header t-medium" />
+                        <ui:VisualElement name="inspect-slots" class="slots" />
+                        <ui:VisualElement name="inspect-actions" class="actions" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="spacer" picking-mode="Ignore" />
+                <ui:VisualElement name="right-column" class="right-column" picking-mode="Ignore">
+                    <ui:VisualElement name="showcase" class="panel showcase">
+                        <ui:VisualElement class="showcase__header">
+                            <ui:Label name="showcase-title" class="showcase__title t-bold" />
+                            <ui:Button name="showcase-close" text="×" class="btn btn-close" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="showcase-image" class="showcase__image" />
+                        <ui:Label name="showcase-caption" class="showcase__caption t-muted" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="catalog" class="panel catalog">
+                        <ui:VisualElement class="catalog__header">
+                            <ui:Label text="КАТАЛОГ" class="catalog__title t-bold" />
+                            <ui:Button name="catalog-close" text="×" class="btn btn-close" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="tabs">
+                            <ui:Button name="tab-units" text="Существа" class="btn tab" />
+                            <ui:Button name="tab-buildings" text="Здания" class="btn tab" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="units-page" class="catalog__page">
+                            <ui:VisualElement class="stepper">
+                                <ui:Label text="Нанимать группой" class="stepper__label" />
+                                <ui:Button name="hire-less" text="−" class="btn btn-icon" />
+                                <ui:Label name="hire-amount" text="1" class="stepper__value t-bold" />
+                                <ui:Button name="hire-more" text="+" class="btn btn-icon" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="unit-cards" />
+                        </ui:VisualElement>
+                        <ui:ScrollView name="buildings-page" class="catalog__page" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="bottom" class="bottom" picking-mode="Ignore">
+                <ui:VisualElement name="status" class="panel status">
+                    <ui:Label name="status-text" class="status__text" />
+                </ui:VisualElement>
+                <ui:VisualElement name="context" class="panel context">
+                    <ui:VisualElement name="context-targets" class="context__targets" />
+                    <ui:VisualElement class="context__row">
+                        <ui:VisualElement class="context__text">
+                            <ui:Label name="context-title" class="context__title" />
+                            <ui:Label name="context-prompt" class="context__prompt" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="context-actions" class="context__actions" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="fan-layer" class="layer" picking-mode="Ignore">
+            <ui:VisualElement name="command-fan" class="fan" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="cheat-overlay" class="overlay">
+            <ui:VisualElement class="panel dialog">
+                <ui:VisualElement class="dialog__header">
+                    <ui:Label text="ЧИТ-МЕНЮ · F1" class="dialog__title t-bold" />
+                    <ui:Button name="cheat-close" text="×" class="btn btn-close" />
+                </ui:VisualElement>
+                <ui:Label text="Миссия 1 без ожидания открытия и перезарядки." class="dialog__text" />
+                <ui:Button name="cheat-prepare" text="Открыть расстановку" class="btn" />
+                <ui:Button name="cheat-quick" text="Быстрый бой" class="btn btn--primary" />
+                <ui:Label name="cheat-status" text="Если бойцов нет, быстрый бой наймёт 1 тролля и 3 гоблинов." class="note" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

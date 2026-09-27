@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using TrollStrategy.Application;
@@ -16,6 +17,18 @@ namespace TrollStrategy.Presentation.Units
         [SerializeField] private TextMeshPro _cargoLabel;
         [SerializeField] private CircleCollider2D _collider;
 
+        [Header("Внешний вид")]
+        [SerializeField] private Sprite[] _idleFrames = Array.Empty<Sprite>();
+        [SerializeField] private Sprite[] _walkFrames = Array.Empty<Sprite>();
+        [Tooltip("Бой: замах и удар, 100 мс на кадр.")]
+        [SerializeField] private Sprite[] _attackFrames = Array.Empty<Sprite>();
+        [Tooltip("Бой: получение урона, 100 мс на кадр.")]
+        [SerializeField] private Sprite[] _hurtFrames = Array.Empty<Sprite>();
+        [Tooltip("Бой: гибель, 100 мс на кадр; последний кадр остаётся.")]
+        [SerializeField] private Sprite[] _deathFrames = Array.Empty<Sprite>();
+        [Tooltip("Масштаб только изображения; коллайдер и круг выделения не меняются.")]
+        [SerializeField, Min(0.05f)] private float _spriteScale = 1f;
+
         private UnitSnapshot _snapshot;
         private UnitDefinition _definition;
         private TilemapWorldView _worldView;
@@ -25,10 +38,30 @@ namespace TrollStrategy.Presentation.Units
         private int _currentFrame;
         private float _movementSpeed;
         private LineRenderer _selectionRing;
+        private bool _isSelected;
+        private bool _worksInside;
+        private bool _hiddenInside;
 
         public string UnitId => _snapshot?.Id;
         public UnitSnapshot Snapshot => _snapshot;
         public UnitDefinition Definition => _definition;
+        public Sprite IdleSprite => _idleFrames != null && _idleFrames.Length > 0 ? _idleFrames[0] : null;
+        public float SpriteScale => _spriteScale > 0f ? _spriteScale : 1f;
+        public int IdleFrameCount => _idleFrames?.Length ?? 0;
+        public int WalkFrameCount => _walkFrames?.Length ?? 0;
+        public IReadOnlyList<Sprite> IdleFrames => _idleFrames ?? Array.Empty<Sprite>();
+        public IReadOnlyList<Sprite> WalkFrames => _walkFrames ?? Array.Empty<Sprite>();
+        public IReadOnlyList<Sprite> AttackFrames => _attackFrames ?? Array.Empty<Sprite>();
+        public IReadOnlyList<Sprite> HurtFrames => _hurtFrames ?? Array.Empty<Sprite>();
+        public IReadOnlyList<Sprite> DeathFrames => _deathFrames ?? Array.Empty<Sprite>();
+        /// <summary>A worker that reached its workplace door is inside the building and not drawn.</summary>
+        public bool IsHiddenInside => _hiddenInside;
+
+        public void SetSpriteScale(float scale)
+        {
+            _spriteScale = Mathf.Max(0.05f, scale);
+            ApplySpriteScale();
+        }
 
         public void Setup(UnitSnapshot snapshot, UnitDefinition definition, Action<string, bool> onClick, TilemapWorldView worldView = null)
         {
@@ -42,8 +75,8 @@ namespace TrollStrategy.Presentation.Units
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.sortingOrder = 20;
-                if (definition != null)
-                    _spriteRenderer.sprite = definition.IdleSprite;
+                if (IdleSprite != null)
+                    _spriteRenderer.sprite = IdleSprite;
             }
             ApplySpriteScale();
             FaceCamera();
@@ -89,7 +122,7 @@ namespace TrollStrategy.Presentation.Units
             EnsureDedicatedSpriteRenderer();
             if (_spriteRenderer == null) return;
 
-            float scale = _definition != null ? _definition.SpriteScale : 1f;
+            float scale = SpriteScale;
             _spriteRenderer.transform.localScale = new Vector3(scale, scale, 1f);
             _spriteRenderer.transform.localPosition = new Vector3(0f, 0f, -0.65f);
         }
@@ -102,6 +135,15 @@ namespace TrollStrategy.Presentation.Units
             if (_selectionCircle != null) _selectionCircle.transform.rotation = camera.transform.rotation;
             if (_cargoIcon != null) _cargoIcon.transform.rotation = camera.transform.rotation;
             if (_cargoLabel != null) _cargoLabel.transform.rotation = camera.transform.rotation;
+        }
+
+        private void ApplyInsideVisibility()
+        {
+            bool visible = !_hiddenInside;
+            if (_spriteRenderer != null) _spriteRenderer.enabled = visible;
+            if (_collider != null) _collider.enabled = visible;
+            if (_selectionRing != null) _selectionRing.enabled = _isSelected && visible;
+            if (_selectionCircle != null) _selectionCircle.gameObject.SetActive(_isSelected && visible);
         }
 
         private static Sprite _proceduralSelectionSprite;
@@ -203,32 +245,39 @@ namespace TrollStrategy.Presentation.Units
             }
         }
 
-        public void UpdateVisuals(UnitSnapshot snapshot, bool isSelected)
+        public void UpdateVisuals(UnitSnapshot snapshot, bool isSelected, Sprite cargoSprite = null)
         {
             _snapshot = snapshot;
             _targetPosition = MapPosition(snapshot);
             if (snapshot.MovementSpeed > 0f) _movementSpeed = snapshot.MovementSpeed;
+            _isSelected = isSelected;
+            _worksInside = snapshot.Assignment != null && snapshot.Assignment.Kind == AssignmentKind.Work;
 
             EnsureSelectionVisuals();
             ApplySpriteScale();
             FaceCamera();
 
-            if (_selectionRing != null)
-                _selectionRing.enabled = isSelected;
-
-            if (_selectionCircle != null)
-                _selectionCircle.gameObject.SetActive(isSelected);
+            ApplyInsideVisibility();
 
             if (_spriteRenderer != null)
                 _spriteRenderer.color = isSelected ? ColonyPalette.Cream : Color.white;
 
             if (snapshot.Assignment != null && snapshot.Assignment.Kind == AssignmentKind.Haul && snapshot.Assignment.Carried > 0)
             {
-                if (_cargoIcon != null) _cargoIcon.gameObject.SetActive(true);
+                if (_cargoIcon != null)
+                {
+                    _cargoIcon.sprite = cargoSprite != null ? cargoSprite : GetFallbackOreSprite();
+                    _cargoIcon.sortingOrder = 24;
+                    _cargoIcon.transform.localPosition = transform.InverseTransformDirection(Vector3.up * 1.1f);
+                    _cargoIcon.transform.localScale = Vector3.one * 0.75f;
+                    _cargoIcon.gameObject.SetActive(true);
+                }
                 if (_cargoLabel != null)
                 {
                     _cargoLabel.gameObject.SetActive(true);
                     _cargoLabel.text = $"{snapshot.Assignment.Carried}";
+                    _cargoLabel.sortingOrder = 25;
+                    _cargoLabel.transform.localPosition = new Vector3(0.48f, -0.2f, -0.05f);
                 }
             }
             else
@@ -242,6 +291,30 @@ namespace TrollStrategy.Presentation.Units
         private void Update()
         {
             AdvanceVisual(Time.deltaTime);
+        }
+
+        private static Sprite _fallbackOreSprite;
+
+        public static Sprite GetFallbackOreSprite()
+        {
+            if (_fallbackOreSprite != null) return _fallbackOreSprite;
+            const int size = 16;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            texture.filterMode = FilterMode.Point;
+            var pixels = new Color32[size * size];
+            var dark = new Color32(45, 53, 69, 255);
+            var mid = new Color32(103, 121, 139, 255);
+            var light = new Color32(178, 194, 202, 255);
+            for (int y = 2; y < 13; y++)
+            for (int x = 2; x < 14; x++)
+            {
+                if (x + y < 7 || x - y > 8 || y - x > 9 || x + y > 24) continue;
+                pixels[y * size + x] = y > 8 || x > 9 ? dark : (x < 7 && y > 5 ? mid : light);
+            }
+            texture.SetPixels32(pixels);
+            texture.Apply();
+            _fallbackOreSprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
+            return _fallbackOreSprite;
         }
 
         private Vector3 MapPosition(UnitSnapshot snapshot)
@@ -271,9 +344,17 @@ namespace TrollStrategy.Presentation.Units
                 transform.position = _targetPosition;
             }
 
-            if (_definition != null && _spriteRenderer != null)
+            // Hide only once the view has walked to the door, not when the simulation already arrived.
+            bool hidden = _worksInside && !_isWalking;
+            if (hidden != _hiddenInside)
             {
-                var frames = _isWalking ? _definition.WalkFrames : _definition.IdleFrames;
+                _hiddenInside = hidden;
+                ApplyInsideVisibility();
+            }
+
+            if (_spriteRenderer != null)
+            {
+                var frames = _isWalking && WalkFrameCount > 0 ? _walkFrames : _idleFrames;
                 if (frames != null && frames.Length > 0)
                 {
                     _animTimer += Mathf.Max(0f, deltaSeconds);

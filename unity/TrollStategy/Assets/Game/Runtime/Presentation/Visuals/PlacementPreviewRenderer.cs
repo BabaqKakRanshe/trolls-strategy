@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TrollStrategy.Application;
@@ -15,14 +16,12 @@ namespace TrollStrategy.Presentation.Visuals
         [SerializeField] private LineRenderer _crossRenderer;
         [SerializeField] private TilemapWorldView _worldView;
         [SerializeField] private GameContentCatalog _catalog;
-        [SerializeField] private PrimitiveBuilding _mineModelPrefab;
 
         private GameSession _session;
         private InteractionController _interaction;
         private Camera _camera;
-        private PrimitiveBuilding _mineGhost;
-        private static readonly BuildingSnapshot MinePreview = new BuildingSnapshot(
-            "preview-mine", BuildingKind.Mine, "Шахта", new Cell(0, 0), 3, 3, 0, 100, 0, 0, 0f);
+        private readonly Dictionary<BuildingKind, BuildingModel> _ghosts = new();
+        private BuildingModel _activeGhost;
 
         public void Init(GameSession session, InteractionController interaction, TilemapWorldView worldView, GameContentCatalog catalog, Camera cam)
         {
@@ -31,13 +30,6 @@ namespace TrollStrategy.Presentation.Visuals
             _worldView = worldView;
             _catalog = catalog;
             _camera = cam != null ? cam : Camera.main;
-            if (_mineModelPrefab != null)
-            {
-                _mineGhost = Instantiate(_mineModelPrefab, transform);
-                _mineGhost.name = "MinePreview3D";
-                _mineGhost.Sync(MinePreview, false);
-                _mineGhost.gameObject.SetActive(false);
-            }
 
             if (_boxOutlineRenderer == null)
             {
@@ -78,6 +70,7 @@ namespace TrollStrategy.Presentation.Visuals
 
         private InteractionModeType _lastModeType = InteractionModeType.Neutral;
         private int _enteredFrame = -1;
+        private Cell _lastGhostCell = new(-1, -1);
 
         private void Update()
         {
@@ -90,7 +83,10 @@ namespace TrollStrategy.Presentation.Visuals
                 _enteredFrame = Time.frameCount;
             }
 
-            if (mode.Type != InteractionModeType.PlacingMine && mode.Type != InteractionModeType.PlacingUnits)
+            bool movingBuilding = mode.Type == InteractionModeType.MovingBuilding;
+            bool placingBuilding = mode.Type == InteractionModeType.PlacingBuilding || movingBuilding;
+            ShowGhost(placingBuilding ? GetGhost(mode.BuildingKind) : null);
+            if (!placingBuilding && mode.Type != InteractionModeType.PlacingUnits)
             {
                 if (_ghostRenderer != null && _ghostRenderer.gameObject.activeSelf)
                     _ghostRenderer.gameObject.SetActive(false);
@@ -98,7 +94,6 @@ namespace TrollStrategy.Presentation.Visuals
                     _boxOutlineRenderer.gameObject.SetActive(false);
                 if (_crossRenderer != null && _crossRenderer.gameObject.activeSelf)
                     _crossRenderer.gameObject.SetActive(false);
-                if (_mineGhost != null) _mineGhost.gameObject.SetActive(false);
                 return;
             }
 
@@ -112,18 +107,20 @@ namespace TrollStrategy.Presentation.Visuals
                 if (_ghostRenderer != null) _ghostRenderer.gameObject.SetActive(false);
                 if (_boxOutlineRenderer != null) _boxOutlineRenderer.gameObject.SetActive(false);
                 if (_crossRenderer != null) _crossRenderer.gameObject.SetActive(false);
-                if (_mineGhost != null) _mineGhost.gameObject.SetActive(false);
+                ShowGhost(null);
                 return;
             }
 
             bool leftClicked = Mouse.current.leftButton.wasPressedThisFrame;
-            float size = mode.Type == InteractionModeType.PlacingMine ? 3f : 1f;
-            Vector3 centerPos = mode.Type == InteractionModeType.PlacingMine
-                ? _worldView.BuildingCenterWorld(cell, 3, 3)
+            var definition = placingBuilding ? _catalog.GetBuilding(mode.BuildingKind) : null;
+            int width = definition != null ? definition.Width : 1;
+            int height = definition != null ? definition.Height : 1;
+            Vector3 centerPos = placingBuilding
+                ? _worldView.BuildingCenterWorld(cell, width, height)
                 : _worldView.MapToWorld(new Vector3(cell.X + 0.5f, cell.Y + 0.5f, 0f));
 
-            bool valid = mode.Type == InteractionModeType.PlacingMine
-                ? _session.CanBuildMine(cell).Ok
+            bool valid = placingBuilding
+                ? _session.CanPlaceBuilding(mode.BuildingKind, cell, movingBuilding ? mode.BuildingId : null).Ok
                 : _session.CanBuyUnits(mode.UnitKind, mode.Amount, cell).Ok;
 
             Color themeColor = ColonyPalette.WithAlpha(
@@ -135,7 +132,7 @@ namespace TrollStrategy.Presentation.Visuals
                 _boxOutlineRenderer.transform.position = centerPos;
                 _boxOutlineRenderer.transform.position += _worldView.GroundOffset(0.19f);
                 _boxOutlineRenderer.transform.rotation = _worldView.GroundRotation;
-                _boxOutlineRenderer.transform.localScale = new Vector3(size, size, 1f);
+                _boxOutlineRenderer.transform.localScale = new Vector3(width, height, 1f);
                 _boxOutlineRenderer.color = themeColor;
             }
 
@@ -147,33 +144,33 @@ namespace TrollStrategy.Presentation.Visuals
                 _ghostRenderer.transform.rotation = _camera.transform.rotation;
                 if (mode.Type == InteractionModeType.PlacingUnits)
                 {
-                    var unitDef = _catalog.GetUnit(mode.UnitKind);
-                    _ghostRenderer.sprite = unitDef.IdleSprite;
-                    _ghostRenderer.transform.localScale = Vector3.one * unitDef.SpriteScale;
+                    var unitView = ContentPrefabs.Unit(_catalog.GetUnit(mode.UnitKind));
+                    _ghostRenderer.sprite = unitView != null ? unitView.IdleSprite : null;
+                    _ghostRenderer.transform.localScale = Vector3.one * (unitView != null ? unitView.SpriteScale : 1f);
                 }
                 _ghostRenderer.color = new Color(themeColor.r, themeColor.g, themeColor.b, 0.75f);
             }
-            if (_mineGhost != null)
+            if (_activeGhost != null)
             {
-                _mineGhost.gameObject.SetActive(mode.Type == InteractionModeType.PlacingMine);
-                _mineGhost.transform.position = centerPos;
-                _mineGhost.transform.rotation = _worldView.GroundRotation;
-                _mineGhost.Sync(MinePreview, true);
+                _activeGhost.transform.position = centerPos;
+                _activeGhost.transform.rotation = _worldView.GroundRotation;
+                // the ghost clicks into each new cell, so the grid feels snapped rather than floaty
+                if (cell != _lastGhostCell) TrollStrategy.Presentation.Feel.Juice.Punch(_activeGhost.transform, .07f, .2f);
             }
+            _lastGhostCell = cell;
 
             if (_crossRenderer != null)
             {
                 if (!valid)
                 {
                     _crossRenderer.gameObject.SetActive(true);
-                    float half = size * 0.5f;
                     Vector3 origin = new Vector3(cell.X, cell.Y, 0f);
                     // Draw X cross inside footprint
                     _crossRenderer.SetPosition(0, _worldView.MapToWorld(origin) + _worldView.GroundOffset(0.2f));
-                    _crossRenderer.SetPosition(1, _worldView.MapToWorld(origin + new Vector3(size, size, 0f)) + _worldView.GroundOffset(0.2f));
-                    _crossRenderer.SetPosition(2, _worldView.MapToWorld(origin + new Vector3(half, half, 0f)) + _worldView.GroundOffset(0.2f));
-                    _crossRenderer.SetPosition(3, _worldView.MapToWorld(origin + new Vector3(size, 0f, 0f)) + _worldView.GroundOffset(0.2f));
-                    _crossRenderer.SetPosition(4, _worldView.MapToWorld(origin + new Vector3(0f, size, 0f)) + _worldView.GroundOffset(0.2f));
+                    _crossRenderer.SetPosition(1, _worldView.MapToWorld(origin + new Vector3(width, height, 0f)) + _worldView.GroundOffset(0.2f));
+                    _crossRenderer.SetPosition(2, _worldView.MapToWorld(origin + new Vector3(width * 0.5f, height * 0.5f, 0f)) + _worldView.GroundOffset(0.2f));
+                    _crossRenderer.SetPosition(3, _worldView.MapToWorld(origin + new Vector3(width, 0f, 0f)) + _worldView.GroundOffset(0.2f));
+                    _crossRenderer.SetPosition(4, _worldView.MapToWorld(origin + new Vector3(0f, height, 0f)) + _worldView.GroundOffset(0.2f));
                     _crossRenderer.startColor = themeColor;
                     _crossRenderer.endColor = themeColor;
                 }
@@ -185,11 +182,36 @@ namespace TrollStrategy.Presentation.Visuals
 
             if (leftClicked && Time.frameCount > _enteredFrame && !UIInputUtils.IsPointerOverUI())
             {
-                if (mode.Type == InteractionModeType.PlacingMine)
-                    _interaction.PlaceMine(cell);
+                if (movingBuilding)
+                    _interaction.MoveBuilding(cell);
+                else if (placingBuilding)
+                    _interaction.PlaceBuilding(cell);
                 else if (mode.Type == InteractionModeType.PlacingUnits)
                     _interaction.PlaceUnits(cell);
             }
+        }
+
+        private BuildingModel GetGhost(BuildingKind kind)
+        {
+            if (_ghosts.TryGetValue(kind, out var ghost)) return ghost;
+            var model = ContentPrefabs.Building(_catalog.GetBuilding(kind))?.Model;
+            if (model != null)
+            {
+                ghost = Instantiate(model, transform);
+                ghost.name = $"{kind}Preview3D";
+                ghost.SetHighlighted(true);
+                ghost.gameObject.SetActive(false);
+            }
+            _ghosts[kind] = ghost;
+            return ghost;
+        }
+
+        private void ShowGhost(BuildingModel ghost)
+        {
+            if (_activeGhost == ghost) return;
+            if (_activeGhost != null) _activeGhost.gameObject.SetActive(false);
+            _activeGhost = ghost;
+            if (_activeGhost != null) _activeGhost.gameObject.SetActive(true);
         }
     }
 }

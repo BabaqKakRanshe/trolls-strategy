@@ -18,7 +18,7 @@ namespace TrollStrategy.Tests
             var target = new RenderTexture(800, 600, 16);
             try
             {
-                economy.Init(14, 14, 1f, 1000, 20, 0.25f, 3, 0.1f, 0.5f);
+                economy.Init(14, 14, 1f, 1000, 20, 0.25f, 0.1f, 0.5f);
                 var grid = gridObject.AddComponent<Grid>();
                 grid.transform.SetPositionAndRotation(new Vector3(2f, 3f, 4f), Quaternion.Euler(90f, 0f, 0f));
                 var worldView = gridObject.AddComponent<TilemapWorldView>();

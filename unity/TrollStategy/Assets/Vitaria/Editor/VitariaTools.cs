@@ -7,6 +7,11 @@
 //   3. Build Scene From Layout — instantiates every object of the Blender scene at its place, grouped by category
 //   4. Setup Lighting        — directional sun with soft shadows, gradient ambient, URP shadow distance/resolution
 //   5. Align Main Camera     — camera position / FOV / background identical to the Blender preview
+//
+// Battle arenas (Models/Arena, Layout/arena_*_layout.json) are assembled into a prefab by the game
+// (TrollStrategy > Arena > Build Arena Prefabs); here they only get their import profile, the two water
+// materials (Vitaria_Water, Vitaria_Waterfall), whose textures scroll at runtime, and Vitaria_FX for the
+// faces that glow (arena flames, coals, sparks).
 
 using System;
 using System.Collections.Generic;
@@ -26,6 +31,27 @@ namespace Vitaria.EditorTools
         public const string PrefabsRoot = Root + "/Prefabs";
         public const string MaterialPath = Root + "/Materials/Vitaria_Palette.mat";
         public const string SourceMaterialName = "Vitaria_Palette";
+        public const string ArenaModelsRoot = ModelsRoot + "/Arena";
+        // Water keeps its own materials: a small tiling texture scrolled along V by the arena script.
+        public static readonly string[] WaterMaterialNames = { "Vitaria_Water", "Vitaria_Waterfall" };
+        // Every material besides the palette an FBX may use: water, and Vitaria_FX — the palette with emission
+        // on, for the glowing faces of arena flames, coals and sparks (the colony's palette keeps emission off).
+        public static readonly string[] ExtraMaterialNames = { "Vitaria_Water", "Vitaria_Waterfall", "Vitaria_FX" };
+        public static string WaterMaterialPath(string name) { return Root + "/Materials/" + name + ".mat"; }
+
+        /// <summary>Remaps every Vitaria material the FBX files use (palette, water, FX) to the project assets.</summary>
+        public static void AddMaterialRemaps(ModelImporter mi)
+        {
+            var palette = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
+            if (palette != null)
+                mi.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), SourceMaterialName), palette);
+            foreach (var name in ExtraMaterialNames)
+            {
+                var extra = AssetDatabase.LoadAssetAtPath<Material>(WaterMaterialPath(name));
+                if (extra != null)
+                    mi.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), name), extra);
+            }
+        }
         const string AlbedoPath = Root + "/Textures/Vitaria_Palette.png";
         const string EmissionPath = Root + "/Textures/Vitaria_Palette_Emission.png";
         const string LayoutPath = Root + "/Layout/vitaria_layout.json";
@@ -66,7 +92,7 @@ namespace Vitaria.EditorTools
                     var path = AssetDatabase.GUIDToAssetPath(guid);
                     var mi = AssetImporter.GetAtPath(path) as ModelImporter;
                     if (mi == null) continue;
-                    mi.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), SourceMaterialName), mat);
+                    AddMaterialRemaps(mi);
                     mi.SaveAndReimport();
                     n++;
                 }
@@ -156,6 +182,7 @@ namespace Vitaria.EditorTools
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 var name = Path.GetFileNameWithoutExtension(path);
                 if (name == "Vitaria_Scene") continue;
+                if (path.StartsWith(ArenaModelsRoot + "/")) continue;     // arenas are assembled by the game
                 var model = AssetDatabase.LoadAssetAtPath<GameObject>(path);
                 if (model == null) continue;
                 var category = Path.GetFileName(Path.GetDirectoryName(path));
@@ -329,11 +356,11 @@ namespace Vitaria.EditorTools
             mi.importBlendShapes = false;
             mi.importNormals = ModelImporterNormals.Import;
             mi.importTangents = ModelImporterTangents.None;
-            mi.generateSecondaryUV = true;      // lightmap UVs, in case you bake GI
+            // lightmap UVs, in case you bake GI; arenas are spawned at runtime and their merged meshes
+            // (tens of thousands of triangles in hundreds of pieces) would only slow the import down
+            mi.generateSecondaryUV = !assetPath.StartsWith(VitariaTools.ArenaModelsRoot + "/");
             mi.isReadable = false;
-            var mat = AssetDatabase.LoadAssetAtPath<Material>(VitariaTools.MaterialPath);
-            if (mat != null)
-                mi.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), VitariaTools.SourceMaterialName), mat);
+            VitariaTools.AddMaterialRemaps(mi);
         }
     }
 
@@ -345,6 +372,17 @@ namespace Vitaria.EditorTools
             if (!assetPath.StartsWith(VitariaTools.Root + "/Textures")) return;
             var ti = assetImporter as TextureImporter;
             if (ti == null) return;
+            if (Path.GetFileNameWithoutExtension(assetPath).StartsWith("Vitaria_Water"))
+            {
+                // water: tiling stripes scrolled along V — repeat, mipmapped against shimmer
+                ti.textureType = TextureImporterType.Default;
+                ti.mipmapEnabled = true;
+                ti.filterMode = FilterMode.Trilinear;
+                ti.wrapMode = TextureWrapMode.Repeat;
+                ti.textureCompression = TextureImporterCompression.Uncompressed;
+                ti.sRGBTexture = true;
+                return;
+            }
             ti.mipmapEnabled = false;
             ti.filterMode = FilterMode.Bilinear;
             ti.wrapMode = TextureWrapMode.Clamp;

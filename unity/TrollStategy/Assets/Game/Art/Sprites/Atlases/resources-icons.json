@@ -1,0 +1,293 @@
+{
+	"textures": [
+		{
+			"image": "resources-icons-0.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 1024,
+				"h": 1024
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "enchanted-sword.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 335,
+						"h": 352
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 335,
+						"h": 352
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 335,
+						"h": 352
+					}
+				},
+				{
+					"filename": "wheat.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 234,
+						"h": 268
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 234,
+						"h": 268
+					},
+					"frame": {
+						"x": 1,
+						"y": 355,
+						"w": 234,
+						"h": 268
+					}
+				},
+				{
+					"filename": "iron-sword.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 253,
+						"h": 265
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 253,
+						"h": 265
+					},
+					"frame": {
+						"x": 1,
+						"y": 625,
+						"w": 253,
+						"h": 265
+					}
+				},
+				{
+					"filename": "wooden-shield.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 216,
+						"h": 252
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 216,
+						"h": 252
+					},
+					"frame": {
+						"x": 237,
+						"y": 355,
+						"w": 216,
+						"h": 252
+					}
+				},
+				{
+					"filename": "iron-armor.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 265,
+						"h": 251
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 265,
+						"h": 251
+					},
+					"frame": {
+						"x": 338,
+						"y": 1,
+						"w": 265,
+						"h": 251
+					}
+				},
+				{
+					"filename": "logs.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 271,
+						"h": 220
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 271,
+						"h": 220
+					},
+					"frame": {
+						"x": 605,
+						"y": 1,
+						"w": 271,
+						"h": 220
+					}
+				},
+				{
+					"filename": "planks.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 261,
+						"h": 230
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 261,
+						"h": 230
+					},
+					"frame": {
+						"x": 605,
+						"y": 223,
+						"w": 261,
+						"h": 230
+					}
+				},
+				{
+					"filename": "animal-hide.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 245,
+						"h": 246
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 245,
+						"h": 246
+					},
+					"frame": {
+						"x": 256,
+						"y": 609,
+						"w": 245,
+						"h": 246
+					}
+				},
+				{
+					"filename": "iron-ingot.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 220,
+						"h": 166
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 220,
+						"h": 166
+					},
+					"frame": {
+						"x": 256,
+						"y": 857,
+						"w": 220,
+						"h": 166
+					}
+				},
+				{
+					"filename": "coins.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 168,
+						"h": 145
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 168,
+						"h": 145
+					},
+					"frame": {
+						"x": 455,
+						"y": 455,
+						"w": 168,
+						"h": 145
+					}
+				},
+				{
+					"filename": "leather.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 259,
+						"h": 202
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 259,
+						"h": 202
+					},
+					"frame": {
+						"x": 625,
+						"y": 455,
+						"w": 259,
+						"h": 202
+					}
+				},
+				{
+					"filename": "violet-crystal.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 197,
+						"h": 244
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 197,
+						"h": 244
+					},
+					"frame": {
+						"x": 503,
+						"y": 659,
+						"w": 197,
+						"h": 244
+					}
+				},
+				{
+					"filename": "iron-ore.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 216,
+						"h": 200
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 216,
+						"h": 200
+					},
+					"frame": {
+						"x": 702,
+						"y": 659,
+						"w": 216,
+						"h": 200
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:0461bff7d41f722f5c96343fbe478c80:d48a04d16b339eb9fc92a9d827a7a293:f42939da71f23d780a36032fef68fbc6$"
+	}
+}

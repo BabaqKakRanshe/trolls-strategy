@@ -2,6 +2,5 @@
   <Project Path="TrollStrategy.Runtime.csproj" />
   <Project Path="TrollStrategy.Editor.csproj" />
   <Project Path="TrollStrategy.EditModeTests.csproj" />
-  <Project Path="Unity.2D.Welcome.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>

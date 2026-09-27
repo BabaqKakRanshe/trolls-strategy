@@ -2,7 +2,8 @@
     "name": "TrollStrategy.EditModeTests",
     "rootNamespace": "TrollStrategy.Tests",
     "references": [
-        "TrollStrategy.Runtime"
+        "TrollStrategy.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [
         "Editor"

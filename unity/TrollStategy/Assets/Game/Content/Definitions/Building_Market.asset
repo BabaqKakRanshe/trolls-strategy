@@ -14,9 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.BuildingDefinition
   _kind: 2
   _displayName: "\u0420\u044B\u043D\u043E\u043A"
-  _price: 0
+  _price: 150
+  _constructible: 0
   _width: 3
   _height: 2
-  _maxOre: 0
+  _entrance: {x: 1.5, y: -0.428}
+  _crowdSpacing: 0.2
+  _capacity: 0
   _maxWorkers: 0
+  _upgradeCosts: b40000002c010000a4010000i
+  _capacityPerLevel: 0
+  _workersPerLevel: 0
+  _saleBonusPerLevel: 1
+  _recipes: []
+  _storageRole: 2
+  _storedResources: 
+  _slotStackSize: 0
   _sprite: {fileID: 21300000, guid: 73b79868ed04f4f4a8c6bdf85ed08755, type: 3}
+  _prefab: {fileID: 7479253601596416256, guid: 5461d8c79c02eec47ab945b81f538dcd, type: 3}
+  _icon: {fileID: 1510558811, guid: 09bbd4ccc6c7bd240abbcc21ca5c3aa2, type: 3}

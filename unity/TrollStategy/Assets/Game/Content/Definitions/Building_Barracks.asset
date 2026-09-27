@@ -15,8 +15,21 @@ MonoBehaviour:
   _kind: 3
   _displayName: "\u0411\u0430\u0440\u0430\u043A\u0438"
   _price: 0
+  _constructible: 0
   _width: 3
   _height: 3
-  _maxOre: 0
+  _entrance: {x: 1.5, y: 0.35}
+  _crowdSpacing: 0.2
+  _capacity: 0
   _maxWorkers: 0
+  _upgradeCosts: 
+  _capacityPerLevel: 0
+  _workersPerLevel: 0
+  _saleBonusPerLevel: 0
+  _recipes: []
+  _storageRole: 0
+  _storedResources: 
+  _slotStackSize: 0
   _sprite: {fileID: 0}
+  _prefab: {fileID: 1459175269125417582, guid: cec34fd35a355554bb137bbd56951636, type: 3}
+  _icon: {fileID: 198637862, guid: 09bbd4ccc6c7bd240abbcc21ca5c3aa2, type: 3}

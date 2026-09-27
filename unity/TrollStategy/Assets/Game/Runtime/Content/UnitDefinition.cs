@@ -5,55 +5,69 @@ namespace TrollStrategy.Content
     [CreateAssetMenu(fileName = "UnitDefinition", menuName = "TrollStrategy/Content/Unit Definition")]
     public class UnitDefinition : ScriptableObject
     {
+        [Header("Описание")]
         [SerializeField] private UnitKind _kind;
         [SerializeField] private string _displayName = "Unit";
-        [SerializeField] private int _price = 40;
-        [SerializeField] private int _strength = 3;
-        [SerializeField] private float _speed = 5f;
-        [SerializeField] private int _cargoCapacity = 10;
-        [SerializeField] private string _description = "";
+        [SerializeField, TextArea] private string _description = "";
+
+        [Header("Характеристики")]
+        [Tooltip("Цена найма в золоте.")]
+        [SerializeField, Min(0)] private int _price = 40;
+        [Tooltip("Сила: скорость производства. Каждое очко даёт EconomyConfig.WorkPerStrengthSecond работы в секунду.")]
+        [SerializeField, Min(0)] private int _strength = 3;
+        [Tooltip("Скорость передвижения.")]
+        [SerializeField, Min(0f)] private float _speed = 5f;
+        [Tooltip("Выносливость в процентах: 100% = 1 единица груза за ходку, 150% = 1.5. Дробная часть копится между ходками.")]
+        [SerializeField, Min(1)] private int _stamina = 100;
+
+        [Header("Бой")]
+        [SerializeField, Min(1)] private int _combatHealth = 20;
+        [SerializeField, Min(1)] private int _combatDamage = 2;
+        [SerializeField, Min(0)] private int _combatArmor = 1;
+        [SerializeField, Min(100)] private int _attackIntervalMs = 2000;
+        [SerializeField, Min(1)] private int _attackRange = 3;
+
+        [Header("Внешний вид")]
+        [Tooltip("Портрет для интерфейса.")]
         [SerializeField] private Sprite _portraitSprite;
-        [SerializeField] private Sprite[] _idleFrames = new Sprite[0];
-        [SerializeField] private Sprite[] _walkFrames = new Sprite[0];
-        [SerializeField, Min(0.05f)] private float _spriteScale = 1f;
+        [Tooltip("Префаб-вариант UnitBase: спрайт, анимация и размер существа.")]
+        [SerializeField] private GameObject _prefab;
 
         public UnitKind Kind => _kind;
         public string DisplayName => _displayName;
         public int Price => _price;
         public int Strength => _strength;
         public float Speed => _speed;
-        public int CargoCapacity => _cargoCapacity;
+        public int Stamina => _stamina;
+        public int CombatHealth => _combatHealth;
+        public int CombatDamage => _combatDamage;
+        public int CombatArmor => _combatArmor;
+        public int AttackIntervalMs => _attackIntervalMs;
+        public int AttackRange => _attackRange;
         public string Description => _description;
         public Sprite PortraitSprite => _portraitSprite;
-        public Sprite[] IdleFrames => _idleFrames;
-        public Sprite[] WalkFrames => _walkFrames;
-        public Sprite IdleSprite => _idleFrames != null && _idleFrames.Length > 0 ? _idleFrames[0] : _portraitSprite;
-        public Sprite WalkSprite => _walkFrames != null && _walkFrames.Length > 0 ? _walkFrames[0] : IdleSprite;
-        public float SpriteScale => _spriteScale > 0f ? _spriteScale : 1f;
+        public GameObject Prefab => _prefab;
 
-        public void Init(UnitKind kind, string displayName, int price, int strength, float speed, int cargoCapacity, string description, Sprite portrait, Sprite[] idleFrames, Sprite[] walkFrames)
-        {
-            Init(kind, displayName, price, strength, speed, cargoCapacity, description, portrait, idleFrames, walkFrames, SpriteScale);
-        }
-
-        public void Init(UnitKind kind, string displayName, int price, int strength, float speed, int cargoCapacity, string description, Sprite portrait, Sprite[] idleFrames, Sprite[] walkFrames, float spriteScale)
+        public void Init(UnitKind kind, string displayName, int price, int strength, float speed, int stamina,
+            string description = "", Sprite portrait = null)
         {
             _kind = kind;
             _displayName = displayName;
             _price = price;
             _strength = strength;
             _speed = speed;
-            _cargoCapacity = cargoCapacity;
+            _stamina = Mathf.Max(1, stamina);
             _description = description;
             _portraitSprite = portrait;
-            _idleFrames = idleFrames ?? new Sprite[0];
-            _walkFrames = walkFrames ?? new Sprite[0];
-            _spriteScale = Mathf.Max(0.05f, spriteScale);
         }
 
-        public void Init(UnitKind kind, string displayName, int price, int strength, float speed, int cargoCapacity, Sprite portrait, Sprite[] idleFrames, Sprite[] walkFrames)
+        public void SetCombatStats(int health, int damage, int armor, int attackIntervalMs, int attackRange)
         {
-            Init(kind, displayName, price, strength, speed, cargoCapacity, "", portrait, idleFrames, walkFrames);
+            _combatHealth = health;
+            _combatDamage = damage;
+            _combatArmor = armor;
+            _attackIntervalMs = attackIntervalMs;
+            _attackRange = attackRange;
         }
     }
 }

@@ -17,7 +17,6 @@ MonoBehaviour:
   _cellSize: 1
   _maxUnitsPerCell: 20
   _stepTimeSeconds: 0.25
-  _transferTimeSeconds: 0.5
+  _transferTimeSeconds: 0.25
   _startingGold: 1000
-  _orePerStrengthSecond: 0.1
-  _oreSellPrice: 3
+  _workPerStrengthSecond: 0.1

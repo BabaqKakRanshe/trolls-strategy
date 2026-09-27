@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a09b53d96beac6489c03d204e536d7d, type: 3}
+  m_Name: Building_Enchanter
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.BuildingDefinition
+  _kind: 13
+  _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u0442\u0435\u043B\u044C"
+  _price: 300
+  _constructible: 1
+  _width: 2
+  _height: 2
+  _entrance: {x: 1, y: 0.35}
+  _crowdSpacing: 0.2
+  _capacity: 20
+  _maxWorkers: 3
+  _upgradeCosts: 
+  _capacityPerLevel: 0
+  _workersPerLevel: 0
+  _saleBonusPerLevel: 0
+  _recipes:
+  - _inputs:
+    - _resource: 7
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 11
+      _amount: 1
+    _work: 6
+    _bonusEveryCycles: 0
+    _bonusOutput:
+      _resource: 0
+      _amount: 0
+  _storageRole: 0
+  _storedResources: 
+  _slotStackSize: 0
+  _sprite: {fileID: 0}
+  _prefab: {fileID: 2602274075895252538, guid: c88f24ba7a890e148a095aaa51c1f35f, type: 3}
+  _icon: {fileID: -451829995, guid: 09bbd4ccc6c7bd240abbcc21ca5c3aa2, type: 3}

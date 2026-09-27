@@ -1,0 +1,523 @@
+fileFormatVersion: 2
+guid: 03d4554813ef07d4a8e60cb9bbdceec0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1916048878502335114
+    second: resources-icons-0_0
+  - first:
+      213: -2588862264006181265
+    second: resources-icons-0_1
+  - first:
+      213: 6083083904453515828
+    second: resources-icons-0_2
+  - first:
+      213: 5551021254267272468
+    second: resources-icons-0_3
+  - first:
+      213: -2373732371217469760
+    second: resources-icons-0_4
+  - first:
+      213: 1170961003664086435
+    second: resources-icons-0_5
+  - first:
+      213: -2542480736567144105
+    second: resources-icons-0_6
+  - first:
+      213: -5511468348415496916
+    second: resources-icons-0_7
+  - first:
+      213: 294508452921231634
+    second: resources-icons-0_8
+  - first:
+      213: 5486180528642849139
+    second: resources-icons-0_9
+  - first:
+      213: 3773996183462024846
+    second: resources-icons-0_10
+  - first:
+      213: 1529794075919756419
+    second: resources-icons-0_11
+  - first:
+      213: 2395832971735400537
+    second: resources-icons-0_12
+  - first:
+      213: 6600134743537876171
+    second: resources-icons-0_13
+  - first:
+      213: -2497002169171764467
+    second: resources-icons-0_14
+  - first:
+      213: -5547591764304704863
+    second: resources-icons-0_15
+  - first:
+      213: -3065727190044317230
+    second: resources-icons-0_16
+  - first:
+      213: -1848046375426098619
+    second: resources-icons-0_17
+  - first:
+      213: 7713534052864088056
+    second: resources-icons-0_18
+  - first:
+      213: 6461185360059201374
+    second: resources-icons-0_19
+  - first:
+      213: 313224111726303909
+    second: resources-icons-0_20
+  - first:
+      213: -2228576614077529446
+    second: resources-icons-0_21
+  - first:
+      213: 5909394078868636276
+    second: resources-icons-0_22
+  - first:
+      213: 4655755544412303352
+    second: resources-icons-0_23
+  - first:
+      213: 1978190135174198927
+    second: resources-icons-0_24
+  - first:
+      213: -362604725759029179
+    second: resources-icons-0_25
+  - first:
+      213: -5624109357094608797
+    second: resources-icons-0_26
+  - first:
+      213: -4700393341879089427
+    second: resources-icons-0_27
+  - first:
+      213: -762426711759585957
+    second: resources-icons-0_28
+  - first:
+      213: -6112153692983134447
+    second: resources-icons-0_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 362
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: iron-ore
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 165
+        width: 216
+        height: 200
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ade586081a782a643ad51444413cf096
+      internalID: 104497840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: iron-ingot
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 1
+        width: 220
+        height: 166
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e985c48491e49694b8584a98cf23cbc6
+      internalID: -255195324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wheat
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 401
+        width: 234
+        height: 268
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcfa7350788f51d40a200b3341481ebd
+      internalID: -250620656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: violet-crystal
+      rect:
+        serializedVersion: 2
+        x: 503
+        y: 121
+        width: 197
+        height: 244
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c00a415978799a4093fe0edadff239d
+      internalID: 534537650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: animal-hide
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 169
+        width: 245
+        height: 246
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 172082a9140acf04c9c6b59641d5deef
+      internalID: -711378300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: leather
+      rect:
+        serializedVersion: 2
+        x: 625
+        y: 367
+        width: 259
+        height: 202
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 942ccbb79ff0fd944a5c64e4718b75e4
+      internalID: 1084967311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-sword
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 671
+        width: 335
+        height: 352
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc0873bdefabd824a8bf5cc29b599385
+      internalID: 1465269554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wooden-shield
+      rect:
+        serializedVersion: 2
+        x: 237
+        y: 417
+        width: 216
+        height: 252
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06b616a33fb114746b12857414cf338a
+      internalID: 1574400780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: planks
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 571
+        width: 261
+        height: 230
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08b3db7af40d0894fa22a416977340b6
+      internalID: 1067552197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: iron-armor
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 772
+        width: 265
+        height: 251
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f160a0d6d4848fa43867dc2e3ec1c999
+      internalID: 1562037474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: iron-sword
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 134
+        width: 253
+        height: 265
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64b793b3a08c1cb43bf6a7513ab56462
+      internalID: 1512361336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logs
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 803
+        width: 271
+        height: 220
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8c5dedf42bcd3b419256ddb5f3ae1a8
+      internalID: 1284599114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coins
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 424
+        width: 168
+        height: 145
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fdfcde3ebc1aa844a008ae0791f0ead
+      internalID: 638093292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 312b391dd6bb47c459c7bb53b10ee81f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      animal-hide: -711378300
+      coins: 638093292
+      enchanted-sword: 1465269554
+      iron-armor: 1562037474
+      iron-ingot: -255195324
+      iron-ore: 104497840
+      iron-sword: 1512361336
+      leather: 1084967311
+      logs: 1284599114
+      planks: 1067552197
+      violet-crystal: 534537650
+      wheat: -250620656
+      wooden-shield: 1574400780
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

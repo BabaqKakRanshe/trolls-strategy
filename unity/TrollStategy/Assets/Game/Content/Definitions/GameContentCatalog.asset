@@ -18,6 +18,86 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4463564e7f531cf43906f329d3f16c64, type: 2}
   - {fileID: 11400000, guid: 0149dbea25a705142bfa15797b071ac3, type: 2}
   - {fileID: 11400000, guid: 91c0e55d0d210ad4090e93869c6aee9e, type: 2}
+  - {fileID: 11400000, guid: 1828eddaa9f1a0844b0118f407591a87, type: 2}
+  - {fileID: 11400000, guid: d21a79b3472e1cd44b7c06086280bc14, type: 2}
+  - {fileID: 11400000, guid: 9909a4600d05e104db703c355eae27ba, type: 2}
+  - {fileID: 11400000, guid: f38978defecc2e2459e816ae967dae2b, type: 2}
+  - {fileID: 11400000, guid: 7b70998f31543e14bbf601467a8381aa, type: 2}
+  - {fileID: 11400000, guid: db9315b4712e15649b898d94c09efa6f, type: 2}
+  - {fileID: 11400000, guid: b454bb2532cee594f8e164499abad67b, type: 2}
+  - {fileID: 11400000, guid: c866dc197e91c814aa24a0f627b3e063, type: 2}
+  - {fileID: 11400000, guid: d1b3cd2b703ab1840b889fb104da1474, type: 2}
+  - {fileID: 11400000, guid: ec1ed47287c3c8645b402f2e6da5acb8, type: 2}
   _units:
   - {fileID: 11400000, guid: 00ed8c2edd1992b4a92287cf49f58038, type: 2}
   - {fileID: 11400000, guid: a64c4bf0d6855224cb929cc5081b6a7a, type: 2}
+  _missions:
+  - {fileID: 11400000, guid: 8c85ec55c6084ddca3c53e2b324f49db, type: 2}
+  _equipment:
+  - {fileID: 11400000, guid: 7dd71cd8d30b4cf692b662b4dcdca91b, type: 2}
+  - {fileID: 11400000, guid: 83186730ba60476e8b4d2fe0a0a47143, type: 2}
+  - {fileID: 11400000, guid: 8520e4843fbfc7147832858807d10028, type: 2}
+  - {fileID: 11400000, guid: 28460ab137ea8664395f957a0d4520a9, type: 2}
+  - {fileID: 11400000, guid: 645c395ad48e61c43819e1052aa5bfa5, type: 2}
+  - {fileID: 11400000, guid: f39ef2e08ee2aaa4da2e616097775b13, type: 2}
+  _resources:
+  - _kind: 0
+    _displayName: "\u0420\u0443\u0434\u0430"
+    _sellPrice: 3
+    _icon: {fileID: 104497840, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+  - _kind: 1
+    _displayName: "\u0421\u043B\u0438\u0442\u043E\u043A"
+    _sellPrice: 9
+    _icon: {fileID: -255195324, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+  - _kind: 2
+    _displayName: "\u041F\u0448\u0435\u043D\u0438\u0446\u0430"
+    _sellPrice: 2
+    _icon: {fileID: -250620656, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+  - _kind: 3
+    _displayName: "\u0428\u043A\u0443\u0440\u0430"
+    _sellPrice: 9
+    _icon: {fileID: -711378300, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+  - _kind: 4
+    _displayName: "\u041A\u043E\u0436\u0430"
+    _sellPrice: 14
+    _icon: {fileID: 1084967311, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+  - _kind: 5
+    _displayName: "\u0411\u0440\u0451\u0432\u043D\u0430"
+    _sellPrice: 2
+    _icon: {fileID: 1284599114, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+  - _kind: 6
+    _displayName: "\u0414\u043E\u0441\u043A\u0438"
+    _sellPrice: 4
+    _icon: {fileID: 1067552197, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+  - _kind: 7
+    _displayName: "\u0416\u0435\u043B\u0435\u0437\u043D\u044B\u0439 \u043C\u0435\u0447"
+    _sellPrice: 26
+    _icon: {fileID: 1512361336, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: iron-sword
+  - _kind: 8
+    _displayName: "\u0423\u0441\u0438\u043B\u0435\u043D\u043D\u0430\u044F \u0431\u0440\u043E\u043D\u044F"
+    _sellPrice: 45
+    _icon: {fileID: 1562037474, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: iron-armor
+  - _kind: 9
+    _displayName: "\u0414\u0435\u0440\u0435\u0432\u044F\u043D\u043D\u044B\u0439 \u0449\u0438\u0442"
+    _sellPrice: 18
+    _icon: {fileID: 1574400780, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: wooden-shield
+  - _kind: 10
+    _displayName: "\u041A\u0440\u0438\u0441\u0442\u0430\u043B\u043B"
+    _sellPrice: 30
+    _icon: {fileID: 534537650, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+  - _kind: 11
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043C\u0435\u0447"
+    _sellPrice: 90
+    _icon: {fileID: 1465269554, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-sword

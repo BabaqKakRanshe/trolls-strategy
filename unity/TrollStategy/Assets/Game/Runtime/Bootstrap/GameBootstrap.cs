@@ -1,7 +1,12 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
+using TrollStrategy.Presentation;
+using TrollStrategy.Presentation.Battle;
 using TrollStrategy.Presentation.Buildings;
+using TrollStrategy.Presentation.Feel;
 using TrollStrategy.Presentation.Map;
 using TrollStrategy.Presentation.Units;
 using TrollStrategy.Presentation.Visuals;
@@ -26,35 +31,40 @@ namespace TrollStrategy.Bootstrap
         [SerializeField] private HaulRouteVisualizer _routeVisualizer;
         [SerializeField] private MapInputHandler _inputHandler;
 
-        [Header("Prefabs")]
-        [SerializeField] private BuildingView _buildingPrefab;
-        [SerializeField] private UnitView _unitPrefab;
-
         [Header("UI")]
-        [SerializeField] private HudPresenter _hudPresenter;
-        [SerializeField] private ResourceBarView _resourceBar;
-        [SerializeField] private UnitRosterView _unitRosterView;
-        [SerializeField] private ShopDockView _shopDockView;
-        [SerializeField] private CommandDockView _commandDockView;
-        private CommandFanView _commandFanView;
-        [SerializeField] private InspectCardView _inspectCardView;
-        [SerializeField] private StatusMessageView _statusMessageView;
+        [SerializeField] private ColonyHud _hud;
 
         private GameSession _session;
         private InteractionController _interaction;
 
         public GameSession Session => _session;
         public InteractionController Interaction => _interaction;
+        public Camera ColonyCamera => _camera;
+        /// <summary>The colony HUD; the battle scene hides it while it covers the screen.</summary>
+        public bool HudVisible
+        {
+            get => _hud != null && _hud.Visible;
+            set
+            {
+                if (_hud != null) _hud.Visible = value;
+            }
+        }
+        public MapInputHandler MapInput => _inputHandler;
+        public SelectionBoxRenderer SelectionBox => _selectionBox;
 
         private void Awake()
         {
             if (_camera == null) _camera = Camera.main;
 
-            if (_catalog == null || _buildingPrefab == null || _unitPrefab == null)
+            if (_catalog == null)
             {
-                Debug.LogError(
-                    $"{nameof(GameBootstrap)} requires serialized references to the content catalog, building prefab, and unit prefab. Rebuild the main scene from TrollStrategy/Setup Game Scene.",
-                    this);
+                Debug.LogError($"{nameof(GameBootstrap)} requires a serialized content catalog reference.", this);
+                enabled = false;
+                return;
+            }
+            if (!ContentPrefabs.Validate(_catalog, out var contentError))
+            {
+                Debug.LogError($"{nameof(GameBootstrap)}: content prefabs are invalid:\n{contentError}", this);
                 enabled = false;
                 return;
             }
@@ -66,22 +76,39 @@ namespace TrollStrategy.Bootstrap
             if (_selectionBox == null) _selectionBox = FindAnyObjectByType<SelectionBoxRenderer>();
             if (_routeVisualizer == null) _routeVisualizer = FindAnyObjectByType<HaulRouteVisualizer>();
             if (_inputHandler == null) _inputHandler = FindAnyObjectByType<MapInputHandler>();
-            if (_hudPresenter == null) _hudPresenter = FindAnyObjectByType<HudPresenter>();
-            if (_resourceBar == null) _resourceBar = FindAnyObjectByType<ResourceBarView>();
-            if (_unitRosterView == null) _unitRosterView = FindAnyObjectByType<UnitRosterView>();
-            if (_shopDockView == null) _shopDockView = FindAnyObjectByType<ShopDockView>();
-            if (_commandDockView == null) _commandDockView = FindAnyObjectByType<CommandDockView>();
-            if (_inspectCardView == null) _inspectCardView = FindAnyObjectByType<InspectCardView>();
-            if (_statusMessageView == null) _statusMessageView = FindAnyObjectByType<StatusMessageView>();
+            if (_hud == null) _hud = FindAnyObjectByType<ColonyHud>();
 
-            _session = new GameSession(_catalog);
+            if (_worldView == null)
+            {
+                Debug.LogError($"{nameof(GameBootstrap)} needs a {nameof(TilemapWorldView)} to read scene buildings.", this);
+                enabled = false;
+                return;
+            }
+
+            // Building prefabs placed in the scene are the starting colony; the session validates the layout.
+            var placements = SceneBuildingPlacements.Collect(_worldView, _catalog);
+            var startingBuildings = new List<StartingBuilding>(placements.Count);
+            foreach (var placement in placements) startingBuildings.Add(placement.Building);
+            try
+            {
+                _session = new GameSession(_catalog, startingBuildings);
+            }
+            catch (InvalidOperationException exception)
+            {
+                Debug.LogError($"{nameof(GameBootstrap)}: scene building layout is invalid. {exception.Message}", this);
+                enabled = false;
+                return;
+            }
+            var sceneViews = new Dictionary<string, BuildingView>(placements.Count);
+            for (int i = 0; i < placements.Count; i++)
+                sceneViews.Add(_session.StartingBuildingIds[i], placements[i].View);
             _interaction = new InteractionController(_session);
 
             if (_buildingManager != null)
-                _buildingManager.Init(_session, _interaction, _worldView, _catalog, _buildingPrefab);
+                _buildingManager.Init(_session, _interaction, _worldView, _catalog, sceneViews);
 
             if (_unitManager != null)
-                _unitManager.Init(_session, _interaction, _catalog, _unitPrefab, _worldView);
+                _unitManager.Init(_session, _interaction, _catalog, _worldView, _buildingManager);
 
             if (_placementPreview != null)
                 _placementPreview.Init(_session, _interaction, _worldView, _catalog, _camera);
@@ -95,68 +122,32 @@ namespace TrollStrategy.Bootstrap
             if (_inputHandler != null)
                 _inputHandler.Init(_interaction, _selectionBox);
 
-            if (_inputHandler != null && _hudPresenter != null)
+            if (_hud != null)
             {
-                var canvas = _hudPresenter.GetComponentInParent<Canvas>();
-                if (canvas != null)
+                var context = new ColonyHudContext(_session, _interaction)
                 {
-                    var fanObject = new GameObject("CommandFanView", typeof(RectTransform), typeof(CommandFanView));
-                    fanObject.transform.SetParent(canvas.transform, false);
-                    _commandFanView = fanObject.GetComponent<CommandFanView>();
-                    _commandFanView.Init(_interaction, _inputHandler, canvas);
-                }
+                    ToggleGuides = _routeVisualizer != null ? _routeVisualizer.ToggleGuides : null,
+                    GuidesVisible = _routeVisualizer != null ? () => _routeVisualizer.GuidesVisible : null,
+                    OpenBattle = mission => BattleSceneController.Open(this, mission),
+#if UNITY_EDITOR || UNITY_ENABLE_CHECKS
+                    OpenQuickBattle = mission => BattleSceneController.OpenQuick(this, mission),
+#endif
+                    Showcase = new BuildingShowcase()
+                };
+                _hud.Init(context, _inputHandler);
             }
+            else Debug.LogError($"{nameof(GameBootstrap)} has no {nameof(ColonyHud)}; the colony has no HUD.", this);
 
-            if (_hudPresenter != null)
-                _hudPresenter.Init(_session, _interaction, _resourceBar, _unitRosterView, _shopDockView, _commandDockView, _inspectCardView, _statusMessageView);
-
-            var gridBtn = GameObject.Find("GridToggleBtn")?.GetComponent<UnityEngine.UI.Button>();
-            if (gridBtn != null) gridBtn.onClick.AddListener(() => _routeVisualizer?.ToggleGuides());
+            // every command answers with sound, a mark and, if refused, why
+            var feedback = new GameObject("ColonyFeedback", typeof(ColonyFeedback)).GetComponent<ColonyFeedback>();
+            feedback.transform.SetParent(transform, false);
+            feedback.Init(_session, _interaction, _worldView, _buildingManager,
+                _hud != null ? _hud.PlayRefusalCue : null);
         }
 
         private void Update()
         {
             _session?.Advance(Time.deltaTime);
-        }
-
-        public void InjectDependencies(
-            GameContentCatalog catalog,
-            TilemapWorldView worldView,
-            Camera cam,
-            BuildingVisualsManager buildingManager,
-            UnitVisualsManager unitManager,
-            PlacementPreviewRenderer placementPreview,
-            SelectionBoxRenderer selectionBox,
-            HaulRouteVisualizer routeVisualizer,
-            MapInputHandler inputHandler,
-            BuildingView buildingPrefab,
-            UnitView unitPrefab,
-            HudPresenter hudPresenter,
-            ResourceBarView resourceBar,
-            UnitRosterView unitRosterView,
-            ShopDockView shopDockView,
-            CommandDockView commandDockView,
-            InspectCardView inspectCardView,
-            StatusMessageView statusMessageView)
-        {
-            _catalog = catalog;
-            _worldView = worldView;
-            _camera = cam;
-            _buildingManager = buildingManager;
-            _unitManager = unitManager;
-            _placementPreview = placementPreview;
-            _selectionBox = selectionBox;
-            _routeVisualizer = routeVisualizer;
-            _inputHandler = inputHandler;
-            _buildingPrefab = buildingPrefab;
-            _unitPrefab = unitPrefab;
-            _hudPresenter = hudPresenter;
-            _resourceBar = resourceBar;
-            _unitRosterView = unitRosterView;
-            _shopDockView = shopDockView;
-            _commandDockView = commandDockView;
-            _inspectCardView = inspectCardView;
-            _statusMessageView = statusMessageView;
         }
     }
 }

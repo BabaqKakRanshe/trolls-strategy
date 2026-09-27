@@ -13,6 +13,8 @@ namespace TrollStrategy.Presentation.Visuals
     {
         private const float DragThresholdPixels = 7f;
         private const float UnitClickRadius = 0.48f;
+        private const float DoubleClickSeconds = 0.35f;
+        private const float DoubleClickMaxPixels = 12f;
 
         [SerializeField] private LineRenderer _lineRenderer;
         [SerializeField] private SpriteRenderer _fillRenderer;
@@ -25,6 +27,8 @@ namespace TrollStrategy.Presentation.Visuals
         private Vector2 _startScreenPos;
         private bool _isDragging;
         private bool _dragVisible;
+        private float _lastUnitClickTime = float.NegativeInfinity;
+        private Vector2 _lastUnitClickScreenPos;
 
         public void Init(InteractionController interaction, UnitVisualsManager unitVisuals, Camera cam,
             TilemapWorldView worldView = null, BuildingVisualsManager buildingVisuals = null)
@@ -109,7 +113,7 @@ namespace TrollStrategy.Presentation.Visuals
                 if (wasMarquee)
                     SelectRectangle(_startWorldPos, mouseWorld, IsAdditiveModifierPressed());
                 else
-                    SelectPoint(mouseWorld, IsAdditiveModifierPressed());
+                    SelectPoint(mouseWorld, mouseScreen, IsAdditiveModifierPressed());
             }
         }
 
@@ -142,16 +146,29 @@ namespace TrollStrategy.Presentation.Visuals
             _interaction.SelectUnits(enclosed, additive);
         }
 
-        private void SelectPoint(Vector3 mouseWorld, bool additive)
+        private void SelectPoint(Vector3 mouseWorld, Vector2 mouseScreen, bool additive)
         {
             UnitView nearestUnit = FindUnitAt(mouseWorld);
 
             if (nearestUnit != null)
             {
+                float now = Time.unscaledTime;
+                bool isDoubleClick = now - _lastUnitClickTime <= DoubleClickSeconds &&
+                                     Vector2.Distance(_lastUnitClickScreenPos, mouseScreen) <= DoubleClickMaxPixels;
+                if (isDoubleClick)
+                {
+                    _lastUnitClickTime = float.NegativeInfinity;
+                    _interaction.InspectSquad(nearestUnit.UnitId, FindUnitIdsAt(mouseWorld));
+                    return;
+                }
+
+                _lastUnitClickTime = now;
+                _lastUnitClickScreenPos = mouseScreen;
                 _interaction.ClickUnit(nearestUnit.UnitId, additive);
                 return;
             }
 
+            _lastUnitClickTime = float.NegativeInfinity;
             if (SelectBuildingPoint(mouseWorld)) return;
 
             if (!additive) _interaction.CancelOrClear();
@@ -191,18 +208,33 @@ namespace TrollStrategy.Presentation.Visuals
             return nearest;
         }
 
+        private List<string> FindUnitIdsAt(Vector3 worldPoint)
+        {
+            var ids = new List<string>();
+            if (_unitVisuals == null) return ids;
+            var mapPoint = _worldView != null ? _worldView.WorldToMap(worldPoint) : worldPoint;
+            float maxSqrDistance = UnitClickRadius * UnitClickRadius;
+            foreach (var pair in _unitVisuals.Views)
+            {
+                var unitMapPoint = _worldView != null
+                    ? _worldView.WorldToMap(pair.Value.transform.position)
+                    : pair.Value.transform.position;
+                if (((Vector2)(unitMapPoint - mapPoint)).sqrMagnitude <= maxSqrDistance)
+                    ids.Add(pair.Key);
+            }
+            ids.Sort(System.StringComparer.Ordinal);
+            return ids;
+        }
+
         private bool SelectBuildingPoint(Vector3 mouseWorld)
         {
             if (_buildingVisuals == null) return false;
-            var mapPoint = _worldView != null ? _worldView.WorldToMap(mouseWorld) : mouseWorld;
             foreach (var pair in _buildingVisuals.Views)
             {
                 var building = pair.Value;
                 if (!building.ContainsWorldPoint(mouseWorld)) continue;
 
-                _interaction.ChooseBuilding(
-                    building.BuildingId,
-                    new WorldPosition(mapPoint.x, mapPoint.y));
+                _interaction.ChooseBuilding(building.BuildingId);
                 return true;
             }
             return false;

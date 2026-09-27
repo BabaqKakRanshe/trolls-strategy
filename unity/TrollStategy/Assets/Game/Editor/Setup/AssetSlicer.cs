@@ -18,7 +18,7 @@ namespace TrollStrategy.Editor.Setup
             AssetDatabase.SaveAssets();
         }
 
-        private static void SaveSlices(TextureImporter importer, List<SpriteRect> slices)
+        internal static void SaveSlices(TextureImporter importer, List<SpriteRect> slices)
         {
             var factories = new SpriteDataProviderFactories();
             factories.Init();
@@ -69,12 +69,19 @@ namespace TrollStrategy.Editor.Setup
             Debug.Log("[AssetSlicer] All assets sliced successfully!");
         }
 
-        private static void SliceUnits()
+        internal static void SliceUnits()
         {
             SliceSpritesheet("Assets/Game/Art/Sprites/Units/goblin-idle.png", 512, 128, 32, 32, 16, "goblin_idle");
             SliceSpritesheet("Assets/Game/Art/Sprites/Units/goblin-walk.png", 128, 128, 32, 32, 4, "goblin_walk");
             SliceSpritesheet("Assets/Game/Art/Sprites/Units/troll-idle.png", 512, 128, 32, 32, 16, "troll_idle");
             SliceSpritesheet("Assets/Game/Art/Sprites/Units/troll-walk.png", 192, 128, 32, 32, 6, "troll_walk");
+            // battle poses (Minifantasy Creatures): the top row faces right, like idle and walk
+            SliceSpritesheet("Assets/Game/Art/Sprites/Units/goblin-attack.png", 128, 128, 32, 32, 4, "goblin_attack");
+            SliceSpritesheet("Assets/Game/Art/Sprites/Units/goblin-hurt.png", 128, 128, 32, 32, 4, "goblin_hurt");
+            SliceSpritesheet("Assets/Game/Art/Sprites/Units/goblin-die.png", 384, 32, 32, 32, 12, "goblin_die");
+            SliceSpritesheet("Assets/Game/Art/Sprites/Units/troll-attack.png", 128, 128, 32, 32, 4, "troll_attack");
+            SliceSpritesheet("Assets/Game/Art/Sprites/Units/troll-hurt.png", 128, 128, 32, 32, 4, "troll_hurt");
+            SliceSpritesheet("Assets/Game/Art/Sprites/Units/troll-die.png", 448, 32, 32, 32, 14, "troll_die");
         }
 
         private static void SliceSpritesheet(string path, int texW, int texH, int frameW, int frameH, int count, string prefix)

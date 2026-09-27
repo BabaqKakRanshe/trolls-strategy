@@ -345,32 +345,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
     nameFileIdTable:
-      troll-walk_0: -2034987578301592101
-      troll-walk_1: -782193919289829734
-      troll-walk_10: -3715521162919871965
-      troll-walk_11: -5326271698806218367
-      troll-walk_12: -7292186011979374519
-      troll-walk_13: 4865973320651080550
-      troll-walk_14: -8279100117046129038
-      troll-walk_15: -5541332968973819312
-      troll-walk_16: -5639512101807342591
-      troll-walk_17: -1486796470536385316
-      troll-walk_18: 8699219987413875313
-      troll-walk_19: -3653148280628533675
-      troll-walk_2: -1806350680364310980
-      troll-walk_20: -7473942254574650695
-      troll-walk_21: -984043865172657814
-      troll-walk_22: -6238909858974887648
-      troll-walk_23: 1345864120934891313
-      troll-walk_3: 2141866366432261379
-      troll-walk_4: -898392750814334835
-      troll-walk_5: -2534117119610006481
-      troll-walk_6: 5525313632409355454
-      troll-walk_7: 5715439201042052372
-      troll-walk_8: 3110723257867217462
-      troll-walk_9: -410693028405249949
       troll_walk_0: 7457262499840173999
       troll_walk_1: 193887042755987836
       troll_walk_2: 6863704876348422395

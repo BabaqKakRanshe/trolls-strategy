@@ -24,13 +24,13 @@ namespace TrollStrategy.Presentation.Visuals
             if (Keyboard.current != null)
             {
                 if (Keyboard.current.escapeKey.wasPressedThisFrame)
-                    _interaction.CancelOrClear();
+                    Cancel();
 
                 if (Keyboard.current.digit1Key.wasPressedThisFrame)
                     _interaction.SelectNextIdle();
 
                 if (Keyboard.current.bKey.wasPressedThisFrame)
-                    _interaction.BeginMinePlacement();
+                    _interaction.BeginBuildingPlacement(TrollStrategy.Content.BuildingKind.Mine);
 
                 if (Keyboard.current.wKey.wasPressedThisFrame)
                     _interaction.BeginWorkTarget();
@@ -59,12 +59,21 @@ namespace TrollStrategy.Presentation.Visuals
                     if (_selectionBox == null || _selectionBox.IsBuildingAt(pointer)) return;
                     _interaction.ToggleCommands(true);
                     CommandFanRequested?.Invoke(pointer);
+                    TrollStrategy.Presentation.Audio.GameAudio.Play(TrollStrategy.Presentation.Audio.Sfx.UiClick);
                 }
                 else
                 {
-                    _interaction.CancelOrClear();
+                    Cancel();
                 }
             }
+        }
+
+        /// <summary>Esc or right click: drops the current mode or selection, audibly when there was one.</summary>
+        private void Cancel()
+        {
+            bool something = _interaction.Mode.Type != InteractionModeType.Neutral || _interaction.SelectedIds.Count > 0;
+            _interaction.CancelOrClear();
+            if (something) TrollStrategy.Presentation.Audio.GameAudio.Play(TrollStrategy.Presentation.Audio.Sfx.UiBack);
         }
     }
 }
