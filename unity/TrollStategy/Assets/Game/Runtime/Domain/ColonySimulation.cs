@@ -23,14 +23,15 @@ namespace TrollStrategy.Domain
                 BuildMineCommand c => BuildMine(state, c.Cell, catalog),
                 BuildBuildingCommand c => BuildBuilding(state, c.Kind, c.Cell, catalog),
                 UpgradeBuildingCommand c => UpgradeBuilding(state, c.BuildingId, catalog),
-                DemolishBuildingCommand c => DemolishBuilding(state, c.BuildingId),
+                DemolishBuildingCommand c => DemolishBuilding(state, c.BuildingId, catalog),
                 MoveBuildingCommand c => MoveBuilding(state, c.BuildingId, c.Cell, catalog),
                 BuyUnitsCommand c => BuyUnits(state, c.UnitKind, c.Amount, c.Cell, catalog),
                 AssignWorkCommand c => AssignWork(state, c.UnitIds, c.BuildingId, catalog),
-                AssignHaulCommand c => AssignHaul(state, c.UnitIds, c.SourceId, c.DestinationId, catalog),
+                AssignHaulCommand c => AssignHaul(state, c.UnitIds, c.SourceId, c.DestinationId, c.Cargo, catalog),
                 ReleaseUnitsCommand c => ReleaseUnits(state, c.UnitIds, catalog),
                 SellUnitsCommand c => SellUnits(state, c.UnitIds, catalog),
                 SendToBarracksCommand c => SendToBarracks(state, c.UnitIds, catalog),
+                ClaimQuestRewardCommand => Progression.Claim(state, catalog),
                 _ => CommandResult.Fail("Неизвестная команда")
             };
         }
@@ -81,6 +82,9 @@ namespace TrollStrategy.Domain
         {
             var economy = catalog.Economy;
             var unitDef = catalog.GetUnit(kind);
+
+            if (!Progression.IsUnitUnlocked(state, kind))
+                return CommandResult.Fail($"Существо «{unitDef.DisplayName}» ещё не открыто: выполняйте задания");
 
             if (amount < 1 || amount > economy.MaxUnitsPerCell)
                 return CommandResult.Fail($"Количество должно быть от 1 до {economy.MaxUnitsPerCell}");
@@ -146,6 +150,28 @@ namespace TrollStrategy.Domain
                 if (Provides(sourceDef, resource) && Accepts(destinationDef, resource, catalog))
                     return true;
             return false;
+        }
+
+        /// <summary>Goods a hauler can take from a source to a destination, in the order haulers pick them.</summary>
+        public static List<ResourceKind> CarriableResources(BuildingKind source, BuildingKind destination,
+            GameContentCatalog catalog)
+        {
+            var sourceDef = catalog.GetBuilding(source);
+            var destinationDef = catalog.GetBuilding(destination);
+            var goods = new List<ResourceKind>();
+            foreach (var resource in AllResources)
+                if (Provides(sourceDef, resource) && Accepts(destinationDef, resource, catalog)) goods.Add(resource);
+            return goods;
+        }
+
+        /// <summary>Goods a building hands to haulers, whatever the destination.</summary>
+        public static List<ResourceKind> ProvidedResources(BuildingKind source, GameContentCatalog catalog)
+        {
+            var definition = catalog.GetBuilding(source);
+            var goods = new List<ResourceKind>();
+            foreach (var resource in AllResources)
+                if (Provides(definition, resource)) goods.Add(resource);
+            return goods;
         }
 
         // Goods haulers may pick up: a stockpile's stored goods or a producer's outputs, never its inputs.
@@ -220,6 +246,8 @@ namespace TrollStrategy.Domain
             var definition = catalog.GetBuilding(kind);
             if (!definition.Constructible)
                 return CommandResult.Fail("Эту постройку нельзя построить");
+            if (!Progression.IsBuildingUnlocked(state, kind))
+                return CommandResult.Fail($"Постройка «{definition.DisplayName}» ещё не открыта: выполняйте задания");
             var validation = ValidateBuildingPlacement(state, kind, cell, catalog);
             if (!validation.Ok) return validation;
 
@@ -317,6 +345,7 @@ namespace TrollStrategy.Domain
             IReadOnlyList<string> unitIds,
             string sourceId,
             string destinationId,
+            IReadOnlyList<ResourceKind> cargo,
             GameContentCatalog catalog)
         {
             var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
@@ -329,12 +358,26 @@ namespace TrollStrategy.Domain
             if (source.Id == destination.Id || !IsValidHaulRoute(source.Kind, destination.Kind, catalog))
                 return CommandResult.Fail("Этот маршрут не перевозит подходящий товар");
 
+            // a chosen good must travel this route; an empty choice means everything it can carry
+            var carriable = CarriableResources(source.Kind, destination.Kind, catalog);
+            var goods = new List<ResourceKind>();
+            if (cargo != null)
+            {
+                foreach (var resource in cargo)
+                {
+                    if (!carriable.Contains(resource))
+                        return CommandResult.Fail(
+                            $"По этому маршруту не возят: {catalog.TryGetResource(resource)?.DisplayName ?? resource.ToString()}");
+                    if (!goods.Contains(resource)) goods.Add(resource);
+                }
+            }
+
             for (int i = 0; i < selectedUnits.Count; i++)
             {
                 var u = selectedUnits[i];
 
                 ReturnCarriedCargo(state, u);
-                u.Assignment = Assignment.Haul(sourceId, destinationId);
+                u.Assignment = Assignment.Haul(sourceId, destinationId, goods);
             }
 
             return CommandResult.Success();
@@ -533,23 +576,21 @@ namespace TrollStrategy.Domain
                     var dockPos = SourceDockPosition(source, unit, catalog);
                     if (Travel(state, unit, dockPos, source, speedInWorldUnits, deltaSeconds, catalog))
                     {
-                        if (!IsSourceDockBusy(state, unit) && !HasSourceQueue(state, source.Id))
-                        {
-                            assignment.Phase = HaulPhase.Loading;
-                        }
+                        assignment.PhaseElapsedSeconds = 0f;
+                        if (FreeLoadingPlaces(state, unit, catalog) > 0 && !HasSourceQueue(state, source.Id))
+                            BeginLoading(state, unit, source, destination, unitDef, catalog);
                         else
                         {
                             assignment.Phase = HaulPhase.QueuedAtSource;
                             assignment.QueueTicket = state.NextHaulQueueTicket++;
                         }
-                        assignment.PhaseElapsedSeconds = 0f;
                     }
                     break;
                 }
                 case HaulPhase.QueuedAtSource:
                 {
                     int rank = SourceQueueRank(state, unit);
-                    if (rank == 0 && !IsSourceDockBusy(state, unit))
+                    if (rank < FreeLoadingPlaces(state, unit, catalog))
                     {
                         assignment.Phase = HaulPhase.ToDock;
                         assignment.QueueTicket = 0;
@@ -565,36 +606,13 @@ namespace TrollStrategy.Domain
                 case HaulPhase.ToDock:
                 {
                     if (Travel(state, unit, SourceDockPosition(source, unit, catalog), source, speedInWorldUnits, deltaSeconds, catalog))
-                    {
-                        assignment.Phase = HaulPhase.Loading;
-                        assignment.PhaseElapsedSeconds = 0f;
-                    }
+                        BeginLoading(state, unit, source, destination, unitDef, catalog);
                     break;
                 }
                 case HaulPhase.Loading:
                 {
                     assignment.PhaseElapsedSeconds += deltaSeconds;
-                    float transferTime = catalog.Economy.TransferTimeSeconds;
-                    if (assignment.PhaseElapsedSeconds >= transferTime)
-                    {
-                        if (!TryPickCargo(source, destination, catalog, out var resource, out int destinationRoom))
-                        {
-                            assignment.PhaseElapsedSeconds = transferTime;
-                            break;
-                        }
-                        int carryBudget = assignment.CarryCreditPercent + unitDef.Stamina;
-                        int capacity = TripCarryCapacity(carryBudget);
-                        int taken = Math.Min(source.GetStock(resource), Math.Min(capacity, destinationRoom));
-
-                        source.AddStock(resource, -taken);
-                        assignment.Carried = taken;
-                        assignment.CarriedResource = resource;
-                        assignment.CarryCreditPercent = carryBudget >= StaminaPercentPerOre
-                            ? carryBudget % StaminaPercentPerOre
-                            : 0;
-                        assignment.Phase = HaulPhase.ToDestination;
-                        assignment.PhaseElapsedSeconds = 0f;
-                    }
+                    TryLoad(state, unit, source, destination, unitDef, catalog);
                     break;
                 }
                 case HaulPhase.ToDestination:
@@ -606,41 +624,95 @@ namespace TrollStrategy.Domain
                     {
                         assignment.Phase = HaulPhase.Unloading;
                         assignment.PhaseElapsedSeconds = 0f;
+                        // with no unloading time the goods change hands on arrival
+                        if (catalog.Economy.UnloadSeconds <= 0f) TryUnload(state, destination, assignment, catalog);
                     }
                     break;
                 }
                 case HaulPhase.Unloading:
                 {
                     assignment.PhaseElapsedSeconds += deltaSeconds;
-                    float transferTime = catalog.Economy.TransferTimeSeconds;
-                    if (assignment.PhaseElapsedSeconds >= transferTime)
-                    {
-                        Unload(state, destination, assignment, catalog);
-
-                        if (assignment.Carried == 0)
-                        {
-                            assignment.CrowdSlot = -1;
-                            assignment.Phase = HaulPhase.ToSource;
-                            assignment.PhaseElapsedSeconds = 0f;
-                        }
-                        else
-                        {
-                            assignment.PhaseElapsedSeconds = transferTime;
-                        }
-                    }
+                    TryUnload(state, destination, assignment, catalog);
                     break;
                 }
             }
         }
 
-        // The first good in ResourceKind order that the source holds and the destination still has room for.
-        private static bool TryPickCargo(BuildingState source, BuildingState destination, GameContentCatalog catalog,
-            out ResourceKind resource, out int destinationRoom)
+        // The hauler stands at the door; with no loading time it takes its load at once.
+        private static void BeginLoading(GameState state, UnitState unit, BuildingState source,
+            BuildingState destination, UnitDefinition unitDef, GameContentCatalog catalog)
+        {
+            unit.Assignment.Phase = HaulPhase.Loading;
+            unit.Assignment.PhaseElapsedSeconds = 0f;
+            if (catalog.Economy.LoadSeconds <= 0f) TryLoad(state, unit, source, destination, unitDef, catalog);
+        }
+
+        // Once EconomyConfig.LoadSeconds have passed, takes as much of the first good it may carry as it can
+        // lift and the destination can hold. With nothing it may take it waits at the door, unless others
+        // queue for the door: then it gives up its place and joins the back of the queue.
+        private static void TryLoad(GameState state, UnitState unit, BuildingState source, BuildingState destination,
+            UnitDefinition unitDef, GameContentCatalog catalog)
+        {
+            var assignment = unit.Assignment;
+            float loadTime = catalog.Economy.LoadSeconds;
+            if (assignment.PhaseElapsedSeconds < loadTime) return;
+            if (!TryPickCargo(source, destination, assignment, catalog, out var resource, out int destinationRoom))
+            {
+                if (HasSourceQueue(state, source.Id))
+                {
+                    assignment.Phase = HaulPhase.QueuedAtSource;
+                    assignment.QueueTicket = state.NextHaulQueueTicket++;
+                    assignment.CrowdSlot = -1;
+                    assignment.PhaseElapsedSeconds = 0f;
+                    return;
+                }
+                assignment.PhaseElapsedSeconds = loadTime;
+                return;
+            }
+            int carryBudget = assignment.CarryCreditPercent + unitDef.Stamina;
+            int capacity = TripCarryCapacity(carryBudget);
+            int taken = Math.Min(source.GetStock(resource), Math.Min(capacity, destinationRoom));
+
+            source.AddStock(resource, -taken);
+            assignment.Carried = taken;
+            assignment.CarriedResource = resource;
+            assignment.CarryCreditPercent = carryBudget >= StaminaPercentPerOre
+                ? carryBudget % StaminaPercentPerOre
+                : 0;
+            assignment.Phase = HaulPhase.ToDestination;
+            assignment.PhaseElapsedSeconds = 0f;
+        }
+
+        // Once EconomyConfig.UnloadSeconds have passed, hands the load over (sells it at a market); what does
+        // not fit stays with the hauler, who tries again next step.
+        private static void TryUnload(GameState state, BuildingState destination, Assignment assignment,
+            GameContentCatalog catalog)
+        {
+            float unloadTime = catalog.Economy.UnloadSeconds;
+            if (assignment.PhaseElapsedSeconds < unloadTime) return;
+            Unload(state, destination, assignment, catalog);
+            if (assignment.Carried == 0)
+            {
+                assignment.CrowdSlot = -1;
+                assignment.Phase = HaulPhase.ToSource;
+                assignment.PhaseElapsedSeconds = 0f;
+            }
+            else
+            {
+                assignment.PhaseElapsedSeconds = unloadTime;
+            }
+        }
+
+        // The first good in ResourceKind order that the hauler may take, the source holds and the destination
+        // still has room for.
+        private static bool TryPickCargo(BuildingState source, BuildingState destination, Assignment assignment,
+            GameContentCatalog catalog, out ResourceKind resource, out int destinationRoom)
         {
             var sourceDef = catalog.GetBuilding(source.Kind);
             foreach (var candidate in AllResources)
             {
-                if (source.GetStock(candidate) <= 0 || !Provides(sourceDef, candidate)) continue;
+                if (!assignment.MayCarry(candidate) || source.GetStock(candidate) <= 0 || !Provides(sourceDef, candidate))
+                    continue;
                 int room = Room(destination, candidate, catalog);
                 if (room <= 0) continue;
                 resource = candidate;
@@ -659,8 +731,11 @@ namespace TrollStrategy.Domain
             var role = catalog.GetBuilding(destination.Kind).StorageRole;
             if (role == StorageRole.Market)
             {
+                int income = assignment.Carried * SalePrice(catalog, resource, destination.Level);
                 state.SoldGoods += assignment.Carried;
-                state.Gold += assignment.Carried * SalePrice(catalog, resource, destination.Level);
+                state.SoldByResource[resource] = state.SoldOf(resource) + assignment.Carried;
+                state.SalesGold += income;
+                state.Gold += income;
                 assignment.Carried = 0;
             }
             else if (role == StorageRole.Armory)
@@ -687,11 +762,11 @@ namespace TrollStrategy.Domain
             }
         }
 
-        // Each source building loads one hauler at a time; the rest wait as a group at its door and
-        // leave one transfer apart.
+        // Each source building loads EconomyConfig.LoadersPerDoor haulers at a time; the rest wait as a group
+        // at its door and step up as places free.
         private const int MaxCrowdSlots = 64;
 
-        // One hauler loads at a time, so the dock is the entrance itself.
+        // Loaders stand at the entrance itself.
         private static WorldPosition SourceDockPosition(BuildingState source, UnitState unit, GameContentCatalog catalog)
         {
             return BuildingEntrancePosition(source, catalog);
@@ -723,9 +798,12 @@ namespace TrollStrategy.Domain
             : assignment.Phase == HaulPhase.ToDestination || assignment.Phase == HaulPhase.Unloading ? assignment.DestinationId
             : null;
 
-        private static bool IsSourceDockBusy(GameState state, UnitState unit)
+        // Places at the source's door still open for loading: EconomyConfig.LoadersPerDoor minus the haulers
+        // already stepping up to it or loading there.
+        private static int FreeLoadingPlaces(GameState state, UnitState unit, GameContentCatalog catalog)
         {
             string sourceId = unit.Assignment.SourceId;
+            int busy = 0;
             for (int i = 0; i < state.Units.Count; i++)
             {
                 var other = state.Units[i];
@@ -733,9 +811,9 @@ namespace TrollStrategy.Domain
                 var a = other.Assignment;
                 if (a.Kind == AssignmentKind.Haul && a.SourceId == sourceId &&
                     (a.Phase == HaulPhase.ToDock || a.Phase == HaulPhase.Loading))
-                    return true;
+                    busy++;
             }
-            return false;
+            return Math.Max(0, catalog.Economy.LoadersPerDoor - busy);
         }
 
         private static bool HasSourceQueue(GameState state, string sourceId)
@@ -852,10 +930,12 @@ namespace TrollStrategy.Domain
             return CommandResult.Success();
         }
 
-        private static CommandResult DemolishBuilding(GameState state, string buildingId)
+        private static CommandResult DemolishBuilding(GameState state, string buildingId, GameContentCatalog catalog)
         {
             var building = state.Buildings.Find(b => b.Id == buildingId);
             if (building == null) return CommandResult.Fail("Здание не найдено");
+            // what cannot be built again (the scene's market and warehouse) cannot be torn down either
+            if (!catalog.GetBuilding(building.Kind).Constructible) return CommandResult.Fail("Эту постройку нельзя снести");
             if (building.TotalStock > 0) return CommandResult.Fail("Сначала вывезите товары из постройки");
             foreach (var unit in state.Units)
             {

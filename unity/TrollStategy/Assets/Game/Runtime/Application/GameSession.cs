@@ -25,6 +25,11 @@ namespace TrollStrategy.Application
         private int _revision;
         private float _remainderSeconds;
         private bool _debugBattleAccess;
+        // Which level of the authored chain opens each building, creature and mission; read once from content.
+        private Dictionary<BuildingKind, int> _buildingUnlockLevels;
+        private Dictionary<UnitKind, int> _unitUnlockLevels;
+        private Dictionary<string, int> _missionUnlockLevels;
+        private int _tutorialSteps;
 
         public event Action<GameSnapshot> OnSnapshotChanged;
         /// <summary>Every dispatched command with its result, accepted or refused, after the state committed.</summary>
@@ -32,9 +37,11 @@ namespace TrollStrategy.Application
 
         /// <summary>
         /// Starts a colony with the given buildings. Throws when the layout breaks placement rules;
-        /// StartingBuildingIds lists the created ids in layout order.
+        /// StartingBuildingIds lists the created ids in layout order. A campaign game plays the catalog's
+        /// quest chain and starts with only its opening unlocks; a sandbox game has everything open.
         /// </summary>
-        public GameSession(GameContentCatalog catalog, IReadOnlyList<StartingBuilding> startingBuildings)
+        public GameSession(GameContentCatalog catalog, IReadOnlyList<StartingBuilding> startingBuildings,
+            bool campaign = false)
         {
             _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
             if (startingBuildings == null) throw new ArgumentNullException(nameof(startingBuildings));
@@ -59,6 +66,7 @@ namespace TrollStrategy.Application
                         DefinitionId = definition.ItemId
                     });
             }
+            if (campaign) Progression.Start(_state, _catalog);
             _revision = 1;
         }
 
@@ -68,9 +76,26 @@ namespace TrollStrategy.Application
         public BattleRunState ActiveBattle => _state.ActiveBattle;
         public int ActiveTimeMs => _state.ActiveTimeMs;
         public int FirstMissionWins => _state.FirstMissionWins;
+        public bool IsCampaign => _state.Progress != null;
+
+        public bool IsBuildingUnlocked(BuildingKind kind) => Progression.IsBuildingUnlocked(_state, kind);
+        public bool IsUnitUnlocked(UnitKind kind) => Progression.IsUnitUnlocked(_state, kind);
 
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
         public void EnableDebugBattleAccess() => _debugBattleAccess = true;
+
+        /// <summary>Development shortcut: marks the current quest done so it can be claimed at once.</summary>
+        public CommandResult DebugCompleteQuest()
+        {
+            if (_state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
+            var candidate = _state.Clone();
+            if (!Progression.CompleteCurrentQuest(candidate, _catalog))
+                return CommandResult.Fail("Нет текущего задания");
+            _state = candidate;
+            _revision++;
+            Emit();
+            return CommandResult.Success();
+        }
 #endif
 
         public CommandResult CanEnterMission(string missionId)
@@ -103,10 +128,13 @@ namespace TrollStrategy.Application
                 StartBattleCommand start => BattleApplication.Start(candidate, start, _catalog,
                     _debugBattleAccess),
                 AcknowledgeBattleCommand => BattleApplication.Acknowledge(candidate),
+                ClaimBattleRewardCommand => BattleApplication.ClaimReward(candidate),
                 _ => ColonySimulation.ApplyCommand(candidate, command, _catalog)
             };
             if (result.Ok)
             {
+                // quest goals met by this command count in the same commit
+                Progression.Update(candidate, _catalog);
                 _state = candidate;
                 _revision++;
                 Emit();
@@ -133,6 +161,7 @@ namespace TrollStrategy.Application
             {
                 ColonySimulation.TickColony(_state, step, _catalog);
                 _state.ActiveTimeMs += (int)Math.Round(step * 1000f);
+                Progression.Update(_state, _catalog);
                 _remainderSeconds -= step;
                 changed = true;
             }
@@ -277,7 +306,197 @@ namespace TrollStrategy.Application
                 totalOreInBuildings + carriedOre,
                 buildingSnapshots,
                 unitSnapshots,
-                equipmentSnapshots);
+                equipmentSnapshots,
+                CreateProgressSnapshot(),
+                CreateBattleRewardSnapshot());
+        }
+
+        private BattleRewardSnapshot CreateBattleRewardSnapshot()
+        {
+            var pending = _state.PendingBattleReward;
+            if (pending == null) return null;
+            string name = pending.MissionId;
+            foreach (var mission in _catalog.Missions)
+                if (mission != null && mission.MissionId == pending.MissionId) name = mission.DisplayName;
+            return new BattleRewardSnapshot(name, pending.Gold, pending.MinGold, pending.MaxGold, pending.FirstWin);
+        }
+
+        private ProgressSnapshot CreateProgressSnapshot()
+        {
+            var progress = _state.Progress;
+            if (progress == null) return ProgressSnapshot.Sandbox;
+            EnsureUnlockLevels();
+
+            QuestSnapshot questSnapshot = null;
+            var quest = Progression.CurrentQuest(_state, _catalog);
+            if (quest != null)
+            {
+                var goals = new List<GoalSnapshot>(quest.Goals.Count);
+                for (int i = 0; i < quest.Goals.Count; i++)
+                {
+                    var goal = quest.Goals[i];
+                    bool done = i < progress.GoalDone.Count && progress.GoalDone[i];
+                    goals.Add(new GoalSnapshot(goal, DescribeGoal(goal), Progression.GoalProgress(_state, i, goal), done));
+                }
+                var rewards = new List<RewardSnapshot>(quest.Rewards.Count);
+                foreach (var reward in quest.Rewards) rewards.Add(DescribeReward(reward));
+                bool tutorial = quest.IsTutorial && progress.QuestIndex < _tutorialSteps;
+                questSnapshot = new QuestSnapshot(quest.Id, progress.QuestIndex + 1, quest.Title, quest.Description,
+                    tutorial, tutorial ? progress.QuestIndex + 1 : 0, _tutorialSteps, goals, rewards,
+                    Progression.IsQuestComplete(_state, _catalog));
+            }
+
+            return new ProgressSnapshot(true, progress.QuestIndex + 1, questSnapshot,
+                new List<BuildingKind>(progress.UnlockedBuildings), new List<UnitKind>(progress.UnlockedUnits),
+                new List<string>(progress.UnlockedMissions), _buildingUnlockLevels, _unitUnlockLevels,
+                _missionUnlockLevels);
+        }
+
+        private void EnsureUnlockLevels()
+        {
+            if (_buildingUnlockLevels != null) return;
+            _buildingUnlockLevels = new Dictionary<BuildingKind, int>();
+            _unitUnlockLevels = new Dictionary<UnitKind, int>();
+            _missionUnlockLevels = new Dictionary<string, int>(StringComparer.Ordinal);
+            var chain = _catalog.Progression != null ? _catalog.Progression.Quests : Array.Empty<QuestDefinition>();
+            _tutorialSteps = 0;
+            while (_tutorialSteps < chain.Count && chain[_tutorialSteps] != null && chain[_tutorialSteps].IsTutorial)
+                _tutorialSteps++;
+            for (int i = 0; i < chain.Count; i++)
+            {
+                if (chain[i] == null) continue;
+                foreach (var reward in chain[i].Rewards)
+                {
+                    switch (reward.Kind)
+                    {
+                        case QuestRewardKind.UnlockBuilding:
+                            _buildingUnlockLevels.TryAdd(reward.Building, i + 1);
+                            break;
+                        case QuestRewardKind.UnlockUnit:
+                            _unitUnlockLevels.TryAdd(reward.Unit, i + 1);
+                            break;
+                        case QuestRewardKind.UnlockMission:
+                            if (!string.IsNullOrEmpty(reward.MissionId))
+                                _missionUnlockLevels.TryAdd(reward.MissionId, i + 1);
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>A goal as a line in the quest tracker; the numbers are shown beside it.</summary>
+        public string DescribeGoal(QuestGoal goal)
+        {
+            string unit = goal.AnyUnit ? null : UnitName(goal.Unit);
+            switch (goal.Kind)
+            {
+                case QuestGoalKind.OwnUnits:
+                    return unit == null ? "Существ в поселении" : $"Нанять: {unit}";
+                case QuestGoalKind.OwnBuildings:
+                    return $"Построить: {BuildingName(goal.Building)}";
+                case QuestGoalKind.WorkAt:
+                    return unit == null
+                        ? $"Рабочие → {BuildingName(goal.Building)}"
+                        : $"Работает: {unit} → {BuildingName(goal.Building)}";
+                case QuestGoalKind.HaulRoute:
+                    string route = $"{BuildingName(goal.Building)} → {BuildingName(goal.Destination)}";
+                    return unit == null ? $"Носильщики: {route}" : $"Носит {unit}: {route}";
+                case QuestGoalKind.HaveGold:
+                    return "Золото в казне";
+                case QuestGoalKind.EarnGold:
+                    return "Выручка рынка, золото";
+                case QuestGoalKind.SellGoods:
+                    return "Продано товаров";
+                case QuestGoalKind.SellResource:
+                    return $"Продано: {ResourceName(goal.Resource).ToLowerInvariant()}";
+                case QuestGoalKind.WinBattles:
+                    return "Победы в бою";
+                case QuestGoalKind.UpgradeBuilding:
+                    return $"Уровень: {BuildingName(goal.Building)}";
+                default:
+                    return goal.Kind.ToString();
+            }
+        }
+
+        public RewardSnapshot DescribeReward(QuestReward reward)
+        {
+            switch (reward.Kind)
+            {
+                case QuestRewardKind.UnlockBuilding:
+                {
+                    // the reward is the right to build, so say where and for how much
+                    var building = TryBuilding(reward.Building);
+                    return new RewardSnapshot(reward, building?.DisplayName ?? reward.Building.ToString(), "НОВАЯ ПОСТРОЙКА",
+                        building == null
+                            ? string.Empty
+                            : $"Теперь её можно строить: Каталог → «Здания», {building.Price} золота.\n" +
+                              DescribeBuilding(building));
+                }
+                case QuestRewardKind.UnlockUnit:
+                {
+                    var unit = TryUnit(reward.Unit);
+                    return new RewardSnapshot(reward, unit?.DisplayName ?? reward.Unit.ToString(), "НОВОЕ СУЩЕСТВО",
+                        unit == null
+                            ? string.Empty
+                            : $"Теперь его можно нанимать: Каталог → «Существа», {unit.Price} золота.\n" + unit.Description);
+                }
+                case QuestRewardKind.UnlockMission:
+                {
+                    BattleMissionDefinition mission = null;
+                    foreach (var candidate in _catalog.Missions)
+                        if (candidate != null && candidate.MissionId == reward.MissionId) mission = candidate;
+                    string description = mission == null
+                        ? "Кнопка «В БОЙ» наверху открыта."
+                        : $"Кнопка «В БОЙ» наверху открыта. В бой идут до {mission.MaxPlayerUnits} бойцов, " +
+                          $"первая победа принесёт {GoldRange(mission.FirstWinGold, mission.FirstWinGoldMax)} золота.";
+                    return new RewardSnapshot(reward, mission?.DisplayName ?? reward.MissionId, "НОВЫЙ БОЙ", description);
+                }
+                default:
+                    return new RewardSnapshot(reward, $"{reward.Gold} золота", "ЗОЛОТО", "Пополнит казну поселения.");
+            }
+        }
+
+        /// <summary>"от 200 до 350" for a range, the single amount when there is none.</summary>
+        public static string GoldRange(int min, int max) => max > min ? $"от {min} до {max}" : min.ToString();
+
+        /// <summary>A building as the catalog and rewards describe it: size, staff, role and recipes.</summary>
+        public string DescribeBuilding(BuildingDefinition building)
+        {
+            string text = $"{building.Width}×{building.Height}";
+            if (building.MaxWorkers > 0) text += $" · до {building.MaxWorkers} рабочих";
+            switch (building.StorageRole)
+            {
+                case StorageRole.Stockpile:
+                    text += " · хранит сырьё";
+                    break;
+                case StorageRole.Market:
+                    text += " · продаёт товары";
+                    break;
+                case StorageRole.Armory:
+                    text += " · снаряжение отряда";
+                    break;
+            }
+            string recipes = DescribeRecipes(building);
+            return string.IsNullOrEmpty(recipes) ? text : text + "\n" + recipes;
+        }
+
+        private string UnitName(UnitKind kind) => (TryUnit(kind)?.DisplayName ?? kind.ToString()).ToLowerInvariant();
+
+        private string BuildingName(BuildingKind kind) =>
+            (TryBuilding(kind)?.DisplayName ?? kind.ToString()).ToLowerInvariant();
+
+        private BuildingDefinition TryBuilding(BuildingKind kind)
+        {
+            foreach (var definition in _catalog.Buildings)
+                if (definition != null && definition.Kind == kind) return definition;
+            return null;
+        }
+
+        private UnitDefinition TryUnit(UnitKind kind)
+        {
+            foreach (var definition in _catalog.Units)
+                if (definition != null && definition.Kind == kind) return definition;
+            return null;
         }
 
         private void Emit()
@@ -331,7 +550,7 @@ namespace TrollStrategy.Application
             return 1;
         }
 
-        private static string FormatAssignmentStatus(Assignment assignment, List<BuildingSnapshot> buildings)
+        private string FormatAssignmentStatus(Assignment assignment, List<BuildingSnapshot> buildings)
         {
             if (assignment.Kind == AssignmentKind.Idle) return "Свободен";
             if (assignment.Kind == AssignmentKind.ToWork)
@@ -346,7 +565,49 @@ namespace TrollStrategy.Application
             }
             var source = buildings.Find(b => b.Id == assignment.SourceId)?.Name ?? "источник";
             var dest = buildings.Find(b => b.Id == assignment.DestinationId)?.Name ?? "цель";
-            return $"Несёт: {source} -> {dest}";
+            return $"Несёт: {source} -> {dest} · {DescribeCargo(assignment)}";
+        }
+
+        /// <summary>What a hauler is allowed to take: "всё" or the chosen goods.</summary>
+        public string DescribeCargo(Assignment assignment)
+        {
+            if (assignment == null || assignment.CarriesAnything) return "всё";
+            var names = new List<string>(assignment.Cargo.Count);
+            foreach (var resource in assignment.Cargo) names.Add(ResourceName(resource).ToLowerInvariant());
+            return string.Join(", ", names);
+        }
+
+        /// <summary>
+        /// A good as a hint shows it: its market price, which buildings make it and which use it, and what it
+        /// gives a fighter when it is equipment.
+        /// </summary>
+        public string DescribeResource(ResourceKind resource)
+        {
+            var lines = new List<string>();
+            var definition = _catalog.TryGetResource(resource);
+            if (definition != null) lines.Add($"На рынке: {definition.SellPrice} зол. за штуку");
+            var makers = new List<string>();
+            var users = new List<string>();
+            foreach (var building in _catalog.Buildings)
+            {
+                if (building == null) continue;
+                if (building.ProducesInRecipe(resource)) makers.Add(building.DisplayName);
+                if (building.ConsumesInRecipe(resource)) users.Add(building.DisplayName);
+            }
+            if (makers.Count > 0) lines.Add("Делают: " + string.Join(", ", makers));
+            if (users.Count > 0) lines.Add("Нужен для: " + string.Join(", ", users));
+            if (definition != null && definition.IsEquipment)
+            {
+                foreach (var item in _catalog.Equipment)
+                {
+                    if (item == null || item.ItemId != definition.EquipmentId) continue;
+                    var bonus = new List<string>();
+                    if (item.DamageBonus != 0) bonus.Add($"урон +{item.DamageBonus}");
+                    if (item.ArmorBonus != 0) bonus.Add($"броня +{item.ArmorBonus}");
+                    lines.Add("Снаряжение бойца: " + string.Join(", ", bonus));
+                }
+            }
+            return string.Join("\n", lines);
         }
     }
 }

@@ -124,11 +124,16 @@ namespace TrollStrategy.Application
         public IReadOnlyList<BuildingSnapshot> Buildings { get; }
         public IReadOnlyList<UnitSnapshot> Units { get; }
         public IReadOnlyList<EquipmentSnapshot> Equipment { get; }
+        public ProgressSnapshot Progress { get; }
+        /// <summary>Gold a won battle rolled that waits to be taken; null when there is none.</summary>
+        public BattleRewardSnapshot BattleReward { get; }
 
         public GameSnapshot(int revision, int gold, int soldGoods, int totalOre,
             IReadOnlyList<BuildingSnapshot> buildings, IReadOnlyList<UnitSnapshot> units,
-            IReadOnlyList<EquipmentSnapshot> equipment = null)
+            IReadOnlyList<EquipmentSnapshot> equipment = null, ProgressSnapshot progress = null,
+            BattleRewardSnapshot battleReward = null)
         {
+            BattleReward = battleReward;
             Revision = revision;
             Gold = gold;
             SoldGoods = soldGoods;
@@ -136,6 +141,7 @@ namespace TrollStrategy.Application
             Buildings = Copy(buildings);
             Units = Copy(units);
             Equipment = Copy(equipment);
+            Progress = progress ?? ProgressSnapshot.Sandbox;
         }
 
         private static T[] Copy<T>(IReadOnlyList<T> source)
@@ -148,6 +154,178 @@ namespace TrollStrategy.Application
                 copy[i] = source[i];
             return copy;
         }
+    }
+
+    /// <summary>
+    /// The player's progress as the HUD shows it: the current quest and what is open. A sandbox game has
+    /// no quests and everything open.
+    /// </summary>
+    public sealed class ProgressSnapshot
+    {
+        public static readonly ProgressSnapshot Sandbox = new(false, 0, null, null, null, null, null, null, null);
+
+        private readonly IReadOnlyCollection<BuildingKind> _buildings;
+        private readonly IReadOnlyCollection<UnitKind> _units;
+        private readonly IReadOnlyCollection<string> _missions;
+        private readonly IReadOnlyDictionary<BuildingKind, int> _buildingLevels;
+        private readonly IReadOnlyDictionary<UnitKind, int> _unitLevels;
+        private readonly IReadOnlyDictionary<string, int> _missionLevels;
+
+        public ProgressSnapshot(bool enabled, int level, QuestSnapshot quest,
+            IReadOnlyCollection<BuildingKind> unlockedBuildings, IReadOnlyCollection<UnitKind> unlockedUnits,
+            IReadOnlyCollection<string> unlockedMissions, IReadOnlyDictionary<BuildingKind, int> buildingUnlockLevels,
+            IReadOnlyDictionary<UnitKind, int> unitUnlockLevels, IReadOnlyDictionary<string, int> missionUnlockLevels)
+        {
+            Enabled = enabled;
+            Level = level;
+            Quest = quest;
+            _buildings = unlockedBuildings ?? System.Array.Empty<BuildingKind>();
+            _units = unlockedUnits ?? System.Array.Empty<UnitKind>();
+            _missions = unlockedMissions ?? System.Array.Empty<string>();
+            _buildingLevels = buildingUnlockLevels ?? new Dictionary<BuildingKind, int>();
+            _unitLevels = unitUnlockLevels ?? new Dictionary<UnitKind, int>();
+            _missionLevels = missionUnlockLevels ?? new Dictionary<string, int>();
+        }
+
+        /// <summary>False in a sandbox game: no quests, nothing locked.</summary>
+        public bool Enabled { get; }
+        /// <summary>The number of the current quest in the whole chain, from 1.</summary>
+        public int Level { get; }
+        /// <summary>The current quest; null in a sandbox game or when no quest follows.</summary>
+        public QuestSnapshot Quest { get; }
+
+        public bool IsBuildingUnlocked(BuildingKind kind) => !Enabled || Contains(_buildings, kind);
+        public bool IsUnitUnlocked(UnitKind kind) => !Enabled || Contains(_units, kind);
+        public bool IsMissionUnlocked(string missionId) => !Enabled || Contains(_missions, missionId);
+
+        /// <summary>The level whose quest opens a locked building; 0 when open or when no quest opens it.</summary>
+        public int UnlockLevel(BuildingKind kind) =>
+            IsBuildingUnlocked(kind) || !_buildingLevels.TryGetValue(kind, out int level) ? 0 : level;
+
+        public int UnlockLevel(UnitKind kind) =>
+            IsUnitUnlocked(kind) || !_unitLevels.TryGetValue(kind, out int level) ? 0 : level;
+
+        public int MissionUnlockLevel(string missionId) =>
+            missionId == null || IsMissionUnlocked(missionId) || !_missionLevels.TryGetValue(missionId, out int level)
+                ? 0
+                : level;
+
+        private static bool Contains<T>(IReadOnlyCollection<T> items, T item)
+        {
+            foreach (var candidate in items)
+                if (EqualityComparer<T>.Default.Equals(candidate, item)) return true;
+            return false;
+        }
+    }
+
+    public sealed class BattleRewardSnapshot
+    {
+        public BattleRewardSnapshot(string missionName, int gold, int minGold, int maxGold, bool firstWin)
+        {
+            MissionName = missionName;
+            Gold = gold;
+            MinGold = minGold;
+            MaxGold = maxGold;
+            FirstWin = firstWin;
+        }
+
+        public string MissionName { get; }
+        public int Gold { get; }
+        public int MinGold { get; }
+        public int MaxGold { get; }
+        public bool FirstWin { get; }
+    }
+
+    public sealed class QuestSnapshot
+    {
+        public QuestSnapshot(string id, int level, string title, string description, bool isTutorial,
+            int tutorialStep, int tutorialSteps, IReadOnlyList<GoalSnapshot> goals, IReadOnlyList<RewardSnapshot> rewards,
+            bool isComplete)
+        {
+            Id = id;
+            Level = level;
+            Title = title;
+            Description = description;
+            IsTutorial = isTutorial;
+            TutorialStep = tutorialStep;
+            TutorialSteps = tutorialSteps;
+            Goals = goals ?? System.Array.Empty<GoalSnapshot>();
+            Rewards = rewards ?? System.Array.Empty<RewardSnapshot>();
+            IsComplete = isComplete;
+        }
+
+        public string Id { get; }
+        public int Level { get; }
+        public string Title { get; }
+        /// <summary>How to do it, in the player's clicks.</summary>
+        public string Description { get; }
+        public bool IsTutorial { get; }
+        /// <summary>Step within the tutorial, from 1; 0 outside it.</summary>
+        public int TutorialStep { get; }
+        public int TutorialSteps { get; }
+        public IReadOnlyList<GoalSnapshot> Goals { get; }
+        public IReadOnlyList<RewardSnapshot> Rewards { get; }
+        public bool IsComplete { get; }
+
+        /// <summary>The reward the reveal lands on: the first unlock, or the gold when there is none.</summary>
+        public RewardSnapshot Headline
+        {
+            get
+            {
+                foreach (var reward in Rewards)
+                    if (reward.Kind != QuestRewardKind.Gold) return reward;
+                return Rewards.Count > 0 ? Rewards[0] : null;
+            }
+        }
+
+        /// <summary>The first goal still to do; null when all are met.</summary>
+        public GoalSnapshot NextGoal
+        {
+            get
+            {
+                foreach (var goal in Goals)
+                    if (!goal.Done) return goal;
+                return null;
+            }
+        }
+    }
+
+    public sealed class GoalSnapshot
+    {
+        public GoalSnapshot(QuestGoal goal, string text, int current, bool done)
+        {
+            Goal = goal;
+            Text = text;
+            Current = done ? System.Math.Max(current, goal.Amount) : System.Math.Min(current, goal.Amount);
+            Done = done;
+        }
+
+        public QuestGoal Goal { get; }
+        public QuestGoalKind Kind => Goal.Kind;
+        public string Text { get; }
+        public int Current { get; }
+        public int Target => Goal.Amount;
+        public bool Done { get; }
+        public string ProgressText => $"{System.Math.Min(Current, Target)}/{Target}";
+    }
+
+    public sealed class RewardSnapshot
+    {
+        public RewardSnapshot(QuestReward reward, string title, string caption, string description)
+        {
+            Reward = reward;
+            Title = title;
+            Caption = caption;
+            Description = description;
+        }
+
+        public QuestReward Reward { get; }
+        public QuestRewardKind Kind => Reward.Kind;
+        /// <summary>What it is: the building's or creature's name, the mission, or the gold amount.</summary>
+        public string Title { get; }
+        /// <summary>What kind of reward it is, in capitals: new building, new creature…</summary>
+        public string Caption { get; }
+        public string Description { get; }
     }
 
     public sealed class EquipmentSnapshot

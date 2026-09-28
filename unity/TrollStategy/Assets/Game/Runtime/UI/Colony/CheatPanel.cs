@@ -22,6 +22,7 @@ namespace TrollStrategy.UI
             UiFeel.Bind(Ui.Require<Button>(root, "cheat-close"), Hide, Sfx.UiBack);
             UiFeel.Bind(Ui.Require<Button>(root, "cheat-prepare"), OpenPreparation);
             UiFeel.Bind(Ui.Require<Button>(root, "cheat-quick"), StartQuickBattle);
+            UiFeel.Bind(Ui.Require<Button>(root, "cheat-quest"), CompleteQuest);
             Hide();
         }
 
@@ -87,13 +88,17 @@ namespace TrollStrategy.UI
             if (session.CurrentSnapshot.Units.Count == 0)
             {
                 var catalog = session.Catalog;
-                int squadCost = catalog.GetUnit(UnitKind.Troll).Price + catalog.GetUnit(UnitKind.Goblin).Price * 3;
+                // a campaign that has not opened the troll yet fights with goblins only
+                var leader = session.IsUnitUnlocked(UnitKind.Troll) ? UnitKind.Troll : UnitKind.Goblin;
+                var squad = new[] { leader, UnitKind.Goblin, UnitKind.Goblin, UnitKind.Goblin };
+                int squadCost = 0;
+                foreach (var kind in squad) squadCost += catalog.GetUnit(kind).Price;
                 if (session.CurrentSnapshot.Gold < squadCost)
                 {
                     _status.text = "Не хватает золота для тестового отряда";
                     return;
                 }
-                foreach (var kind in new[] { UnitKind.Troll, UnitKind.Goblin, UnitKind.Goblin, UnitKind.Goblin })
+                foreach (var kind in squad)
                 {
                     var buy = session.Dispatch(new BuyUnitsCommand(kind, 1, session.FindSpawnCell()));
                     if (!buy.Ok)
@@ -107,6 +112,18 @@ namespace TrollStrategy.UI
             Hide();
             if (_context.OpenQuickBattle == null || !_context.OpenQuickBattle(mission))
                 _status.text = "Не удалось запустить бой: проверь состав и данные миссии";
+        }
+
+        private void CompleteQuest()
+        {
+            var result = _context.Session.DebugCompleteQuest();
+            if (!result.Ok)
+            {
+                _status.text = result.Error;
+                return;
+            }
+            // the reward reveal opens over the colony
+            Hide();
         }
     }
 }

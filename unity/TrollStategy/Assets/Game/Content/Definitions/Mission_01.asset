@@ -77,8 +77,10 @@ MonoBehaviour:
     Cell:
       X: 8
       Y: 3
-  _firstWinGold: 250
-  _repeatWinGold: 75
+  _firstWinGold: 200
+  _firstWinGoldMax: 350
+  _repeatWinGold: 60
+  _repeatWinGoldMax: 120
   _unlockAfterActiveSeconds: 120
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

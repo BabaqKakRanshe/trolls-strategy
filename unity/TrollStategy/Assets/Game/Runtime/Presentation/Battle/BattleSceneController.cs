@@ -246,7 +246,7 @@ namespace TrollStrategy.Presentation.Battle
             SetRect(_title.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
                 new Vector2(0f, 1f), new Vector2(28f, -12f), new Vector2(1400f, 38f));
             _subtitle = Label("MissionGoal", top.transform,
-                $"Цель: победи всех врагов · {EnemySummary()} · Награда за победу: {_mission.FirstWinGold}/{_mission.RepeatWinGold} золота (первая/повторная)",
+                $"Цель: победи всех врагов · {EnemySummary()} · Награда за победу — сюрприз: {GameSession.GoldRange(_mission.FirstWinGold, _mission.FirstWinGoldMax)} золота за первую, {GameSession.GoldRange(_mission.RepeatWinGold, _mission.RepeatWinGoldMax)} за повторную",
                 18, TextAlignmentOptions.MidlineLeft);
             SetRect(_subtitle.rectTransform, Vector2.zero, Vector2.zero, Vector2.zero,
                 new Vector2(28f, 39f), new Vector2(1620f, 25f));
@@ -720,10 +720,14 @@ namespace TrollStrategy.Presentation.Battle
             if (run != null)
                 foreach (var owner in _equipmentOwners.Values)
                     if (owner != null && run.FallenUnitIds.Contains(owner)) lostItems++;
-            _replayStatus.text = $"{outcome} · +{run?.AwardedGold ?? 0} золота\n" +
+            // the amount is a surprise revealed back in the colony
+            string reward = victory ? "награда ждёт в поселении" : "без награды";
+            _replayStatus.text = $"{outcome} · {reward}\n" +
                 $"Выжило: {_placements.Count - (run?.FallenUnitIds.Count ?? 0)} · погибло: {run?.FallenUnitIds.Count ?? 0} · потеряно вещей: {lostItems}";
             _title.text = $"{_mission.DisplayName.ToUpperInvariant()}  ·  {outcome}";
-            _subtitle.text = "Бой завершён · награда и потери применены · выжившие бойцы вернутся в колонию";
+            _subtitle.text = victory
+                ? "Бой завершён · потери применены · награда ждёт в поселении · выжившие вернутся в колонию"
+                : "Бой завершён · потери применены · выжившие бойцы вернутся в колонию";
             _phaseGuide.text = "Нажми «Вернуться в колонию», чтобы продолжить строительство и добычу.";
             _backButton.interactable = true;
             _returnButton.gameObject.SetActive(true);

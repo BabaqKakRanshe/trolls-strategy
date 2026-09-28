@@ -13,8 +13,11 @@ namespace TrollStrategy.Content
         [SerializeField] private List<BattleMissionDefinition> _missions = new();
         [SerializeField] private List<EquipmentDefinition> _equipment = new();
         [SerializeField] private List<ResourceDefinition> _resources = new();
+        [Tooltip("Quest chain and starting unlocks; a campaign session plays it, a sandbox session ignores it.")]
+        [SerializeField] private ProgressionDefinition _progression;
 
         public EconomyConfig Economy => _economy;
+        public ProgressionDefinition Progression => _progression;
         public IReadOnlyList<BuildingDefinition> Buildings => _buildings;
         public IReadOnlyList<UnitDefinition> Units => _units;
         public IReadOnlyList<BattleMissionDefinition> Missions => _missions;
@@ -43,6 +46,8 @@ namespace TrollStrategy.Content
 
         public void SetResources(IEnumerable<ResourceDefinition> resources) =>
             _resources = new List<ResourceDefinition>(resources);
+
+        public void SetProgression(ProgressionDefinition progression) => _progression = progression;
 
         public BuildingDefinition GetBuilding(BuildingKind kind)
         {

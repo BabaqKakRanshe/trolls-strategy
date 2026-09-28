@@ -11,6 +11,8 @@
     --gold: #E8C170;
     --gold-light: #F4D48E;
     --gold-deep: #A9782F;
+    --gold-glow: #FFF3CF;
+    --gold-ray: rgba(244, 212, 142, 0.11);
     --surface: rgba(19, 27, 35, 0.94);
     --surface-raised: #25333E;
     --surface-sunken: #111820;
@@ -89,6 +91,12 @@
     border-bottom-color: var(--edge-dark);
     border-radius: 12px;
     padding: 10px 14px;
+}
+
+/* A panel that must not let the map show through, such as a dialog in the middle of the screen.
+   The HUD blends in linear space, so even the 94% surface lets bright buildings bleed in. */
+.panel--solid {
+    background-color: #131B23;
 }
 
 .divider {
@@ -177,8 +185,16 @@
     scale: 1 1;
 }
 
+/* What the current quest asks for next. The HUD toggles .hud-pulse on its root so the rim breathes. */
 .btn.is-suggested {
-    border-color: var(--gold-light);
+    border-color: var(--gold);
+    border-bottom-color: var(--gold-deep);
+    transition-property: scale, background-color, opacity, border-color;
+    transition-duration: 0.12s, 0.12s, 0.2s, 0.4s;
+}
+
+.hud-pulse .btn.is-suggested {
+    border-color: var(--gold-glow);
 }
 
 .btn-icon {
@@ -299,6 +315,26 @@
     white-space: normal;
 }
 
+/*
+ * Built-in controls. The game theme does not import Unity's default one, so the structure a ScrollView
+ * needs to clip and scroll its content is declared here.
+ */
+.unity-scroll-view__content-and-vertical-scroll-container {
+    flex-direction: row;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.unity-scroll-view__content-viewport {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+}
+
+.unity-scroll-view__content-container {
+    flex-shrink: 0;
+}
+
 /* Full-screen dim behind a dialog. */
 .overlay {
     position: absolute;
@@ -309,6 +345,16 @@
     align-items: center;
     justify-content: center;
     background-color: rgba(6, 10, 14, 0.72);
+}
+
+/* A light dim for a quick choice in the middle of an order; the map stays in view. */
+.overlay--soft {
+    background-color: rgba(6, 10, 14, 0.62);
+}
+
+/* A deeper dim for a moment that should hold the whole screen, such as a reward. */
+.overlay--deep {
+    background-color: rgba(4, 7, 10, 0.86);
 }
 
 .dialog {

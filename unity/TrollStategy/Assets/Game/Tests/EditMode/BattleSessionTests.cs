@@ -82,12 +82,18 @@ namespace TrollStrategy.Tests
             Assert.That(session.ActiveBattle.Report.Fighters[1].StepIntervalMs, Is.EqualTo(200));
             Assert.That(session.CurrentSnapshot.Equipment[0].OwnerUnitId, Is.EqualTo(unitId));
             Assert.That(session.FirstMissionWins, Is.EqualTo(1));
-            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(beforeGold + 250));
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(beforeGold), "The prize waits to be taken");
+            Assert.That(session.CurrentSnapshot.BattleReward.Gold, Is.EqualTo(250));
             Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 1, session.FindSpawnCell())).Ok,
                 Is.False, "Colony commands must not change a battle already being replayed");
+            Assert.That(session.Dispatch(new ClaimBattleRewardCommand()).Ok, Is.False,
+                "The prize is taken back in the colony, after the replay");
             Assert.That(session.Dispatch(new AcknowledgeBattleCommand()).Ok, Is.True);
             Assert.That(session.Dispatch(new AcknowledgeBattleCommand()).Ok, Is.False);
+            Assert.That(session.Dispatch(new ClaimBattleRewardCommand()).Ok, Is.True);
+            Assert.That(session.Dispatch(new ClaimBattleRewardCommand()).Ok, Is.False, "Taken exactly once");
             Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(beforeGold + 250));
+            Assert.That(session.CurrentSnapshot.BattleReward, Is.Null);
             Assert.That(session.CanEnterMission("mission-1").Ok, Is.False, "Cooldown uses active time");
         }
 

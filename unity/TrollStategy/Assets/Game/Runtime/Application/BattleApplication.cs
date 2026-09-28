@@ -14,6 +14,8 @@ namespace TrollStrategy.Application
             if (state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
             if (mission.MissionId != "mission-1") return CommandResult.Fail("Эта миссия пока недоступна");
             if (debugBypassTime) return CommandResult.Success();
+            if (!Progression.IsMissionUnlocked(state, mission.MissionId))
+                return CommandResult.Fail("Бой откроется по заданию");
             if (state.ActiveTimeMs < UnlockAtMs(mission)) return CommandResult.Fail("Миссия ещё не открыта");
             if (state.ActiveTimeMs < state.FirstMissionNextReadyAtMs)
                 return CommandResult.Fail("Миссия восстанавливается");
@@ -122,13 +124,37 @@ namespace TrollStrategy.Application
             int reward = 0;
             if (report.Outcome == BattleOutcome.PlayerVictory)
             {
-                reward = state.FirstMissionWins == 0 ? mission.FirstWinGold : mission.RepeatWinGold;
-                state.Gold += reward;
+                // a surprise within the mission's range; the colony gets it when the player takes it
+                bool first = state.FirstMissionWins == 0;
+                int min = first ? mission.FirstWinGold : mission.RepeatWinGold;
+                int max = first ? mission.FirstWinGoldMax : mission.RepeatWinGoldMax;
+                reward = RewardDice.Roll(state, min, max);
+                var pending = state.PendingBattleReward;
+                state.PendingBattleReward = new PendingBattleReward
+                {
+                    MissionId = mission.MissionId,
+                    // an untaken earlier win is never lost: it adds to this one
+                    Gold = reward + (pending?.Gold ?? 0),
+                    MinGold = min + (pending?.Gold ?? 0),
+                    MaxGold = max + (pending?.Gold ?? 0),
+                    FirstWin = first
+                };
                 state.FirstMissionWins++;
+                state.BattlesWon++;
             }
             state.FirstMissionNextReadyAtMs = state.ActiveTimeMs +
                 (int)Math.Ceiling(mission.CooldownActiveSeconds * 1000f);
             state.ActiveBattle = new BattleRunState(mission.MissionId, report, reward, fallen);
+            return CommandResult.Success();
+        }
+
+        /// <summary>Puts a won battle's gold into the treasury.</summary>
+        public static CommandResult ClaimReward(GameState state)
+        {
+            var pending = state.PendingBattleReward;
+            if (pending == null) return CommandResult.Fail("Награды за бой нет");
+            state.Gold += pending.Gold;
+            state.PendingBattleReward = null;
             return CommandResult.Success();
         }
 

@@ -24,8 +24,15 @@ namespace TrollStrategy.Content
         [SerializeField] private List<Cell> _enemyDeployment = new();
         [SerializeField] private List<Cell> _blockedCells = new();
         [SerializeField] private List<BattleEnemyStart> _enemies = new();
+        [Header("Награда за победу: случайная сумма в диапазоне, игрок узнаёт её после боя")]
+        [Tooltip("Меньше всего золота за первую победу.")]
         [SerializeField, Min(0)] private int _firstWinGold = 250;
+        [Tooltip("Больше всего золота за первую победу; меньше минимума — всегда минимум.")]
+        [SerializeField, Min(0)] private int _firstWinGoldMax;
+        [Tooltip("Меньше всего золота за повторную победу.")]
         [SerializeField, Min(0)] private int _repeatWinGold = 75;
+        [Tooltip("Больше всего золота за повторную победу; меньше минимума — всегда минимум.")]
+        [SerializeField, Min(0)] private int _repeatWinGoldMax;
         [SerializeField, Min(0f)] private float _unlockAfterActiveSeconds = 120f;
         [SerializeField, Min(0f)] private float _cooldownActiveSeconds = 120f;
 
@@ -42,8 +49,12 @@ namespace TrollStrategy.Content
         public IReadOnlyList<Cell> EnemyDeployment => _enemyDeployment;
         public IReadOnlyList<Cell> BlockedCells => _blockedCells;
         public IReadOnlyList<BattleEnemyStart> Enemies => _enemies;
+        /// <summary>The least gold a first win pays; the win rolls up to <see cref="FirstWinGoldMax"/>.</summary>
         public int FirstWinGold => _firstWinGold;
+        public int FirstWinGoldMax => Math.Max(_firstWinGold, _firstWinGoldMax);
+        /// <summary>The least gold a repeat win pays; the win rolls up to <see cref="RepeatWinGoldMax"/>.</summary>
         public int RepeatWinGold => _repeatWinGold;
+        public int RepeatWinGoldMax => Math.Max(_repeatWinGold, _repeatWinGoldMax);
         public float UnlockAfterActiveSeconds => _unlockAfterActiveSeconds;
         public float CooldownActiveSeconds => _cooldownActiveSeconds;
         public GameObject EnvironmentPrefab => _environmentPrefab;
@@ -98,6 +109,15 @@ namespace TrollStrategy.Content
             _cooldownActiveSeconds = cooldownSeconds;
             _firstWinGold = firstWinGold;
             _repeatWinGold = repeatWinGold;
+            _firstWinGoldMax = firstWinGold;
+            _repeatWinGoldMax = repeatWinGold;
+        }
+
+        /// <summary>Lets a win pay a surprise amount between the minimum and these maximums.</summary>
+        public void SetRewardRanges(int firstWinGoldMax, int repeatWinGoldMax)
+        {
+            _firstWinGoldMax = firstWinGoldMax;
+            _repeatWinGoldMax = repeatWinGoldMax;
         }
     }
 }

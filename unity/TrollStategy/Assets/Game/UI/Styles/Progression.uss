@@ -1,0 +1,457 @@
+/*
+ * Progression layout: the quest card above the inspect card, closed catalog cards and the reward reveal.
+ * Colours come from Theme.uss variables; type comes from its t-* classes.
+ */
+
+/* Quest card */
+
+.quest {
+    flex-shrink: 0;
+    margin-bottom: 10px;
+    padding: 10px 12px 12px 14px;
+    border-color: var(--gold-deep);
+}
+
+.quest.is-complete {
+    border-color: var(--gold);
+}
+
+.quest__header {
+    flex-direction: row;
+    align-items: center;
+}
+
+.quest__chapter {
+    flex-grow: 1;
+    color: var(--gold);
+}
+
+.quest__toggle {
+    width: 30px;
+    height: 30px;
+    min-height: 30px;
+    font-size: 20px;
+}
+
+.quest__title {
+    margin-top: 2px;
+    font-size: 21px;
+    white-space: normal;
+}
+
+.quest__description {
+    margin-top: 6px;
+    font-size: 14px;
+    color: var(--ink-muted);
+    white-space: normal;
+}
+
+.quest__goals {
+    margin-top: 8px;
+}
+
+.quest-goal {
+    flex-direction: row;
+    align-items: center;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.quest-goal__check {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-right: 9px;
+    border-radius: 4px;
+    border-width: 2px;
+    border-color: var(--edge);
+    background-color: var(--surface-sunken);
+}
+
+.quest-goal.is-done .quest-goal__check {
+    border-color: var(--grass-light);
+    background-color: var(--grass);
+}
+
+.quest-goal__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 15px;
+    white-space: normal;
+}
+
+.quest-goal.is-done .quest-goal__text {
+    color: var(--ink-muted);
+}
+
+.quest-goal__count {
+    flex-shrink: 0;
+    margin-left: 8px;
+    font-size: 14px;
+    color: var(--gold);
+}
+
+.quest-goal.is-done .quest-goal__count {
+    color: var(--grass-light);
+}
+
+.quest__reward {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top-width: 1px;
+    border-color: var(--edge);
+}
+
+.quest__reward-caption {
+    margin-right: 8px;
+}
+
+.quest__reward-items {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-shrink: 1;
+}
+
+.quest-reward-chip {
+    flex-direction: row;
+    align-items: center;
+    margin: 2px 6px 2px 0;
+    padding: 2px 9px 2px 4px;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: var(--edge);
+    background-color: var(--surface-raised);
+}
+
+.quest-reward-chip__art {
+    width: 26px;
+    height: 26px;
+    margin-right: 6px;
+}
+
+.quest-reward-chip__text {
+    font-size: 14px;
+    color: var(--gold-light);
+}
+
+.quest__claim {
+    margin-top: 10px;
+    min-height: 50px;
+}
+
+/* Closed catalog cards */
+
+.card.is-locked {
+    opacity: 0.6;
+}
+
+.card__lock {
+    margin-top: 1px;
+    margin-bottom: 2px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--gold);
+}
+
+.hud-pulse .card.is-suggested {
+    border-color: var(--gold-glow);
+}
+
+/* Reward reveal */
+
+.reward {
+    width: 520px;
+    align-items: center;
+    padding: 18px 26px 22px 26px;
+    border-color: var(--gold-deep);
+}
+
+.reward__eyebrow {
+    color: var(--gold);
+    letter-spacing: 3px;
+}
+
+.reward__quest {
+    margin-top: 2px;
+    font-size: 22px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* 320 square: the round frame in the middle, the glow and the motes centred on it (RewardOverlay) */
+.reward__stage {
+    width: 320px;
+    height: 320px;
+    margin-top: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.reward__rays {
+    position: absolute;
+    left: -20px;
+    top: -20px;
+    width: 360px;
+    height: 360px;
+}
+
+.reward__ray {
+    position: absolute;
+    left: 171px;
+    top: 0;
+    width: 18px;
+    height: 360px;
+    border-radius: 9px;
+    background-color: var(--gold-ray);
+}
+
+.reward__window {
+    width: 224px;
+    height: 224px;
+    overflow: hidden;
+    border-radius: 112px;
+    border-width: 4px;
+    border-color: var(--edge);
+    background-color: var(--surface-sunken);
+    transition-property: border-color;
+    transition-duration: 0.3s;
+}
+
+.reward__window.is-revealed {
+    border-color: var(--gold);
+}
+
+.reward__prize {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.reward__prize-image {
+    width: 168px;
+    height: 168px;
+}
+
+.reward__monogram {
+    font-size: 72px;
+    color: var(--gold);
+}
+
+.reward__sparks {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.reward__spark {
+    position: absolute;
+    left: 146px;
+    top: 146px;
+    width: 28px;
+    height: 28px;
+    --unity-image-tint-color: var(--gold-light);
+}
+
+.reward__spark--pale {
+    --unity-image-tint-color: var(--gold-glow);
+}
+
+.reward__kind {
+    margin-top: 8px;
+    color: var(--gold);
+    letter-spacing: 3px;
+}
+
+.reward__name {
+    font-size: 34px;
+    -unity-text-align: middle-center;
+}
+
+.reward__description {
+    max-width: 460px;
+    margin-top: 4px;
+    font-size: 15px;
+    color: var(--ink-muted);
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.reward__extras {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.reward__extra {
+    margin: 2px 4px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: var(--gold-deep);
+    background-color: var(--surface-raised);
+    font-size: 14px;
+    color: var(--gold-light);
+}
+
+.reward__claim {
+    min-width: 260px;
+    min-height: 56px;
+    margin-top: 14px;
+    font-size: 20px;
+}
+
+/* Battle prize: a slot machine with one reel per digit (BattleRewardOverlay) */
+
+.jackpot {
+    width: 540px;
+    align-items: center;
+    padding: 18px 26px 22px 26px;
+    border-color: var(--gold);
+}
+
+.jackpot__eyebrow {
+    font-size: 30px;
+    letter-spacing: 4px;
+    color: var(--gold-light);
+}
+
+.jackpot__title {
+    margin-top: 2px;
+    font-size: 16px;
+    color: var(--ink-muted);
+}
+
+/* 460 × 176: the lights run round this box (BattleRewardOverlay) */
+.jackpot__machine {
+    width: 460px;
+    height: 176px;
+    margin-top: 12px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 22px;
+    border-width: 4px;
+    border-color: var(--gold-deep);
+    background-color: var(--wood-deep);
+}
+
+.jackpot__machine.is-won {
+    border-color: var(--gold-light);
+}
+
+.jackpot__reels {
+    flex-direction: row;
+    align-items: center;
+}
+
+.jackpot__coin {
+    width: 58px;
+    height: 58px;
+    margin-right: 10px;
+}
+
+/* one digit shows at a time: the window is one .jackpot__digit tall */
+.jackpot__reel {
+    width: 78px;
+    height: 112px;
+    margin: 0 4px;
+    overflow: hidden;
+    border-radius: 12px;
+    border-width: 4px;
+    border-color: var(--edge-dark);
+    background-color: var(--ink);
+}
+
+.jackpot__reel.is-stopped {
+    border-color: var(--gold);
+}
+
+.jackpot__strip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+}
+
+.jackpot__digit {
+    height: 104px;
+    font-size: 72px;
+    -unity-text-align: middle-center;
+    color: var(--ink-dark);
+}
+
+.jackpot__lights {
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    right: -4px;
+    bottom: -4px;
+}
+
+.jackpot__light {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: var(--edge-dark);
+    background-color: var(--gold-deep);
+    transition-property: background-color;
+    transition-duration: 0.06s;
+}
+
+.jackpot__light.is-lit {
+    border-color: var(--gold);
+    background-color: var(--gold-glow);
+}
+
+.jackpot__sparks {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.jackpot__spark {
+    position: absolute;
+    left: 212px;
+    top: 70px;
+    width: 28px;
+    height: 28px;
+    --unity-image-tint-color: var(--gold-light);
+}
+
+.jackpot__spark--pale {
+    --unity-image-tint-color: var(--gold-glow);
+}
+
+.jackpot__range {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--ink-muted);
+}
+
+.jackpot__amount {
+    min-height: 48px;
+    font-size: 40px;
+    color: var(--gold-light);
+    -unity-text-align: middle-center;
+}
+
+.jackpot__claim {
+    min-width: 280px;
+    min-height: 56px;
+    margin-top: 8px;
+    font-size: 20px;
+}

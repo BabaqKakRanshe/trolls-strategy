@@ -26,6 +26,15 @@ namespace TrollStrategy.Presentation.Visuals
                 if (Keyboard.current.escapeKey.wasPressedThisFrame)
                     Cancel();
 
+                // Enter settles the haul cargo; where to carry it is picked on the map next
+                if ((Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.numpadEnterKey.wasPressedThisFrame) &&
+                    _interaction.Mode.Type == InteractionModeType.ChoosingHaulCargo)
+                {
+                    if (_interaction.HaulCargoHasDestination)
+                        TrollStrategy.Presentation.Audio.GameAudio.Play(TrollStrategy.Presentation.Audio.Sfx.UiClick);
+                    _interaction.ConfirmHaulCargo();
+                }
+
                 if (Keyboard.current.digit1Key.wasPressedThisFrame)
                     _interaction.SelectNextIdle();
 

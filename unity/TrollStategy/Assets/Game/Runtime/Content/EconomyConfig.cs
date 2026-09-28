@@ -14,7 +14,15 @@ namespace TrollStrategy.Content
 
         [Header("Simulation Timing")]
         [SerializeField] private float _stepTimeSeconds = 0.25f; // 250ms economy step
-        [SerializeField] private float _transferTimeSeconds = 0.5f; // 500ms load/unload
+
+        [Header("Носильщики")]
+        [Tooltip("Сколько секунд носильщик грузит товар у двери источника. Время идёт шагами экономики (0,25 с) и округляется вверх; 0 — берёт сразу по прибытии. Можно менять во время игры.")]
+        [FormerlySerializedAs("_transferTimeSeconds")]
+        [SerializeField, Min(0f)] private float _loadSeconds = 0.25f;
+        [Tooltip("Сколько секунд носильщик выгружает товар у получателя; на рынке это продажа. Шагами по 0,25 с; 0 — сразу по прибытии.")]
+        [SerializeField, Min(0f)] private float _unloadSeconds = 0.25f;
+        [Tooltip("Сколько носильщиков одновременно грузятся у одной двери; остальные ждут в очереди.")]
+        [SerializeField, Min(1)] private int _loadersPerDoor = 1;
 
         [Header("Economy Values")]
         [SerializeField] private int _startingGold = 1000;
@@ -28,10 +36,13 @@ namespace TrollStrategy.Content
         public int MaxUnitsPerCell => _maxUnitsPerCell;
         public float StepTimeSeconds => _stepTimeSeconds;
         public float EconomyStepSeconds => _stepTimeSeconds;
-        public float TransferTimeSeconds => _transferTimeSeconds;
+        public float LoadSeconds => Mathf.Max(0f, _loadSeconds);
+        public float UnloadSeconds => Mathf.Max(0f, _unloadSeconds);
+        public int LoadersPerDoor => Mathf.Max(1, _loadersPerDoor);
         public int StartingGold => _startingGold;
         public float WorkPerStrengthSecond => _workPerStrengthSecond;
 
+        /// <param name="transferTimeSeconds">Both loading and unloading time; see <see cref="SetHauling"/>.</param>
         public void Init(int gridWidth, int gridHeight, float cellSize, int startingGold, int maxUnitsPerCell, float tickIntervalSeconds, float workPerStrengthSecond, float transferTimeSeconds)
         {
             _gridWidth = gridWidth;
@@ -41,7 +52,16 @@ namespace TrollStrategy.Content
             _maxUnitsPerCell = maxUnitsPerCell;
             _stepTimeSeconds = tickIntervalSeconds;
             _workPerStrengthSecond = workPerStrengthSecond;
-            _transferTimeSeconds = transferTimeSeconds;
+            _loadSeconds = transferTimeSeconds;
+            _unloadSeconds = transferTimeSeconds;
+            _loadersPerDoor = 1;
+        }
+
+        public void SetHauling(float loadSeconds, float unloadSeconds, int loadersPerDoor)
+        {
+            _loadSeconds = Mathf.Max(0f, loadSeconds);
+            _unloadSeconds = Mathf.Max(0f, unloadSeconds);
+            _loadersPerDoor = Mathf.Max(1, loadersPerDoor);
         }
     }
 }

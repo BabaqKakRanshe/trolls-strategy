@@ -11,7 +11,8 @@ namespace TrollStrategy.UI
 {
     /// <summary>
     /// Card for the building or creature the player inspects: what it does, what it holds, why it idles,
-    /// and what can be done with it. Hidden while a building is being moved so the map stays clear.
+    /// who works and carries there (each can be taken off the job), and what can be done with it. Hidden while
+    /// a building is being moved so the map stays clear.
     /// </summary>
     public sealed class InspectPanel
     {
@@ -48,6 +49,7 @@ namespace TrollStrategy.UI
         private readonly VisualElement _slots;
         private readonly List<Row> _rowPool = new();
         private readonly List<Slot> _slotPool = new();
+        private readonly StaffList _staff;
         private readonly ActionButton[] _actions = new ActionButton[ActionCount];
         private int _rowCount;
         private int _actionCount;
@@ -63,6 +65,10 @@ namespace TrollStrategy.UI
             _note = Ui.Require<Label>(root, "inspect-note");
             _slotsHeader = Ui.Require<Label>(root, "inspect-slots-header");
             _slots = Ui.Require<VisualElement>(root, "inspect-slots");
+            var staffScroll = Ui.Require<ScrollView>(root, "inspect-staff-scroll");
+            staffScroll.verticalScrollerVisibility = ScrollerVisibility.Hidden;
+            staffScroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            _staff = new StaffList(Ui.Require<VisualElement>(root, "inspect-staff"), context);
             UiFeel.Bind(Ui.Require<Button>(root, "inspect-close"), () => context.Interaction.CloseInspect(), Sfx.UiBack);
 
             var actions = Ui.Require<VisualElement>(root, "inspect-actions");
@@ -78,6 +84,7 @@ namespace TrollStrategy.UI
 
         public bool IsShown => Ui.IsShown(_panel);
         public string Title => _title.text;
+        public StaffList Staff => _staff;
 
         /// <summary>The visible action buttons, left to right.</summary>
         public IReadOnlyList<Button> Actions
@@ -129,6 +136,7 @@ namespace TrollStrategy.UI
         private void Hide()
         {
             _shownId = null;
+            _staff.Hide();
             Ui.Show(_panel, false);
         }
 
@@ -140,9 +148,6 @@ namespace TrollStrategy.UI
             Ui.SetText(_subtitle, $"УРОВЕНЬ {building.Level}   ·   {building.Width}×{building.Height}");
 
             BeginRows();
-            if (building.MaxWorkers > 0)
-                AddRow("Рабочие", $"{building.WorkerCount} / {building.MaxWorkers}");
-            AddRow("Носильщики", $"гоблины {building.GoblinHaulers} · тролли {building.TrollHaulers}");
             if (building.RecipeText.Length > 0)
                 AddRow("Рецепт", building.RecipeText);
             if (building.IsWorkplace)
@@ -173,6 +178,7 @@ namespace TrollStrategy.UI
             EndRows();
             SetNote(note);
             RenderSlots(building);
+            _staff.Show(building, snapshot);
 
             BeginActions();
             var interaction = _context.Interaction;
@@ -183,8 +189,9 @@ namespace TrollStrategy.UI
                 {
                     if (unit == null || _actionCount >= ActionCount) continue;
                     var kind = unit.Kind;
-                    AddAction("Нанять: " + unit.DisplayName.ToLowerInvariant(), Ui.Gold(unit.Price), "btn--primary",
-                        snapshot.Gold >= unit.Price, () => interaction.RecruitUnit(kind));
+                    bool open = snapshot.Progress.IsUnitUnlocked(kind);
+                    AddAction("Нанять: " + unit.DisplayName.ToLowerInvariant(), open ? Ui.Gold(unit.Price) : "закрыто",
+                        "btn--primary", open && snapshot.Gold >= unit.Price, () => interaction.RecruitUnit(kind));
                 }
             }
             else
@@ -192,8 +199,9 @@ namespace TrollStrategy.UI
                 bool maxed = building.UpgradeCost < 0;
                 AddAction("Улучшить", maxed ? "макс. уровень" : Ui.Gold(building.UpgradeCost), "btn--primary",
                     !maxed && snapshot.Gold >= building.UpgradeCost, interaction.UpgradeInspectedBuilding);
-                AddAction("Снести", "вернуть " + Ui.Gold(building.RefundGold), "btn--danger", true,
-                    interaction.DemolishInspectedBuilding);
+                bool removable = definition.Constructible;
+                AddAction("Снести", removable ? "вернуть " + Ui.Gold(building.RefundGold) : "нельзя снести", "btn--danger",
+                    removable, interaction.DemolishInspectedBuilding);
             }
             EndActions();
         }
@@ -216,7 +224,10 @@ namespace TrollStrategy.UI
             foreach (var item in snapshot.Equipment)
                 if (item.OwnerUnitId == unit.Id) gear.Add(item.DisplayName);
             if (gear.Count > 0) AddRow("Снаряжение", string.Join(", ", gear));
+            var assignment = unit.Assignment;
+            if (assignment.Kind == AssignmentKind.Haul) AddRow("Возит", _context.Session.DescribeCargo(assignment));
             EndRows();
+            _staff.Hide();
 
             var selected = _context.Interaction.SelectedIds;
             SetNote(selected.Count > 1 ? $"Команды ниже получат все выбранные: {selected.Count}." : null);

@@ -134,6 +134,8 @@ namespace TrollStrategy.Presentation.Visuals
             {
                 foreach (var pair in _unitVisuals.Views)
                 {
+                    // creatures working inside a building are out of reach
+                    if (pair.Value.IsHiddenInside) continue;
                     var pos = _worldView != null
                         ? _worldView.WorldToMap(pair.Value.transform.position)
                         : pair.Value.transform.position;
@@ -193,8 +195,11 @@ namespace TrollStrategy.Presentation.Visuals
             var mapPoint = _worldView != null ? _worldView.WorldToMap(worldPoint) : worldPoint;
             UnitView nearest = null;
             float nearestSqrDistance = UnitClickRadius * UnitClickRadius;
+            var selectable = _interaction.SelectableUnitIds();
             foreach (var pair in _unitVisuals.Views)
             {
+                // a worker inside, or just stepping in, must not take the click meant for its building
+                if (pair.Value.IsHiddenInside || !selectable.Contains(pair.Key)) continue;
                 var unitMapPoint = _worldView != null
                     ? _worldView.WorldToMap(pair.Value.transform.position)
                     : pair.Value.transform.position;
@@ -214,8 +219,10 @@ namespace TrollStrategy.Presentation.Visuals
             if (_unitVisuals == null) return ids;
             var mapPoint = _worldView != null ? _worldView.WorldToMap(worldPoint) : worldPoint;
             float maxSqrDistance = UnitClickRadius * UnitClickRadius;
+            var selectable = _interaction.SelectableUnitIds();
             foreach (var pair in _unitVisuals.Views)
             {
+                if (pair.Value.IsHiddenInside || !selectable.Contains(pair.Key)) continue;
                 var unitMapPoint = _worldView != null
                     ? _worldView.WorldToMap(pair.Value.transform.position)
                     : pair.Value.transform.position;

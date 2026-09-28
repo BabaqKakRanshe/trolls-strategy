@@ -17,6 +17,8 @@ MonoBehaviour:
   _cellSize: 1
   _maxUnitsPerCell: 20
   _stepTimeSeconds: 0.25
-  _transferTimeSeconds: 0.25
+  _loadSeconds: 0.25
+  _unloadSeconds: 0
+  _loadersPerDoor: 3
   _startingGold: 1000
   _workPerStrengthSecond: 0.1

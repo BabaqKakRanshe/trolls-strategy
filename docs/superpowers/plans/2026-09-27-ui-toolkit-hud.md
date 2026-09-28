@@ -32,3 +32,13 @@
 2. HUD боя из `BattleSceneController` в `Runtime/UI/Battle`, удаление `ButtonFeel`/uGUI-пути в `UIInputUtils`.
 
 Готово, когда проходят компиляция, EditMode-тесты, проверка в Play Mode и сборка Windows player.
+
+## Состояние на 27.09.2026
+
+Этап 1 выполнен. EditMode: 129 из 130, все 10 тестов `ColonyHudTests` зелёные; единственное падение — `SavedScene_StartingBuildingsFormValidLayoutOnGrid` (склад в сцене смещён от сетки на 0.42, к HUD не относится). Play Mode 1920×1080: верхняя панель, каталог с прокруткой, карточки здания и юнита, панель контекста, веер, режим размещения; `UIInputUtils` пропускает клик на карту и блокирует его над панелями. Windows player (`TrollStrategy/Build Windows Player`) собран без ошибок и отрисовывает HUD при 1600×900.
+
+Открыто:
+
+- Этап 2 ждёт окончания текущей переделки боевого uGUI в `BattleSceneController`.
+- Портреты существ — кадры анимации 32×32 с большим полем, в карточках каталога они мелкие; нужен отдельный портрет.
+- Резервный шрифт: `GameTextSettings` берёт недостающие в Rubik символы (стрелки) из `LiberationSans Fallback.asset`; это динамический атлас, он меняется после игры.

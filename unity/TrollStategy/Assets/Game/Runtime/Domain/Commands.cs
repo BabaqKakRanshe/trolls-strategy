@@ -42,6 +42,11 @@ namespace TrollStrategy.Domain
     {
     }
 
+    /// <summary>Takes the gold a won battle rolled into the treasury.</summary>
+    public sealed class ClaimBattleRewardCommand : IGameCommand
+    {
+    }
+
     public class BuildMineCommand : IGameCommand
     {
         public Cell Cell { get; }
@@ -105,12 +110,16 @@ namespace TrollStrategy.Domain
         public IReadOnlyList<string> UnitIds { get; }
         public string SourceId { get; }
         public string DestinationId { get; }
+        /// <summary>Goods the haulers may take; null or empty means whatever the route can carry.</summary>
+        public IReadOnlyList<ResourceKind> Cargo { get; }
 
-        public AssignHaulCommand(IReadOnlyList<string> unitIds, string sourceId, string destinationId)
+        public AssignHaulCommand(IReadOnlyList<string> unitIds, string sourceId, string destinationId,
+            IReadOnlyList<ResourceKind> cargo = null)
         {
             UnitIds = unitIds;
             SourceId = sourceId;
             DestinationId = destinationId;
+            Cargo = cargo ?? System.Array.Empty<ResourceKind>();
         }
     }
 
@@ -130,5 +139,10 @@ namespace TrollStrategy.Domain
     {
         public IReadOnlyList<string> UnitIds { get; }
         public SendToBarracksCommand(IReadOnlyList<string> unitIds) => UnitIds = unitIds;
+    }
+
+    /// <summary>Takes the rewards of the finished current quest and begins the next one.</summary>
+    public sealed class ClaimQuestRewardCommand : IGameCommand
+    {
     }
 }

@@ -38,6 +38,11 @@ namespace TrollStrategy.Domain
         // Place held in the group in front of the door the hauler waits at (queued at its source,
         // or delivering to its destination); -1 when it is not waiting.
         public int CrowdSlot { get; set; } = -1;
+        // Goods a hauler may take from its source; empty means whatever the route can carry.
+        public List<ResourceKind> Cargo { get; set; } = new();
+
+        public bool CarriesAnything => Cargo == null || Cargo.Count == 0;
+        public bool MayCarry(ResourceKind resource) => CarriesAnything || Cargo.Contains(resource);
 
         public static Assignment Idle() => new() { Kind = AssignmentKind.Idle };
 
@@ -53,14 +58,15 @@ namespace TrollStrategy.Domain
             BuildingId = buildingId
         };
 
-        public static Assignment Haul(string sourceId, string destinationId) => new()
+        public static Assignment Haul(string sourceId, string destinationId, IEnumerable<ResourceKind> cargo = null) => new()
         {
             Kind = AssignmentKind.Haul,
             SourceId = sourceId,
             DestinationId = destinationId,
             Phase = HaulPhase.ToSource,
             Carried = 0,
-            PhaseElapsedSeconds = 0f
+            PhaseElapsedSeconds = 0f,
+            Cargo = cargo != null ? new List<ResourceKind>(cargo) : new List<ResourceKind>()
         };
 
         public Assignment Clone() => new()
@@ -75,7 +81,8 @@ namespace TrollStrategy.Domain
             CarryCreditPercent = CarryCreditPercent,
             PhaseElapsedSeconds = PhaseElapsedSeconds,
             QueueTicket = QueueTicket,
-            CrowdSlot = CrowdSlot
+            CrowdSlot = CrowdSlot,
+            Cargo = Cargo != null ? new List<ResourceKind>(Cargo) : new List<ResourceKind>()
         };
     }
 

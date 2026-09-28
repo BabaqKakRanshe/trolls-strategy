@@ -18,8 +18,11 @@ namespace TrollStrategy.Presentation.Buildings
         private Camera _camera;
         private RenderTexture _texture;
 
-        /// <summary>Shows the building's model; returns the texture it renders into, or null without a model.</summary>
-        public Texture Show(BuildingDefinition definition)
+        /// <summary>
+        /// Shows the building's model; returns the texture it renders into, or null without a model. Framing is
+        /// the room around the model: 1 fills the picture, larger values leave a margin.
+        /// </summary>
+        public Texture Show(BuildingDefinition definition, float framing = 1.65f)
         {
             Hide();
             var model = definition != null ? ContentPrefabs.Building(definition)?.Model : null;
@@ -43,7 +46,7 @@ namespace TrollStrategy.Presentation.Buildings
 
             EnsureCamera();
             float radius = Mathf.Sqrt(bounds.extents.x * bounds.extents.x + bounds.extents.z * bounds.extents.z);
-            _camera.orthographicSize = Mathf.Max(bounds.extents.y, radius) * 1.65f;
+            _camera.orthographicSize = Mathf.Max(bounds.extents.y, radius) * Mathf.Max(.5f, framing);
             _camera.transform.position = bounds.center + new Vector3(1f, .7f, -1f).normalized * 20f;
             _camera.transform.LookAt(bounds.center);
             _camera.enabled = true;

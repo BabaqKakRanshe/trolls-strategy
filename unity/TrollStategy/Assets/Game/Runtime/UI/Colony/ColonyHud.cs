@@ -92,6 +92,7 @@ namespace TrollStrategy.UI
         {
             if (_document == null || _document.rootVisualElement == null) return;
             _document.rootVisualElement.style.display = _visible ? DisplayStyle.Flex : DisplayStyle.None;
+            _view?.SetHudVisible(_visible);
         }
 
         private void OnSnapshotChanged(GameSnapshot snapshot) => _view?.Refresh(snapshot);

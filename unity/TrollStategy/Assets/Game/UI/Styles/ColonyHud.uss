@@ -246,8 +246,10 @@
     -unity-text-align: middle-center;
 }
 
+/* rows keep their height; the list scrolls instead of squeezing them */
 .card {
     flex-direction: row;
+    flex-shrink: 0;
     align-items: center;
     padding: 10px;
     margin-bottom: 8px;
@@ -452,4 +454,191 @@
     min-height: 54px;
     border-radius: 27px;
     border-color: var(--gold);
+}
+
+/* What a haul order carries: a dialog in the middle of the screen, a card per good */
+
+.cargo-dialog {
+    width: 640px;
+    max-width: 94%;
+    padding: 18px 22px 16px 22px;
+    align-items: stretch;
+}
+
+.cargo-dialog__title {
+    font-size: 24px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.cargo-dialog__text {
+    margin-top: 4px;
+    margin-bottom: 12px;
+    font-size: 15px;
+    color: var(--ink-muted);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.cargo-dialog__choices {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cargo-card {
+    flex-direction: column;
+    width: 136px;
+    min-height: 132px;
+    margin: 5px;
+    padding: 10px 8px 8px 8px;
+}
+
+.cargo-card__art {
+    flex-direction: row;
+    height: 56px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+
+.cargo-card__icon {
+    width: 56px;
+    height: 56px;
+}
+
+.cargo-card__stack-icon {
+    width: 36px;
+    height: 36px;
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+.cargo-card__letter {
+    font-size: 26px;
+    -unity-text-align: middle-center;
+}
+
+.cargo-card__name {
+    font-size: 15px;
+    white-space: normal;
+}
+
+.cargo-card__sub {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    -unity-text-align: middle-center;
+}
+
+.cargo-dialog__note {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--ink-muted);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.cargo-dialog__actions {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 14px;
+}
+
+.cargo-dialog__actions .btn {
+    min-width: 170px;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+/* Hint card over the element under the pointer; left/top from code mark the element's top centre */
+
+.tooltip {
+    position: absolute;
+    translate: -50% -100%;
+    max-width: 320px;
+    padding: 8px 12px;
+}
+
+.tooltip__title {
+    font-size: 16px;
+}
+
+.tooltip__body {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--ink-muted);
+    white-space: normal;
+}
+
+/* Workers and haulers of the inspected building */
+
+.staff-scroll {
+    max-height: 260px;
+    margin-top: 10px;
+    flex-shrink: 1;
+}
+
+.staff {
+    margin-bottom: 8px;
+}
+
+.staff__header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.staff__caption {
+    flex-grow: 1;
+    color: var(--gold);
+}
+
+.staff__all {
+    min-height: 30px;
+    padding: 2px 10px;
+    font-size: 13px;
+}
+
+.staff__empty {
+    margin-top: 0;
+    font-size: 13px;
+}
+
+.staff-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 3px;
+    padding: 3px 4px 3px 6px;
+    border-radius: 8px;
+    background-color: var(--surface-raised);
+}
+
+.staff-row__portrait {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    margin-right: 8px;
+}
+
+.staff-row__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.staff-row__name {
+    font-size: 14px;
+}
+
+.staff-row__state {
+    font-size: 12px;
+    color: var(--ink-muted);
+    white-space: normal;
+}
+
+.staff-row__release {
+    width: 30px;
+    height: 30px;
+    min-height: 30px;
+    font-size: 18px;
 }

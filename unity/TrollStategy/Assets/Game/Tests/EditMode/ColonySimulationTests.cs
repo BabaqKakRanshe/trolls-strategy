@@ -94,6 +94,22 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void Demolish_RefusesBuildingsThatCannotBeBuiltAgain()
+        {
+            var session = TestColony.NewSession(_catalog);
+            int revision = session.CurrentSnapshot.Revision;
+
+            foreach (var id in new[] { "warehouse-1", "market-1" })
+            {
+                var refused = session.Dispatch(new DemolishBuildingCommand(id));
+                Assert.That(refused.Ok, Is.False, id);
+                Assert.That(refused.Error, Is.EqualTo("Эту постройку нельзя снести"));
+            }
+            Assert.That(session.CurrentSnapshot.Buildings.Count, Is.EqualTo(TestColony.Layout.Length));
+            Assert.That(session.CurrentSnapshot.Revision, Is.EqualTo(revision));
+        }
+
+        [Test]
         public void InteractionPlacement_BuildsTheChosenKindAndReturnsToNeutral()
         {
             var session = TestColony.NewSession(_catalog);
@@ -380,7 +396,7 @@ namespace TrollStrategy.Tests
             Assert.That(departures.Count, Is.EqualTo(5), "every hauler should get a turn at the dock");
             var ticks = departures.Values.OrderBy(t => t).ToArray();
             for (int i = 1; i < ticks.Length; i++)
-                Assert.That(ticks[i] - ticks[i - 1], Is.GreaterThanOrEqualTo((int)(_catalog.Economy.TransferTimeSeconds / step)),
+                Assert.That(ticks[i] - ticks[i - 1], Is.GreaterThanOrEqualTo((int)(_catalog.Economy.LoadSeconds / step)),
                     "haulers must leave the source staggered by a full load");
 
             var positions = state.Units.Select(u => u.Position).ToList();
@@ -534,7 +550,7 @@ namespace TrollStrategy.Tests
                 assignment.Phase = HaulPhase.Loading;
                 assignment.PhaseElapsedSeconds = 0f;
                 assignment.Carried = 0;
-                ColonySimulation.TickColony(state, _catalog.Economy.TransferTimeSeconds, _catalog);
+                ColonySimulation.TickColony(state, _catalog.Economy.LoadSeconds, _catalog);
                 Assert.That(assignment.Phase, Is.EqualTo(HaulPhase.ToDestination));
                 carried[i] = assignment.Carried;
             }
@@ -664,7 +680,7 @@ namespace TrollStrategy.Tests
             });
             state.Units[0].Assignment.Phase = HaulPhase.Loading;
 
-            ColonySimulation.TickColony(state, _catalog.Economy.TransferTimeSeconds, _catalog);
+            ColonySimulation.TickColony(state, _catalog.Economy.LoadSeconds, _catalog);
             var assignment = state.Units[0].Assignment;
             Assert.That(assignment.CarriedResource, Is.EqualTo(ResourceKind.IronIngot), "Inputs are never picked up");
             Assert.That(smeltery.GetStock(ResourceKind.IronOre), Is.EqualTo(6));
@@ -672,7 +688,7 @@ namespace TrollStrategy.Tests
             int gold = state.Gold;
             assignment.Phase = HaulPhase.Unloading;
             assignment.PhaseElapsedSeconds = 0f;
-            ColonySimulation.TickColony(state, _catalog.Economy.TransferTimeSeconds, _catalog);
+            ColonySimulation.TickColony(state, _catalog.Economy.LoadSeconds, _catalog);
             Assert.That(state.Gold, Is.EqualTo(gold + 9));
             Assert.That(state.SoldGoods, Is.EqualTo(1));
         }
@@ -692,7 +708,7 @@ namespace TrollStrategy.Tests
             assignment.Carried = 2;
             assignment.CarriedResource = ResourceKind.IronSword;
 
-            ColonySimulation.TickColony(state, _catalog.Economy.TransferTimeSeconds, _catalog);
+            ColonySimulation.TickColony(state, _catalog.Economy.LoadSeconds, _catalog);
 
             Assert.That(assignment.Carried, Is.Zero);
             Assert.That(state.Equipment.Select(item => item.DefinitionId), Is.EqualTo(new[] { "iron-sword", "iron-sword" }));

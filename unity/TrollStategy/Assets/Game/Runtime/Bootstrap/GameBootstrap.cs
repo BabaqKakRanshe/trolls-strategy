@@ -18,6 +18,8 @@ namespace TrollStrategy.Bootstrap
     {
         [Header("Configuration")]
         [SerializeField] private GameContentCatalog _catalog;
+        [Tooltip("Play the catalog's tutorial and quest chain. Off: sandbox with every building and creature open.")]
+        [SerializeField] private bool _campaign = true;
 
         [Header("World & Map")]
         [SerializeField] private TilemapWorldView _worldView;
@@ -89,9 +91,12 @@ namespace TrollStrategy.Bootstrap
             var placements = SceneBuildingPlacements.Collect(_worldView, _catalog);
             var startingBuildings = new List<StartingBuilding>(placements.Count);
             foreach (var placement in placements) startingBuildings.Add(placement.Building);
+            bool campaign = _campaign && _catalog.Progression != null;
+            if (_campaign && !campaign)
+                Debug.LogError($"{nameof(GameBootstrap)}: the catalog has no progression; starting a sandbox game.", this);
             try
             {
-                _session = new GameSession(_catalog, startingBuildings);
+                _session = new GameSession(_catalog, startingBuildings, campaign);
             }
             catch (InvalidOperationException exception)
             {

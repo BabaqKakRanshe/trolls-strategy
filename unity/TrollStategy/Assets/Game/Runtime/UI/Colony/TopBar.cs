@@ -29,6 +29,9 @@ namespace TrollStrategy.UI
         private readonly Button _catalogButton;
         private bool? _battleReady;
         private float _nextBattleCheck;
+        private ProgressSnapshot _progress = ProgressSnapshot.Sandbox;
+        private QuestFocus _focus = QuestFocus.None;
+        private bool _catalogOpen;
 
         public TopBar(VisualElement root, ColonyHudContext context, Action toggleCatalog)
         {
@@ -52,10 +55,23 @@ namespace TrollStrategy.UI
 
         public Button BattleButton => _battleButton;
         public Button IdleButton => _idleButton;
+        public Button CatalogButton => _catalogButton;
         public string GoldText => _gold.Value.ToString();
+
+        /// <summary>What the current quest asks for: the battle, or the catalog while it is closed.</summary>
+        public void SetFocus(QuestFocus focus)
+        {
+            _focus = focus ?? QuestFocus.None;
+            _battleButton.EnableInClassList("is-suggested", _focus.Battle);
+            _catalogButton.EnableInClassList("is-suggested", _focus.UsesCatalog && !_catalogOpen);
+        }
 
         public void Refresh(GameSnapshot snapshot)
         {
+            bool missionWasOpen = _mission == null || _progress.IsMissionUnlocked(_mission.MissionId);
+            _progress = snapshot.Progress;
+            // a battle opened or closed by the quest chain says so at once, not at the next timer check
+            if (_mission != null && missionWasOpen != _progress.IsMissionUnlocked(_mission.MissionId)) RefreshBattle();
             _gold.Set(snapshot.Gold);
             _ore.Set(snapshot.TotalOre);
             _population.Set(snapshot.Units.Count);
@@ -69,7 +85,12 @@ namespace TrollStrategy.UI
             _gridButton.EnableInClassList("is-on", _context.GuidesVisible?.Invoke() ?? false);
         }
 
-        public void SetCatalogOpen(bool open) => _catalogButton.EnableInClassList("is-on", open);
+        public void SetCatalogOpen(bool open)
+        {
+            _catalogOpen = open;
+            _catalogButton.EnableInClassList("is-on", open);
+            _catalogButton.EnableInClassList("is-suggested", _focus.UsesCatalog && !open);
+        }
 
         public void Tick()
         {
@@ -92,6 +113,13 @@ namespace TrollStrategy.UI
             }
             _battleReady = ready;
             UiFeel.SetAvailable(_battleButton, ready);
+            if (!_progress.IsMissionUnlocked(_mission.MissionId))
+            {
+                // the quest chain opens the battle; say at which level
+                int level = _progress.MissionUnlockLevel(_mission.MissionId);
+                Ui.SetText(_battleButton, level > 0 ? $"БОЙ ПОСЛЕ УР. {level}" : "БОЙ ЗАКРЫТ");
+                return;
+            }
             int wait = session.MissionWaitMs(_mission.MissionId);
             Ui.SetText(_battleButton, ready ? "В БОЙ" : wait > 0 ? "БОЙ ЧЕРЕЗ " + Duration(wait) : "БОЙ ЗАКРЫТ");
         }

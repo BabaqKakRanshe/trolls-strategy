@@ -14,6 +14,7 @@ namespace TrollStrategy.Application
         PlacingUnits,
         ChoosingWorkTarget,
         ChoosingHaulSource,
+        ChoosingHaulCargo,
         ChoosingHaulDestination
     }
 
@@ -37,6 +38,11 @@ namespace TrollStrategy.Application
         public static InteractionMode PlacingUnits(UnitKind kind, int amount) => new() { Type = InteractionModeType.PlacingUnits, UnitKind = kind, Amount = amount };
         public static InteractionMode ChoosingWorkTarget => new() { Type = InteractionModeType.ChoosingWorkTarget };
         public static InteractionMode ChoosingHaulSource => new() { Type = InteractionModeType.ChoosingHaulSource };
+        public static InteractionMode ChoosingHaulCargo(string sourceId) => new()
+        {
+            Type = InteractionModeType.ChoosingHaulCargo,
+            SourceId = sourceId
+        };
         public static InteractionMode ChoosingHaulDestination(string sourceId) => new()
         {
             Type = InteractionModeType.ChoosingHaulDestination,
@@ -48,6 +54,8 @@ namespace TrollStrategy.Application
     {
         private readonly GameSession _session;
         private readonly HashSet<string> _selected = new();
+        // Goods the haul order being given may take; empty means everything the route carries.
+        private readonly List<ResourceKind> _haulCargo = new();
         private InteractionMode _mode = InteractionMode.Neutral;
         private string _message = "Постройте шахту и наймите рабочих.";
         private string _inspectedBuildingId = null;
@@ -62,6 +70,9 @@ namespace TrollStrategy.Application
         public InteractionController(GameSession session)
         {
             _session = session;
+            _session.OnSnapshotChanged += DropUnselectable;
+            var quest = session.CurrentSnapshot.Progress.Quest;
+            if (quest != null) _message = $"Задание «{quest.Title}»: что делать — в карточке слева вверху.";
         }
 
         public InteractionMode Mode => _mode;
@@ -71,6 +82,103 @@ namespace TrollStrategy.Application
         public string InspectedUnitId => _inspectedUnitId;
         public bool CommandsOpen => _commandsOpen;
         public int StackQuantity => _stackQuantity;
+        /// <summary>Goods chosen for the haul order being given; empty means everything the route carries.</summary>
+        public IReadOnlyList<ResourceKind> HaulCargo => _haulCargo;
+
+        /// <summary>
+        /// Goods the haul source picked in this order hands out, so the player can choose what to carry; empty
+        /// before a source is picked.
+        /// </summary>
+        public IReadOnlyList<ResourceKind> HaulCargoChoices
+        {
+            get
+            {
+                if (!IsHaulStepAfterSource(_mode.Type)) return Array.Empty<ResourceKind>();
+                var source = FindBuilding(_mode.SourceId);
+                return source != null
+                    ? ColonySimulation.ProvidedResources(source.Kind, _session.Catalog)
+                    : (IReadOnlyList<ResourceKind>)Array.Empty<ResourceKind>();
+            }
+        }
+
+        /// <summary>Whether some building takes the chosen cargo from the haul source; the order can go on.</summary>
+        public bool HaulCargoHasDestination =>
+            IsHaulStepAfterSource(_mode.Type) && HaulDestinationIds(_mode.SourceId, _haulCargo).Count > 0;
+
+        /// <summary>Adds a good to the haul order's cargo, or takes it out again.</summary>
+        public void ToggleHaulCargo(ResourceKind resource)
+        {
+            if (_mode.Type != InteractionModeType.ChoosingHaulCargo) return;
+            if (!_haulCargo.Remove(resource)) _haulCargo.Add(resource);
+            _haulCargo.Sort();
+            _message = CargoMessage(string.Empty);
+            Emit();
+        }
+
+        /// <summary>The haul order takes whatever its route can carry.</summary>
+        public void CarryEverything()
+        {
+            if (_mode.Type != InteractionModeType.ChoosingHaulCargo) return;
+            _haulCargo.Clear();
+            _message = CargoMessage(string.Empty);
+            Emit();
+        }
+
+        /// <summary>The cargo is settled; the player now picks on the map where to carry it.</summary>
+        public void ConfirmHaulCargo()
+        {
+            if (_mode.Type != InteractionModeType.ChoosingHaulCargo) return;
+            if (!HaulCargoHasDestination)
+            {
+                Refuse("Ни одно здание не примет всё выбранное сразу. Уберите лишнее или выберите «Всё».");
+                return;
+            }
+            _mode = InteractionMode.ChoosingHaulDestination(_mode.SourceId);
+            _message = CargoMessage("Кликните на карте по зданию, куда носить.");
+            Emit();
+        }
+
+        /// <summary>Back from picking the destination to the cargo choice; what was chosen stays chosen.</summary>
+        public void ChangeHaulCargo()
+        {
+            if (_mode.Type != InteractionModeType.ChoosingHaulDestination) return;
+            _mode = InteractionMode.ChoosingHaulCargo(_mode.SourceId);
+            _message = CargoMessage(string.Empty);
+            Emit();
+        }
+
+        /// <summary>Takes the given creatures off their work or route; they stay in the colony, free.</summary>
+        public void ReleaseUnits(IReadOnlyList<string> unitIds)
+        {
+            if (unitIds == null || unitIds.Count == 0) return;
+            var result = _session.Dispatch(new ReleaseUnitsCommand(new List<string>(unitIds)));
+            _message = result.Ok ? $"Снято с работы: {unitIds.Count}." : result.Error;
+            Emit();
+        }
+
+        /// <summary>
+        /// Whether the player can pick this creature: it exists and is not inside a building. A worker that
+        /// reached its workplace works inside, out of sight and out of reach, until released from the building.
+        /// </summary>
+        public bool IsSelectable(string unitId)
+        {
+            if (string.IsNullOrEmpty(unitId)) return false;
+            foreach (var unit in _session.CurrentSnapshot.Units)
+                if (unit.Id == unitId) return IsSelectable(unit);
+            return false;
+        }
+
+        /// <summary>Every creature the player can pick right now, read from one snapshot.</summary>
+        public HashSet<string> SelectableUnitIds()
+        {
+            var ids = new HashSet<string>();
+            foreach (var unit in _session.CurrentSnapshot.Units)
+                if (IsSelectable(unit)) ids.Add(unit.Id);
+            return ids;
+        }
+
+        public static bool IsSelectable(UnitSnapshot unit) =>
+            unit != null && unit.Assignment.Kind != AssignmentKind.Work;
 
         public void ClickUnit(string unitId, bool additive)
         {
@@ -162,6 +270,11 @@ namespace TrollStrategy.Application
 
         public void BeginUnitPlacement(UnitKind kind, int amount)
         {
+            if (!_session.IsUnitUnlocked(kind))
+            {
+                Refuse($"Существо «{_session.Catalog.GetUnit(kind).DisplayName}» откроется за задание.");
+                return;
+            }
             _commandsOpen = false;
             _mode = InteractionMode.PlacingUnits(kind, amount);
             _message = $"Кликните по клетке, где появятся все {amount} существ.";
@@ -186,6 +299,11 @@ namespace TrollStrategy.Application
 
         public void BeginBuildingPlacement(BuildingKind kind)
         {
+            if (!_session.IsBuildingUnlocked(kind))
+            {
+                Refuse($"Постройка «{_session.Catalog.GetBuilding(kind).DisplayName}» откроется за задание.");
+                return;
+            }
             _commandsOpen = false;
             _mode = InteractionMode.PlacingBuilding(kind);
             _message = $"Выберите свободные клетки: {_session.Catalog.GetBuilding(kind).DisplayName}.";
@@ -235,6 +353,7 @@ namespace TrollStrategy.Application
             if (!HasSelection()) return;
             _commandsOpen = false;
             _mode = InteractionMode.ChoosingHaulSource;
+            _haulCargo.Clear();
             _message = "Сначала укажите, откуда носить товар.";
             Emit();
         }
@@ -255,6 +374,28 @@ namespace TrollStrategy.Application
                 _message = result.Error;
             }
             Emit();
+        }
+
+        /// <summary>Takes a won battle's gold into the treasury.</summary>
+        public CommandResult ClaimBattleReward()
+        {
+            var reward = _session.CurrentSnapshot.BattleReward;
+            var result = _session.Dispatch(new ClaimBattleRewardCommand());
+            _message = result.Ok ? $"Награда за бой: +{reward?.Gold ?? 0} зол." : result.Error;
+            Emit();
+            return result;
+        }
+
+        /// <summary>Takes the finished quest's rewards; the next quest begins at once.</summary>
+        public CommandResult ClaimQuestReward()
+        {
+            var headline = _session.CurrentSnapshot.Progress.Quest?.Headline;
+            var result = _session.Dispatch(new ClaimQuestRewardCommand());
+            _message = result.Ok
+                ? headline != null ? $"Награда получена: {headline.Title}." : "Награда получена."
+                : result.Error;
+            Emit();
+            return result;
         }
 
         public void SelectBuilding(string buildingId)
@@ -358,6 +499,12 @@ namespace TrollStrategy.Application
                 return;
             }
 
+            if (_mode.Type == InteractionModeType.ChoosingHaulCargo)
+            {
+                Refuse("Сначала выберите, что носить, и нажмите «Куда носить».");
+                return;
+            }
+
             var validTargets = GetTargetBuildingIds();
             if (!validTargets.Contains(buildingId))
             {
@@ -392,10 +539,12 @@ namespace TrollStrategy.Application
                 return;
             }
 
+            // every haul order asks what to take: each source hands out its own goods
             if (_mode.Type == InteractionModeType.ChoosingHaulSource)
             {
-                _mode = InteractionMode.ChoosingHaulDestination(buildingId);
-                _message = "Теперь укажите, куда доставлять товар.";
+                _mode = InteractionMode.ChoosingHaulCargo(buildingId);
+                _haulCargo.Clear();
+                _message = CargoMessage(string.Empty);
                 Emit();
                 return;
             }
@@ -403,8 +552,11 @@ namespace TrollStrategy.Application
             if (_mode.Type == InteractionModeType.ChoosingHaulDestination)
             {
                 var ids = new List<string>(_selected);
-                var result = _session.Dispatch(new AssignHaulCommand(ids, _mode.SourceId, buildingId));
-                FinishCommand(result.Ok, result.Ok ? "Постоянный маршрут назначен." : result.Error);
+                var cargo = new List<ResourceKind>(_haulCargo);
+                var result = _session.Dispatch(new AssignHaulCommand(ids, _mode.SourceId, buildingId, cargo));
+                FinishCommand(result.Ok, result.Ok
+                    ? cargo.Count == 0 ? "Постоянный маршрут назначен." : $"Маршрут назначен, носят: {CargoNames(cargo)}."
+                    : result.Error);
             }
         }
 
@@ -493,27 +645,53 @@ namespace TrollStrategy.Application
             }
             else if (_mode.Type == InteractionModeType.ChoosingHaulDestination)
             {
-                BuildingSnapshot src = null;
-                for (int i = 0; i < buildings.Count; i++)
-                {
-                    if (buildings[i].Id == _mode.SourceId)
-                    {
-                        src = buildings[i];
-                        break;
-                    }
-                }
-                if (src != null)
-                {
-                    for (int i = 0; i < buildings.Count; i++)
-                    {
-                        var dest = buildings[i];
-                        if (dest.Id != src.Id && ColonySimulation.IsValidHaulRoute(src.Kind, dest.Kind, _session.Catalog))
-                            list.Add(dest.Id);
-                    }
-                }
+                list = HaulDestinationIds(_mode.SourceId, _haulCargo);
             }
 
             return list;
+        }
+
+        // Buildings a haul from the source can end at; with goods chosen, only those that take all of them.
+        private List<string> HaulDestinationIds(string sourceId, List<ResourceKind> cargo)
+        {
+            var list = new List<string>();
+            var src = FindBuilding(sourceId);
+            if (src == null) return list;
+            foreach (var dest in _session.CurrentSnapshot.Buildings)
+            {
+                if (dest.Id == src.Id || !ColonySimulation.IsValidHaulRoute(src.Kind, dest.Kind, _session.Catalog))
+                    continue;
+                if (cargo.Count > 0)
+                {
+                    var carriable = ColonySimulation.CarriableResources(src.Kind, dest.Kind, _session.Catalog);
+                    if (!cargo.TrueForAll(carriable.Contains)) continue;
+                }
+                list.Add(dest.Id);
+            }
+            return list;
+        }
+
+        private static bool IsHaulStepAfterSource(InteractionModeType mode) =>
+            mode == InteractionModeType.ChoosingHaulCargo || mode == InteractionModeType.ChoosingHaulDestination;
+
+        private string CargoMessage(string next)
+        {
+            string cargo = _haulCargo.Count == 0 ? "Носить всё, что есть." : $"Носить: {CargoNames(_haulCargo)}.";
+            return string.IsNullOrEmpty(next) ? cargo : cargo + " " + next;
+        }
+
+        private string CargoNames(IReadOnlyList<ResourceKind> cargo)
+        {
+            var names = new List<string>(cargo.Count);
+            foreach (var resource in cargo) names.Add(_session.ResourceName(resource).ToLowerInvariant());
+            return string.Join(", ", names);
+        }
+
+        private BuildingSnapshot FindBuilding(string buildingId)
+        {
+            foreach (var building in _session.CurrentSnapshot.Buildings)
+                if (building.Id == buildingId) return building;
+            return null;
         }
 
         private int SaleRefund(ICollection<string> unitIds)
@@ -548,15 +726,34 @@ namespace TrollStrategy.Application
             Emit();
         }
 
-        private bool SnapshotContainsUnit(string unitId)
+        // Selectable creatures only: those inside a building cannot be picked.
+        private bool SnapshotContainsUnit(string unitId) => IsSelectable(unitId);
+
+        // Creatures that went inside a building, were sold or fell drop out of the selection; an order that
+        // was waiting for a target is called off once nobody is left to give it to.
+        private void DropUnselectable(GameSnapshot snapshot)
         {
-            if (string.IsNullOrEmpty(unitId)) return false;
-            var units = _session.CurrentSnapshot.Units;
-            for (int i = 0; i < units.Count; i++)
+            if (_selected.Count == 0 && _inspectedUnitId == null) return;
+            var selectable = new HashSet<string>();
+            foreach (var unit in snapshot.Units)
+                if (IsSelectable(unit)) selectable.Add(unit.Id);
+            int before = _selected.Count;
+            _selected.RemoveWhere(id => !selectable.Contains(id));
+            bool inspectedGone = _inspectedUnitId != null && !selectable.Contains(_inspectedUnitId);
+            if (inspectedGone) _inspectedUnitId = null;
+            if (_selected.Count == before && !inspectedGone) return;
+            if (_selected.Count == 0)
             {
-                if (units[i].Id == unitId) return true;
+                _commandsOpen = false;
+                if (_mode.Type == InteractionModeType.ChoosingWorkTarget ||
+                    _mode.Type == InteractionModeType.ChoosingHaulSource ||
+                    IsHaulStepAfterSource(_mode.Type))
+                {
+                    _mode = InteractionMode.Neutral;
+                    _message = "Выбранные существа ушли в здание.";
+                }
             }
-            return false;
+            Emit();
         }
 
         private void Emit()

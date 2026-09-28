@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Presentation.Audio;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace TrollStrategy.UI
 {
     /// <summary>
     /// Bottom bar for the current intent. With creatures selected it offers their commands; while placing,
-    /// moving or picking a target it says what the map expects, lists valid targets as buttons and offers
-    /// a way out. Every action goes to the interaction controller, the same path as the hotkeys.
+    /// moving or picking a target it says what the map expects and offers a way out. Workplaces and haul
+    /// sources are also listed as buttons; where a haul goes is picked on the map only. While the haul cargo
+    /// dialog is up the bar steps aside. Every action goes to the interaction controller, the same path as
+    /// the hotkeys.
     /// </summary>
     public sealed class ContextBar
     {
@@ -26,10 +27,13 @@ namespace TrollStrategy.UI
         private readonly Button _barracks;
         private readonly Button _sell;
         private readonly Button _auto;
+        private readonly Button _cargo;
         private readonly Button _cancel;
         private readonly Button _clear;
         private readonly List<Button> _targetButtons = new();
+        private readonly List<BuildingKind> _targetKinds = new();
         private string _targetSignature;
+        private QuestFocus _focus = QuestFocus.None;
 
         public ContextBar(VisualElement root, ColonyHudContext context)
         {
@@ -47,6 +51,7 @@ namespace TrollStrategy.UI
             _barracks = Command(actions, "В бараки", null, null, interaction.SendSelectedToBarracks, silent: true);
             _sell = Command(actions, "Продать", null, "btn--danger", interaction.SellSelected, silent: true);
             _auto = Command(actions, "Поставить сам", null, "btn--primary", interaction.PlaceBuildingAutomatically);
+            _cargo = Command(actions, "Изменить груз", null, null, interaction.ChangeHaulCargo);
             _cancel = Command(actions, "Отмена", "Esc", null, interaction.CancelOrClear, click: Sfx.UiBack);
             _clear = Command(actions, "×", "Esc", "btn-close", interaction.CancelOrClear, click: Sfx.UiBack);
             Ui.Show(_bar, false);
@@ -59,6 +64,12 @@ namespace TrollStrategy.UI
         public Button SellButton => _sell;
         public Button CancelButton => _cancel;
         public IReadOnlyList<Button> TargetButtons => _targetButtons;
+        public Button HaulButton => _haul;
+        /// <summary>Back to the cargo choice while the haul destination is being picked.</summary>
+        public Button ChangeCargoButton => _cargo;
+
+        /// <summary>What the current quest asks for; the matching command and targets are marked.</summary>
+        public void SetFocus(QuestFocus focus) => _focus = focus ?? QuestFocus.None;
 
         public void Refresh(GameSnapshot snapshot)
         {
@@ -66,7 +77,9 @@ namespace TrollStrategy.UI
             var mode = interaction.Mode;
             int selected = interaction.SelectedIds.Count;
 
-            if (mode.Type == InteractionModeType.Neutral && selected == 0)
+            // the cargo dialog in the middle of the screen asks alone
+            if (mode.Type == InteractionModeType.Neutral && selected == 0 ||
+                mode.Type == InteractionModeType.ChoosingHaulCargo)
             {
                 Ui.Show(_bar, false);
                 ClearTargets();
@@ -85,18 +98,23 @@ namespace TrollStrategy.UI
         private void ShowSelection(GameSnapshot snapshot, InteractionController interaction)
         {
             int goblins = 0, trolls = 0, refund = 0;
+            bool ordered = false;
             foreach (var unit in snapshot.Units)
             {
                 if (!Contains(interaction.SelectedIds, unit.Id)) continue;
                 if (unit.UnitKind == UnitKind.Goblin) goblins++;
                 else if (unit.UnitKind == UnitKind.Troll) trolls++;
                 refund += Domain.ColonySimulation.UnitSaleRefund(_context.Catalog.GetUnit(unit.UnitKind));
+                ordered |= _focus.Orders(unit.UnitKind);
             }
             Ui.SetText(_title, $"Выбрано: {interaction.SelectedIds.Count}");
             Ui.SetText(_prompt, Breakdown(goblins, trolls));
             ClearTargets();
             Ui.SetCaption(_sell, "Продать +" + Ui.Gold(refund));
-            SetButtons(selection: true, auto: false, cancel: false);
+            SetButtons(selection: true, auto: false, cargo: false, cancel: false);
+            // the quest's next order for these creatures
+            _work.EnableInClassList("is-suggested", ordered && _focus.WorkTarget != null);
+            _haul.EnableInClassList("is-suggested", ordered && _focus.HaulFrom != null);
         }
 
         private void ShowMode(GameSnapshot snapshot, InteractionController interaction, InteractionMode mode)
@@ -132,12 +150,27 @@ namespace TrollStrategy.UI
             Ui.SetText(_title, title);
             Ui.SetText(_prompt, interaction.Message);
 
-            bool targeting = mode.Type == InteractionModeType.ChoosingWorkTarget ||
-                             mode.Type == InteractionModeType.ChoosingHaulSource ||
-                             mode.Type == InteractionModeType.ChoosingHaulDestination;
-            if (targeting) ShowTargets(snapshot, interaction, mode);
+            // the haul destination is the player's call on the map: no list of buildings for it
+            bool listed = mode.Type == InteractionModeType.ChoosingWorkTarget ||
+                          mode.Type == InteractionModeType.ChoosingHaulSource;
+            if (listed) ShowTargets(snapshot, interaction, mode);
             else ClearTargets();
-            SetButtons(selection: false, auto: mode.Type == InteractionModeType.PlacingBuilding, cancel: true);
+            SetButtons(selection: false, auto: mode.Type == InteractionModeType.PlacingBuilding,
+                cargo: mode.Type == InteractionModeType.ChoosingHaulDestination, cancel: true);
+            MarkQuestTargets(mode.Type);
+        }
+
+        // The target the quest asks for in this step: its workplace, where to carry from.
+        private void MarkQuestTargets(InteractionModeType mode)
+        {
+            BuildingKind? wanted = mode switch
+            {
+                InteractionModeType.ChoosingWorkTarget => _focus.WorkTarget,
+                InteractionModeType.ChoosingHaulSource => _focus.HaulFrom,
+                _ => null
+            };
+            for (int i = 0; i < _targetButtons.Count; i++)
+                _targetButtons[i].EnableInClassList("is-suggested", wanted != null && _targetKinds[i] == wanted.Value);
         }
 
         /// <summary>Valid targets as buttons, rebuilt only when the step or the set of targets changes.</summary>
@@ -151,13 +184,19 @@ namespace TrollStrategy.UI
             foreach (var id in ids)
             {
                 string name = id;
+                var kind = default(BuildingKind);
                 foreach (var building in snapshot.Buildings)
-                    if (building.Id == id) name = building.Name;
+                {
+                    if (building.Id != id) continue;
+                    name = building.Name;
+                    kind = building.Kind;
+                }
                 var target = id;
                 var button = UiFeel.Bind(Ui.TextButton(name, "btn chip"), () => interaction.ChooseBuilding(target),
                     silentClick: true);
                 _targets.Add(button);
                 _targetButtons.Add(button);
+                _targetKinds.Add(kind);
             }
             Ui.Show(_targets, ids.Count > 0);
         }
@@ -166,11 +205,12 @@ namespace TrollStrategy.UI
         {
             foreach (var button in _targetButtons) button.RemoveFromHierarchy();
             _targetButtons.Clear();
+            _targetKinds.Clear();
             _targetSignature = null;
             Ui.Show(_targets, false);
         }
 
-        private void SetButtons(bool selection, bool auto, bool cancel)
+        private void SetButtons(bool selection, bool auto, bool cargo, bool cancel)
         {
             Ui.Show(_work, selection);
             Ui.Show(_haul, selection);
@@ -179,6 +219,7 @@ namespace TrollStrategy.UI
             Ui.Show(_sell, selection);
             Ui.Show(_clear, selection);
             Ui.Show(_auto, auto);
+            Ui.Show(_cargo, cargo);
             Ui.Show(_cancel, cancel);
         }
 
