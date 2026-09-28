@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using TrollStrategy.Bootstrap;
+using TrollStrategy.Presentation.Buildings;
+using TrollStrategy.Presentation.Units;
+using TrollStrategy.Presentation.WorldUi;
 using TrollStrategy.UI;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -16,7 +19,9 @@ namespace TrollStrategy.Editor.Setup
     /// <summary>
     /// Builds the screen UI prefab and puts it into the colony scene. The prefab is a tree of nested
     /// UIDocuments, one GameObject per screen, band and panel, so the Hierarchy shows the UI's structure;
-    /// each panel's layout is its own UXML. Also owns the panel settings, theme and fallback font.
+    /// each panel's layout is its own UXML. Also owns the panel settings, theme and fallback font, the
+    /// world-space settings for labels over things in the world, and those labels in the building and
+    /// unit prefabs.
     /// </summary>
     public static class UiSetup
     {
@@ -25,10 +30,12 @@ namespace TrollStrategy.Editor.Setup
         public const string TextSettingsPath = "Assets/Game/UI/Settings/GameTextSettings.asset";
         public const string ThemePath = "Assets/Game/UI/Settings/GameTheme.tss";
         public const string FallbackFontPath = "Assets/Game/UI/Fonts/LiberationSans Fallback.asset";
+        public const string WorldPanelSettingsPath = "Assets/Game/UI/Settings/WorldPanelSettings.asset";
+        public const string WorldThemePath = "Assets/Game/UI/Settings/WorldTheme.tss";
+        private const string BuildingBasePath = "Assets/Game/Prefabs/BuildingBase.prefab";
+        private const string UnitBasePath = "Assets/Game/Prefabs/UnitBase.prefab";
         private const string FallbackSourcePath = "Assets/TextMesh Pro/Fonts/LiberationSans.ttf";
         private const string UxmlFolder = "Assets/Game/UI/Uxml/";
-        private const string LegacyHudName = "ColonyHud";
-        private const string LegacyCanvasName = "HUDCanvas";
 
         /// <summary>One GameObject with a UIDocument; children nest into its root in sorting order.</summary>
         private sealed class Node
@@ -139,13 +146,9 @@ namespace TrollStrategy.Editor.Setup
         {
             if (boot == null) throw new ArgumentNullException(nameof(boot));
             var prefab = BuildPrefab();
+            var worldPanel = EnsureWorldPanelSettings();
+            InstallWorldLabels(worldPanel);
 
-            foreach (var name in new[] { LegacyCanvasName, LegacyHudName })
-            {
-                var legacy = GameObject.Find(name);
-                if (legacy != null && !PrefabUtility.IsPartOfPrefabInstance(legacy) && legacy.transform.parent == null)
-                    Undo.DestroyObjectImmediate(legacy);
-            }
             EnsureEventSystem();
 
             GameObject instance = null;
@@ -166,6 +169,8 @@ namespace TrollStrategy.Editor.Setup
                 .objectReferenceValue = hud;
             (serialized.FindProperty("_battleHud") ?? throw new InvalidOperationException("GameBootstrap has no _battleHud field"))
                 .objectReferenceValue = battleHud;
+            (serialized.FindProperty("_worldPanel") ?? throw new InvalidOperationException("GameBootstrap has no _worldPanel field"))
+                .objectReferenceValue = worldPanel;
             serialized.ApplyModifiedProperties();
             return hud;
         }
@@ -232,6 +237,84 @@ namespace TrollStrategy.Editor.Setup
             if (node.Field != null) fields.Add(node.Field, document);
             foreach (var child in node.Children) Add(child, go.transform, fields);
             return go;
+        }
+
+        /// <summary>
+        /// World-space settings for WorldPanel labels: 100 panel pixels per world unit and the world theme.
+        /// They take no input, so no collider is made for them; one would catch the board's raycasts.
+        /// </summary>
+        public static PanelSettings EnsureWorldPanelSettings()
+        {
+            var settings = AssetDatabase.LoadAssetAtPath<PanelSettings>(WorldPanelSettingsPath);
+            if (settings == null)
+            {
+                settings = ScriptableObject.CreateInstance<PanelSettings>();
+                AssetDatabase.CreateAsset(settings, WorldPanelSettingsPath);
+            }
+            settings.renderMode = PanelRenderMode.WorldSpace;
+            settings.themeStyleSheet = AssetDatabase.LoadAssetAtPath<ThemeStyleSheet>(WorldThemePath);
+            if (settings.themeStyleSheet == null) Debug.LogWarning($"World UI theme missing: {WorldThemePath}");
+            settings.textSettings = EnsureTextSettings();
+            var serialized = new SerializedObject(settings);
+            var colliders = serialized.FindProperty("m_ColliderUpdateMode")
+                ?? throw new InvalidOperationException("PanelSettings has no collider mode");
+            colliders.enumValueIndex = Array.IndexOf(colliders.enumNames, "Keep");
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssetIfDirty(settings);
+            return settings;
+        }
+
+        /// <summary>
+        /// The building name and the hauler's cargo count are world panels in the base prefabs, at the
+        /// place of the text they replace; every variant and scene instance inherits them.
+        /// </summary>
+        public static void InstallWorldLabels(PanelSettings settings)
+        {
+            ReplaceWithWorldPanel<BuildingView>(BuildingBasePath, "_label", "Label", settings);
+            ReplaceWithWorldPanel<UnitView>(UnitBasePath, "_cargoLabel", "CargoLabel", settings);
+        }
+
+        private static void ReplaceWithWorldPanel<T>(string prefabPath, string field, string childName,
+            PanelSettings settings) where T : Component
+        {
+            var contents = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                var owner = contents.GetComponentInChildren<T>(true)
+                    ?? throw new InvalidOperationException($"{prefabPath} has no {typeof(T).Name}");
+                var serialized = new SerializedObject(owner);
+                var property = serialized.FindProperty(field)
+                    ?? throw new InvalidOperationException($"{typeof(T).Name} has no field {field}");
+                if (property.objectReferenceValue is WorldPanel panel)
+                {
+                    panel.GetComponent<UIDocument>().panelSettings = settings;
+                }
+                else
+                {
+                    // the field, retyped to WorldPanel, no longer holds the old text: find it by name
+                    Transform old = null;
+                    foreach (var child in contents.GetComponentsInChildren<Transform>(true))
+                        if (child.name == childName && child.GetComponent<WorldPanel>() == null) old = child;
+                    if (old == null) throw new InvalidOperationException($"{prefabPath} has no {childName} to replace");
+                    var go = new GameObject(childName);
+                    go.transform.SetParent(old.parent, false);
+                    go.transform.SetSiblingIndex(old.GetSiblingIndex());
+                    go.transform.SetLocalPositionAndRotation(old.localPosition, old.localRotation);
+                    go.SetActive(old.gameObject.activeSelf);
+                    Object.DestroyImmediate(old.gameObject);
+                    var document = go.AddComponent<UIDocument>();
+                    document.panelSettings = settings;
+                    document.worldSpaceSizeMode = WorldSpaceSizeMode.Dynamic;
+                    property.objectReferenceValue = go.AddComponent<WorldPanel>();
+                }
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(contents, prefabPath);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(contents);
+            }
         }
 
         /// <summary>1920×1080 reference, scaled by width and height alike, with the game theme.</summary>

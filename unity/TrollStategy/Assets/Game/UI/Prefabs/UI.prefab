@@ -243,7 +243,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6833388473266409086}
+  m_Father: {fileID: 4053673483692053999}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2695016495758723895
 MonoBehaviour:
@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: 9ea6dc1996fec7a4da63be8e6549122f, type: 2}
-  m_ParentUI: {fileID: 1805505908180156093}
+  m_ParentUI: {fileID: 4052611196681800841}
   sourceAsset: {fileID: 9197481963319205126, guid: 9ec9975e65ea0df42830fb64608c2c99, type: 3}
   m_SortingOrder: 1
   m_Position: 1
@@ -282,7 +282,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.UI.UiDocumentClasses
   _classes:
   - layer
---- !u!1 &1968763508917752512
+--- !u!1 &2205561335445661984
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -290,9 +290,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6833388473266409086}
-  - component: {fileID: 1805505908180156093}
-  - component: {fileID: 5640154684631291269}
+  - component: {fileID: 874069637307498896}
+  - component: {fileID: 261545979553759699}
+  - component: {fileID: 5012933963705920066}
   m_Layer: 0
   m_Name: Bottom
   m_TagString: Untagged
@@ -300,39 +300,39 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6833388473266409086
+--- !u!4 &874069637307498896
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1968763508917752512}
+  m_GameObject: {fileID: 2205561335445661984}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2782991810432081189}
-  - {fileID: 8018779402596715450}
-  m_Father: {fileID: 5055009096461670649}
+  - {fileID: 5437983957164818511}
+  - {fileID: 2955090973738485941}
+  m_Father: {fileID: 4510201185723487923}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1805505908180156093
+--- !u!114 &261545979553759699
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1968763508917752512}
+  m_GameObject: {fileID: 2205561335445661984}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: 9ea6dc1996fec7a4da63be8e6549122f, type: 2}
-  m_ParentUI: {fileID: 8388724987577788853}
+  m_ParentUI: {fileID: 5442604982672058341}
   sourceAsset: {fileID: 0}
-  m_SortingOrder: 2
+  m_SortingOrder: 1
   m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
@@ -340,20 +340,19 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
---- !u!114 &5640154684631291269
+--- !u!114 &5012933963705920066
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1968763508917752512}
+  m_GameObject: {fileID: 2205561335445661984}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1cd3f73802fab4418e501757957f0f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.UI.UiDocumentClasses
   _classes:
-  - bottom
   - hud-band
 --- !u!1 &2473450274034316743
 GameObject:
@@ -586,7 +585,7 @@ Transform:
   - {fileID: 7139243095740530735}
   - {fileID: 7311350119494427600}
   - {fileID: 3397904766833148971}
-  m_Father: {fileID: 4053673483692053999}
+  m_Father: {fileID: 874069637307498896}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5899162048949743724
 MonoBehaviour:
@@ -601,7 +600,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: 9ea6dc1996fec7a4da63be8e6549122f, type: 2}
-  m_ParentUI: {fileID: 4052611196681800841}
+  m_ParentUI: {fileID: 261545979553759699}
   sourceAsset: {fileID: 0}
   m_SortingOrder: 0
   m_Position: 0
@@ -796,7 +795,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4381034897804287085}
+  m_Father: {fileID: 4510201185723487923}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5714803707497992444
 MonoBehaviour:
@@ -811,7 +810,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: 9ea6dc1996fec7a4da63be8e6549122f, type: 2}
-  m_ParentUI: {fileID: 21493615888950224}
+  m_ParentUI: {fileID: 5442604982672058341}
   sourceAsset: {fileID: 9197481963319205126, guid: 4332e1d81ee9b1d4f92d8059a5919ff6, type: 3}
   m_SortingOrder: 0
   m_Position: 0
@@ -940,7 +939,7 @@ Transform:
   m_Children:
   - {fileID: 8175617713010528732}
   - {fileID: 2559462986950096574}
-  - {fileID: 6833388473266409086}
+  - {fileID: 4053673483692053999}
   m_Father: {fileID: 4553410400218250727}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8388724987577788853
@@ -980,6 +979,78 @@ MonoBehaviour:
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.UI.UiDocumentClasses
   _classes:
   - hud-root
+--- !u!1 &5166490353445662076
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4510201185723487923}
+  - component: {fileID: 5442604982672058341}
+  - component: {fileID: 4702466861331857319}
+  m_Layer: 0
+  m_Name: Frame
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4510201185723487923
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5166490353445662076}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 915151496469651947}
+  - {fileID: 874069637307498896}
+  m_Father: {fileID: 7492997585134560282}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5442604982672058341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5166490353445662076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: 9ea6dc1996fec7a4da63be8e6549122f, type: 2}
+  m_ParentUI: {fileID: 547749263016594965}
+  sourceAsset: {fileID: 0}
+  m_SortingOrder: 0
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &4702466861331857319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5166490353445662076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1cd3f73802fab4418e501757957f0f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.UI.UiDocumentClasses
+  _classes:
+  - battle-frame
 --- !u!1 &5180313548501393910
 GameObject:
   m_ObjectHideFlags: 0
@@ -1011,9 +1082,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5437983957164818511}
-  - {fileID: 2955090973738485941}
-  m_Father: {fileID: 4381034897804287085}
+  - {fileID: 2782991810432081189}
+  - {fileID: 8018779402596715450}
+  m_Father: {fileID: 5055009096461670649}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4052611196681800841
 MonoBehaviour:
@@ -1028,9 +1099,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: 9ea6dc1996fec7a4da63be8e6549122f, type: 2}
-  m_ParentUI: {fileID: 21493615888950224}
+  m_ParentUI: {fileID: 8388724987577788853}
   sourceAsset: {fileID: 0}
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
@@ -1051,6 +1122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.UI.UiDocumentClasses
   _classes:
+  - bottom
   - hud-band
 --- !u!1 &5471050241308049786
 GameObject:
@@ -1084,7 +1156,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4381034897804287085}
+  - {fileID: 4510201185723487923}
   - {fileID: 255924687032697603}
   m_Father: {fileID: 8011412757571204081}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1145,78 +1217,6 @@ MonoBehaviour:
   _actions: {fileID: 2960257015480540348}
   _replay: {fileID: 1559691635713987618}
   _banner: {fileID: 2491477677149458023}
---- !u!1 &5687438167677286378
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4381034897804287085}
-  - component: {fileID: 21493615888950224}
-  - component: {fileID: 3705066114182053300}
-  m_Layer: 0
-  m_Name: Frame
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4381034897804287085
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5687438167677286378}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 915151496469651947}
-  - {fileID: 4053673483692053999}
-  m_Father: {fileID: 7492997585134560282}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &21493615888950224
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5687438167677286378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
-  m_PanelSettings: {fileID: 11400000, guid: 9ea6dc1996fec7a4da63be8e6549122f, type: 2}
-  m_ParentUI: {fileID: 547749263016594965}
-  sourceAsset: {fileID: 0}
-  m_SortingOrder: 0
-  m_Position: 0
-  m_WorldSpaceSizeMode: 1
-  m_WorldSpaceWidth: 1920
-  m_WorldSpaceHeight: 1080
-  m_PivotReferenceSize: 0
-  m_Pivot: 0
-  m_WorldSpaceCollider: {fileID: 0}
---- !u!114 &3705066114182053300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5687438167677286378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1cd3f73802fab4418e501757957f0f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.UI.UiDocumentClasses
-  _classes:
-  - battle-frame
 --- !u!1 &5791328537456171064
 GameObject:
   m_ObjectHideFlags: 0
@@ -1302,7 +1302,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4053673483692053999}
+  m_Father: {fileID: 874069637307498896}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1559691635713987618
 MonoBehaviour:
@@ -1317,7 +1317,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: 9ea6dc1996fec7a4da63be8e6549122f, type: 2}
-  m_ParentUI: {fileID: 4052611196681800841}
+  m_ParentUI: {fileID: 261545979553759699}
   sourceAsset: {fileID: 9197481963319205126, guid: 350fc34ece5638545b01b14c1cca9799, type: 3}
   m_SortingOrder: 1
   m_Position: 0
@@ -1765,7 +1765,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6833388473266409086}
+  m_Father: {fileID: 4053673483692053999}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7548849980504005662
 MonoBehaviour:
@@ -1780,7 +1780,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: 9ea6dc1996fec7a4da63be8e6549122f, type: 2}
-  m_ParentUI: {fileID: 1805505908180156093}
+  m_ParentUI: {fileID: 4052611196681800841}
   sourceAsset: {fileID: 9197481963319205126, guid: 8da63bf40a811ba439accc596a2bfda7, type: 3}
   m_SortingOrder: 0
   m_Position: 0

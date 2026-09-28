@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using TMPro;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Feel;
 using TrollStrategy.Presentation.Units;
+using TrollStrategy.Presentation.WorldUi;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace TrollStrategy.Presentation.Battle
 {
@@ -19,7 +20,6 @@ namespace TrollStrategy.Presentation.Battle
         /// <summary>Battle-only size: a 9 px troll stands about 0.96 m, a 6 px goblin about 0.64 m.</summary>
         public const float PixelSize = .17f / 1.6f;
         private const float GroundLift = .05f;
-        private const float BarWidth = 1f / 1.6f;
         private const float BarHeight = .13f / 1.6f;
         private const float IdleFrame = .2f;
         private const float WalkFrame = .1f;
@@ -40,11 +40,10 @@ namespace TrollStrategy.Presentation.Battle
         private SpriteRenderer _sprite;
         private SpriteRenderer _shadow;
         private SpriteRenderer _ring;
-        private Transform _bar;
-        private SpriteRenderer _barFill;
-        private SpriteRenderer _barChip;
-        private SpriteRenderer _barBack;
-        private TextMeshPro _barLabel;
+        private WorldPanel _bar;
+        private VisualElement _barFill;
+        private VisualElement _barChip;
+        private Label _barLabel;
         private Transform _hitbox;
         private CapsuleCollider _collider;
         private BattleCellView _cellView;
@@ -278,11 +277,12 @@ namespace TrollStrategy.Presentation.Battle
             if (_camera == null || _sprite == null) return;
             var facing = _camera.transform.rotation;
             _sprite.transform.rotation = facing;
-            _bar.rotation = facing;
+            _bar.transform.rotation = facing;
             // feet stay on the cell while the sprite pops, squashes or shrinks: scale the pivot offset with it
             float scale = _spriteScale > 0f ? _sprite.transform.localScale.y / _spriteScale : 1f;
             _sprite.transform.position = transform.position + Vector3.up * GroundLift + BodyUp * (_feet * scale);
-            _bar.position = AboveHead;
+            // the bar's document hangs from its bottom edge: the bar itself stays centred where it always was
+            _bar.transform.position = AboveHead - BodyUp * (BarHeight * .5f + .03f);
             // the hitbox leans with the billboard, so a click on the head still means this fighter
             _hitbox.rotation = Quaternion.FromToRotation(Vector3.up, BodyUp);
             _hitbox.position = transform.position + Vector3.up * GroundLift;
@@ -342,10 +342,10 @@ namespace TrollStrategy.Presentation.Battle
             _ring.color = ring;
 
             float barScale = spawn * remove * (_pose == Pose.Dead ? 1f - Mathf.Clamp01(_deadTime / .25f) : 1f);
-            _bar.localScale = Vector3.one * (barScale * (1f + _barPunch * .18f));
+            _bar.transform.localScale = Vector3.one * (barScale * (1f + _barPunch * .18f));
             SetBarSegment(_barChip, _chipHp / _maxHp);
             SetBarSegment(_barFill, (float)_hp / _maxHp);
-            _barFill.color = Color.Lerp(Color.white, _enemy ? EnemyFill : PlayerFill, 1f - _barPunch * .7f);
+            _barFill.style.backgroundColor = Color.Lerp(Color.white, _enemy ? EnemyFill : PlayerFill, 1f - _barPunch * .7f);
         }
 
         private static float LungeOffset(float t, bool melee)
@@ -446,27 +446,13 @@ namespace TrollStrategy.Presentation.Battle
             _ring.sortingOrder = 5;
             _ring.transform.SetLocalPositionAndRotation(Vector3.up * (GroundLift + .005f), Quaternion.Euler(90f, 0f, 0f));
 
-            _bar = new GameObject("HpBar").transform;
-            _bar.SetParent(transform, false);
-            _barBack = BarPart("Back", new Color(.08f, .07f, .06f, .85f), 30);
-            _barBack.transform.localScale = new Vector3(BarWidth + .06f, BarHeight + .06f, 1f);
-            _barChip = BarPart("Chip", new Color(1f, .93f, .7f, 1f), 31);
-            _barFill = BarPart("Fill", _enemy ? EnemyFill : PlayerFill, 32);
-            _barLabel = new GameObject("Hp", typeof(TextMeshPro)).GetComponent<TextMeshPro>();
-            _barLabel.transform.SetParent(_bar, false);
-            _barLabel.transform.localPosition = new Vector3(0f, BarHeight + .12f, 0f);
-            _barLabel.alignment = TextAlignmentOptions.Center;
-            _barLabel.fontSize = 2.2f;
-            _barLabel.fontStyle = FontStyles.Bold;
-            _barLabel.textWrappingMode = TextWrappingModes.NoWrap;
-            _barLabel.rectTransform.sizeDelta = new Vector2(3f, .5f);
-            // TMP creates a renderer material for outlines; do that only for live battle views.
-            if (UnityEngine.Application.isPlaying)
-            {
-                _barLabel.outlineWidth = .3f;
-                _barLabel.outlineColor = new Color32(20, 16, 12, 255);
-            }
-            _barLabel.sortingOrder = 33;
+            // HP over the head: the number, then the bar with its lagging chip (sizes and colours in WorldUi.uss)
+            _bar = WorldPanel.Create("HpBar", transform, 33, Pivot.BottomCenter, "hp-bar");
+            _barLabel = _bar.AddLabel("world-label hp-bar__label");
+            var track = BarPart(_bar.Content, "hp-bar__track");
+            var inside = BarPart(track, "hp-bar__inside");
+            _barChip = BarPart(inside, "hp-bar__chip");
+            _barFill = BarPart(inside, "hp-bar__fill");
 
             _hitbox = new GameObject("Hitbox").transform;
             _hitbox.SetParent(transform, false);
@@ -478,24 +464,17 @@ namespace TrollStrategy.Presentation.Battle
             _cellView = _hitbox.gameObject.AddComponent<BattleCellView>();
         }
 
-        private SpriteRenderer BarPart(string name, Color color, int order)
+        private static VisualElement BarPart(VisualElement parent, string className)
         {
-            var part = new GameObject(name, typeof(SpriteRenderer)).GetComponent<SpriteRenderer>();
-            part.transform.SetParent(_bar, false);
-            part.sprite = FeelSprites.White;
-            part.color = color;
-            part.sortingOrder = order;
-            part.transform.localScale = new Vector3(BarWidth, BarHeight, 1f);
+            var part = new VisualElement { pickingMode = PickingMode.Ignore };
+            part.AddToClassList(className);
+            parent.Add(part);
             return part;
         }
 
-        private static void SetBarSegment(SpriteRenderer segment, float fraction)
-        {
-            fraction = Mathf.Clamp01(fraction);
-            segment.enabled = fraction > .001f;
-            segment.transform.localScale = new Vector3(BarWidth * fraction, BarHeight, 1f);
-            segment.transform.localPosition = new Vector3((fraction - 1f) * BarWidth * .5f, 0f, 0f);
-        }
+        // segments grow from the left edge of the bar
+        private static void SetBarSegment(VisualElement segment, float fraction) =>
+            segment.style.width = Length.Percent(Mathf.Clamp01(fraction) * 100f);
 
         private void RefreshBar()
         {

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using TMPro;
 using TrollStrategy.Presentation.Feel;
+using TrollStrategy.Presentation.WorldUi;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Label = UnityEngine.UIElements.Label;
 
 namespace TrollStrategy.Presentation.Battle
 {
@@ -19,10 +20,12 @@ namespace TrollStrategy.Presentation.Battle
         public const float Gravity = 9f;
 
         private const int SortText = 60;
+        // a world font size of 1 used to be 10 panel pixels: the numbers keep their old sizes
+        private const float FontPixels = 10f;
         private const int SortSpark = 50;
 
         private readonly List<Effect> _active = new();
-        private readonly Stack<TextMeshPro> _textPool = new();
+        private readonly Stack<WorldPanel> _textPool = new();
         private readonly Stack<SpriteRenderer> _spritePool = new();
         private readonly Dictionary<GameObject, Stack<Transform>> _meshPool = new();
         // presentation only, but still repeatable: the same replay kicks up the same dust
@@ -42,12 +45,13 @@ namespace TrollStrategy.Presentation.Battle
         /// <summary>A number that pops above a fighter and drifts up while fading.</summary>
         public void Number(Vector3 position, string text, Color color, float size, float lateral)
         {
-            var label = TakeText();
+            var panel = TakeText();
+            var label = (Label)panel.Content[0];
             label.text = text;
-            label.color = color;
-            label.fontSize = size;
-            label.transform.position = position;
-            _active.Add(new FloatingText(label, position, lateral, this));
+            label.style.color = color;
+            label.style.fontSize = size * FontPixels;
+            panel.transform.position = position;
+            _active.Add(new FloatingText(panel, label, color, position, lateral, this));
         }
 
         /// <summary>Star burst with a few glowing shards at the point of impact.</summary>
@@ -247,32 +251,24 @@ namespace TrollStrategy.Presentation.Battle
             _spritePool.Push(renderer);
         }
 
-        private TextMeshPro TakeText()
+        private WorldPanel TakeText()
         {
-            TextMeshPro label = null;
-            while (_textPool.Count > 0 && label == null) label = _textPool.Pop();
-            if (label == null)
+            WorldPanel panel = null;
+            while (_textPool.Count > 0 && panel == null) panel = _textPool.Pop();
+            if (panel == null)
             {
-                var go = new GameObject("DamageNumber", typeof(TextMeshPro));
-                go.transform.SetParent(transform, false);
-                label = go.GetComponent<TextMeshPro>();
-                label.alignment = TextAlignmentOptions.Center;
-                label.fontStyle = FontStyles.Bold;
-                label.textWrappingMode = TextWrappingModes.NoWrap;
-                label.rectTransform.sizeDelta = new Vector2(6f, 2f);
-                label.outlineWidth = .28f;
-                label.outlineColor = new Color32(24, 18, 14, 255);
-                label.sortingOrder = SortText;
+                panel = WorldPanel.Create("DamageNumber", transform, SortText);
+                panel.AddLabel("world-label world-label--damage");
             }
-            label.gameObject.SetActive(true);
-            return label;
+            panel.gameObject.SetActive(true);
+            return panel;
         }
 
-        private void ReturnText(TextMeshPro label)
+        private void ReturnText(WorldPanel panel)
         {
-            if (label == null) return;
-            label.gameObject.SetActive(false);
-            _textPool.Push(label);
+            if (panel == null) return;
+            panel.gameObject.SetActive(false);
+            _textPool.Push(panel);
         }
 
         private abstract class Effect
@@ -285,39 +281,41 @@ namespace TrollStrategy.Presentation.Battle
         private sealed class FloatingText : Effect
         {
             private const float Life = .95f;
-            private readonly TextMeshPro _label;
+            private readonly WorldPanel _panel;
+            private readonly Label _label;
             private readonly Vector3 _origin;
             private readonly float _lateral;
             private readonly BattleEffects _owner;
             private readonly Color _color;
 
-            public FloatingText(TextMeshPro label, Vector3 origin, float lateral, BattleEffects owner)
+            public FloatingText(WorldPanel panel, Label label, Color color, Vector3 origin, float lateral, BattleEffects owner)
             {
+                _panel = panel;
                 _label = label;
                 _origin = origin;
                 _lateral = lateral;
                 _owner = owner;
-                _color = label.color;
+                _color = color;
             }
 
             public override bool Tick(float dt, Quaternion facing)
             {
                 Age += dt;
-                if (_label == null) return false;
+                if (_panel == null) return false;
                 float t = Age / Life;
                 // pop past full size, settle, then rise and fade
                 float scale = t < .18f ? Ease.OutBack(t / .18f, 3f) : 1f;
                 float rise = Ease.OutCubic(t) * .9f;
                 var right = facing * Vector3.right;
-                _label.transform.SetPositionAndRotation(_origin + Vector3.up * rise + right * (_lateral * Ease.OutCubic(t)), facing);
-                _label.transform.localScale = Vector3.one * scale;
+                _panel.transform.SetPositionAndRotation(_origin + Vector3.up * rise + right * (_lateral * Ease.OutCubic(t)), facing);
+                _panel.transform.localScale = Vector3.one * scale;
                 var color = _color;
                 color.a = t < .6f ? 1f : 1f - (t - .6f) / .4f;
-                _label.color = color;
+                _label.style.color = color;
                 return t < 1f;
             }
 
-            public override void Release() => _owner.ReturnText(_label);
+            public override void Release() => _owner.ReturnText(_panel);
         }
 
         /// <summary>The spark star; without an arena it also flings flat shards.</summary>

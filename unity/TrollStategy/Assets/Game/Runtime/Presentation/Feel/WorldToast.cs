@@ -1,5 +1,6 @@
-using TMPro;
+using TrollStrategy.Presentation.WorldUi;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace TrollStrategy.Presentation.Feel
 {
@@ -11,29 +12,19 @@ namespace TrollStrategy.Presentation.Feel
     {
         private const float Life = 1.6f;
 
-        private TextMeshPro _label;
+        private Label _label;
         private Vector3 _origin;
         private Vector3 _up;
         private Color _color;
         private float _time;
 
-        public static void Show(Vector3 position, Vector3 up, string text, Color color, float size = 5f)
+        public static void Show(Vector3 position, Vector3 up, string text, Color color)
         {
             if (string.IsNullOrWhiteSpace(text)) return;
-            var go = new GameObject("WorldToast", typeof(TextMeshPro), typeof(WorldToast));
-            var label = go.GetComponent<TextMeshPro>();
-            label.text = text;
-            label.fontSize = size;
-            label.fontStyle = FontStyles.Bold;
-            label.alignment = TextAlignmentOptions.Center;
-            label.textWrappingMode = TextWrappingModes.NoWrap;
-            label.rectTransform.sizeDelta = new Vector2(20f, 2f);
-            label.outlineWidth = .3f;
-            label.outlineColor = new Color32(20, 16, 12, 255);
-            label.sortingOrder = 80;
-            label.color = color;
-            var toast = go.GetComponent<WorldToast>();
-            toast._label = label;
+            var panel = WorldPanel.Create("WorldToast", null, 80);
+            var toast = panel.gameObject.AddComponent<WorldToast>();
+            toast._label = panel.AddLabel("world-label world-label--toast");
+            toast._label.text = text;
             toast._origin = position;
             toast._up = up.sqrMagnitude > .0001f ? up.normalized : Vector3.up;
             toast._color = color;
@@ -57,7 +48,7 @@ namespace TrollStrategy.Presentation.Feel
             transform.localScale = Vector3.one * (t < .12f ? Ease.OutBack(t / .12f, 2.5f) : 1f);
             var color = _color;
             color.a = t < .7f ? 1f : 1f - (t - .7f) / .3f;
-            _label.color = color;
+            _label.style.color = color;
         }
     }
 }

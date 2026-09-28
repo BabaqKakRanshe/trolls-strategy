@@ -713,10 +713,6 @@ PrefabInstance:
       propertyPath: _model
       value: 
       objectReference: {fileID: 7716639686716744619}
-    - target: {fileID: 6311961548452623507, guid: 393ad0905b6cfb54f8b82603d1bcb816, type: 3}
-      propertyPath: m_TextStyleHashCode
-      value: -1183493901
-      objectReference: {fileID: 0}
     - target: {fileID: 7234655403894833658, guid: 393ad0905b6cfb54f8b82603d1bcb816, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

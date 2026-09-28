@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Presentation;
@@ -10,6 +11,7 @@ using TrollStrategy.Presentation.Feel;
 using TrollStrategy.Presentation.Map;
 using TrollStrategy.Presentation.Units;
 using TrollStrategy.Presentation.Visuals;
+using TrollStrategy.Presentation.WorldUi;
 using TrollStrategy.UI;
 
 namespace TrollStrategy.Bootstrap
@@ -36,6 +38,8 @@ namespace TrollStrategy.Bootstrap
         [Header("UI")]
         [SerializeField] private ColonyHud _hud;
         [SerializeField] private BattleHud _battleHud;
+        [Tooltip("World-space panel settings for labels, numbers and bars over things in the world.")]
+        [SerializeField] private PanelSettings _worldPanel;
 
         private GameSession _session;
         private InteractionController _interaction;
@@ -60,6 +64,7 @@ namespace TrollStrategy.Bootstrap
         private void Awake()
         {
             if (_camera == null) _camera = Camera.main;
+            WorldPanel.Configure(_worldPanel);
 
             if (_catalog == null)
             {

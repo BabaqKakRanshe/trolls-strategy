@@ -1,6 +1,7 @@
-using TMPro;
-using UnityEngine;
 using TrollStrategy.Presentation.Units;
+using TrollStrategy.Presentation.WorldUi;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace TrollStrategy.Presentation.Buildings
 {
@@ -13,13 +14,11 @@ namespace TrollStrategy.Presentation.Buildings
         private const float RiseHeight = 1.1f;
         private const float CoinHeight = 0.6f;
 
-        private static readonly Color GainColor = new Color(1f, 0.86f, 0.25f);
-
         private SpriteRenderer _product;
         private Transform _gain;
         private SpriteRenderer _coin;
         private float _coinScale;
-        private TextMeshPro _gold;
+        private Label _gold;
         private Vector3 _start;
         private float _age;
 
@@ -53,20 +52,11 @@ namespace TrollStrategy.Presentation.Buildings
             }
             else textX = -0.45f;
 
-            var label = new GameObject("Amount");
-            label.transform.SetParent(feedback._gain, false);
-            feedback._gold = label.AddComponent<TextMeshPro>();
-            feedback._gold.rectTransform.pivot = new Vector2(0f, 0.5f);
-            feedback._gold.rectTransform.sizeDelta = new Vector2(2.5f, 0.9f);
-            feedback._gold.transform.localPosition = new Vector3(textX, 0.02f, 0f);
+            // the amount starts just right of the coin and grows to the right
+            var amount = WorldPanel.Create("Amount", feedback._gain, 43, Pivot.LeftCenter);
+            amount.transform.localPosition = new Vector3(textX, 0.02f, 0f);
+            feedback._gold = amount.AddLabel("world-label world-label--gain");
             feedback._gold.text = $"+{gold}";
-            feedback._gold.fontSize = 6f;
-            feedback._gold.fontStyle = FontStyles.Bold;
-            feedback._gold.alignment = TextAlignmentOptions.MidlineLeft;
-            feedback._gold.color = GainColor;
-            feedback._gold.outlineWidth = 0.3f;
-            feedback._gold.outlineColor = ColonyPalette.Night;
-            feedback._gold.sortingOrder = 43;
             feedback.FaceCamera();
             feedback.Update();
         }
@@ -88,7 +78,7 @@ namespace TrollStrategy.Presentation.Buildings
             _gain.localPosition = Vector3.up * (RiseHeight * rise);
             _gain.localScale = Vector3.one * PopScale(Mathf.Clamp01(gainT / 0.3f));
             float alpha = 1f - Mathf.Clamp01((gainT - 0.7f) / 0.3f);
-            _gold.alpha = alpha;
+            _gold.style.opacity = alpha;
             if (_coin != null)
             {
                 _coin.color = WithAlpha(_coin.color, alpha);

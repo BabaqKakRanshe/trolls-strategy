@@ -6133,10 +6133,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5959009748265994640, guid: 5461d8c79c02eec47ab945b81f538dcd, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5461d8c79c02eec47ab945b81f538dcd, type: 3}
 --- !u!1001 &1052173735
 PrefabInstance:
@@ -7567,10 +7564,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2048073911736177550, guid: cbeb3315e5841904e9e2a19dbfd720cb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cbeb3315e5841904e9e2a19dbfd720cb, type: 3}
 --- !u!1001 &1287573557
 PrefabInstance:
@@ -11421,6 +11415,7 @@ MonoBehaviour:
   _inputHandler: {fileID: 763616823}
   _hud: {fileID: 1402543897}
   _battleHud: {fileID: 1402543898}
+  _worldPanel: {fileID: 11400000, guid: 31a5b628d1d59424fafa98c944efbe60, type: 2}
 --- !u!4 &1972204677
 Transform:
   m_ObjectHideFlags: 0

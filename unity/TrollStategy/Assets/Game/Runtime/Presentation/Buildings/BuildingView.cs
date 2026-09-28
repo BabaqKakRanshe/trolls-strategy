@@ -1,5 +1,4 @@
 using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -7,6 +6,9 @@ using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Presentation.Visuals;
 using TrollStrategy.Presentation.Map;
+using TrollStrategy.Presentation.WorldUi;
+using DisplayStyle = UnityEngine.UIElements.DisplayStyle;
+using Label = UnityEngine.UIElements.Label;
 
 namespace TrollStrategy.Presentation.Buildings
 {
@@ -18,13 +20,16 @@ namespace TrollStrategy.Presentation.Buildings
         [SerializeField] private SpriteRenderer _selectionHighlight;
         [Tooltip("Production bar; move it in the prefab to place it.")]
         [SerializeField] private BuildingProgressBar _productionProgress;
-        [SerializeField] private TextMeshPro _label;
+        [Tooltip("Name and stock over the building while it is hovered or targeted.")]
+        [SerializeField] private WorldPanel _label;
         [SerializeField] private BoxCollider2D _collider;
         [Tooltip("Model child of this building variant.")]
         [SerializeField] private BuildingModel _model;
 
         private BuildingSnapshot _snapshot;
         private TilemapWorldView _worldView;
+        private Label _labelTitle;
+        private Label _labelInfo;
 
         public BuildingKind Kind => _kind;
         public string BuildingId => _snapshot?.Id;
@@ -186,7 +191,7 @@ namespace TrollStrategy.Presentation.Buildings
             SetOutlineVisible(false);
 
             if (_label != null)
-                _label.gameObject.SetActive(show);
+                _label.Visible = show;
 
             if (_spriteRenderer != null)
                 _spriteRenderer.color = Color.white;
@@ -281,16 +286,17 @@ namespace TrollStrategy.Presentation.Buildings
 
             if (_label != null)
             {
-                _label.sortingOrder = 25;
                 _label.transform.localPosition = new Vector3(0f, snapshot.Height * 0.5f + 0.45f, -2.2f);
-                if (Camera.main != null) _label.transform.rotation = Camera.main.transform.rotation;
-                _label.fontSize = 2.4f;
-                _label.color = ColonyPalette.Text;
-                _label.alignment = TextAlignmentOptions.Center;
+                _label.Face(Camera.main);
+                if (_labelTitle == null)
+                {
+                    _labelTitle = _label.AddLabel("world-label world-label--building");
+                    _labelInfo = _label.AddLabel("world-label world-label--building-info");
+                }
                 string info = LabelInfo(snapshot);
-                _label.text = info.Length > 0
-                    ? $"<b>{snapshot.Name}</b>\n<size=80%>{info}</size>"
-                    : $"<b>{snapshot.Name}</b>";
+                _labelTitle.text = snapshot.Name;
+                _labelInfo.text = info;
+                _labelInfo.style.display = info.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             }
         }
 

@@ -29,6 +29,7 @@
     --clay-deep: #8C3322;
     --clay-light: #FF9A84;
     --water: #73BED3;
+    --coin: #FFDB40;
 }
 
 /* Root of the screen UI document: type and text colour inherit from here into every nested document. */

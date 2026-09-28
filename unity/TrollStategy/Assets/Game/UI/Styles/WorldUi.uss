@@ -1,0 +1,85 @@
+/*
+ * UI over things in the world: building names, cargo counts, refusal toasts, sale gains, damage numbers
+ * and fighter health. Each is a small world-space UIDocument (WorldPanel) whose elements are built in
+ * code with these classes. The panel settings map 100 panel pixels to one world unit, so a 24px label
+ * stands 0.24 units tall. Colours come from Theme.uss.
+ */
+
+.world-label {
+    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+    color: var(--ink);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    -unity-text-outline-width: 2px;
+    -unity-text-outline-color: var(--edge-dark);
+    margin: 0;
+    padding: 0;
+}
+
+/* Over a hovered or targeted building: its name, then workers and stock. */
+.world-label--building {
+    font-size: 24px;
+}
+
+.world-label--building-info {
+    font-size: 19px;
+    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
+}
+
+/* Beside a hauler's cargo icon. */
+.world-label--cargo {
+    font-size: 20px;
+}
+
+/* Why a building or order was refused, where it happened. */
+.world-label--toast {
+    font-size: 50px;
+    -unity-text-outline-width: 3px;
+}
+
+/* Gold a sale brought, rising from the market. */
+.world-label--gain {
+    font-size: 60px;
+    color: var(--coin);
+    -unity-text-align: middle-left;
+    -unity-text-outline-width: 3px;
+}
+
+/* Damage over a fighter; the size of the blow sets the font size in code. */
+.world-label--damage {
+    font-size: 54px;
+    -unity-text-outline-width: 3px;
+}
+
+/* Fighter health: the number over a bar with a pale chip that lags behind the fill. */
+.hp-bar {
+    align-items: center;
+}
+
+.hp-bar__label {
+    font-size: 22px;
+    margin-bottom: 2px;
+}
+
+.hp-bar__track {
+    width: 69px;
+    height: 14px;
+    padding: 3px;
+    background-color: var(--surface-sunken);
+}
+
+.hp-bar__inside {
+    flex-grow: 1;
+}
+
+.hp-bar__chip,
+.hp-bar__fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.hp-bar__chip {
+    background-color: var(--gold-glow);
+}

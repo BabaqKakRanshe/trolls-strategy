@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Map;
+using TrollStrategy.Presentation.WorldUi;
+using Label = UnityEngine.UIElements.Label;
 
 namespace TrollStrategy.Presentation.Units
 {
@@ -14,8 +15,10 @@ namespace TrollStrategy.Presentation.Units
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private SpriteRenderer _selectionCircle;
         [SerializeField] private SpriteRenderer _cargoIcon;
-        [SerializeField] private TextMeshPro _cargoLabel;
+        [Tooltip("How much the hauler carries, beside the cargo icon.")]
+        [SerializeField] private WorldPanel _cargoLabel;
         [SerializeField] private CircleCollider2D _collider;
+        private Label _cargoCount;
 
         [Header("Внешний вид")]
         [SerializeField] private Sprite[] _idleFrames = Array.Empty<Sprite>();
@@ -134,7 +137,7 @@ namespace TrollStrategy.Presentation.Units
             if (_spriteRenderer != null) _spriteRenderer.transform.rotation = camera.transform.rotation;
             if (_selectionCircle != null) _selectionCircle.transform.rotation = camera.transform.rotation;
             if (_cargoIcon != null) _cargoIcon.transform.rotation = camera.transform.rotation;
-            if (_cargoLabel != null) _cargoLabel.transform.rotation = camera.transform.rotation;
+            if (_cargoLabel != null) _cargoLabel.Face(camera);
         }
 
         private void ApplyInsideVisibility()
@@ -275,8 +278,8 @@ namespace TrollStrategy.Presentation.Units
                 if (_cargoLabel != null)
                 {
                     _cargoLabel.gameObject.SetActive(true);
-                    _cargoLabel.text = $"{snapshot.Assignment.Carried}";
-                    _cargoLabel.sortingOrder = 25;
+                    _cargoCount ??= _cargoLabel.AddLabel("world-label world-label--cargo");
+                    _cargoCount.text = $"{snapshot.Assignment.Carried}";
                     _cargoLabel.transform.localPosition = new Vector3(0.48f, -0.2f, -0.05f);
                 }
             }
