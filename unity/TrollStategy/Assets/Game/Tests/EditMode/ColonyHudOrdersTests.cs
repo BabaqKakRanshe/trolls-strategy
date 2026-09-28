@@ -12,7 +12,6 @@ namespace TrollStrategy.Tests
     /// <summary>Haul cargo choice, the staff of a building and the battle prize, driven through the colony HUD.</summary>
     public class ColonyHudOrdersTests
     {
-        private const string LayoutPath = "Assets/Game/UI/Uxml/ColonyHud.uxml";
         private const string CatalogPath = "Assets/Game/Content/Definitions/GameContentCatalog.asset";
 
         private GameContentCatalog _catalog;
@@ -28,13 +27,7 @@ namespace TrollStrategy.Tests
             Assert.That(_catalog, Is.Not.Null, CatalogPath);
             _session = TestColony.NewSession(_catalog);
             _interaction = new InteractionController(_session);
-            var layout = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(LayoutPath);
-            _hud = new ColonyHudView(layout.CloneTree(), new ColonyHudContext(_session, _interaction)
-            {
-                ToggleGuides = () => { },
-                GuidesVisible = () => false,
-                OpenBattle = _ => { }
-            });
+            _hud = TestUi.Colony(_session, _interaction);
             var cell = _session.FindFirstBuildingCell(BuildingKind.Mine);
             Assert.That(_session.Dispatch(new BuildBuildingCommand(BuildingKind.Mine, cell.Value)).Ok, Is.True);
             _mine = _session.CurrentSnapshot.Buildings.First(b => b.Kind == BuildingKind.Mine).Id;

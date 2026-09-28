@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="showcase" class="panel showcase">
+        <ui:VisualElement class="showcase__header">
+            <ui:Label name="showcase-title" class="showcase__title t-bold" />
+            <ui:Button name="showcase-close" text="×" class="btn btn-close" />
+        </ui:VisualElement>
+        <ui:VisualElement name="showcase-image" class="showcase__image" />
+        <ui:Label name="showcase-caption" class="showcase__caption t-muted" />
+    </ui:VisualElement>
+</ui:UXML>

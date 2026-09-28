@@ -12,7 +12,6 @@ namespace TrollStrategy.Tests
     /// <summary>The campaign as the colony HUD shows it: the quest card, closed catalog cards and the reward reveal.</summary>
     public class ColonyHudProgressionTests
     {
-        private const string LayoutPath = "Assets/Game/UI/Uxml/ColonyHud.uxml";
         private const string CatalogPath = "Assets/Game/Content/Definitions/GameContentCatalog.asset";
 
         private GameContentCatalog _catalog;
@@ -28,14 +27,7 @@ namespace TrollStrategy.Tests
             Assert.That(_catalog.Progression, Is.Not.Null, "The catalog must link Progression.asset");
             _session = new GameSession(_catalog, TestColony.Layout, campaign: true);
             _interaction = new InteractionController(_session);
-            var layout = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(LayoutPath);
-            Assert.That(layout, Is.Not.Null, LayoutPath);
-            _hud = new ColonyHudView(layout.CloneTree(), new ColonyHudContext(_session, _interaction)
-            {
-                ToggleGuides = () => { },
-                GuidesVisible = () => false,
-                OpenBattle = _ => { }
-            });
+            _hud = TestUi.Colony(_session, _interaction);
         }
 
         [Test]
@@ -175,8 +167,7 @@ namespace TrollStrategy.Tests
         public void SandboxHud_HasNoQuestCard()
         {
             var session = TestColony.NewSession(_catalog);
-            var layout = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(LayoutPath);
-            var hud = new ColonyHudView(layout.CloneTree(), new ColonyHudContext(session, new InteractionController(session)));
+            var hud = TestUi.Colony(new ColonyHudContext(session, new InteractionController(session)));
 
             Assert.That(hud.Quest.IsShown, Is.False);
             Assert.That(hud.Reward.IsOpen, Is.False);

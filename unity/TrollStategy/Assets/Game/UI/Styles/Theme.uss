@@ -31,12 +31,25 @@
     --water: #73BED3;
 }
 
-/* Root of every HUD document: type and text colour inherit from here. */
-.hud-screen {
-    flex-grow: 1;
+/* Root of the screen UI document: type and text colour inherit from here into every nested document. */
+.ui-screen {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     -unity-font-definition: url("../Fonts/Rubik-Regular.ttf");
     font-size: 17px;
     color: var(--ink);
+}
+
+/* A nested document that covers its parent: a screen, an overlay, a layer that positions its own content. */
+.layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .t-medium {

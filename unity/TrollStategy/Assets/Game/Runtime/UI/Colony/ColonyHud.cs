@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using TrollStrategy.Application;
 using TrollStrategy.Presentation.Visuals;
 using UnityEngine;
@@ -7,13 +9,31 @@ using UnityEngine.UIElements;
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// Scene end of the colony HUD: owns the UIDocument, feeds session and interaction changes to
-    /// <see cref="ColonyHudView"/> and tells the map input which screen areas belong to the HUD.
-    /// The document is never disabled (that would rebuild its tree); hiding only switches display off.
+    /// Scene end of the colony HUD: its parts are nested UIDocuments under this GameObject, one per panel
+    /// or band. Collects their roots for <see cref="ColonyHudView"/>, feeds it session and interaction
+    /// changes and tells the map input which screen areas belong to the HUD. The document is never
+    /// disabled (that would rebuild its tree); hiding only switches display off.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public sealed class ColonyHud : MonoBehaviour
     {
+        [Header("Part documents nested under this one")]
+        [SerializeField] private UIDocument _topBar;
+        [SerializeField] private UIDocument _quest;
+        [SerializeField] private UIDocument _inspect;
+        [SerializeField] private UIDocument _showcase;
+        [SerializeField] private UIDocument _catalog;
+        [SerializeField] private UIDocument _status;
+        [SerializeField] private UIDocument _contextBar;
+        [SerializeField] private UIDocument _commandFan;
+        [SerializeField] private UIDocument _haulCargo;
+        [SerializeField] private UIDocument _reward;
+        [SerializeField] private UIDocument _battleReward;
+        [Tooltip("Developer cheat menu (F1); removed from release players.")]
+        [SerializeField] private UIDocument _cheat;
+        [SerializeField] private UIDocument _tooltip;
+
+        private readonly List<(VisualElement Root, VisualElement Content)> _builtFrom = new();
         private UIDocument _document;
         private ColonyHudContext _context;
         private MapInputHandler _mapInput;
@@ -44,10 +64,41 @@ namespace TrollStrategy.UI
             TryBuild();
         }
 
+        /// <summary>The root element of every part, taken from its document by <paramref name="rootOf"/>.</summary>
+        public ColonyHudRoots CollectRoots(Func<UIDocument, VisualElement> rootOf)
+        {
+            if (rootOf == null) throw new ArgumentNullException(nameof(rootOf));
+            VisualElement Of(UIDocument document) => document != null ? rootOf(document) : null;
+            return new ColonyHudRoots
+            {
+                Screen = Of(GetComponent<UIDocument>()),
+                TopBar = Of(_topBar),
+                Quest = Of(_quest),
+                Inspect = Of(_inspect),
+                Showcase = Of(_showcase),
+                Catalog = Of(_catalog),
+                Status = Of(_status),
+                Context = Of(_contextBar),
+                Fan = Of(_commandFan),
+                HaulCargo = Of(_haulCargo),
+                Reward = Of(_reward),
+                BattleReward = Of(_battleReward),
+                Cheat = Of(_cheat),
+                Tooltip = Of(_tooltip)
+            };
+        }
+
         /// <summary>Plays the HUD's "no" for a refused intent or command.</summary>
         public void PlayRefusalCue() => _view?.PlayRefusal();
 
-        private void Awake() => _document = GetComponent<UIDocument>();
+        private void Awake()
+        {
+            _document = GetComponent<UIDocument>();
+#if !(UNITY_EDITOR || UNITY_ENABLE_CHECKS)
+            if (_cheat != null) Destroy(_cheat.gameObject);
+            _cheat = null;
+#endif
+        }
 
         private void OnEnable()
         {
@@ -66,8 +117,8 @@ namespace TrollStrategy.UI
         private void Update()
         {
             if (_context == null) return;
-            // UI Builder live reload replaces the document's tree; rebuild on the new one
-            if ((_view == null || _view.Root.panel == null) && !TryBuild()) return;
+            // UI Builder live reload replaces a part's tree; rebuild on the new ones
+            if ((_view == null || IsStale()) && !TryBuild()) return;
             _view.Tick(Time.unscaledDeltaTime);
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
             if (_visible && Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)
@@ -78,15 +129,25 @@ namespace TrollStrategy.UI
         private bool TryBuild()
         {
             if (_context == null || _document == null) return false;
-            var root = _document.rootVisualElement;
-            if (root == null || root.Q("hud-screen") == null) return false;
-            // the document root must cover the whole screen, yet only real HUD parts may catch the pointer
-            root.StretchToParentSize();
-            root.pickingMode = PickingMode.Ignore;
-            _view = new ColonyHudView(root, _context);
+            var roots = CollectRoots(document => document.rootVisualElement);
+            // nested documents attach to this one when they are enabled, which may come after Init
+            foreach (var root in roots.Required)
+                if (root == null || root.panel == null) return false;
+            _view = new ColonyHudView(roots, _context);
+            _builtFrom.Clear();
+            foreach (var root in roots.Required) _builtFrom.Add((root, FirstChild(root)));
             ApplyVisibility();
             return true;
         }
+
+        private bool IsStale()
+        {
+            foreach (var (root, content) in _builtFrom)
+                if (root.panel == null || FirstChild(root) != content) return true;
+            return false;
+        }
+
+        private static VisualElement FirstChild(VisualElement root) => root.childCount > 0 ? root[0] : null;
 
         private void ApplyVisibility()
         {

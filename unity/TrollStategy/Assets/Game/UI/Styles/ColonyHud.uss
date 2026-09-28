@@ -1,16 +1,17 @@
-/* Colony HUD layout: top bar, left inspect card, right catalog, bottom status and context bar. */
+/*
+ * Colony HUD layout: top bar, left inspect card, right catalog, bottom status and context bar.
+ * Each part is a nested UIDocument; the frame, bands and columns are documents without UXML whose root
+ * elements take the classes below from UiDocumentClasses.
+ */
 
 .hud-root {
     flex-grow: 1;
     padding: 14px 16px;
 }
 
-.layer {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
+/* A band of the frame that keeps its content's height. */
+.hud-band {
+    flex-shrink: 0;
 }
 
 /* Top bar */
@@ -70,11 +71,15 @@
 
 /* Middle band: left card, free map, right catalog */
 
-/* Columns stretch to the band's height so the catalog's max-height has something to resolve against. */
+/*
+ * Columns stretch to the band's height, and so do the showcase and catalog documents in the right
+ * column, so the catalog's max-height has something to resolve against.
+ */
 .middle {
     flex-grow: 1;
     flex-direction: row;
     align-items: stretch;
+    justify-content: space-between;
     margin-top: 12px;
     margin-bottom: 12px;
 }
@@ -87,7 +92,7 @@
 
 .right-column {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: stretch;
     flex-shrink: 0;
 }
 

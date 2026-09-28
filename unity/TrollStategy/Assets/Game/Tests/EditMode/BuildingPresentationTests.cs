@@ -24,9 +24,16 @@ namespace TrollStrategy.Tests
             var hud = Object.FindAnyObjectByType<TrollStrategy.UI.ColonyHud>();
             Assert.That(hud, Is.Not.Null);
             var document = hud.GetComponent<UnityEngine.UIElements.UIDocument>();
-            Assert.That(document.visualTreeAsset, Is.Not.Null);
-            Assert.That(document.panelSettings, Is.Not.Null);
-            Assert.That(document.panelSettings.themeStyleSheet, Is.Not.Null);
+            var screen = document.parentUI as UnityEngine.UIElements.UIDocument;
+            Assert.That(screen, Is.Not.Null, "The colony HUD nests in the screen UI document");
+            Assert.That(PrefabUtility.GetCorrespondingObjectFromSource(screen.gameObject),
+                Is.EqualTo(AssetDatabase.LoadAssetAtPath<GameObject>(TestUi.PrefabPath)), "The scene uses the UI prefab");
+            Assert.That(screen.panelSettings, Is.Not.Null);
+            Assert.That(screen.panelSettings.themeStyleSheet, Is.Not.Null);
+            foreach (var part in screen.GetComponentsInChildren<UnityEngine.UIElements.UIDocument>(true))
+                if (part != screen) Assert.That(part.parentUI, Is.Not.Null, $"{part.name} must nest in its parent document");
+            var roots = hud.CollectRoots(_ => new UnityEngine.UIElements.VisualElement());
+            Assert.That(roots.Required, Has.All.Not.Null, "Every HUD part document is wired");
             var boot = Object.FindAnyObjectByType<TrollStrategy.Bootstrap.GameBootstrap>();
             Assert.That(new SerializedObject(boot).FindProperty("_hud").objectReferenceValue, Is.EqualTo(hud));
         }

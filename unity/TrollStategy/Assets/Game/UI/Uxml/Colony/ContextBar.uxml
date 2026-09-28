@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="context" class="panel context">
+        <ui:VisualElement name="context-targets" class="context__targets" />
+        <ui:VisualElement class="context__row">
+            <ui:VisualElement class="context__text">
+                <ui:Label name="context-title" class="context__title" />
+                <ui:Label name="context-prompt" class="context__prompt" />
+            </ui:VisualElement>
+            <ui:VisualElement name="context-actions" class="context__actions" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

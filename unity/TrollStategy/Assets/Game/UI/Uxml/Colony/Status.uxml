@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="status" class="panel status">
+        <ui:Label name="status-text" class="status__text" />
+    </ui:VisualElement>
+</ui:UXML>

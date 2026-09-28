@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="cheat-overlay" class="overlay">
+        <ui:VisualElement class="panel dialog">
+            <ui:VisualElement class="dialog__header">
+                <ui:Label text="ЧИТ-МЕНЮ · F1" class="dialog__title t-bold" />
+                <ui:Button name="cheat-close" text="×" class="btn btn-close" />
+            </ui:VisualElement>
+            <ui:Label text="Миссия 1 без ожидания открытия и перезарядки." class="dialog__text" />
+            <ui:Button name="cheat-prepare" text="Открыть расстановку" class="btn" />
+            <ui:Button name="cheat-quick" text="Быстрый бой" class="btn btn--primary" />
+            <ui:Button name="cheat-quest" text="Выполнить текущее задание" class="btn" />
+            <ui:Label name="cheat-status" text="Если бойцов нет, быстрый бой наймёт 1 тролля и 3 гоблинов." class="note" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

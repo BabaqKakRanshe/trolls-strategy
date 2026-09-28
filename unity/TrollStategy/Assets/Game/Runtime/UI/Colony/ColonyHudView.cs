@@ -5,8 +5,8 @@ using UnityEngine.UIElements;
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// The colony HUD over a cloned ColonyHud.uxml. Holds the screen parts and routes snapshots and
-    /// interaction changes to them; it needs no scene, so EditMode tests build it the same way.
+    /// The colony HUD over the root elements of its part documents. Holds the screen parts and routes
+    /// snapshots and interaction changes to them; it needs no scene, so EditMode tests build it the same way.
     /// </summary>
     public sealed class ColonyHudView
     {
@@ -21,31 +21,28 @@ namespace TrollStrategy.UI
         private GameSnapshot _snapshot;
         private float _pulseTime;
 
-        public ColonyHudView(VisualElement root, ColonyHudContext context)
+        public ColonyHudView(ColonyHudRoots roots, ColonyHudContext context)
         {
             _context = context;
-            Root = root.Q("hud-screen") ?? root;
-            Showcase = new ShowcasePanel(Root, context.Showcase);
-            Catalog = new CatalogPanel(Root, context, Showcase);
-            TopBar = new TopBar(Root, context, Catalog.Toggle);
+            Root = roots.Screen;
+            Showcase = new ShowcasePanel(roots.Showcase, context.Showcase);
+            Catalog = new CatalogPanel(roots.Catalog, context, Showcase);
+            TopBar = new TopBar(roots.TopBar, context, Catalog.Toggle);
             Catalog.OpenChanged += TopBar.SetCatalogOpen;
             TopBar.SetCatalogOpen(Catalog.IsOpen);
-            Quest = new QuestTracker(Root, context);
-            Inspect = new InspectPanel(Root, context);
-            Tooltip = new HudTooltip(Root);
-            ContextBar = new ContextBar(Root, context);
-            HaulCargo = new HaulCargoDialog(Root, context, Tooltip);
-            Status = new StatusLine(Root);
-            Fan = new CommandFan(Root, context);
-            Reward = new RewardOverlay(Root, context, Showcase);
-            BattleReward = new BattleRewardOverlay(Root, context);
+            Quest = new QuestTracker(roots.Quest, context);
+            Inspect = new InspectPanel(roots.Inspect, context);
+            // the hint card's document sorts above every other part of the HUD
+            Tooltip = new HudTooltip(roots.Tooltip);
+            ContextBar = new ContextBar(roots.Context, context);
+            HaulCargo = new HaulCargoDialog(roots.HaulCargo, context, Tooltip);
+            Status = new StatusLine(roots.Status);
+            Fan = new CommandFan(roots.Fan, context);
+            Reward = new RewardOverlay(roots.Reward, context, Showcase);
+            BattleReward = new BattleRewardOverlay(roots.BattleReward, context);
             Quest.ClaimRequested += OpenReward;
-            // the hint card draws over every other part of the HUD
-            Tooltip.BringToFront();
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
-            Cheat = new CheatPanel(Root, context);
-#else
-            Root.Q("cheat-overlay")?.RemoveFromHierarchy();
+            if (roots.Cheat != null) Cheat = new CheatPanel(roots.Cheat, context);
 #endif
             var snapshot = context.Session.CurrentSnapshot;
             Refresh(snapshot);
@@ -148,7 +145,7 @@ namespace TrollStrategy.UI
         public void ToggleCheat()
         {
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
-            Cheat.Toggle();
+            Cheat?.Toggle();
 #endif
         }
 

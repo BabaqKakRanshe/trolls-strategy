@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="inspect" class="panel inspect">
+        <ui:VisualElement class="inspect__header">
+            <ui:VisualElement class="inspect__titles">
+                <ui:Label name="inspect-title" class="inspect__title t-bold" />
+                <ui:Label name="inspect-subtitle" class="inspect__subtitle t-medium" />
+            </ui:VisualElement>
+            <ui:Button name="inspect-close" text="×" class="btn btn-close" />
+        </ui:VisualElement>
+        <ui:VisualElement class="divider" />
+        <ui:VisualElement name="inspect-rows" />
+        <ui:Label name="inspect-note" class="note" />
+        <ui:Label name="inspect-slots-header" class="slots-header t-medium" />
+        <ui:VisualElement name="inspect-slots" class="slots" />
+        <ui:ScrollView name="inspect-staff-scroll" class="staff-scroll">
+            <ui:VisualElement name="inspect-staff" class="staff-list" />
+        </ui:ScrollView>
+        <ui:VisualElement name="inspect-actions" class="actions" />
+    </ui:VisualElement>
+</ui:UXML>

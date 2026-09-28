@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="quest" class="panel quest">
+        <ui:VisualElement class="quest__header">
+            <ui:Label name="quest-chapter" class="quest__chapter t-caption" />
+            <ui:Button name="quest-toggle" text="−" class="btn btn-close quest__toggle" />
+        </ui:VisualElement>
+        <ui:Label name="quest-title" class="quest__title t-bold" />
+        <ui:VisualElement name="quest-body" class="quest__body">
+            <ui:Label name="quest-description" class="quest__description" />
+            <ui:VisualElement name="quest-goals" class="quest__goals" />
+            <ui:VisualElement class="quest__reward">
+                <ui:Label text="НАГРАДА" class="t-caption quest__reward-caption" />
+                <ui:VisualElement name="quest-reward-items" class="quest__reward-items" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Button name="quest-claim" class="btn btn--gold quest__claim">
+            <ui:Label text="ЗАБРАТЬ НАГРАДУ" class="btn__caption" picking-mode="Ignore" />
+        </ui:Button>
+    </ui:VisualElement>
+</ui:UXML>

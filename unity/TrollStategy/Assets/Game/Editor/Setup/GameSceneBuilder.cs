@@ -151,7 +151,7 @@ namespace TrollStrategy.Editor.Setup
             soBoot.ApplyModifiedPropertiesWithoutUndo();
 
             // 5. UI Toolkit HUD and the event system its input goes through
-            ColonyHudSetup.Install(boot);
+            UiSetup.Install(boot);
 
             EditorUtility.SetDirty(boot);
             ThreeDSceneSetup.ApplyToOpenScene();

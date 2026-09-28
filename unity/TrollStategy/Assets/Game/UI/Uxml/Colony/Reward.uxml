@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="reward-overlay" class="overlay overlay--deep">
+        <ui:VisualElement name="reward-dialog" class="panel reward">
+            <ui:Label name="reward-eyebrow" class="reward__eyebrow t-caption" />
+            <ui:Label name="reward-quest" class="reward__quest t-bold" />
+            <ui:VisualElement name="reward-stage" class="reward__stage">
+                <ui:VisualElement name="reward-rays" class="reward__rays" picking-mode="Ignore" />
+                <ui:VisualElement name="reward-window" class="reward__window" picking-mode="Ignore">
+                    <ui:VisualElement name="reward-prize" class="reward__prize" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="reward-sparks" class="reward__sparks" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="reward-kind" class="reward__kind t-caption" />
+            <ui:Label name="reward-name" class="reward__name t-bold" />
+            <ui:Label name="reward-description" class="reward__description" />
+            <ui:VisualElement name="reward-extras" class="reward__extras" />
+            <ui:Button name="reward-claim" class="btn btn--gold reward__claim">
+                <ui:Label text="ЗАБРАТЬ" class="btn__caption" picking-mode="Ignore" />
+            </ui:Button>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

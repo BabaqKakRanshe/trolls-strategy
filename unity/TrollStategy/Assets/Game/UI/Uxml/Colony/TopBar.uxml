@@ -1,0 +1,43 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="top-bar" class="top-bar" picking-mode="Ignore">
+        <ui:VisualElement name="brand" class="panel brand">
+            <ui:Label text="ПОСЕЛЕНИЕ" class="brand__title t-bold" />
+            <ui:Label text="ЛЕСНАЯ ДОЛИНА" class="brand__subtitle t-medium" />
+        </ui:VisualElement>
+        <ui:VisualElement name="resources" class="panel resources">
+            <ui:VisualElement class="stat stat--gold">
+                <ui:Label text="ЗОЛОТО" class="t-caption" />
+                <ui:Label name="gold-value" text="0" class="stat__value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="stat">
+                <ui:Label text="РУДА" class="t-caption" />
+                <ui:Label name="ore-value" text="0" class="stat__value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="stat">
+                <ui:Label text="НАСЕЛЕНИЕ" class="t-caption" />
+                <ui:Label name="population-value" text="0" class="stat__value" />
+                <ui:Label name="population-idle" text="" class="stat__note" />
+            </ui:VisualElement>
+            <ui:VisualElement class="stat">
+                <ui:Label text="ПРОДАНО" class="t-caption" />
+                <ui:Label name="sold-value" text="0" class="stat__value" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="spacer" picking-mode="Ignore" />
+        <ui:VisualElement name="top-actions" class="top-actions" picking-mode="Ignore">
+            <ui:Button name="idle-button" class="btn">
+                <ui:Label text="Свободный" class="btn__caption" picking-mode="Ignore" />
+                <ui:Label text="1" class="hotkey" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="grid-button" class="btn">
+                <ui:Label text="Сетка" class="btn__caption" picking-mode="Ignore" />
+                <ui:Label text="G" class="hotkey" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="battle-button" text="В БОЙ" class="btn btn--gold battle-button" />
+            <ui:Button name="catalog-button" text="Каталог" class="btn" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

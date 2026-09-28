@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="battle-reward-overlay" class="overlay overlay--deep">
+        <ui:VisualElement name="battle-reward-dialog" class="panel jackpot">
+            <ui:Label text="ПОБЕДА!" class="jackpot__eyebrow t-bold" />
+            <ui:Label name="battle-reward-title" class="jackpot__title t-medium" />
+            <ui:VisualElement name="battle-reward-machine" class="jackpot__machine">
+                <ui:VisualElement name="battle-reward-reels" class="jackpot__reels" picking-mode="Ignore" />
+                <ui:VisualElement name="battle-reward-lights" class="jackpot__lights" picking-mode="Ignore" />
+                <ui:VisualElement name="battle-reward-sparks" class="jackpot__sparks" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="battle-reward-range" class="jackpot__range" />
+            <ui:Label name="battle-reward-amount" class="jackpot__amount t-bold" />
+            <ui:Button name="battle-reward-claim" class="btn btn--gold jackpot__claim">
+                <ui:Label text="ЗАБРАТЬ ЗОЛОТО" class="btn__caption" picking-mode="Ignore" />
+            </ui:Button>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

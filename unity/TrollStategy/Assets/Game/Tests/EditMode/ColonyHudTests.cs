@@ -12,7 +12,6 @@ namespace TrollStrategy.Tests
     /// <summary>The colony HUD built from its real layout and catalog, driven the way the player drives it.</summary>
     public class ColonyHudTests
     {
-        private const string LayoutPath = "Assets/Game/UI/Uxml/ColonyHud.uxml";
         private const string CatalogPath = "Assets/Game/Content/Definitions/GameContentCatalog.asset";
 
         private GameContentCatalog _catalog;
@@ -32,14 +31,7 @@ namespace TrollStrategy.Tests
                 new StartingBuilding(BuildingKind.Barracks, new Cell(2, 8))
             });
             _interaction = new InteractionController(_session);
-            var layout = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(LayoutPath);
-            Assert.That(layout, Is.Not.Null, LayoutPath);
-            _hud = new ColonyHudView(layout.CloneTree(), new ColonyHudContext(_session, _interaction)
-            {
-                ToggleGuides = () => { },
-                GuidesVisible = () => false,
-                OpenBattle = _ => { }
-            });
+            _hud = TestUi.Colony(_session, _interaction);
         }
 
         [Test]

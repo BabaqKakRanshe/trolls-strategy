@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Progression.uss" />
+    <ui:VisualElement name="catalog" class="panel catalog">
+        <ui:VisualElement class="catalog__header">
+            <ui:Label text="КАТАЛОГ" class="catalog__title t-bold" />
+            <ui:Button name="catalog-close" text="×" class="btn btn-close" />
+        </ui:VisualElement>
+        <ui:VisualElement class="tabs">
+            <ui:Button name="tab-units" text="Существа" class="btn tab" />
+            <ui:Button name="tab-buildings" text="Здания" class="btn tab" />
+        </ui:VisualElement>
+        <ui:VisualElement name="units-page" class="catalog__page">
+            <ui:VisualElement class="stepper">
+                <ui:Label text="Нанимать группой" class="stepper__label" />
+                <ui:Button name="hire-less" text="−" class="btn btn-icon" />
+                <ui:Label name="hire-amount" text="1" class="stepper__value t-bold" />
+                <ui:Button name="hire-more" text="+" class="btn btn-icon" />
+            </ui:VisualElement>
+            <ui:VisualElement name="unit-cards" />
+        </ui:VisualElement>
+        <ui:ScrollView name="buildings-page" class="catalog__page" />
+    </ui:VisualElement>
+</ui:UXML>
