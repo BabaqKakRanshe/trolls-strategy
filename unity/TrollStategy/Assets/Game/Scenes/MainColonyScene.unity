@@ -8321,6 +8321,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43c974b55e4913542b1def11ef608766, type: 3}
   m_Name: 
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.UI.ColonyHud
+--- !u!114 &1402543898 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7003219428395364962, guid: 4fde23fcf6477764c917f990b57832da, type: 3}
+  m_PrefabInstance: {fileID: 1402543896}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51f0ab204932c694888553a3573c350e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.UI.BattleHud
 --- !u!1001 &1407788080
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11409,6 +11420,7 @@ MonoBehaviour:
   _routeVisualizer: {fileID: 763616824}
   _inputHandler: {fileID: 763616823}
   _hud: {fileID: 1402543897}
+  _battleHud: {fileID: 1402543898}
 --- !u!4 &1972204677
 Transform:
   m_ObjectHideFlags: 0

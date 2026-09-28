@@ -52,6 +52,15 @@ namespace TrollStrategy.Tests
             return new ColonyHudView(hud.CollectRoots(ui.RootOf), context);
         }
 
+        /// <summary>A battle HUD over a fresh clone of the prefab.</summary>
+        public static BattleHudView Battle()
+        {
+            var ui = Load();
+            var hud = ui.Prefab.GetComponentInChildren<BattleHud>(true);
+            Assert.That(hud, Is.Not.Null, "The UI prefab has no BattleHud");
+            return new BattleHudView(hud.CollectRoots(ui.RootOf));
+        }
+
         public VisualElement RootOf(UIDocument document) => _roots[document];
 
         private VisualElement Clone(UIDocument document, VisualElement parent)

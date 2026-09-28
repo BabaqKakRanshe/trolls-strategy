@@ -35,6 +35,7 @@ namespace TrollStrategy.Bootstrap
 
         [Header("UI")]
         [SerializeField] private ColonyHud _hud;
+        [SerializeField] private BattleHud _battleHud;
 
         private GameSession _session;
         private InteractionController _interaction;
@@ -51,6 +52,8 @@ namespace TrollStrategy.Bootstrap
                 if (_hud != null) _hud.Visible = value;
             }
         }
+        /// <summary>The battle's screen UI; hidden in the colony until a battle opens it.</summary>
+        public IBattleScreen BattleScreen => _battleHud;
         public MapInputHandler MapInput => _inputHandler;
         public SelectionBoxRenderer SelectionBox => _selectionBox;
 
@@ -79,6 +82,7 @@ namespace TrollStrategy.Bootstrap
             if (_routeVisualizer == null) _routeVisualizer = FindAnyObjectByType<HaulRouteVisualizer>();
             if (_inputHandler == null) _inputHandler = FindAnyObjectByType<MapInputHandler>();
             if (_hud == null) _hud = FindAnyObjectByType<ColonyHud>();
+            if (_battleHud == null) _battleHud = FindAnyObjectByType<BattleHud>();
 
             if (_worldView == null)
             {

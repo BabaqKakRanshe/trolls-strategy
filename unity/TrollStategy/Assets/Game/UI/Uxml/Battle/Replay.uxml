@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/BattleHud.uss" />
+    <ui:VisualElement name="battle-replay" class="panel battle-replay">
+        <ui:Label name="battle-replay-status" class="battle-replay__status t-bold" />
+        <ui:VisualElement class="spacer" picking-mode="Ignore" />
+        <ui:Button name="battle-pause" text="ПАУЗА" class="btn battle-replay__pause" />
+        <ui:Button name="battle-speed-1" text="1×" class="btn battle-replay__speed" />
+        <ui:Button name="battle-speed-2" text="2×" class="btn battle-replay__speed" />
+        <ui:Button name="battle-speed-4" text="4×" class="btn battle-replay__speed" />
+        <ui:Button name="battle-return" text="ВЕРНУТЬСЯ В КОЛОНИЮ" class="btn btn--primary battle-replay__return" />
+    </ui:VisualElement>
+</ui:UXML>

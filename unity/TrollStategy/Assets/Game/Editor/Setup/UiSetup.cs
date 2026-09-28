@@ -42,14 +42,14 @@ namespace TrollStrategy.Editor.Setup
             public Node[] Children = Array.Empty<Node>();
         }
 
-        private static Node Part(string name, int order, string field, params string[] classes) => new()
+        private static Node Part(string folder, string name, int order, string field, params string[] classes) => new()
         {
-            Name = name, Uxml = $"Colony/{name}.uxml", Order = order, Field = field, Classes = classes
+            Name = name, Uxml = $"{folder}/{name}.uxml", Order = order, Field = field, Classes = classes
         };
 
-        private static Node Layer(string name, int order, string field) => new()
+        private static Node Layer(string folder, string name, int order, string field) => new()
         {
-            Name = name, Uxml = $"Colony/{name}.uxml", Order = order, Field = field, Absolute = true,
+            Name = name, Uxml = $"{folder}/{name}.uxml", Order = order, Field = field, Absolute = true,
             Classes = new[] { "layer" }
         };
 
@@ -68,27 +68,57 @@ namespace TrollStrategy.Editor.Setup
             Children = new[]
             {
                 Box("Frame", 0, new[] { "hud-root" },
-                    Part("TopBar", 0, "_topBar", "hud-band"),
+                    Part("Colony", "TopBar", 0, "_topBar", "hud-band"),
                     Box("Middle", 1, new[] { "middle" },
                         Box("LeftColumn", 0, new[] { "left-column" },
-                            Part("Quest", 0, "_quest"),
-                            Part("Inspect", 1, "_inspect")),
+                            Part("Colony", "Quest", 0, "_quest"),
+                            Part("Colony", "Inspect", 1, "_inspect")),
                         Box("RightColumn", 1, new[] { "right-column" },
-                            Part("Showcase", 0, "_showcase"),
-                            Part("Catalog", 1, "_catalog"))),
+                            Part("Colony", "Showcase", 0, "_showcase"),
+                            Part("Colony", "Catalog", 1, "_catalog"))),
                     Box("Bottom", 2, new[] { "bottom", "hud-band" },
-                        Part("Status", 0, "_status"),
+                        Part("Colony", "Status", 0, "_status"),
                         new Node
                         {
                             Name = "ContextBar", Uxml = "Colony/ContextBar.uxml", Order = 1, Field = "_contextBar",
                             Absolute = true, Classes = new[] { "layer" }
                         })),
-                Layer("CommandFan", 10, "_commandFan"),
-                Layer("HaulCargo", 20, "_haulCargo"),
-                Layer("Reward", 30, "_reward"),
-                Layer("BattleReward", 31, "_battleReward"),
-                Layer("Cheat", 40, "_cheat"),
+                Layer("Colony", "CommandFan", 10, "_commandFan"),
+                Layer("Colony", "HaulCargo", 20, "_haulCargo"),
+                Layer("Colony", "Reward", 30, "_reward"),
+                Layer("Colony", "BattleReward", 31, "_battleReward"),
+                Layer("Colony", "Cheat", 40, "_cheat"),
                 new Node { Name = "Tooltip", Order = 50, Field = "_tooltip", Absolute = true, Classes = new[] { "layer" } }
+            }
+        };
+
+        // Field names are the BattleHud fields that hold each part's document. It sorts above the colony
+        // HUD and stays hidden (.battle-screen) until a battle opens it.
+        private static Node BattleHudTree() => new()
+        {
+            Name = "BattleHud",
+            Uxml = "BattleHud.uxml",
+            Order = 10,
+            Absolute = true,
+            Classes = new[] { "layer", "battle-screen" },
+            Children = new[]
+            {
+                Box("Frame", 0, new[] { "battle-frame" },
+                    Part("Battle", "Header", 0, "_header", "hud-band"),
+                    // deployment panels, then the replay bar, in the same place at the bottom
+                    Box("Bottom", 1, new[] { "hud-band" },
+                        new Node
+                        {
+                            Name = "Deployment", Order = 0, Field = "_deploymentBand", Classes = new[] { "battle-deployment" },
+                            Children = new[]
+                            {
+                                Part("Battle", "Roster", 0, "_roster"),
+                                Part("Battle", "Selected", 1, "_selected", "battle-grow"),
+                                Part("Battle", "Actions", 2, "_actions")
+                            }
+                        },
+                        Part("Battle", "Replay", 1, "_replay"))),
+                Layer("Battle", "Banner", 10, "_banner")
             }
         };
 
@@ -128,11 +158,14 @@ namespace TrollStrategy.Editor.Setup
             }
             var hud = instance.GetComponentInChildren<ColonyHud>(true)
                 ?? throw new InvalidOperationException("The UI prefab has no ColonyHud");
+            var battleHud = instance.GetComponentInChildren<BattleHud>(true)
+                ?? throw new InvalidOperationException("The UI prefab has no BattleHud");
 
             var serialized = new SerializedObject(boot);
-            var reference = serialized.FindProperty("_hud")
-                ?? throw new InvalidOperationException("GameBootstrap has no _hud field");
-            reference.objectReferenceValue = hud;
+            (serialized.FindProperty("_hud") ?? throw new InvalidOperationException("GameBootstrap has no _hud field"))
+                .objectReferenceValue = hud;
+            (serialized.FindProperty("_battleHud") ?? throw new InvalidOperationException("GameBootstrap has no _battleHud field"))
+                .objectReferenceValue = battleHud;
             serialized.ApplyModifiedProperties();
             return hud;
         }
@@ -149,18 +182,8 @@ namespace TrollStrategy.Editor.Setup
                 screen.sortingOrder = 0;
                 root.AddComponent<UiDocumentClasses>().SetClasses("ui-screen");
 
-                var colony = ColonyHudTree();
-                var fields = new Dictionary<string, UIDocument>();
-                var colonyObject = Add(colony, root.transform, fields);
-                var hud = colonyObject.AddComponent<ColonyHud>();
-                var serialized = new SerializedObject(hud);
-                foreach (var pair in fields)
-                {
-                    var property = serialized.FindProperty(pair.Key)
-                        ?? throw new InvalidOperationException($"ColonyHud has no field {pair.Key}");
-                    property.objectReferenceValue = pair.Value;
-                }
-                serialized.ApplyModifiedPropertiesWithoutUndo();
+                AddScreen<ColonyHud>(ColonyHudTree(), root.transform);
+                AddScreen<BattleHud>(BattleHudTree(), root.transform);
 
                 var folder = System.IO.Path.GetDirectoryName(PrefabPath)?.Replace('\\', '/');
                 if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder("Assets/Game/UI", "Prefabs");
@@ -172,6 +195,21 @@ namespace TrollStrategy.Editor.Setup
             {
                 Object.DestroyImmediate(root);
             }
+        }
+
+        /// <summary>Adds a screen's document tree and its component, with each part document in its field.</summary>
+        private static void AddScreen<T>(Node tree, Transform parent) where T : MonoBehaviour
+        {
+            var fields = new Dictionary<string, UIDocument>();
+            var screen = Add(tree, parent, fields).AddComponent<T>();
+            var serialized = new SerializedObject(screen);
+            foreach (var pair in fields)
+            {
+                var property = serialized.FindProperty(pair.Key)
+                    ?? throw new InvalidOperationException($"{typeof(T).Name} has no field {pair.Key}");
+                property.objectReferenceValue = pair.Value;
+            }
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         // The document is added after the GameObject has its parent: that is when it finds its parent document.

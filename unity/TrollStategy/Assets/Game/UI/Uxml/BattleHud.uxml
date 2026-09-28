@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- The battle HUD's own document holds no elements: its parts are the nested documents under the
+         BattleHud GameObject. These sheets reach every one of them. -->
+    <ui:Style src="../Styles/Theme.uss" />
+    <ui:Style src="../Styles/BattleHud.uss" />
+</ui:UXML>

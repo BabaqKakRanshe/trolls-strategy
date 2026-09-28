@@ -1,0 +1,24 @@
+using UnityEngine.UIElements;
+
+namespace TrollStrategy.UI
+{
+    /// <summary>
+    /// The root element of each battle HUD part. In the scene each is a nested UIDocument under the
+    /// BattleHud GameObject; tests clone the same documents from the UI prefab.
+    /// </summary>
+    public sealed class BattleHudRoots
+    {
+        /// <summary>The BattleHud document itself: hiding it hides the whole battle screen.</summary>
+        public VisualElement Screen { get; set; }
+        public VisualElement Header { get; set; }
+        /// <summary>The band holding roster, selected fighter and actions; shown only while deploying.</summary>
+        public VisualElement Deployment { get; set; }
+        public VisualElement Roster { get; set; }
+        public VisualElement Selected { get; set; }
+        public VisualElement Actions { get; set; }
+        public VisualElement Replay { get; set; }
+        public VisualElement Banner { get; set; }
+
+        public VisualElement[] Required => new[] { Screen, Header, Deployment, Roster, Selected, Actions, Replay, Banner };
+    }
+}

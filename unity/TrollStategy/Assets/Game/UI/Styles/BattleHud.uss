@@ -1,0 +1,223 @@
+/*
+ * Battle HUD layout: the mission header on top; at the bottom the three deployment panels, then the
+ * replay bar in their place; the banner over the arena. Each part is a nested UIDocument; the frame,
+ * the bottom band and the deployment band are documents without UXML whose root elements take the
+ * classes below from UiDocumentClasses. Colours come from Theme.uss.
+ */
+
+/* Hidden until a battle opens it, in the editor too. */
+.battle-screen {
+    display: none;
+}
+
+.battle-screen.is-open {
+    display: flex;
+}
+
+.battle-frame {
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: 14px 16px;
+}
+
+/* Header */
+
+.battle-header {
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 18px;
+}
+
+.battle-header__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.battle-header__title {
+    font-size: 28px;
+    letter-spacing: 1px;
+}
+
+.battle-header__goal {
+    font-size: 16px;
+    white-space: normal;
+    margin-top: 2px;
+}
+
+.battle-header__guide {
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    color: var(--water);
+    margin-top: 4px;
+}
+
+.battle-header__back {
+    min-width: 180px;
+    min-height: 54px;
+    margin-left: 16px;
+}
+
+/* Deployment: roster, selected fighter, actions */
+
+.battle-deployment {
+    flex-direction: row;
+    align-items: stretch;
+    height: 290px;
+    flex-shrink: 0;
+}
+
+/* The selected fighter's document takes the width the roster and actions leave. */
+.battle-grow {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.battle-panel {
+    flex-grow: 1;
+}
+
+.battle-roster {
+    width: 600px;
+    margin-right: 12px;
+}
+
+.battle-selected {
+    margin-right: 12px;
+}
+
+.battle-actions {
+    width: 520px;
+}
+
+.battle-panel__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.battle-panel__title {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.battle-panel__action {
+    min-height: 36px;
+    margin-bottom: 8px;
+}
+
+.battle-list {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.battle-list .unity-scroll-view__content-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.battle-card {
+    width: 272px;
+    min-height: 64px;
+    margin: 0 8px 8px 0;
+    align-items: flex-start;
+}
+
+.battle-card .btn__title,
+.battle-card .btn__hint {
+    -unity-text-align: middle-left;
+}
+
+.battle-card.is-placed {
+    border-color: var(--grass);
+}
+
+.battle-card--gear {
+    width: 316px;
+}
+
+.battle-selected__details {
+    font-size: 16px;
+    white-space: normal;
+    margin-bottom: 8px;
+}
+
+.battle-selected__caption {
+    margin-bottom: 6px;
+}
+
+.battle-actions__hint {
+    font-size: 16px;
+    white-space: normal;
+    color: var(--ink-muted);
+}
+
+.battle-actions__auto {
+    margin-top: 8px;
+}
+
+.battle-actions__start {
+    min-height: 64px;
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+/* Replay */
+
+.battle-replay {
+    flex-direction: row;
+    align-items: center;
+    min-height: 96px;
+    padding: 10px 18px;
+}
+
+.battle-replay__status {
+    font-size: 20px;
+    white-space: normal;
+}
+
+.battle-replay > .btn {
+    min-height: 56px;
+    margin-left: 10px;
+}
+
+.battle-replay__pause {
+    min-width: 170px;
+}
+
+.battle-replay__speed {
+    min-width: 76px;
+}
+
+.battle-replay__return {
+    min-width: 360px;
+}
+
+/* Banner */
+
+.battle-banner {
+    position: absolute;
+    top: 150px;
+    left: 50%;
+    translate: -50% 0;
+    width: 640px;
+    height: 104px;
+    align-items: center;
+    justify-content: center;
+}
+
+.battle-banner__text {
+    font-size: 56px;
+    -unity-text-align: middle-center;
+}
+
+.battle-banner.is-victory .battle-banner__text {
+    color: var(--gold-light);
+}
+
+.battle-banner.is-defeat .battle-banner__text {
+    color: var(--clay-light);
+}
+
+.battle-banner.is-draw .battle-banner__text {
+    color: var(--ink-muted);
+}
