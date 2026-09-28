@@ -1,11 +1,10 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace TrollStrategy.Presentation.Feel
 {
     /// <summary>
-    /// Short presentation-only reactions (punch, squash, pop-in, shake, nudge, colour flash) that confirm an
-    /// action within a frame. They run on unscaled time and always return the target to its rest state.
+    /// Short presentation-only reactions of world objects (punch, squash, pop-in, shake, nudge) that confirm
+    /// an action within a frame. Screen UI has its own in UiMotion. They run on unscaled time and always return the target to its rest state.
     /// </summary>
     public static class Juice
     {
@@ -28,12 +27,6 @@ namespace TrollStrategy.Presentation.Feel
         /// <summary>Side-to-side wobble: "no" — the action was refused.</summary>
         public static void Nudge(Transform target, float amplitude = 8f, float duration = .35f) =>
             Get(target)?.PlayMove(amplitude, duration, true);
-
-        /// <summary>Tints a UI graphic and fades back to its own colour.</summary>
-        public static void Flash(Graphic graphic, Color color, float duration = .3f)
-        {
-            if (graphic != null) Get(graphic.transform)?.PlayFlash(graphic, color, duration);
-        }
 
         /// <summary>Hover scale the target eases to (1 = rest); combines with punches.</summary>
         public static void Hover(Transform target, float scale) => Get(target)?.SetHover(scale);
@@ -115,13 +108,6 @@ namespace TrollStrategy.Presentation.Feel
         private float _moveDuration;
         private float _seed;
 
-        private Graphic _graphic;
-        private Color _restColor;
-        private Color _flashColor;
-        private bool _flashActive;
-        private float _flashTime;
-        private float _flashDuration;
-
         private bool ScaleBusy => _scaleActive || !Mathf.Approximately(_hover, 1f) || !Mathf.Approximately(_hoverTarget, 1f);
 
         private void Awake() => _seed = (GetInstanceHash() % 1000) * .173f;
@@ -154,22 +140,6 @@ namespace TrollStrategy.Presentation.Feel
             _moveDuration = Mathf.Max(.01f, duration);
             _moveActive = true;
             enabled = true;
-        }
-
-        internal void PlayFlash(Graphic graphic, Color color, float duration)
-        {
-            if (!_flashActive || _graphic != graphic)
-            {
-                if (_flashActive && _graphic != null) _graphic.color = _restColor;
-                _graphic = graphic;
-                _restColor = graphic.color;
-            }
-            _flashColor = color;
-            _flashTime = 0f;
-            _flashDuration = Mathf.Max(.01f, duration);
-            _flashActive = true;
-            enabled = true;
-            graphic.color = color;
         }
 
         private void Update()
@@ -205,22 +175,7 @@ namespace TrollStrategy.Presentation.Feel
                 }
             }
 
-            if (_flashActive)
-            {
-                _flashTime += dt;
-                float t = _flashTime / _flashDuration;
-                if (_graphic == null || t >= 1f)
-                {
-                    _flashActive = false;
-                    if (_graphic != null) _graphic.color = _restColor;
-                }
-                else
-                {
-                    _graphic.color = Color.Lerp(_flashColor, _restColor, Ease.OutCubic(t));
-                }
-            }
-
-            if (!ScaleBusy && !_moveActive && !_flashActive) enabled = false;
+            if (!ScaleBusy && !_moveActive) enabled = false;
         }
 
         private void ApplyScale()
@@ -237,7 +192,7 @@ namespace TrollStrategy.Presentation.Feel
 
         private void OnDisable()
         {
-            // an interrupted reaction must not leave the object squashed, offset or tinted
+            // an interrupted reaction must not leave the object squashed or offset
             if (_scaleActive || !Mathf.Approximately(_hover, 1f) || !Mathf.Approximately(_hoverTarget, 1f))
             {
                 _scaleActive = false;
@@ -248,11 +203,6 @@ namespace TrollStrategy.Presentation.Feel
             {
                 _moveActive = false;
                 transform.localPosition = _restPosition;
-            }
-            if (_flashActive)
-            {
-                _flashActive = false;
-                if (_graphic != null) _graphic.color = _restColor;
             }
         }
 

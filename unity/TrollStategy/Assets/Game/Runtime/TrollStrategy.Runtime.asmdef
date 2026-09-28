@@ -3,7 +3,6 @@
     "rootNamespace": "TrollStrategy",
     "references": [
         "Unity.InputSystem",
-        "Unity.TextMeshPro",
         "UnityEngine.UI",
         "Unity.2D.Tilemap.Extras",
         "Unity.RenderPipelines.Universal.Runtime"

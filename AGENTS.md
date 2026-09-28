@@ -32,14 +32,17 @@ These rules apply to every change in the Unity project at `unity/TrollStategy`.
 - Architecture-significant work is done when focused and full relevant Unity tests, compilation, and the applicable player build pass. `TrollStrategy/Build Windows Player` builds into `Builds/Windows` and writes `build-result.txt` there.
 - Stop and redesign if fixes reveal errors one by one, ownership becomes ambiguous, or a second source of truth appears.
 
-## Screen UI
+## UI
 
-- The colony HUD is UI Toolkit: layout in `Assets/Game/UI/Uxml`, look in `Assets/Game/UI/Styles`. Colours, fonts and button styles live only in `Theme.uss`; screens add layout.
-- `Runtime/UI/Colony` screen parts are plain classes over a cloned UXML tree, so EditMode tests drive them without a scene; `ColonyHud` only connects the `UIDocument`, session and input. `TrollStrategy/Setup Colony HUD` installs the document into the scene.
-- Bind every HUD button with `UiFeel.Bind` and mark unaffordable ones with `UiFeel.SetAvailable`, so a press always answers with a sound or a refusal.
+- All UI is UI Toolkit; do not add uGUI canvases or TextMeshPro. Layout lives in `Assets/Game/UI/Uxml`, look in `Assets/Game/UI/Styles`. Colours, fonts and button styles live only in `Theme.uss`; screens and world labels add layout and sizes.
+- The screen UI is the `UI` prefab (`Assets/Game/UI/Prefabs/UI.prefab`): one GameObject per screen, band and panel, each a `UIDocument` nested in its parent's. Panels have their own UXML in `Uxml/Colony` or `Uxml/Battle`; bands and columns have none and take their layout classes from `UiDocumentClasses`. `UiSetup` describes the tree and `TrollStrategy/Setup UI` rebuilds the prefab from it, so change the structure there.
+- A nested `UIDocument` finds its parent when the component is added. Add it after the GameObject has its parent, or it becomes a separate panel.
+- Screen parts in `Runtime/UI/Colony` and `Runtime/UI/Battle` are plain classes over their document's root, so EditMode tests drive them without a scene; `TestUi` clones the prefab's document tree. `ColonyHud` and `BattleHud` only connect the documents, session and input.
+- Battle deployment (who stands where, who wears what) is `BattleDeployment` in the application layer. `BattleSceneController` owns the arena, camera and replay clock and reaches the screen only through `IBattleScreen`.
+- Bind every button with `UiFeel.Bind` and mark unavailable ones with `UiFeel.SetAvailable`, so a press always answers with a sound or a refusal.
 - A button that holds a badge or other child needs its caption as a child label (`Ui.CaptionButton`); a text element with children stops measuring its own text.
-- Layout containers are `picking-mode="Ignore"`; only panels and buttons catch the pointer, and `UIInputUtils` asks the HUD documents before a map click.
-- The battle HUD is still uGUI inside `BattleSceneController`; its move is stage 2 of `docs/superpowers/plans/2026-09-27-ui-toolkit-hud.md`.
+- Document roots and layout containers ignore the pointer; only panels and buttons catch it, and `UIInputUtils` asks the registered documents before a map or board click.
+- Text, numbers and bars over things in the world are `WorldPanel`s: world-space `UIDocument`s on `WorldPanelSettings` (100 px per world unit, no colliders) styled by `WorldUi.uss`. Keep their transform scale at 1; panels made in code get the settings from `GameBootstrap`.
 
 ## Art handoff pipeline
 

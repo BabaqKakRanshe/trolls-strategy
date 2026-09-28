@@ -1,22 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 namespace TrollStrategy.Presentation.Visuals
 {
     /// <summary>
-    /// Whether the pointer is over HUD rather than the world, so map clicks under a panel are ignored.
-    /// UI Toolkit documents register themselves and are asked with Pick: layout containers are
-    /// picking-mode Ignore, so only real panels and buttons count. uGUI canvases are still checked
-    /// through the EventSystem.
+    /// Whether the pointer is over the screen UI rather than the world, so map and board clicks under a
+    /// panel are ignored. The HUD documents register themselves and are asked with Pick: document roots
+    /// and layout containers are picking-mode Ignore, so only real panels and buttons count.
     /// </summary>
     public static class UIInputUtils
     {
         private static readonly List<UIDocument> s_documents = new();
-        private static readonly List<RaycastResult> s_results = new();
 
         public static void RegisterDocument(UIDocument document)
         {
@@ -28,7 +24,7 @@ namespace TrollStrategy.Presentation.Visuals
         public static bool IsPointerOverInteractiveUI()
         {
             Vector2 screenPosition = Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
-            return IsOverDocument(screenPosition) || IsOverCanvas(screenPosition);
+            return IsOverDocument(screenPosition);
         }
 
         public static bool IsPointerOverUI() => IsPointerOverInteractiveUI();
@@ -54,18 +50,6 @@ namespace TrollStrategy.Presentation.Visuals
                 var picked = panel.Pick(point);
                 if (picked != null && picked != root && picked != panel.visualTree) return true;
             }
-            return false;
-        }
-
-        private static bool IsOverCanvas(Vector2 screenPosition)
-        {
-            if (EventSystem.current == null) return false;
-            var pointerData = new PointerEventData(EventSystem.current) { position = screenPosition };
-            s_results.Clear();
-            EventSystem.current.RaycastAll(pointerData, s_results);
-            for (int i = 0; i < s_results.Count; i++)
-                if (s_results[i].module is GraphicRaycaster)
-                    return true;
             return false;
         }
     }

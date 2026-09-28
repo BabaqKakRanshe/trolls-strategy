@@ -8,7 +8,6 @@ using TrollStrategy.Presentation.Visuals;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace TrollStrategy.Editor.Setup
 {
@@ -52,36 +51,6 @@ namespace TrollStrategy.Editor.Setup
                 image.Apply();
                 File.WriteAllBytes("../vitaria-preview.png", image.EncodeToPNG());
                 Object.DestroyImmediate(image);
-
-                var canvas = GameObject.Find("HUDCanvas")?.GetComponent<Canvas>();
-                var drawer = GameObject.Find("CatalogDrawer")?.GetComponent<RectTransform>();
-                if (canvas != null && drawer != null)
-                {
-                    var previousMode = canvas.renderMode;
-                    var previousCamera = canvas.worldCamera;
-                    var previousPosition = drawer.anchoredPosition;
-                    try
-                    {
-                        drawer.anchoredPosition = new Vector2(-22f, previousPosition.y);
-                        canvas.renderMode = RenderMode.ScreenSpaceCamera;
-                        canvas.worldCamera = camera;
-                        canvas.planeDistance = 1f;
-                        Canvas.ForceUpdateCanvases();
-                        for (var frame = 0; frame < 4; frame++) camera.Render();
-                        RenderTexture.active = target;
-                        var hudImage = new Texture2D(target.width, target.height, TextureFormat.RGB24, false);
-                        hudImage.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0);
-                        hudImage.Apply();
-                        File.WriteAllBytes("../vitaria-hud-preview.png", hudImage.EncodeToPNG());
-                        Object.DestroyImmediate(hudImage);
-                    }
-                    finally
-                    {
-                        canvas.renderMode = previousMode;
-                        canvas.worldCamera = previousCamera;
-                        drawer.anchoredPosition = previousPosition;
-                    }
-                }
             }
             finally
             {
