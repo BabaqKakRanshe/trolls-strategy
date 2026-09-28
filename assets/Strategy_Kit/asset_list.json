@@ -1098,5 +1098,195 @@
    10.428,
    46.107
   ]
+ },
+ {
+  "asset": "Env_Haystack",
+  "category": "Colony",
+  "tris": 118,
+  "size_unity": [
+   1.255,
+   1.02,
+   1.32
+  ]
+ },
+ {
+  "asset": "Bld_Watermill",
+  "category": "Colony",
+  "tris": 3306,
+  "size_unity": [
+   4.425,
+   5.8,
+   3.436
+  ]
+ },
+ {
+  "asset": "Bld_Watermill_Wheel",
+  "category": "Colony",
+  "tris": 1964,
+  "size_unity": [
+   2.295,
+   2.295,
+   0.58
+  ]
+ },
+ {
+  "asset": "Prop_Doorstep",
+  "category": "Colony",
+  "tris": 88,
+  "size_unity": [
+   0.52,
+   0.12,
+   0.26
+  ]
+ },
+ {
+  "asset": "Env_EntrancePath",
+  "category": "Colony",
+  "tris": 146,
+  "size_unity": [
+   0.695,
+   0.022,
+   0.633
+  ]
+ },
+ {
+  "asset": "FX_Select_Corner",
+  "category": "Colony",
+  "tris": 88,
+  "size_unity": [
+   0.34,
+   0.045,
+   0.34
+  ]
+ },
+ {
+  "asset": "Bld_Barn",
+  "category": "Backdrop",
+  "tris": 2712,
+  "size_unity": [
+   4.483,
+   3.861,
+   4.2
+  ]
+ },
+ {
+  "asset": "Bld_Keep",
+  "category": "Backdrop",
+  "tris": 4188,
+  "size_unity": [
+   2.72,
+   5.9,
+   3.0
+  ]
+ },
+ {
+  "asset": "Bld_MineHoist",
+  "category": "Backdrop",
+  "tris": 3483,
+  "size_unity": [
+   4.364,
+   4.083,
+   3.23
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Ground",
+  "category": "ColonyMeadow",
+  "tris": 12672,
+  "size_unity": [
+   108.286,
+   5.504,
+   56.498
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Cliffs",
+  "category": "ColonyMeadow",
+  "tris": 7720,
+  "size_unity": [
+   107.56,
+   7.04,
+   57.776
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Roads",
+  "category": "ColonyMeadow",
+  "tris": 960,
+  "size_unity": [
+   12.135,
+   0.229,
+   17.424
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Fields",
+  "category": "ColonyMeadow",
+  "tris": 3836,
+  "size_unity": [
+   9.238,
+   0.406,
+   8.82
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Foam",
+  "category": "ColonyMeadow",
+  "tris": 200,
+  "size_unity": [
+   2.879,
+   0.358,
+   3.394
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_River",
+  "category": "ColonyMeadow",
+  "tris": 416,
+  "size_unity": [
+   5.449,
+   0.0,
+   28.193
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Falls",
+  "category": "ColonyMeadow",
+  "tris": 120,
+  "size_unity": [
+   3.433,
+   5.09,
+   2.813
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Scatter",
+  "category": "ColonyMeadow",
+  "tris": 78845,
+  "size_unity": [
+   102.117,
+   10.955,
+   52.131
+  ]
+ },
+ {
+  "asset": "Bld_Barracks",
+  "category": "Buildings",
+  "tris": 4538,
+  "size_unity": [
+   6.095,
+   4.235,
+   3.795
+  ]
+ },
+ {
+  "asset": "Bld_Warehouse",
+  "category": "Buildings",
+  "tris": 3756,
+  "size_unity": [
+   5.323,
+   4.416,
+   4.36
+  ]
  }
 ]

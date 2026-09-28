@@ -210,9 +210,11 @@ class Terrace:
     def __init__(self, name, ctrl, z, bottom=BED_Z, wob=0.14, seed=0, hills=0.0, flat=None,
                  grid=0.7, grass=(0.42, 0.95), col_w=(1.3, 2.8), lip=True, cliff=True,
                  open_ranges=(), step=0.42, lean=0.1, batter=0.42, ramp="arena_grass", wide=0.22,
-                 shelves=None, shelf_jit=0.3, notch=0.18):
+                 shelves=None, shelf_jit=0.3, notch=0.18, calm=None):
         self.name, self.z, self.bottom, self.seed = name, z, bottom, seed
         self.hills, self.flat, self.grid, self.grass = hills, flat, grid, grass
+        # calm(x, y) -> 0..1: где пятна травы гасятся к середине рампы (поле под стройку колонии)
+        self.calm = calm
         self.ramp, self.wide = ramp, wide          # рампа травы; доля широких скальных плит
         self.col_w, self.lip, self.cliff, self.open_ranges = col_w, lip, cliff, open_ranges
         self.lean, self.batter = lean, batter
@@ -261,6 +263,11 @@ class Terrace:
         n2 = noise.noise(Vector((x * 0.47, y * 0.47, self.seed + 8.1)))
         r = self.rim(x, y) if rim is None else rim
         t = (lo + hi) / 2 + (hi - lo) * (0.55 * n1 + 0.2 * n2) - 0.12 * smoothstep(1.2, 0.0, r)
+        if self.calm is not None:
+            k = self.calm(x, y)
+            if k > 0:
+                mid = (lo + hi) / 2
+                t = mid + (t - mid) * (1.0 - 0.75 * k)
         return clamp(t, 0.0, 1.0)
 
     # -------------------------------------------------------------- top
@@ -470,6 +477,11 @@ class Terrace:
 # =========================================================================================
 # дорога
 # =========================================================================================
+def _ease(a, x):
+    """Сужение конца дороги на длине a (0 — конец обрезан, например под настилом моста)."""
+    return 1.0 if a <= 0 else smoothstep(0, a, x)
+
+
 def build_road(a, ctrl, terrace, half=0.62, taper=(1.2, 1.2), seed=0, lift=0.025):
     """Грунтовая дорога по террасе: светлая середина, тёмные края, как Env_Paths кита."""
     bm, uvl = a.bm, a.uv
@@ -482,7 +494,7 @@ def build_road(a, ctrl, terrace, half=0.62, taper=(1.2, 1.2), seed=0, lift=0.025
     for k, c in enumerate(s):
         tan = (s[min(k + 1, len(s) - 1)] - s[max(k - 1, 0)]).normalized()
         nr = Vector((-tan.y, tan.x, 0))
-        tp = smoothstep(0, taper[0], cum[k]) * smoothstep(0, taper[1], total - cum[k]) if any(taper) else 1.0
+        tp = _ease(taper[0], cum[k]) * _ease(taper[1], total - cum[k]) if any(taper) else 1.0
         hw = max(0.08, half * (1 + 0.2 * noise.noise(Vector((cum[k] * 0.5, seed * 7.3, 0.5)))) * tp)
         offs = [-(hw + 0.16), -hw, -hw * 0.5, 0.0, hw * 0.5, hw, hw + 0.16]
         ts = [0.0, 0.3, 0.72, 0.9, 0.72, 0.3, 0.0]
@@ -572,7 +584,7 @@ def make_water_texture(path, style="lake"):
     return path
 
 
-def river_ribbon(a, ctrl, half, z=RIVER_Z, tile=4.0, seed=0, flare_end=0.0):
+def river_ribbon(a, ctrl, half, z=RIVER_Z, tile=4.0, seed=0, flare_end=0.0, flare_start=0.0, flare_len=3.0):
     """Лента реки по ломаной ctrl (по течению). Края чуть заходят под берега — щелей нет.
     UV: U поперёк (half*2/tile), V = -длина/tile — та же раскладка, что у водопадов."""
     bm, uvl = a.bm, a.uv
@@ -589,6 +601,8 @@ def river_ribbon(a, ctrl, half, z=RIVER_Z, tile=4.0, seed=0, flare_end=0.0):
         hw = half * (1 + 0.1 * noise.noise(Vector((cum[k] * 0.3, seed * 3.7, 0.5))))
         if flare_end:
             hw *= 1 + flare_end * smoothstep(total - 3.0, total, cum[k])
+        if flare_start:                       # плёс у истока: вода под водопадом шире русла
+            hw *= 1 + flare_start * smoothstep(flare_len, 0.0, cum[k])
         row = []
         for i in range(cols + 1):
             u = i / cols - 0.5

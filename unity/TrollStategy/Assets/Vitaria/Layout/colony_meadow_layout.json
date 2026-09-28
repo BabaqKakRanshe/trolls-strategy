@@ -1,0 +1,641 @@
+{
+ "name": "Colony_Meadow",
+ "plot": {
+  "width": 14,
+  "height": 14,
+  "cellSize": 1.0,
+  "note": "начало координат — середина поля: worldView.MapToWorld((7, 7, 0)); мировые оси, корень окружения без поворота (X на восток, Y вверх, Z на север)",
+  "corners": [
+   [
+    -7.0,
+    0.0,
+    -7.0
+   ],
+   [
+    7.0,
+    0.0,
+    -7.0
+   ],
+   [
+    7.0,
+    0.0,
+    7.0
+   ],
+   [
+    -7.0,
+    0.0,
+    7.0
+   ]
+  ]
+ },
+ "objects": [
+  {
+   "name": "Colony_Meadow_Ground",
+   "asset": "Colony_Meadow_Ground",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Colony_Meadow_Cliffs",
+   "asset": "Colony_Meadow_Cliffs",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Colony_Meadow_Roads",
+   "asset": "Colony_Meadow_Roads",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Colony_Meadow_Fields",
+   "asset": "Colony_Meadow_Fields",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Colony_Meadow_Foam",
+   "asset": "Colony_Meadow_Foam",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Colony_Meadow_River",
+   "asset": "Colony_Meadow_River",
+   "group": "Water",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "scroll": 0.22
+  },
+  {
+   "name": "Colony_Meadow_Falls",
+   "asset": "Colony_Meadow_Falls",
+   "group": "Water",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "scroll": 0.6
+  },
+  {
+   "name": "Env_Bridge.002",
+   "asset": "Env_Bridge",
+   "group": "Backdrop",
+   "p": [
+    -10.95,
+    0.06,
+    -1.35
+   ],
+   "r": [
+    -0.0,
+    -0.999848,
+    -0.0,
+    0.017452
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ]
+  },
+  {
+   "name": "Env_Haystack.001",
+   "asset": "Env_Haystack",
+   "group": "Backdrop",
+   "p": [
+    15.2,
+    -0.8595,
+    -8.9
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    0.8,
+    0.8,
+    0.8
+   ]
+  },
+  {
+   "name": "Env_Haystack.002",
+   "asset": "Env_Haystack",
+   "group": "Backdrop",
+   "p": [
+    16.3,
+    -0.8285,
+    -9.6
+   ],
+   "r": [
+    0.0,
+    0.939693,
+    0.0,
+    0.34202
+   ],
+   "s": [
+    0.65,
+    0.65,
+    0.65
+   ]
+  },
+  {
+   "name": "Env_Haystack.003",
+   "asset": "Env_Haystack",
+   "group": "Backdrop",
+   "p": [
+    12.9,
+    -0.76,
+    -0.3
+   ],
+   "r": [
+    0.0,
+    0.984808,
+    0.0,
+    0.173648
+   ],
+   "s": [
+    0.7,
+    0.7,
+    0.7
+   ]
+  },
+  {
+   "name": "Bld_Watermill.001",
+   "asset": "Bld_Watermill",
+   "group": "Backdrop",
+   "p": [
+    -13.45,
+    -0.0811,
+    -3.45
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    0.6,
+    0.6,
+    0.6
+   ]
+  },
+  {
+   "name": "Bld_Watermill_Wheel.001",
+   "asset": "Bld_Watermill_Wheel",
+   "group": "Backdrop",
+   "p": [
+    -12.268,
+    -0.4531,
+    -3.39
+   ],
+   "r": [
+    0.0,
+    0.707107,
+    0.0,
+    0.707107
+   ],
+   "s": [
+    0.6,
+    0.6,
+    0.6
+   ],
+   "spin": -30.0
+  },
+  {
+   "name": "Bld_Cottage.003",
+   "asset": "Bld_Cottage",
+   "group": "Backdrop",
+   "p": [
+    -16.4,
+    -0.0421,
+    1.3
+   ],
+   "r": [
+    -0.0,
+    -0.809017,
+    -0.0,
+    0.587785
+   ],
+   "s": [
+    0.5,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "name": "Bld_House_Timber.002",
+   "asset": "Bld_House_Timber",
+   "group": "Backdrop",
+   "p": [
+    -16.6,
+    -0.0117,
+    -8.3
+   ],
+   "r": [
+    -0.0,
+    -0.866025,
+    -0.0,
+    0.5
+   ],
+   "s": [
+    0.5,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "name": "Bld_Tower_Round.002",
+   "asset": "Bld_Tower_Round",
+   "group": "Backdrop",
+   "p": [
+    -7.6,
+    2.174,
+    12.4
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    0.475,
+    0.475,
+    0.475
+   ]
+  },
+  {
+   "name": "Bld_Keep.001",
+   "asset": "Bld_Keep",
+   "group": "Backdrop",
+   "p": [
+    0.8,
+    2.159,
+    12.9
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    0.5,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "name": "Bld_House_Stone.003",
+   "asset": "Bld_House_Stone",
+   "group": "Backdrop",
+   "p": [
+    4.8,
+    2.2058,
+    12.35
+   ],
+   "r": [
+    -0.0,
+    -0.99863,
+    -0.0,
+    0.052336
+   ],
+   "s": [
+    0.5,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "name": "Bld_WatchTower.003",
+   "asset": "Bld_WatchTower",
+   "group": "Backdrop",
+   "p": [
+    -18.2,
+    3.9392,
+    5.3
+   ],
+   "r": [
+    0.0,
+    0.991445,
+    0.0,
+    0.130526
+   ],
+   "s": [
+    0.5,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "name": "Bld_Barn.001",
+   "asset": "Bld_Barn",
+   "group": "Backdrop",
+   "p": [
+    19.3,
+    -0.7612,
+    2.2
+   ],
+   "r": [
+    0.0,
+    -0.67559,
+    0.0,
+    0.737277
+   ],
+   "s": [
+    0.5,
+    0.5,
+    0.5
+   ]
+  },
+  {
+   "name": "Bld_MineHoist.001",
+   "asset": "Bld_MineHoist",
+   "group": "Backdrop",
+   "p": [
+    16.4,
+    -0.767,
+    6.15
+   ],
+   "r": [
+    0.0,
+    0.987688,
+    0.0,
+    0.156434
+   ],
+   "s": [
+    0.525,
+    0.525,
+    0.525
+   ]
+  },
+  {
+   "name": "Colony_Meadow_Scatter",
+   "asset": "Colony_Meadow_Scatter",
+   "group": "Nature",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_LanternPost.003",
+   "asset": "Prop_LanternPost",
+   "group": "Props",
+   "p": [
+    -7.95,
+    -0.0,
+    -0.2
+   ],
+   "r": [
+    0.0,
+    0.707107,
+    0.0,
+    0.707107
+   ],
+   "s": [
+    0.8,
+    0.8,
+    0.8
+   ]
+  }
+ ],
+ "camera": {
+  "position": [
+   1.5,
+   16.24,
+   -16.24
+  ],
+  "forward": [
+   -0.06517,
+   -0.7056,
+   0.7056
+  ],
+  "up": [
+   -0.0649,
+   0.70861,
+   0.70261
+  ],
+  "fov": 45.0
+ },
+ "sun": {
+  "forward": [
+   -0.36888,
+   -0.76575,
+   0.52683
+  ],
+  "color": [
+   1.0,
+   0.95,
+   0.86
+  ],
+  "intensity": 1.3
+ },
+ "ambient": {
+  "sky": [
+   0.64,
+   0.72,
+   0.82
+  ],
+  "equator": [
+   0.52,
+   0.58,
+   0.5
+  ],
+  "ground": [
+   0.28,
+   0.26,
+   0.24
+  ]
+ },
+ "background": [
+  0.33,
+  0.45,
+  0.6
+ ],
+ "fx": {
+  "dust": [
+   "FX_Dust_Puff_A",
+   "FX_Dust_Puff_B",
+   "FX_Dust_Puff_C"
+  ],
+  "smoke": [
+   "FX_Smoke_Puff_A",
+   "FX_Smoke_Puff_B"
+  ],
+  "debrisStone": [
+   "FX_Debris_Stone_A",
+   "FX_Debris_Stone_B",
+   "FX_Debris_Stone_C"
+  ],
+  "debrisEarth": [
+   "FX_Debris_Earth_A",
+   "FX_Debris_Earth_B"
+  ],
+  "debrisWood": [
+   "FX_Debris_Wood_A",
+   "FX_Debris_Wood_B"
+  ],
+  "rock": [
+   "FX_Rock_Throw"
+  ],
+  "spark": [
+   "FX_Spark_Shard"
+  ]
+ },
+ "sockets": [
+  {
+   "kind": "mist",
+   "p": [
+    -12.30966,
+    -0.85,
+    6.41135
+   ],
+   "size": 2.1
+  },
+  {
+   "kind": "smoke",
+   "p": [
+    -16.32543,
+    1.38293,
+    1.75007
+   ],
+   "size": 0.35
+  },
+  {
+   "kind": "smoke",
+   "p": [
+    -15.93475,
+    2.04334,
+    -8.67225
+   ],
+   "size": 0.35
+  },
+  {
+   "kind": "smoke",
+   "p": [
+    4.36696,
+    4.07085,
+    12.60667
+   ],
+   "size": 0.35
+  }
+ ],
+ "tris": 139844
+}
