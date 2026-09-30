@@ -32,7 +32,6 @@ namespace TrollStrategy.Presentation.Battle
         private static readonly Color EnemyRing = new(1f, .36f, .3f, .9f);
         private static readonly Color PlayerFill = new(.4f, .86f, .42f, 1f);
         private static readonly Color EnemyFill = new(.93f, .33f, .29f, 1f);
-        private static readonly Dictionary<Sprite, Vector2> BodyBounds = new();
 
         private enum Pose { Idle, Walk, Attack, Hurt, Dead }
 
@@ -383,47 +382,11 @@ namespace TrollStrategy.Presentation.Battle
         private void MeasureBody()
         {
             float min = -.1f, max = .2f;
-            var sprite = Has(_idle) ? _idle[0] : null;
-            if (sprite != null)
+            if (Has(_idle))
             {
-                if (!BodyBounds.TryGetValue(sprite, out var bounds))
-                {
-                    var rect = sprite.rect;
-                    var copy = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.RGBA32, false);
-                    var target = RenderTexture.GetTemporary(sprite.texture.width, sprite.texture.height, 0,
-                        RenderTextureFormat.ARGB32);
-                    var previous = RenderTexture.active;
-                    try
-                    {
-                        // Imported art need not enable Read/Write. Read back just this frame once per creature sprite.
-                        Graphics.Blit(sprite.texture, target);
-                        RenderTexture.active = target;
-                        copy.ReadPixels(rect, 0, 0, false);
-                        var pixels = copy.GetPixels32();
-                        int bottom = copy.height, top = -1;
-                        for (int y = 0; y < copy.height; y++)
-                        for (int x = 0; x < copy.width; x++)
-                        {
-                            if (pixels[y * copy.width + x].a == 0) continue;
-                            bottom = Mathf.Min(bottom, y);
-                            top = Mathf.Max(top, y);
-                        }
-                        bounds = top >= bottom
-                            ? new Vector2((bottom - sprite.pivot.y) / sprite.pixelsPerUnit,
-                                (top + 1f - sprite.pivot.y) / sprite.pixelsPerUnit)
-                            : new Vector2(sprite.bounds.min.y, sprite.bounds.max.y);
-                        BodyBounds[sprite] = bounds;
-                    }
-                    finally
-                    {
-                        RenderTexture.active = previous;
-                        RenderTexture.ReleaseTemporary(target);
-                        if (UnityEngine.Application.isPlaying) Destroy(copy);
-                        else DestroyImmediate(copy);
-                    }
-                }
-                min = bounds.x;
-                max = bounds.y;
+                var body = SpriteBody.Opaque(_idle[0]);
+                min = body.yMin;
+                max = body.yMax;
             }
             _feet = -min * _spriteScale;
             _height = Mathf.Max(.4f, (max - min) * _spriteScale);

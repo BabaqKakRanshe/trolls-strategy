@@ -1,3 +1,4 @@
+using System.IO;
 using NUnit.Framework;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
@@ -38,6 +39,59 @@ namespace TrollStrategy.Tests
             }
             finally
             {
+                Object.DestroyImmediate(root);
+                Object.DestroyImmediate(definition);
+            }
+        }
+
+        [TestCase("Assets/Game/Prefabs/Units/Troll.prefab", UnitKind.Troll)]
+        [TestCase("Assets/Game/Prefabs/Units/Goblin.prefab", UnitKind.Goblin)]
+        public void Colony_StandsOpaqueFeetOnTheLawnOverAShadow(string path, UnitKind kind)
+        {
+            var definition = ScriptableObject.CreateInstance<UnitDefinition>();
+            definition.Init(kind, kind.ToString(), 40, 3, 5f, 100);
+            var root = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            var source = new Texture2D(2, 2);
+            try
+            {
+                var view = root.GetComponent<UnitView>();
+                var sprite = view.IdleSprite;
+                source.LoadImage(File.ReadAllBytes(AssetDatabase.GetAssetPath(sprite.texture)));
+                var rect = sprite.rect;
+                int bottom = (int)rect.height;
+                for (int y = 0; y < rect.height; y++)
+                for (int x = 0; x < rect.width; x++)
+                    if (source.GetPixel((int)rect.x + x, (int)rect.y + y).a > 0f)
+                        bottom = Mathf.Min(bottom, y);
+                Assert.That(bottom, Is.GreaterThan(0), "the frame has a transparent margin under the feet");
+                float feetY = (bottom - sprite.pivot.y) / sprite.pixelsPerUnit;
+
+                // the colony grid's map plane: x east, y north, local -Z up
+                root.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+                view.Setup(new UnitSnapshot("unit-1", 1, kind, kind.ToString(), 3, 5f, 100, new WorldPosition(2f, 3f),
+                    Assignment.Idle(), "Свободен"), definition, null);
+                var visual = root.transform.Find("SpriteVisual");
+                var lawn = root.transform.TransformPoint(Vector3.back * UnitView.GroundLift);
+                Assert.That(Vector3.Distance(visual.TransformPoint(new Vector3(0f, feetY, 0f)), lawn), Is.LessThan(.001f),
+                    "visible feet, rather than the frame's edge, stand on the lawn");
+
+                var shadow = root.transform.Find("Shadow").GetComponent<SpriteRenderer>();
+                Assert.That(shadow.sprite, Is.Not.Null);
+                Assert.That(shadow.enabled, Is.True);
+                Assert.That(Vector3.Distance(shadow.transform.position, lawn), Is.LessThan(.001f), "under the feet");
+                Assert.That(Vector3.Angle(shadow.transform.forward, root.transform.forward), Is.LessThan(.01f),
+                    "flat on the lawn");
+                Assert.That(shadow.bounds.size.x, Is.GreaterThan(.3f), "about as wide as the creature");
+
+                root.transform.localScale = Vector3.one * .4f;          // a pop-in
+                view.UpdateVisuals(view.Snapshot, false);
+                lawn = root.transform.TransformPoint(Vector3.back * UnitView.GroundLift);
+                Assert.That(Vector3.Distance(visual.TransformPoint(new Vector3(0f, feetY, 0f)), lawn), Is.LessThan(.001f),
+                    "a scaled creature keeps its feet down");
+            }
+            finally
+            {
+                Object.DestroyImmediate(source);
                 Object.DestroyImmediate(root);
                 Object.DestroyImmediate(definition);
             }

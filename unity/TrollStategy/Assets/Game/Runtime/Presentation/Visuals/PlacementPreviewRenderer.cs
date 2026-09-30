@@ -6,6 +6,7 @@ using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Map;
 using TrollStrategy.Presentation.Buildings;
+using TrollStrategy.Presentation.Units;
 
 namespace TrollStrategy.Presentation.Visuals
 {
@@ -139,14 +140,15 @@ namespace TrollStrategy.Presentation.Visuals
             if (_ghostRenderer != null)
             {
                 _ghostRenderer.gameObject.SetActive(mode.Type == InteractionModeType.PlacingUnits);
-                _ghostRenderer.transform.position = centerPos;
-                _ghostRenderer.transform.position += _worldView.GroundOffset(0.55f);
                 _ghostRenderer.transform.rotation = _camera.transform.rotation;
                 if (mode.Type == InteractionModeType.PlacingUnits)
                 {
                     var unitView = ContentPrefabs.Unit(_catalog.GetUnit(mode.UnitKind));
                     _ghostRenderer.sprite = unitView != null ? unitView.IdleSprite : null;
                     _ghostRenderer.transform.localScale = Vector3.one * (unitView != null ? unitView.SpriteScale : 1f);
+                    // the creature it will be: feet on the lawn, as UnitView stands it
+                    _ghostRenderer.transform.position = centerPos + _worldView.GroundOffset(UnitView.GroundLift) +
+                        _camera.transform.up * (unitView != null ? unitView.PivotAboveFeet : 0f);
                 }
                 _ghostRenderer.color = new Color(themeColor.r, themeColor.g, themeColor.b, 0.75f);
             }

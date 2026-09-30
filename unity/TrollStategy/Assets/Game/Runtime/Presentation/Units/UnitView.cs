@@ -4,6 +4,7 @@ using UnityEngine;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
+using TrollStrategy.Presentation.Feel;
 using TrollStrategy.Presentation.Map;
 using TrollStrategy.Presentation.WorldUi;
 using Label = UnityEngine.UIElements.Label;
@@ -12,6 +13,13 @@ namespace TrollStrategy.Presentation.Units
 {
     public class UnitView : MonoBehaviour
     {
+        /// <summary>How high the opaque feet stand over the unit's point on the lawn, m (as a battle fighter's).</summary>
+        public const float GroundLift = .05f;
+        // the carried goods' middle over the head, along the billboard: half the 0.75 m icon and a little air, m
+        private const float CargoGap = .45f;
+        // a frame without art: the body the battle's fighters assume
+        private static readonly Rect DefaultBody = Rect.MinMaxRect(-.15f, -.1f, .15f, .2f);
+
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private SpriteRenderer _selectionCircle;
         [SerializeField] private SpriteRenderer _cargoIcon;
@@ -41,6 +49,7 @@ namespace TrollStrategy.Presentation.Units
         private int _currentFrame;
         private float _movementSpeed;
         private LineRenderer _selectionRing;
+        private SpriteRenderer _shadow;
         private bool _isSelected;
         private bool _worksInside;
         private bool _hiddenInside;
@@ -59,6 +68,9 @@ namespace TrollStrategy.Presentation.Units
         public IReadOnlyList<Sprite> DeathFrames => _deathFrames ?? Array.Empty<Sprite>();
         /// <summary>A worker that reached its workplace door is inside the building and not drawn.</summary>
         public bool IsHiddenInside => _hiddenInside;
+        /// <summary>From the opaque feet up the billboard to the sprite's pivot, m at <see cref="SpriteScale"/>.</summary>
+        public float PivotAboveFeet => -Body.yMin * SpriteScale;
+        private Rect Body => IdleSprite != null ? SpriteBody.Opaque(IdleSprite) : DefaultBody;
 
         public void SetSpriteScale(float scale)
         {
@@ -81,6 +93,7 @@ namespace TrollStrategy.Presentation.Units
                 if (IdleSprite != null)
                     _spriteRenderer.sprite = IdleSprite;
             }
+            EnsureShadow();
             ApplySpriteScale();
             FaceCamera();
 
@@ -127,23 +140,62 @@ namespace TrollStrategy.Presentation.Units
 
             float scale = SpriteScale;
             _spriteRenderer.transform.localScale = new Vector3(scale, scale, 1f);
-            _spriteRenderer.transform.localPosition = new Vector3(0f, 0f, -0.65f);
+            Stand();
         }
 
         private void FaceCamera()
         {
             var camera = Camera.main;
-            if (camera == null) return;
-            if (_spriteRenderer != null) _spriteRenderer.transform.rotation = camera.transform.rotation;
-            if (_selectionCircle != null) _selectionCircle.transform.rotation = camera.transform.rotation;
-            if (_cargoIcon != null) _cargoIcon.transform.rotation = camera.transform.rotation;
-            if (_cargoLabel != null) _cargoLabel.Face(camera);
+            if (camera != null)
+            {
+                if (_spriteRenderer != null) _spriteRenderer.transform.rotation = camera.transform.rotation;
+                if (_selectionCircle != null) _selectionCircle.transform.rotation = camera.transform.rotation;
+                if (_cargoIcon != null) _cargoIcon.transform.rotation = camera.transform.rotation;
+                if (_cargoLabel != null) _cargoLabel.Face(camera);
+            }
+            Stand();
+        }
+
+        /// <summary>
+        /// Stands the creature on the lawn: its opaque feet <see cref="GroundLift"/> over the unit's point (local -Z is
+        /// up from the map plane), the body up the billboard, a soft shadow under the feet as wide as the body and the
+        /// carried goods over the head. The offsets are local, so a pop-in or shrink of the root keeps the feet down.
+        /// </summary>
+        private void Stand()
+        {
+            if (_spriteRenderer == null) return;
+            var body = Body;
+            float scale = SpriteScale;
+            var feet = Vector3.back * GroundLift;
+            var up = Quaternion.Inverse(transform.rotation) * _spriteRenderer.transform.up;
+            _spriteRenderer.transform.localPosition = feet - up * (body.yMin * scale);
+            if (_shadow != null)
+            {
+                // wider than the feet: from the colony camera the body hides the shadow's far half
+                float width = Mathf.Max(.1f, body.width * scale * 1.5f);
+                _shadow.transform.SetLocalPositionAndRotation(feet, Quaternion.identity);
+                _shadow.transform.localScale = new Vector3(width, width * .55f, 1f);
+            }
+            if (_cargoIcon != null) _cargoIcon.transform.localPosition = feet + up * (body.height * scale + CargoGap);
+        }
+
+        /// <summary>A blob shadow flat on the lawn, drawn under every creature (as under the battle's fighters).</summary>
+        private void EnsureShadow()
+        {
+            if (_shadow != null) return;
+            var shadowObject = new GameObject("Shadow");
+            shadowObject.transform.SetParent(transform, false);
+            _shadow = shadowObject.AddComponent<SpriteRenderer>();
+            _shadow.sprite = FeelSprites.SoftCircle;
+            _shadow.color = new Color(0f, 0f, 0f, .5f);
+            _shadow.sortingOrder = 18;
         }
 
         private void ApplyInsideVisibility()
         {
             bool visible = !_hiddenInside;
             if (_spriteRenderer != null) _spriteRenderer.enabled = visible;
+            if (_shadow != null) _shadow.enabled = visible;
             if (_collider != null) _collider.enabled = visible;
             if (_selectionRing != null) _selectionRing.enabled = _isSelected && visible;
             if (_selectionCircle != null) _selectionCircle.gameObject.SetActive(_isSelected && visible);
@@ -257,6 +309,7 @@ namespace TrollStrategy.Presentation.Units
             _worksInside = snapshot.Assignment != null && snapshot.Assignment.Kind == AssignmentKind.Work;
 
             EnsureSelectionVisuals();
+            EnsureShadow();
             ApplySpriteScale();
             FaceCamera();
 
@@ -271,7 +324,6 @@ namespace TrollStrategy.Presentation.Units
                 {
                     _cargoIcon.sprite = cargoSprite != null ? cargoSprite : GetFallbackOreSprite();
                     _cargoIcon.sortingOrder = 24;
-                    _cargoIcon.transform.localPosition = transform.InverseTransformDirection(Vector3.up * 1.1f);
                     _cargoIcon.transform.localScale = Vector3.one * 0.75f;
                     _cargoIcon.gameObject.SetActive(true);
                 }
