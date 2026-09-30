@@ -127,13 +127,16 @@ namespace TrollStrategy.Application
         public ProgressSnapshot Progress { get; }
         /// <summary>Gold a won battle rolled that waits to be taken; null when there is none.</summary>
         public BattleRewardSnapshot BattleReward { get; }
+        /// <summary>The colony's land blocks; null when land limits nothing.</summary>
+        public LandSnapshot Land { get; }
 
         public GameSnapshot(int revision, int gold, int soldGoods, int totalOre,
             IReadOnlyList<BuildingSnapshot> buildings, IReadOnlyList<UnitSnapshot> units,
             IReadOnlyList<EquipmentSnapshot> equipment = null, ProgressSnapshot progress = null,
-            BattleRewardSnapshot battleReward = null)
+            BattleRewardSnapshot battleReward = null, LandSnapshot land = null)
         {
             BattleReward = battleReward;
+            Land = land;
             Revision = revision;
             Gold = gold;
             SoldGoods = soldGoods;
@@ -154,6 +157,77 @@ namespace TrollStrategy.Application
                 copy[i] = source[i];
             return copy;
         }
+    }
+
+    /// <summary>
+    /// The colony's land as the island and the HUD show it: every block (index = y * BlocksPerSide + x), the price
+    /// of the next block and what a clearing costs.
+    /// </summary>
+    public sealed class LandSnapshot
+    {
+        private readonly LandBlockSnapshot[] _blocks;
+
+        public LandSnapshot(int blocksPerSide, int blockSize, IReadOnlyList<LandBlockSnapshot> blocks, int nextPrice,
+            int clearGold, float clearSeconds)
+        {
+            BlocksPerSide = blocksPerSide;
+            BlockSize = blockSize;
+            _blocks = new LandBlockSnapshot[blocks?.Count ?? 0];
+            for (int i = 0; i < _blocks.Length; i++) _blocks[i] = blocks[i];
+            NextPrice = nextPrice;
+            ClearGold = clearGold;
+            ClearSeconds = clearSeconds;
+        }
+
+        public int BlocksPerSide { get; }
+        /// <summary>Side of a block in cells.</summary>
+        public int BlockSize { get; }
+        public IReadOnlyList<LandBlockSnapshot> Blocks => _blocks;
+        /// <summary>Gold the next block costs, whichever is bought.</summary>
+        public int NextPrice { get; }
+        public int ClearGold { get; }
+        public float ClearSeconds { get; }
+
+        public bool Inside(int x, int y) => x >= 0 && y >= 0 && x < BlocksPerSide && y < BlocksPerSide;
+
+        public LandBlockSnapshot Block(int x, int y) => Inside(x, y) ? _blocks[y * BlocksPerSide + x] : default;
+
+        /// <summary>Block that holds the cell; false outside the land.</summary>
+        public bool BlockOf(Cell cell, out int x, out int y)
+        {
+            x = cell.X >= 0 ? cell.X / BlockSize : -1;
+            y = cell.Y >= 0 ? cell.Y / BlockSize : -1;
+            return Inside(x, y);
+        }
+    }
+
+    public readonly struct LandBlockSnapshot
+    {
+        public LandBlockSnapshot(int x, int y, bool owned, bool cleared, bool clearing, float clearProgress,
+            float clearSecondsLeft, bool canBuy)
+        {
+            X = x;
+            Y = y;
+            Owned = owned;
+            Cleared = cleared;
+            Clearing = clearing;
+            ClearProgress = clearProgress;
+            ClearSecondsLeft = clearSecondsLeft;
+            CanBuy = canBuy;
+        }
+
+        public int X { get; }
+        public int Y { get; }
+        public bool Owned { get; }
+        public bool Cleared { get; }
+        /// <summary>Owned and wild, with the clearing under way.</summary>
+        public bool Clearing { get; }
+        /// <summary>Share of the clearing done, 0..1.</summary>
+        public float ClearProgress { get; }
+        public float ClearSecondsLeft { get; }
+        /// <summary>Not owned and next to owned land: buyable once the treasury holds <see cref="LandSnapshot.NextPrice"/>.</summary>
+        public bool CanBuy { get; }
+        public bool Wild => Owned && !Cleared;
     }
 
     /// <summary>

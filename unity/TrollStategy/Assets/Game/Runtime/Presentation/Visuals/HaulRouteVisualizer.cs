@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using TrollStrategy.Application;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Map;
@@ -13,7 +12,7 @@ namespace TrollStrategy.Presentation.Visuals
 
         private GameSession _session;
         private bool _guidesVisible = true;
-        private GameObject _gridContainer;
+        private GroundGridView _grid;
         private GameObject _routesContainer;
         private readonly List<LineRenderer> _lines = new();
         private readonly List<LineRenderer> _arrows = new();
@@ -21,12 +20,12 @@ namespace TrollStrategy.Presentation.Visuals
 
         public bool GuidesVisible => _guidesVisible;
 
-        public void Init(GameSession session, TilemapWorldView worldView)
+        public void Init(GameSession session, InteractionController interaction, TilemapWorldView worldView, Camera camera)
         {
             _session = session;
             _worldView = worldView;
 
-            EnsureGridLines();
+            EnsureGrid(interaction, camera);
 
             if (_routesContainer == null)
             {
@@ -52,8 +51,8 @@ namespace TrollStrategy.Presentation.Visuals
         public void SetGuidesVisible(bool visible)
         {
             _guidesVisible = visible;
-            if (_gridContainer != null)
-                _gridContainer.SetActive(_guidesVisible);
+            if (_grid != null)
+                _grid.gameObject.SetActive(_guidesVisible);
             if (_routesContainer != null)
                 _routesContainer.SetActive(_guidesVisible);
         }
@@ -75,78 +74,15 @@ namespace TrollStrategy.Presentation.Visuals
             return s_dashedTexture;
         }
 
-        private void EnsureGridLines()
+        private void EnsureGrid(InteractionController interaction, Camera camera)
         {
-            if (_gridContainer != null) return;
-
-            _gridContainer = new GameObject("GridLines");
-            _gridContainer.transform.SetParent(_worldView.Grid.transform, false);
-
-            int width = _worldView.GridWidth;
-            int height = _worldView.GridHeight;
-            float cellSize = _worldView.CellSize;
-            float thickness = 0.012f;
-            float halfT = thickness * 0.5f;
-
-            var mesh = new Mesh();
-            var vertices = new List<Vector3>();
-            var triangles = new List<int>();
-            var colors = new List<Color>();
-
-            // Keep placement cells legible without competing with buildings at rest.
-            Color gridColor = ColonyPalette.WithAlpha(ColonyPalette.GrassLight, 0.10f);
-
-            // Vertical lines (x = 0 to 14)
-            for (int x = 0; x <= width; x++)
+            if (_grid == null)
             {
-                int baseIdx = vertices.Count;
-                vertices.Add(new Vector3(x * cellSize - halfT, 0f, -0.19f));
-                vertices.Add(new Vector3(x * cellSize + halfT, 0f, -0.19f));
-                vertices.Add(new Vector3(x * cellSize + halfT, height * cellSize, -0.19f));
-                vertices.Add(new Vector3(x * cellSize - halfT, height * cellSize, -0.19f));
-
-                for (int i = 0; i < 4; i++) colors.Add(gridColor);
-
-                triangles.Add(baseIdx);
-                triangles.Add(baseIdx + 1);
-                triangles.Add(baseIdx + 2);
-                triangles.Add(baseIdx);
-                triangles.Add(baseIdx + 2);
-                triangles.Add(baseIdx + 3);
+                _grid = new GameObject("GroundGrid").AddComponent<GroundGridView>();
+                _grid.transform.SetParent(_worldView.Grid.transform, false);
             }
-
-            // Horizontal lines (y = 0 to 14)
-            for (int y = 0; y <= height; y++)
-            {
-                int baseIdx = vertices.Count;
-                vertices.Add(new Vector3(0f, y * cellSize - halfT, -0.19f));
-                vertices.Add(new Vector3(width * cellSize, y * cellSize - halfT, -0.19f));
-                vertices.Add(new Vector3(width * cellSize, y * cellSize + halfT, -0.19f));
-                vertices.Add(new Vector3(0f, y * cellSize + halfT, -0.19f));
-
-                for (int i = 0; i < 4; i++) colors.Add(gridColor);
-
-                triangles.Add(baseIdx);
-                triangles.Add(baseIdx + 1);
-                triangles.Add(baseIdx + 2);
-                triangles.Add(baseIdx);
-                triangles.Add(baseIdx + 2);
-                triangles.Add(baseIdx + 3);
-            }
-
-            mesh.SetVertices(vertices);
-            mesh.SetTriangles(triangles, 0);
-            mesh.SetColors(colors);
-            mesh.RecalculateNormals();
-
-            var mf = _gridContainer.AddComponent<MeshFilter>();
-            mf.mesh = mesh;
-
-            var mr = _gridContainer.AddComponent<MeshRenderer>();
-            mr.material = new Material(Shader.Find("Sprites/Default"));
-            mr.sortingOrder = 4;
-
-            _gridContainer.SetActive(_guidesVisible);
+            _grid.Init(_session, interaction, _worldView, camera);
+            _grid.gameObject.SetActive(_guidesVisible);
         }
 
         private void OnSnapshotChanged(GameSnapshot snapshot)

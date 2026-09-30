@@ -12,6 +12,10 @@
             <ui:Button name="cheat-prepare" text="Открыть расстановку" class="btn" />
             <ui:Button name="cheat-quick" text="Быстрый бой" class="btn btn--primary" />
             <ui:Button name="cheat-quest" text="Выполнить текущее задание" class="btn" />
+            <ui:Button name="cheat-land-buy" text="Купить всю землю" class="btn" />
+            <ui:Button name="cheat-land-clear" text="Расчистить всю землю" class="btn" />
+            <ui:Button name="cheat-buildings" text="Открыть все постройки" class="btn" />
+            <ui:Button name="cheat-gold" text="+1000 золота" class="btn" />
             <ui:Label name="cheat-status" text="Если бойцов нет, быстрый бой наймёт 1 тролля и 3 гоблинов." class="note" />
         </ui:VisualElement>
     </ui:VisualElement>

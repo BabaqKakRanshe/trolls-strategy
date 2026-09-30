@@ -10,6 +10,8 @@ namespace TrollStrategy.UI
     /// <summary>Editor and development-build shortcuts (F1). Gameplay changes still use session commands.</summary>
     public sealed class CheatPanel
     {
+        private const int GoldGrant = 1000;
+
         private readonly ColonyHudContext _context;
         private readonly VisualElement _overlay;
         private readonly Label _status;
@@ -23,6 +25,14 @@ namespace TrollStrategy.UI
             UiFeel.Bind(Ui.Require<Button>(root, "cheat-prepare"), OpenPreparation);
             UiFeel.Bind(Ui.Require<Button>(root, "cheat-quick"), StartQuickBattle);
             UiFeel.Bind(Ui.Require<Button>(root, "cheat-quest"), CompleteQuest);
+            UiFeel.Bind(Ui.Require<Button>(root, "cheat-land-buy"), () => Report(_context.Session.DebugOwnAllLand()));
+            UiFeel.Bind(Ui.Require<Button>(root, "cheat-land-clear"),
+                () => Report(_context.Session.DebugClearAllLand()));
+            UiFeel.Bind(Ui.Require<Button>(root, "cheat-buildings"),
+                () => Report(_context.Session.DebugUnlockAllBuildings()));
+            var gold = Ui.Require<Button>(root, "cheat-gold");
+            gold.text = $"+{GoldGrant} золота";
+            UiFeel.Bind(gold, () => Report(_context.Session.DebugAddGold(GoldGrant)));
             Hide();
         }
 
@@ -113,6 +123,9 @@ namespace TrollStrategy.UI
             if (_context.OpenQuickBattle == null || !_context.OpenQuickBattle(mission))
                 _status.text = "Не удалось запустить бой: проверь состав и данные миссии";
         }
+
+        private void Report(CommandResult result) =>
+            _status.text = result.Ok ? "Готово" : result.Error;
 
         private void CompleteQuest()
         {

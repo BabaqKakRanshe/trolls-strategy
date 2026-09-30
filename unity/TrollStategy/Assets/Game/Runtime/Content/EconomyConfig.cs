@@ -30,6 +30,22 @@ namespace TrollStrategy.Content
         [FormerlySerializedAs("_orePerStrengthSecond")]
         [SerializeField] private float _workPerStrengthSecond = 0.1f;
 
+        [Header("Земля")]
+        [Tooltip("Земля покупается блоками и расчищается. Выключено: строить и ходить можно по всему полю.")]
+        [SerializeField] private bool _landEnabled;
+        [Tooltip("Сторона блока земли в клетках.")]
+        [SerializeField, Min(1)] private int _landBlockSize = 5;
+        [Tooltip("Земля, расчищенная с начала игры, в блоках: x, y, ширина, высота.")]
+        [SerializeField] private RectInt _startLand = new RectInt(2, 2, 4, 4);
+        [Tooltip("Цена первого купленного блока.")]
+        [SerializeField, Min(0)] private int _landPriceBase = 200;
+        [Tooltip("На сколько дорожает каждый следующий блок.")]
+        [SerializeField, Min(0)] private int _landPriceStep = 100;
+        [Tooltip("Сколько секунд расчищается дикий блок; 0 — сразу.")]
+        [SerializeField, Min(0f)] private float _landClearSeconds = 10f;
+        [Tooltip("Сколько золота стоит расчистка блока.")]
+        [SerializeField, Min(0)] private int _landClearGold;
+
         public int GridWidth => _gridWidth;
         public int GridHeight => _gridHeight;
         public float CellSize => _cellSize;
@@ -41,6 +57,13 @@ namespace TrollStrategy.Content
         public int LoadersPerDoor => Mathf.Max(1, _loadersPerDoor);
         public int StartingGold => _startingGold;
         public float WorkPerStrengthSecond => _workPerStrengthSecond;
+        public bool LandEnabled => _landEnabled;
+        public int LandBlockSize => Mathf.Max(1, _landBlockSize);
+        public RectInt StartLand => _startLand;
+        public int LandPriceBase => Mathf.Max(0, _landPriceBase);
+        public int LandPriceStep => Mathf.Max(0, _landPriceStep);
+        public float LandClearSeconds => Mathf.Max(0f, _landClearSeconds);
+        public int LandClearGold => Mathf.Max(0, _landClearGold);
 
         /// <param name="transferTimeSeconds">Both loading and unloading time; see <see cref="SetHauling"/>.</param>
         public void Init(int gridWidth, int gridHeight, float cellSize, int startingGold, int maxUnitsPerCell, float tickIntervalSeconds, float workPerStrengthSecond, float transferTimeSeconds)
@@ -62,6 +85,18 @@ namespace TrollStrategy.Content
             _loadSeconds = Mathf.Max(0f, loadSeconds);
             _unloadSeconds = Mathf.Max(0f, unloadSeconds);
             _loadersPerDoor = Mathf.Max(1, loadersPerDoor);
+        }
+
+        public void SetLand(bool enabled, int blockSize, RectInt startLand, int priceBase, int priceStep,
+            float clearSeconds, int clearGold)
+        {
+            _landEnabled = enabled;
+            _landBlockSize = Mathf.Max(1, blockSize);
+            _startLand = startLand;
+            _landPriceBase = Mathf.Max(0, priceBase);
+            _landPriceStep = Mathf.Max(0, priceStep);
+            _landClearSeconds = Mathf.Max(0f, clearSeconds);
+            _landClearGold = Mathf.Max(0, clearGold);
         }
     }
 }

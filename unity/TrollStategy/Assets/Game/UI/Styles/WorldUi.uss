@@ -2,7 +2,9 @@
  * UI over things in the world: building names, cargo counts, refusal toasts, sale gains, damage numbers
  * and fighter health. Each is a small world-space UIDocument (WorldPanel) whose elements are built in
  * code with these classes. The panel settings map 100 panel pixels to one world unit, so a 24px label
- * stands 0.24 units tall. Colours come from Theme.uss.
+ * stands 0.24 units tall up close; as the colony camera backs off, WorldPanel grows the panel so its
+ * largest text keeps 18px on a 1080px screen, and far away it marks the content .world-panel--far,
+ * under which details drop out. Colours come from Theme.uss.
  */
 
 .world-label {
@@ -26,9 +28,13 @@
     -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
 }
 
-/* Beside a hauler's cargo icon. */
+/* Beside a hauler's cargo icon; far away the counts would crowd the haulers. */
 .world-label--cargo {
     font-size: 20px;
+}
+
+.world-panel--far .world-label--cargo {
+    display: none;
 }
 
 /* Why a building or order was refused, where it happened. */
@@ -82,4 +88,44 @@
 
 .hp-bar__chip {
     background-color: var(--gold-glow);
+}
+
+/* Land mode: the price over a block for sale; red while the treasury is short, gold on the picked block. */
+.land-price {
+    font-size: 64px;
+    color: var(--coin);
+    -unity-text-outline-width: 3px;
+}
+
+.land-price--short {
+    color: var(--clay-light);
+}
+
+.land-price--picked {
+    font-size: 80px;
+    color: var(--gold-glow);
+}
+
+/* A block being cleared: seconds left over a bar that fills. */
+.land-bar {
+    align-items: center;
+}
+
+.land-bar__label {
+    font-size: 60px;
+    margin-bottom: 6px;
+    -unity-text-outline-width: 3px;
+}
+
+.land-bar__track {
+    width: 360px;
+    height: 40px;
+    padding: 7px;
+    background-color: var(--surface-sunken);
+}
+
+.land-bar__fill {
+    height: 100%;
+    width: 0;
+    background-color: var(--gold);
 }

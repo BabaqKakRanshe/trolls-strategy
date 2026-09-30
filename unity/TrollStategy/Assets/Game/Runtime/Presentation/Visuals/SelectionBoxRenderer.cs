@@ -11,7 +11,6 @@ namespace TrollStrategy.Presentation.Visuals
 {
     public class SelectionBoxRenderer : MonoBehaviour
     {
-        private const float DragThresholdPixels = 7f;
         private const float UnitClickRadius = 0.48f;
         private const float DoubleClickSeconds = 0.35f;
         private const float DoubleClickMaxPixels = 12f;
@@ -67,7 +66,18 @@ namespace TrollStrategy.Presentation.Visuals
 
         private void Update()
         {
-            if (_interaction == null || _camera == null || Mouse.current == null) return;
+            if (_interaction == null || _camera == null) return;
+            // a finger selects by tapping; a finger that moves is the camera's, so touch draws no marquee
+            if (MapPointer.UsesTouch)
+            {
+                ResetDrag();
+                if (!MapPointer.Tapped(out var tap)) return;
+                var tapWorld = ScreenToWorld(tap);
+                if (_interaction.Mode.Type == InteractionModeType.Neutral) SelectPoint(tapWorld, tap, false);
+                else if (IsBuildingTargetMode(_interaction.Mode.Type)) SelectBuildingPoint(tapWorld);
+                return;
+            }
+            if (Mouse.current == null) return;
             Vector2 mouseScreen = Mouse.current.position.ReadValue();
             Vector3 mouseWorld = ScreenToWorld(mouseScreen);
 
@@ -96,7 +106,7 @@ namespace TrollStrategy.Presentation.Visuals
 
             if (_isDragging && Mouse.current.leftButton.isPressed)
             {
-                if (!_dragVisible && Vector2.Distance(_startScreenPos, mouseScreen) >= DragThresholdPixels)
+                if (!_dragVisible && UIInputUtils.IsDrag(_startScreenPos, mouseScreen))
                 {
                     _dragVisible = true;
                     SetMarqueeVisible(true);

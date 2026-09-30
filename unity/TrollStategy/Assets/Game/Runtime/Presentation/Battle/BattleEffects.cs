@@ -258,6 +258,7 @@ namespace TrollStrategy.Presentation.Battle
             if (panel == null)
             {
                 panel = WorldPanel.Create("DamageNumber", transform, SortText);
+                panel.KeepReadable = false;     // the battle camera does not zoom; the number scales itself
                 panel.AddLabel("world-label world-label--damage");
             }
             panel.gameObject.SetActive(true);

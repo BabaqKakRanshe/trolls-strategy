@@ -25,7 +25,7 @@ namespace TrollStrategy.Tests
             _catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath);
             Assert.That(_catalog, Is.Not.Null, CatalogPath);
             Assert.That(_catalog.Progression, Is.Not.Null, "The catalog must link Progression.asset");
-            _session = new GameSession(_catalog, TestColony.Layout, campaign: true);
+            _session = new GameSession(_catalog, TestColony.LayoutFor(_catalog), campaign: true);
             _interaction = new InteractionController(_session);
             _hud = TestUi.Colony(_session, _interaction);
         }

@@ -5,7 +5,7 @@ using TrollStrategy.Content;
 namespace TrollStrategy.Domain
 {
     /// <summary>
-    /// Walking rules for the colony: units cross open cells, never a building footprint,
+    /// Walking rules for the colony: units cross open cells of cleared land, never a building footprint,
     /// and reach a building through the approach point in front of its entrance.
     /// </summary>
     public static class ColonyNavigation
@@ -120,6 +120,8 @@ namespace TrollStrategy.Domain
         {
             var economy = catalog.Economy;
             if (cell.X < 0 || cell.Y < 0 || cell.X >= economy.GridWidth || cell.Y >= economy.GridHeight) return false;
+            // no walking through the forest or over the clouds: only cleared land
+            if (!LandRules.IsOpen(state, cell)) return false;
             foreach (var building in state.Buildings)
             {
                 if (building.Id == ignoredId) continue;

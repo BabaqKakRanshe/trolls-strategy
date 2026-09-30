@@ -501,17 +501,33 @@ namespace TrollStrategy.Presentation.Battle
 
         private void Update()
         {
-            if (_camera == null || Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
-            // only battle UI blocks the board: the hidden colony camera's 2D raycaster still hits colony units
-            if (UIInputUtils.IsPointerOverInteractiveUI()) return;
-            if (TryPointedCell(out var cell)) CellClicked?.Invoke(cell);
+            if (_camera == null) return;
+            Vector2 pointer;
+            if (MapPointer.UsesTouch)
+            {
+                if (!MapPointer.Tapped(out pointer)) return;
+            }
+            else
+            {
+                if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
+                // only battle UI blocks the board: the hidden colony camera's 2D raycaster still hits colony units
+                if (UIInputUtils.IsPointerOverInteractiveUI()) return;
+                pointer = Mouse.current.position.ReadValue();
+            }
+            if (TryPointedCell(pointer, out var cell)) CellClicked?.Invoke(cell);
         }
 
         private bool TryPointedCell(out Cell cell)
         {
             cell = default;
-            if (_camera == null || Mouse.current == null) return false;
-            var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+            return Mouse.current != null && TryPointedCell(Mouse.current.position.ReadValue(), out cell);
+        }
+
+        private bool TryPointedCell(Vector2 screen, out Cell cell)
+        {
+            cell = default;
+            if (_camera == null) return false;
+            var ray = _camera.ScreenPointToRay(screen);
             var hits = Physics.RaycastAll(ray, 500f);
             Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
             for (int i = 0; i < hits.Length; i++)

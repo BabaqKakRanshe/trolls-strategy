@@ -32,6 +32,10 @@
                 <ui:Label text="Свободный" class="btn__caption" picking-mode="Ignore" />
                 <ui:Label text="1" class="hotkey" picking-mode="Ignore" />
             </ui:Button>
+            <ui:Button name="land-button" class="btn">
+                <ui:Label text="Земля" class="btn__caption" picking-mode="Ignore" />
+                <ui:Label text="L" class="hotkey" picking-mode="Ignore" />
+            </ui:Button>
             <ui:Button name="grid-button" class="btn">
                 <ui:Label text="Сетка" class="btn__caption" picking-mode="Ignore" />
                 <ui:Label text="G" class="hotkey" picking-mode="Ignore" />

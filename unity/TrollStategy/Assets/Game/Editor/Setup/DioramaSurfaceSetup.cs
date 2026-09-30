@@ -1,13 +1,15 @@
 using System.Linq;
+using TrollStrategy.Presentation.Island;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 namespace TrollStrategy.Editor.Setup
 {
-    // Screen-space contact shadows of the colony renderer. The procedural ground textures that used to be made here
-    // (Meadow, PathGrain, WoodGrain, StoneGrain on the Primitive_* materials) went away with PrimitiveEnvironment:
-    // the colony ground is now the Vitaria kit's Colony_Meadow (ColonyEnvironmentBuilder).
+    // Renderer features of the colony renderer: screen-space contact shadows and the island haze. The procedural
+    // ground textures that used to be made here (Meadow, PathGrain, WoodGrain, StoneGrain on the Primitive_*
+    // materials) went away with PrimitiveEnvironment: the colony ground is now the Vitaria kit's Colony_Meadow
+    // (ColonyEnvironmentBuilder).
     public static class DioramaSurfaceSetup
     {
         public const string RendererPath = "Assets/Settings/Colony3DRenderer.asset";
@@ -40,6 +42,29 @@ namespace TrollStrategy.Editor.Setup
             settings.FindPropertyRelative("Radius").floatValue = .25f;
             settings.FindPropertyRelative("Falloff").floatValue = 55f;
             so.ApplyModifiedPropertiesWithoutUndo();
+            feature.SetActive(true);
+            feature.Create();
+            renderer.SetDirty();
+            EditorUtility.SetDirty(feature);
+            EditorUtility.SetDirty(renderer);
+        }
+
+        /// <summary>The island's height fog and edge haze (<see cref="IslandHazeFeature"/>). The renderer only carries
+        /// the pass; the colony volume's <see cref="IslandHaze"/> decides whether and how it draws.</summary>
+        public static void ConfigureIslandHaze() =>
+            ConfigureIslandHaze(AssetDatabase.LoadAssetAtPath<UniversalRendererData>(RendererPath));
+
+        public static void ConfigureIslandHaze(UniversalRendererData renderer)
+        {
+            if (renderer == null) return;
+            var feature = renderer.rendererFeatures.OfType<IslandHazeFeature>().FirstOrDefault();
+            if (feature == null)
+            {
+                feature = ScriptableObject.CreateInstance<IslandHazeFeature>();
+                feature.name = "Island Haze";
+                AssetDatabase.AddObjectToAsset(feature, renderer);
+                renderer.rendererFeatures.Add(feature);
+            }
             feature.SetActive(true);
             feature.Create();
             renderer.SetDirty();

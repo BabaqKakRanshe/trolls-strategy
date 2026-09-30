@@ -12,7 +12,13 @@ namespace TrollStrategy.Presentation.Visuals
     /// </summary>
     public static class UIInputUtils
     {
+        /// <summary>A press that moves farther than this before release is a drag, not a click, px.</summary>
+        public const float DragThresholdPixels = 7f;
+
         private static readonly List<UIDocument> s_documents = new();
+
+        public static bool IsDrag(Vector2 pressed, Vector2 pointer) =>
+            Vector2.Distance(pressed, pointer) >= DragThresholdPixels;
 
         public static void RegisterDocument(UIDocument document)
         {

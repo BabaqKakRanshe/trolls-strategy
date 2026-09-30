@@ -28,6 +28,7 @@ namespace TrollStrategy.UI
         private readonly Button _sell;
         private readonly Button _auto;
         private readonly Button _cargo;
+        private readonly Button _land;
         private readonly Button _cancel;
         private readonly Button _clear;
         private readonly List<Button> _targetButtons = new();
@@ -45,13 +46,15 @@ namespace TrollStrategy.UI
             _targets = Ui.Require<VisualElement>(root, "context-targets");
             var actions = Ui.Require<VisualElement>(root, "context-actions");
 
-            _work = Command(actions, "Работа", "W", "btn--primary", interaction.BeginWorkTarget);
+            _work = Command(actions, "Работа", "E", "btn--primary", interaction.BeginWorkTarget);
             _haul = Command(actions, "Перенос", "H", "btn--primary", interaction.BeginHaulTarget);
             _release = Command(actions, "Свободны", "R", null, interaction.ReleaseSelected, silent: true);
             _barracks = Command(actions, "В бараки", null, null, interaction.SendSelectedToBarracks, silent: true);
             _sell = Command(actions, "Продать", null, "btn--danger", interaction.SellSelected, silent: true);
             _auto = Command(actions, "Поставить сам", null, "btn--primary", interaction.PlaceBuildingAutomatically);
             _cargo = Command(actions, "Изменить груз", null, null, interaction.ChangeHaulCargo);
+            // the land mode's answer to a picked block: buy it or clear it; ColonyFeedback sounds the result
+            _land = Command(actions, "Купить", null, "btn--gold", () => interaction.ConfirmLand(), silent: true);
             _cancel = Command(actions, "Отмена", "Esc", null, interaction.CancelOrClear, click: Sfx.UiBack);
             _clear = Command(actions, "×", "Esc", "btn-close", interaction.CancelOrClear, click: Sfx.UiBack);
             Ui.Show(_bar, false);
@@ -67,6 +70,8 @@ namespace TrollStrategy.UI
         public Button HaulButton => _haul;
         /// <summary>Back to the cargo choice while the haul destination is being picked.</summary>
         public Button ChangeCargoButton => _cargo;
+        /// <summary>Land mode: buys or clears the picked block.</summary>
+        public Button LandButton => _land;
 
         /// <summary>What the current quest asks for; the matching command and targets are marked.</summary>
         public void SetFocus(QuestFocus focus) => _focus = focus ?? QuestFocus.None;
@@ -143,6 +148,9 @@ namespace TrollStrategy.UI
                 case InteractionModeType.ChoosingHaulDestination:
                     title = "Куда носить";
                     break;
+                case InteractionModeType.ManagingLand:
+                    title = snapshot.Land != null ? $"Земля · участок {Ui.Gold(snapshot.Land.NextPrice)}" : "Земля";
+                    break;
                 default:
                     title = string.Empty;
                     break;
@@ -157,6 +165,7 @@ namespace TrollStrategy.UI
             else ClearTargets();
             SetButtons(selection: false, auto: mode.Type == InteractionModeType.PlacingBuilding,
                 cargo: mode.Type == InteractionModeType.ChoosingHaulDestination, cancel: true);
+            ShowLandOffer(snapshot, mode);
             MarkQuestTargets(mode.Type);
         }
 
@@ -171,6 +180,27 @@ namespace TrollStrategy.UI
             };
             for (int i = 0; i < _targetButtons.Count; i++)
                 _targetButtons[i].EnableInClassList("is-suggested", wanted != null && _targetKinds[i] == wanted.Value);
+        }
+
+        private void ShowLandOffer(GameSnapshot snapshot, InteractionMode mode)
+        {
+            var land = snapshot.Land;
+            bool offer = mode.Type == InteractionModeType.ManagingLand && mode.LandOffer != LandOffer.None && land != null;
+            Ui.Show(_land, offer);
+            if (!offer) return;
+            if (mode.LandOffer == LandOffer.Buy)
+            {
+                Ui.SetCaption(_land, "Купить за " + Ui.Gold(land.NextPrice));
+                UiFeel.SetAvailable(_land, snapshot.Gold >= land.NextPrice);
+            }
+            else
+            {
+                int seconds = (int)Math.Ceiling(land.ClearSeconds);
+                Ui.SetCaption(_land, land.ClearGold > 0
+                    ? $"Расчистить · {seconds} с · {Ui.Gold(land.ClearGold)}"
+                    : $"Расчистить · {seconds} с");
+                UiFeel.SetAvailable(_land, snapshot.Gold >= land.ClearGold);
+            }
         }
 
         /// <summary>Valid targets as buttons, rebuilt only when the step or the set of targets changes.</summary>
@@ -220,6 +250,7 @@ namespace TrollStrategy.UI
             Ui.Show(_clear, selection);
             Ui.Show(_auto, auto);
             Ui.Show(_cargo, cargo);
+            Ui.Show(_land, false);
             Ui.Show(_cancel, cancel);
         }
 

@@ -9,6 +9,7 @@ using TrollStrategy.Presentation.Map;
 using TrollStrategy.Presentation.WorldUi;
 using DisplayStyle = UnityEngine.UIElements.DisplayStyle;
 using Label = UnityEngine.UIElements.Label;
+using Pivot = UnityEngine.UIElements.Pivot;
 
 namespace TrollStrategy.Presentation.Buildings
 {
@@ -20,16 +21,20 @@ namespace TrollStrategy.Presentation.Buildings
         [SerializeField] private SpriteRenderer _selectionHighlight;
         [Tooltip("Production bar; move it in the prefab to place it.")]
         [SerializeField] private BuildingProgressBar _productionProgress;
-        [Tooltip("Name and stock over the building while it is hovered or targeted.")]
+        [Tooltip("Name and stock over the building while it is hovered or targeted; stands on the model's roof.")]
         [SerializeField] private WorldPanel _label;
         [SerializeField] private BoxCollider2D _collider;
         [Tooltip("Model child of this building variant.")]
         [SerializeField] private BuildingModel _model;
 
+        // gap between the top of the model and the bottom of its label, m
+        private const float LabelGap = .3f;
+
         private BuildingSnapshot _snapshot;
         private TilemapWorldView _worldView;
         private Label _labelTitle;
         private Label _labelInfo;
+        private MeshRenderer[] _modelMeshes = Array.Empty<MeshRenderer>();
 
         public BuildingKind Kind => _kind;
         public string BuildingId => _snapshot?.Id;
@@ -63,10 +68,14 @@ namespace TrollStrategy.Presentation.Buildings
             }
             if (_model == null)
                 Debug.LogError($"{name} has no building model", this);
-            else if (_worldView != null)
+            else
             {
-                _model.transform.localPosition = Vector3.zero;
-                _model.transform.localRotation = Quaternion.identity;
+                if (_worldView != null)
+                {
+                    _model.transform.localPosition = Vector3.zero;
+                    _model.transform.localRotation = Quaternion.identity;
+                }
+                _modelMeshes = _model.GetComponentsInChildren<MeshRenderer>(true);
             }
 
             if (_collider == null) _collider = GetComponent<BoxCollider2D>();
@@ -80,10 +89,8 @@ namespace TrollStrategy.Presentation.Buildings
             if (_productionProgress == null)
                 Debug.LogError($"{name} has no production progress bar", this);
 
-            if (_label != null)
-            {
-                _label.transform.localPosition = new Vector3(0f, snapshot.Height * 0.5f + 0.35f, 0f);
-            }
+            // the label stands on the roof and grows upwards as the camera backs off
+            if (_label != null) _label.Pivot = Pivot.BottomCenter;
 
             UpdateVisuals(snapshot, false);
         }
@@ -286,7 +293,7 @@ namespace TrollStrategy.Presentation.Buildings
 
             if (_label != null)
             {
-                _label.transform.localPosition = new Vector3(0f, snapshot.Height * 0.5f + 0.45f, -2.2f);
+                PlaceLabel(snapshot);
                 _label.Face(Camera.main);
                 if (_labelTitle == null)
                 {
@@ -298,6 +305,35 @@ namespace TrollStrategy.Presentation.Buildings
                 _labelInfo.text = info;
                 _labelInfo.style.display = info.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             }
+        }
+
+        // over the middle of the model and clear of its top: seen from above, the building never covers its label
+        private void PlaceLabel(BuildingSnapshot snapshot)
+        {
+            // the building lies in the map plane with its local -z pointing up from the ground
+            var up = transform.rotation * Vector3.back;
+            if (!ModelBounds(out var bounds))
+            {
+                _label.transform.localPosition = new Vector3(0f, snapshot.Height * 0.5f + 0.45f, -2.2f);
+                return;
+            }
+            var extents = bounds.extents;
+            float halfHeight = Mathf.Abs(up.x) * extents.x + Mathf.Abs(up.y) * extents.y + Mathf.Abs(up.z) * extents.z;
+            _label.transform.position = bounds.center + up * (halfHeight + LabelGap);
+        }
+
+        private bool ModelBounds(out Bounds bounds)
+        {
+            bounds = default;
+            bool any = false;
+            foreach (var mesh in _modelMeshes)
+            {
+                if (mesh == null || !mesh.enabled || !mesh.gameObject.activeInHierarchy) continue;
+                if (any) bounds.Encapsulate(mesh.bounds);
+                else bounds = mesh.bounds;
+                any = true;
+            }
+            return any;
         }
 
         private static string LabelInfo(BuildingSnapshot snapshot)

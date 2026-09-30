@@ -98,8 +98,8 @@ namespace TrollStrategy.Presentation.Visuals
                 return;
             }
 
-            if (Mouse.current == null) return;
-            Vector2 mouseScreen = Mouse.current.position.ReadValue();
+            if (Mouse.current == null && !MapPointer.UsesTouch) return;
+            Vector2 mouseScreen = MapPointer.Position;
             if (!WorldProjection.TryGroundPoint(_camera, mouseScreen, _worldView, out var mouseWorld)) return;
             var cell = _worldView.WorldToCell(mouseWorld);
 
@@ -112,7 +112,10 @@ namespace TrollStrategy.Presentation.Visuals
                 return;
             }
 
-            bool leftClicked = Mouse.current.leftButton.wasPressedThisFrame;
+            // a tap places where it lands; a tap never starts on the HUD
+            bool leftClicked = MapPointer.UsesTouch
+                ? MapPointer.Tapped(out _)
+                : Mouse.current.leftButton.wasPressedThisFrame && !UIInputUtils.IsPointerOverUI();
             var definition = placingBuilding ? _catalog.GetBuilding(mode.BuildingKind) : null;
             int width = definition != null ? definition.Width : 1;
             int height = definition != null ? definition.Height : 1;
@@ -182,7 +185,7 @@ namespace TrollStrategy.Presentation.Visuals
                 }
             }
 
-            if (leftClicked && Time.frameCount > _enteredFrame && !UIInputUtils.IsPointerOverUI())
+            if (leftClicked && Time.frameCount > _enteredFrame)
             {
                 if (movingBuilding)
                     _interaction.MoveBuilding(cell);

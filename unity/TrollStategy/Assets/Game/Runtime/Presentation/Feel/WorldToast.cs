@@ -12,6 +12,7 @@ namespace TrollStrategy.Presentation.Feel
     {
         private const float Life = 1.6f;
 
+        private WorldPanel _panel;
         private Label _label;
         private Vector3 _origin;
         private Vector3 _up;
@@ -23,6 +24,7 @@ namespace TrollStrategy.Presentation.Feel
             if (string.IsNullOrWhiteSpace(text)) return;
             var panel = WorldPanel.Create("WorldToast", null, 80);
             var toast = panel.gameObject.AddComponent<WorldToast>();
+            toast._panel = panel;
             toast._label = panel.AddLabel("world-label world-label--toast");
             toast._label.text = text;
             toast._origin = position;
@@ -45,7 +47,7 @@ namespace TrollStrategy.Presentation.Feel
             var camera = Camera.main;
             if (camera != null) transform.rotation = camera.transform.rotation;
             transform.position = _origin + _up * (Ease.OutCubic(t) * .9f);
-            transform.localScale = Vector3.one * (t < .12f ? Ease.OutBack(t / .12f, 2.5f) : 1f);
+            _panel.Scale = t < .12f ? Ease.OutBack(t / .12f, 2.5f) : 1f;
             var color = _color;
             color.a = t < .7f ? 1f : 1f - (t - .7f) / .3f;
             _label.style.color = color;

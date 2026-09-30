@@ -31,6 +31,8 @@ namespace TrollStrategy.Domain
         public uint RewardRoll { get; set; } = RewardDice.Seed;
         // Quest chain and unlocks; null in a sandbox game, where everything is open.
         public ProgressState Progress { get; set; }
+        // The colony's land blocks; null when land limits nothing (the whole grid is open).
+        public LandState Land { get; set; }
 
         public static GameState CreateInitialState(int startingGold = 1000)
         {
@@ -69,6 +71,7 @@ namespace TrollStrategy.Domain
                 PendingBattleReward = PendingBattleReward?.Clone(),
                 RewardRoll = RewardRoll,
                 Progress = Progress?.Clone(),
+                Land = Land?.Clone(),
                 Buildings = new List<BuildingState>(Buildings.Count),
                 Units = new List<UnitState>(Units.Count),
                 Equipment = new List<EquipmentState>(Equipment.Count)

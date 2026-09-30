@@ -18,6 +18,7 @@ namespace TrollStrategy.Presentation.Buildings
         private Transform _gain;
         private SpriteRenderer _coin;
         private float _coinScale;
+        private WorldPanel _amount;
         private Label _gold;
         private Vector3 _start;
         private float _age;
@@ -52,9 +53,12 @@ namespace TrollStrategy.Presentation.Buildings
             }
             else textX = -0.45f;
 
-            // the amount starts just right of the coin and grows to the right
+            // the amount starts just right of the coin and grows to the right; far away the coin and the amount
+            // grow together by the amount's hold, so the panel keeps its own scale
             var amount = WorldPanel.Create("Amount", feedback._gain, 43, Pivot.LeftCenter);
+            amount.KeepReadable = false;
             amount.transform.localPosition = new Vector3(textX, 0.02f, 0f);
+            feedback._amount = amount;
             feedback._gold = amount.AddLabel("world-label world-label--gain");
             feedback._gold.text = $"+{gold}";
             feedback.FaceCamera();
@@ -76,7 +80,7 @@ namespace TrollStrategy.Presentation.Buildings
             float gainT = Mathf.Clamp01((progress - GainDelay) / (1f - GainDelay));
             float rise = 1f - (1f - gainT) * (1f - gainT);
             _gain.localPosition = Vector3.up * (RiseHeight * rise);
-            _gain.localScale = Vector3.one * PopScale(Mathf.Clamp01(gainT / 0.3f));
+            _gain.localScale = Vector3.one * (PopScale(Mathf.Clamp01(gainT / 0.3f)) * _amount.Hold);
             float alpha = 1f - Mathf.Clamp01((gainT - 0.7f) / 0.3f);
             _gold.style.opacity = alpha;
             if (_coin != null)

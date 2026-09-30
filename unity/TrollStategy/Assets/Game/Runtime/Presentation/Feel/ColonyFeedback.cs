@@ -86,6 +86,12 @@ namespace TrollStrategy.Presentation.Feel
                 case ReleaseUnitsCommand _:
                     GameAudio.Play(Sfx.UiBack);
                     break;
+                case BuyLandCommand _:
+                    GameAudio.Play(Sfx.Coins);
+                    break;
+                case ClearLandCommand _:
+                    GameAudio.Play(Sfx.Demolish);
+                    break;
             }
         }
 
@@ -126,6 +132,12 @@ namespace TrollStrategy.Presentation.Feel
                     return TryBuilding(work.BuildingId, out position);
                 case AssignHaulCommand haul:
                     return TryBuilding(haul.DestinationId, out position);
+                case BuyLandCommand buyLand:
+                    position = LandBlockCenter(buyLand.BlockX, buyLand.BlockY);
+                    return true;
+                case ClearLandCommand clearLand:
+                    position = LandBlockCenter(clearLand.BlockX, clearLand.BlockY);
+                    return true;
             }
             return false;
         }
@@ -145,6 +157,12 @@ namespace TrollStrategy.Presentation.Feel
                 catch (System.ArgumentOutOfRangeException) { }
             }
             return _worldView.BuildingCenterWorld(cell, width, height);
+        }
+
+        private Vector3 LandBlockCenter(int x, int y)
+        {
+            int size = _session?.Catalog != null ? _session.Catalog.Economy.LandBlockSize : 5;
+            return _worldView.BuildingCenterWorld(new Cell(x * size, y * size), size, size);
         }
 
         private BuildingKind? KindOf(string buildingId)

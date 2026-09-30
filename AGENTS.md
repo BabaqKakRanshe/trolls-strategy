@@ -42,7 +42,7 @@ These rules apply to every change in the Unity project at `unity/TrollStategy`.
 - Bind every button with `UiFeel.Bind` and mark unavailable ones with `UiFeel.SetAvailable`, so a press always answers with a sound or a refusal.
 - A button that holds a badge or other child needs its caption as a child label (`Ui.CaptionButton`); a text element with children stops measuring its own text.
 - Document roots and layout containers ignore the pointer; only panels and buttons catch it, and `UIInputUtils` asks the registered documents before a map or board click.
-- Text, numbers and bars over things in the world are `WorldPanel`s: world-space `UIDocument`s on `WorldPanelSettings` (100 px per world unit, no colliders) styled by `WorldUi.uss`. Keep their transform scale at 1; panels made in code get the settings from `GameBootstrap`.
+- Text, numbers and bars over things in the world are `WorldPanel`s: world-space `UIDocument`s on `WorldPanelSettings` (100 px per world unit, no colliders) styled by `WorldUi.uss`; panels made in code get the settings from `GameBootstrap`. A `WorldPanel` owns its transform scale: as the camera backs off it grows so its largest text keeps 18 px on a 1080 px screen, and far away its content takes `.world-panel--far`, where styles drop details. Owners size it through `Scale`, never the transform; panels under a camera that does not zoom (battle) turn `KeepReadable` off and scale themselves.
 
 ## Art handoff pipeline
 

@@ -411,6 +411,7 @@ namespace TrollStrategy.Presentation.Battle
 
             // HP over the head: the number, then the bar with its lagging chip (sizes and colours in WorldUi.uss)
             _bar = WorldPanel.Create("HpBar", transform, 33, Pivot.BottomCenter, "hp-bar");
+            _bar.KeepReadable = false;      // the battle camera does not zoom; the bar scales with the fighter
             _barLabel = _bar.AddLabel("world-label hp-bar__label");
             var track = BarPart(_bar.Content, "hp-bar__track");
             var inside = BarPart(track, "hp-bar__inside");

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0f315267f979d14d8b5a218fddae236, type: 3}
   m_Name: EconomyConfig
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.EconomyConfig
-  _gridWidth: 14
-  _gridHeight: 14
+  _gridWidth: 40
+  _gridHeight: 40
   _cellSize: 1
   _maxUnitsPerCell: 20
   _stepTimeSeconds: 0.25
@@ -22,3 +22,15 @@ MonoBehaviour:
   _loadersPerDoor: 3
   _startingGold: 1000
   _workPerStrengthSecond: 0.1
+  _landEnabled: 1
+  _landBlockSize: 5
+  _startLand:
+    serializedVersion: 2
+    x: 3
+    y: 3
+    width: 3
+    height: 3
+  _landPriceBase: 200
+  _landPriceStep: 100
+  _landClearSeconds: 10
+  _landClearGold: 0

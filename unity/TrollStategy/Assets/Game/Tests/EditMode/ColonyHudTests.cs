@@ -24,12 +24,10 @@ namespace TrollStrategy.Tests
         {
             _catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath);
             Assert.That(_catalog, Is.Not.Null, CatalogPath);
-            _session = new GameSession(_catalog, new[]
-            {
+            _session = new GameSession(_catalog, TestColony.LayoutFor(_catalog,
                 new StartingBuilding(BuildingKind.Warehouse, new Cell(10, 8)),
                 new StartingBuilding(BuildingKind.Market, new Cell(10, 2)),
-                new StartingBuilding(BuildingKind.Barracks, new Cell(2, 8))
-            });
+                new StartingBuilding(BuildingKind.Barracks, new Cell(2, 8))));
             _interaction = new InteractionController(_session);
             _hud = TestUi.Colony(_session, _interaction);
         }

@@ -13,6 +13,7 @@ using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation;
 using TrollStrategy.Presentation.Buildings;
+using TrollStrategy.Presentation.Island;
 using TrollStrategy.Presentation.Map;
 using TrollStrategy.Presentation.Units;
 using TrollStrategy.Presentation.Visuals;
@@ -23,6 +24,42 @@ namespace TrollStrategy.Editor.Setup
     {
         private const string CatalogPath = "Assets/Game/Content/Definitions/GameContentCatalog.asset";
         private const string ColonyScenePath = "Assets/Game/Scenes/MainColonyScene.unity";
+
+        private const string LandCornerPath = "Assets/Vitaria/Models/Colony/FX_Select_Corner.fbx";
+
+        /// <summary>
+        /// The land on the colony island (<see cref="LandPresenter"/>) on the scene's GameSystems, with the kit's
+        /// corner piece for blocks for sale, wired into the bootstrap. Keeps an existing one.
+        /// </summary>
+        public static LandPresenter InstallLandPresenter(GameObject systems, GameBootstrap boot)
+        {
+            var land = systems.GetComponent<LandPresenter>();
+            if (land == null) land = systems.AddComponent<LandPresenter>();
+            var soLand = new SerializedObject(land);
+            soLand.FindProperty("_corner").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(LandCornerPath);
+            soLand.ApplyModifiedPropertiesWithoutUndo();
+            if (boot != null)
+            {
+                var soBoot = new SerializedObject(boot);
+                soBoot.FindProperty("_land").objectReferenceValue = land;
+                soBoot.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(boot);
+            }
+            EditorUtility.SetDirty(land);
+            return land;
+        }
+
+        [MenuItem("TrollStrategy/Isle/Install Land Presenter")]
+        public static void InstallLandPresenterMenu()
+        {
+            var boot = UnityEngine.Object.FindAnyObjectByType<GameBootstrap>();
+            var systems = UnityEngine.Object.FindAnyObjectByType<MapInputHandler>();
+            if (boot == null || systems == null)
+                throw new InvalidOperationException("Open MainColonyScene: GameBootstrap or GameSystems is missing");
+            InstallLandPresenter(systems.gameObject, boot);
+            EditorSceneManager.MarkSceneDirty(boot.gameObject.scene);
+            Debug.Log("[Isle] LandPresenter installed on " + systems.name);
+        }
 
         [MenuItem("TrollStrategy/Setup Game Scene")]
         public static void BuildDefaultScene()
@@ -149,6 +186,7 @@ namespace TrollStrategy.Editor.Setup
             soBoot.FindProperty("_routeVisualizer").objectReferenceValue = routeVisualizer;
             soBoot.FindProperty("_inputHandler").objectReferenceValue = inputHandler;
             soBoot.ApplyModifiedPropertiesWithoutUndo();
+            InstallLandPresenter(managersGo, boot);
 
             // 5. UI Toolkit HUD and the event system its input goes through
             UiSetup.Install(boot);

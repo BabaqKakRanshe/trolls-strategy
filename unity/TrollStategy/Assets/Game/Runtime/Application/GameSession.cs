@@ -46,6 +46,8 @@ namespace TrollStrategy.Application
             _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
             if (startingBuildings == null) throw new ArgumentNullException(nameof(startingBuildings));
             _state = GameState.CreateInitialState(_catalog.Economy.StartingGold);
+            // land first: the starting buildings must stand on the cleared start land
+            _state.Land = LandRules.CreateStart(_catalog.Economy);
             var ids = new string[startingBuildings.Count];
             for (int i = 0; i < startingBuildings.Count; i++)
             {
@@ -91,6 +93,67 @@ namespace TrollStrategy.Application
             var candidate = _state.Clone();
             if (!Progression.CompleteCurrentQuest(candidate, _catalog))
                 return CommandResult.Fail("Нет текущего задания");
+            _state = candidate;
+            _revision++;
+            Emit();
+            return CommandResult.Success();
+        }
+
+        /// <summary>Development shortcut: every building of the catalog may be built without its quest.</summary>
+        public CommandResult DebugUnlockAllBuildings()
+        {
+            if (_state.Progress == null) return CommandResult.Fail("В этой игре все постройки уже открыты");
+            if (_state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
+            var candidate = _state.Clone();
+            foreach (var definition in _catalog.Buildings)
+                if (definition != null) candidate.Progress.UnlockedBuildings.Add(definition.Kind);
+            _state = candidate;
+            _revision++;
+            Emit();
+            return CommandResult.Success();
+        }
+
+        /// <summary>Development shortcut: puts gold into the treasury; "have gold" goals count it at once.</summary>
+        public CommandResult DebugAddGold(int amount)
+        {
+            if (amount <= 0) return CommandResult.Fail("Сумма должна быть больше нуля");
+            if (_state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
+            var candidate = _state.Clone();
+            candidate.Gold = (int)Math.Min(int.MaxValue, (long)candidate.Gold + amount);
+            Progression.Update(candidate, _catalog);
+            _state = candidate;
+            _revision++;
+            Emit();
+            return CommandResult.Success();
+        }
+
+        /// <summary>Development shortcut: every block of land becomes the colony's, wild where it was not owned.</summary>
+        public CommandResult DebugOwnAllLand() => DebugLand(LandBlock.Wild);
+
+        /// <summary>Development shortcut: every owned block is cleared at once.</summary>
+        public CommandResult DebugClearAllLand() => DebugLand(LandBlock.Cleared);
+
+        private CommandResult DebugLand(LandBlock target)
+        {
+            if (_state.Land == null) return CommandResult.Fail("В этой игре земля не покупается");
+            if (_state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
+            var candidate = _state.Clone();
+            var land = candidate.Land;
+            for (int y = 0; y < land.BlocksPerSide; y++)
+            for (int x = 0; x < land.BlocksPerSide; x++)
+            {
+                var block = land.Block(x, y);
+                if (target == LandBlock.Wild && block == LandBlock.Unowned)
+                {
+                    land.Set(x, y, LandBlock.Wild);
+                    land.Purchases++;
+                }
+                else if (target == LandBlock.Cleared && block == LandBlock.Wild)
+                {
+                    land.Set(x, y, LandBlock.Cleared);
+                }
+            }
+            candidate.LayoutVersion++;
             _state = candidate;
             _revision++;
             Emit();
@@ -188,20 +251,23 @@ namespace TrollStrategy.Application
                     return candidate;
             }
 
+            // south-west of the middle of the start land (of the grid without land)
+            var center = LandRules.StartCenter(_catalog.Economy);
+            var home = new Cell(center.X - 4, center.Y - 4);
             for (int r = 0; r < 6; r++)
             {
                 for (int dy = -r; dy <= r; dy++)
                 {
                     for (int dx = -r; dx <= r; dx++)
                     {
-                        var candidate = new Cell(3 + dx, 3 + dy);
+                        var candidate = new Cell(home.X + dx, home.Y + dy);
                         if (CanBuyUnits(UnitKind.Goblin, 1, candidate).Ok)
                             return candidate;
                     }
                 }
             }
 
-            return new Cell(3, 3);
+            return home;
         }
 
         public CommandResult CanPlaceBuilding(BuildingKind kind, Cell cell, string ignoredId = null) =>
@@ -214,6 +280,11 @@ namespace TrollStrategy.Application
         {
             return ColonySimulation.ValidateUnitPurchase(_state, kind, amount, cell, _catalog);
         }
+
+        public CommandResult CanBuyLand(int blockX, int blockY) => LandRules.ValidateBuy(_state, blockX, blockY, _catalog);
+
+        public CommandResult CanClearLand(int blockX, int blockY) =>
+            LandRules.ValidateClear(_state, blockX, blockY, _catalog);
 
         public GameSnapshot CreateSnapshot()
         {
@@ -308,7 +379,26 @@ namespace TrollStrategy.Application
                 unitSnapshots,
                 equipmentSnapshots,
                 CreateProgressSnapshot(),
-                CreateBattleRewardSnapshot());
+                CreateBattleRewardSnapshot(),
+                CreateLandSnapshot());
+        }
+
+        private LandSnapshot CreateLandSnapshot()
+        {
+            var land = _state.Land;
+            if (land == null) return null;
+            var blocks = new LandBlockSnapshot[land.Count];
+            for (int y = 0; y < land.BlocksPerSide; y++)
+            for (int x = 0; x < land.BlocksPerSide; x++)
+            {
+                var block = land.Block(x, y);
+                blocks[y * land.BlocksPerSide + x] = new LandBlockSnapshot(x, y, block != LandBlock.Unowned,
+                    block == LandBlock.Cleared, land.IsClearing(x, y), land.ClearProgress(x, y),
+                    land.ClearSecondsLeft(x, y), LandRules.ValidatePlace(_state, x, y).Ok);
+            }
+            var economy = _catalog.Economy;
+            return new LandSnapshot(land.BlocksPerSide, land.BlockSize, blocks, LandRules.NextPrice(land, economy),
+                economy.LandClearGold, economy.LandClearSeconds);
         }
 
         private BattleRewardSnapshot CreateBattleRewardSnapshot()

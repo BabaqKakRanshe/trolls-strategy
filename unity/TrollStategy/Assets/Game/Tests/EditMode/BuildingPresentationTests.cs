@@ -6,10 +6,12 @@ using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Buildings;
 using TrollStrategy.Presentation.Map;
+using TrollStrategy.Presentation.WorldUi;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Pivot = UnityEngine.UIElements.Pivot;
 
 namespace TrollStrategy.Tests
 {
@@ -173,6 +175,37 @@ namespace TrollStrategy.Tests
                     Assert.That(AssetDatabase.Contains(meshRenderer.sharedMaterial), Is.True,
                         $"{kind}/{meshRenderer.name} must reference a saved material");
                 }
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+                Object.DestroyImmediate(map.gameObject);
+                Object.DestroyImmediate(sourceTexture);
+            }
+        }
+
+        [TestCaseSource(nameof(AllKinds))]
+        public void BuildingLabel_StandsOverTheRoofOfItsModel(BuildingKind kind)
+        {
+            var root = CreateBuildingView(out var view, out var sourceTexture, kind);
+            var map = new GameObject("TestMapView").AddComponent<TilemapWorldView>();
+            var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>("Assets/Game/Content/Definitions/GameContentCatalog.asset");
+            var def = catalog.GetBuilding(kind);
+            var snapshot = new BuildingSnapshot("test", kind, def.DisplayName, new Cell(0, 0),
+                def.Width, def.Height, 0, def.Capacity(1), 0, def.MaxWorkers, 0f);
+
+            try
+            {
+                view.Setup(snapshot, null, null, map);
+                view.UpdateVisuals(snapshot, true);
+                var meshes = root.transform.Find("Model").GetComponentsInChildren<MeshRenderer>();
+                var model = meshes[0].bounds;
+                foreach (var mesh in meshes) model.Encapsulate(mesh.bounds);
+                var label = root.GetComponentInChildren<WorldPanel>(true);
+                Assert.That(label.Pivot, Is.EqualTo(Pivot.BottomCenter), "The label grows upwards from the roof");
+                Assert.That(label.transform.position.y, Is.GreaterThan(model.max.y), $"{kind}: the roof covers the label");
+                Assert.That(Vector2.Distance(new Vector2(label.transform.position.x, label.transform.position.z),
+                    new Vector2(model.center.x, model.center.z)), Is.LessThan(.01f), $"{kind}: the label is off the model");
             }
             finally
             {

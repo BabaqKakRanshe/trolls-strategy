@@ -126,7 +126,7 @@ namespace TrollStrategy.Tests
         [Test]
         public void TheTutorial_CanBePlayedToTheFirstBattleReward()
         {
-            var session = new GameSession(_catalog, TestColony.Layout, campaign: true);
+            var session = new GameSession(_catalog, TestColony.LayoutFor(_catalog), campaign: true);
             Expect(session, "tutorial-goblin");
             Assert.That(session.CurrentSnapshot.Progress.Quest.TutorialStep, Is.EqualTo(1));
 

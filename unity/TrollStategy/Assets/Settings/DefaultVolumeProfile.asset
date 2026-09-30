@@ -248,6 +248,43 @@ MonoBehaviour:
   highlightsEnd:
     m_OverrideState: 1
     m_Value: 1
+--- !u!114 &-4391228417311691992
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5948a543f0d05a4082141da651b0590, type: 3}
+  m_Name: IslandHaze
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Presentation.Island.IslandHaze
+  active: 1
+  fogColor:
+    m_OverrideState: 1
+    m_Value: {r: 0.71, g: 0.82, b: 0.93, a: 1}
+  fogStart:
+    m_OverrideState: 1
+    m_Value: 0
+  fogFull:
+    m_OverrideState: 1
+    m_Value: -15
+  fogOpacity:
+    m_OverrideState: 1
+    m_Value: 0
+  edgeColor:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+  edgeIntensity:
+    m_OverrideState: 1
+    m_Value: 0
+  edgeRange:
+    m_OverrideState: 1
+    m_Value: {x: 0.45, y: 1.05}
+  edgeTop:
+    m_OverrideState: 1
+    m_Value: 1
 --- !u!114 &-4210620904635426390
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -509,6 +546,7 @@ MonoBehaviour:
   - {fileID: -8186968272690591729}
   - {fileID: -3978695733392391637}
   - {fileID: -1083910812058648046}
+  - {fileID: -4391228417311691992}
 --- !u!114 &156332030701414761
 MonoBehaviour:
   m_ObjectHideFlags: 3

@@ -302,6 +302,48 @@ namespace TrollStrategy.Tests
             Assert.That(interaction.Mode.Type, Is.EqualTo(InteractionModeType.PlacingUnits));
         }
 
+#if UNITY_EDITOR || UNITY_ENABLE_CHECKS
+        [Test]
+        public void DebugUnlockAllBuildings_OpensEveryCatalogBuildingWithoutTouchingTheQuest()
+        {
+            var session = Campaign(Quest("hire", QuestGoal.OwnUnits(UnitKind.Goblin, 1)));
+            int gold = session.CurrentSnapshot.Gold;
+
+            Assert.That(session.DebugUnlockAllBuildings().Ok, Is.True);
+
+            Assert.That(session.IsBuildingUnlocked(BuildingKind.Mine), Is.True);
+            Assert.That(session.IsBuildingUnlocked(BuildingKind.Field), Is.True);
+            Assert.That(session.CurrentSnapshot.Progress.IsBuildingUnlocked(BuildingKind.Mine), Is.True);
+            Assert.That(session.IsUnitUnlocked(UnitKind.Troll), Is.False, "Only buildings open");
+            Assert.That(session.CurrentSnapshot.Progress.Quest.Id, Is.EqualTo("hire"));
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(gold));
+            Assert.That(session.Dispatch(new BuildBuildingCommand(BuildingKind.Mine, new Cell(2, 2))).Ok, Is.True);
+        }
+
+        [Test]
+        public void DebugUnlockAllBuildings_RefusesASandboxGame()
+        {
+            var session = TestColony.NewSession(Catalog(Quest("hire", QuestGoal.OwnUnits(UnitKind.Goblin, 1))));
+
+            Assert.That(session.DebugUnlockAllBuildings().Ok, Is.False);
+        }
+
+        [Test]
+        public void DebugAddGold_FillsTheTreasuryAndCountsForGoldGoalsAtOnce()
+        {
+            var session = Campaign(Quest("save", QuestGoal.HaveGold(1500)));
+            int gold = session.CurrentSnapshot.Gold;
+            Assert.That(session.CurrentSnapshot.Progress.Quest.IsComplete, Is.False);
+
+            Assert.That(session.DebugAddGold(1000).Ok, Is.True);
+
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(gold + 1000));
+            Assert.That(session.CurrentSnapshot.Progress.Quest.IsComplete, Is.True);
+            Assert.That(session.DebugAddGold(0).Ok, Is.False);
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(gold + 1000));
+        }
+#endif
+
         private GameSession Campaign(params QuestDefinition[] quests) => Campaign(quests, null);
 
         private GameSession Campaign(QuestDefinition first, QuestDefinition second, UnitKind[] startingUnits) =>

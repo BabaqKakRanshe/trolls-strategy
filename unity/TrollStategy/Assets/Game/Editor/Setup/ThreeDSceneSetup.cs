@@ -12,12 +12,19 @@ namespace TrollStrategy.Editor.Setup
     {
         private const string ScenePath = "Assets/Game/Scenes/MainColonyScene.unity";
         private const string RendererPath = "Assets/Settings/Colony3DRenderer.asset";
-        private const float ShadowDistance = 60f;
+        private const float ShadowDistance = 100f;
+        private const string PostProcessDataPath =
+            "Packages/com.unity.render-pipelines.universal/Runtime/Data/PostProcessData.asset";
 
-        // The colony map is the Vitaria kit's Colony_Meadow now: ColonyEnvironmentBuilder builds and installs it
-        // and lights the colony like the arena. This menu stays as the old entry point.
+        // The colony map is the Vitaria kit's floating island (Colony_Isle) when the kit has exported it:
+        // IslandEnvironmentBuilder builds and installs it with its look. Without Layout/isle_layout.json it is
+        // Colony_Meadow, installed and lit like the arena by ColonyEnvironmentBuilder. This menu stays as the old entry point.
         [MenuItem("TrollStrategy/Refresh Diorama")]
-        public static void RefreshDiorama() => ColonyEnvironmentBuilder.RebuildColonyMap();
+        public static void RefreshDiorama()
+        {
+            if (IslandEnvironmentBuilder.HasLayout) IslandEnvironmentBuilder.RebuildIsland();
+            else ColonyEnvironmentBuilder.RebuildColonyMap();
+        }
 
         [MenuItem("TrollStrategy/Convert Colony To 3D")]
         public static void ConvertCurrentScene()
@@ -106,7 +113,9 @@ namespace TrollStrategy.Editor.Setup
                 camera.transform.LookAt(center, Vector3.forward);
             }
             ConfigureDiorama(camera, worldView);
-            ColonyEnvironmentBuilder.InstallIntoOpenScene();
+            // the island sets its own light, fog, post-processing and camera framing on top of the diorama defaults
+            if (IslandEnvironmentBuilder.HasLayout) IslandEnvironmentBuilder.InstallIntoOpenScene();
+            else ColonyEnvironmentBuilder.InstallIntoOpenScene();
         }
 
         private static void ConfigureDiorama(Camera camera, TilemapWorldView worldView)
@@ -147,6 +156,12 @@ namespace TrollStrategy.Editor.Setup
                 renderer = ScriptableObject.CreateInstance<UniversalRendererData>();
                 AssetDatabase.CreateAsset(renderer, RendererPath);
             }
+            // a renderer without post-process data skips every volume effect (the island's grading, bloom, blur)
+            if (renderer.postProcessData == null)
+            {
+                renderer.postProcessData = AssetDatabase.LoadAssetAtPath<PostProcessData>(PostProcessDataPath);
+                EditorUtility.SetDirty(renderer);
+            }
             var serialized = new SerializedObject(pipeline);
             var list = serialized.FindProperty("m_RendererDataList");
             list.arraySize = 1;
@@ -154,8 +169,9 @@ namespace TrollStrategy.Editor.Setup
             serialized.FindProperty("m_DefaultRendererIndex").intValue = 0;
             serialized.FindProperty("m_SoftShadowsSupported").boolValue = true;
             serialized.FindProperty("m_ShadowCascadeCount").intValue = 2;
-            // the colony camera is ~23 m from the field and the far edge of the frame (the ridge and the massif
-            // over the waterfall) is ~55 m away: at URP's default 50 m their shadows cut off along a visible line
+            // the island camera zoomed out to the whole 40x40 isle is ~65 m from the lawn and the satellites at the
+            // top of the frame are ~95 m away: at 60 m their trees lost their shadows and the rock strata (the ledges'
+            // self-shadows) went flat; 100 m keeps them, close-up shadows barely change with two cascades
             serialized.FindProperty("m_ShadowDistance").floatValue = ShadowDistance;
             serialized.FindProperty("m_Cascade2Split").floatValue = 0.4f;
             serialized.FindProperty("m_MSAA").intValue = 4;

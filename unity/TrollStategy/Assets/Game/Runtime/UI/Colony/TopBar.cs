@@ -9,8 +9,8 @@ using UnityEngine.UIElements;
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// Settlement counters and the actions that are always at hand: pick the next idle creature, show the
-    /// grid and routes, go to battle, open the catalog. The battle button counts down to the mission.
+    /// Settlement counters and the actions that are always at hand: pick the next idle creature, buy and clear
+    /// land, show the grid and routes, go to battle, open the catalog. The battle button counts down to the mission.
     /// </summary>
     public sealed class TopBar
     {
@@ -25,6 +25,7 @@ namespace TrollStrategy.UI
         private readonly Label _idle;
         private readonly Button _idleButton;
         private readonly Button _gridButton;
+        private readonly Button _landButton;
         private readonly Button _battleButton;
         private readonly Button _catalogButton;
         private bool? _battleReady;
@@ -44,6 +45,8 @@ namespace TrollStrategy.UI
 
             _idleButton = UiFeel.Bind(Ui.Require<Button>(root, "idle-button"), context.Interaction.SelectNextIdle,
                 silentClick: true);
+            _landButton = UiFeel.Bind(Ui.Require<Button>(root, "land-button"), context.Interaction.ToggleLandMode);
+            Ui.Show(_landButton, context.Session.CurrentSnapshot.Land != null);
             _gridButton = UiFeel.Bind(Ui.Require<Button>(root, "grid-button"), ToggleGuides);
             Ui.Show(_gridButton, context.ToggleGuides != null);
             _mission = context.FirstMission;
@@ -56,6 +59,7 @@ namespace TrollStrategy.UI
         public Button BattleButton => _battleButton;
         public Button IdleButton => _idleButton;
         public Button CatalogButton => _catalogButton;
+        public Button LandButton => _landButton;
         public string GoldText => _gold.Value.ToString();
 
         /// <summary>What the current quest asks for: the battle, or the catalog while it is closed.</summary>
@@ -83,6 +87,9 @@ namespace TrollStrategy.UI
             Ui.SetText(_idle, snapshot.Units.Count == 0 ? "никого нет" : idle > 0 ? $"свободно: {idle}" : "все при деле");
             UiFeel.SetAvailable(_idleButton, idle > 0);
             _gridButton.EnableInClassList("is-on", _context.GuidesVisible?.Invoke() ?? false);
+            Ui.Show(_landButton, snapshot.Land != null);
+            _landButton.EnableInClassList("is-on",
+                _context.Interaction.Mode.Type == InteractionModeType.ManagingLand);
         }
 
         public void SetCatalogOpen(bool open)

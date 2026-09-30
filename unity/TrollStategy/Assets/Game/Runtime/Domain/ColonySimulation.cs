@@ -32,12 +32,15 @@ namespace TrollStrategy.Domain
                 SellUnitsCommand c => SellUnits(state, c.UnitIds, catalog),
                 SendToBarracksCommand c => SendToBarracks(state, c.UnitIds, catalog),
                 ClaimQuestRewardCommand => Progression.Claim(state, catalog),
+                BuyLandCommand c => LandRules.Buy(state, c.BlockX, c.BlockY, catalog),
+                ClearLandCommand c => LandRules.Clear(state, c.BlockX, c.BlockY, catalog),
                 _ => CommandResult.Fail("Неизвестная команда")
             };
         }
 
         public static void TickColony(GameState state, float deltaSeconds, GameContentCatalog catalog)
         {
+            LandRules.Tick(state, deltaSeconds);
             ProduceGoods(state, deltaSeconds, catalog);
 
             for (int i = 0; i < state.Units.Count; i++)
@@ -57,6 +60,11 @@ namespace TrollStrategy.Domain
 
             if (cell.X < 0 || cell.Y < 0 || cell.X + definition.Width > economy.GridWidth || cell.Y + definition.Height > economy.GridHeight)
                 return CommandResult.Fail("Постройка выходит за границу поля");
+
+            for (int y = cell.Y; y < cell.Y + definition.Height; y++)
+            for (int x = cell.X; x < cell.X + definition.Width; x++)
+                if (!LandRules.IsOpen(state, new Cell(x, y)))
+                    return CommandResult.Fail(LandRequired);
 
             for (int i = 0; i < state.Buildings.Count; i++)
             {
@@ -78,6 +86,8 @@ namespace TrollStrategy.Domain
             return CommandResult.Success();
         }
 
+        private const string LandRequired = "Сначала купите и расчистите эту землю";
+
         public static CommandResult ValidateUnitPurchase(GameState state, UnitKind kind, int amount, Cell cell, GameContentCatalog catalog)
         {
             var economy = catalog.Economy;
@@ -91,6 +101,9 @@ namespace TrollStrategy.Domain
 
             if (cell.X < 0 || cell.Y < 0 || cell.X >= economy.GridWidth || cell.Y >= economy.GridHeight)
                 return CommandResult.Fail("Клетка находится за границей поля");
+
+            if (!LandRules.IsOpen(state, cell))
+                return CommandResult.Fail(LandRequired);
 
             for (int i = 0; i < state.Buildings.Count; i++)
             {
@@ -432,9 +445,10 @@ namespace TrollStrategy.Domain
             if (!resolveResult.Ok) return resolveResult;
 
             var barracks = state.Buildings.Find(b => b.Kind == BuildingKind.Barracks);
+            var center = LandRules.StartCenter(catalog.Economy);
             var targetPos = barracks != null 
                 ? BuildingEntrancePosition(barracks, catalog) 
-                : new WorldPosition(2.5f * catalog.Economy.CellSize, 2.5f * catalog.Economy.CellSize);
+                : new WorldPosition((center.X - 4.5f) * catalog.Economy.CellSize, (center.Y - 4.5f) * catalog.Economy.CellSize);
 
             for (int i = 0; i < selectedUnits.Count; i++)
             {
@@ -1002,11 +1016,13 @@ namespace TrollStrategy.Domain
                    point.Y >= minY - epsilon && point.Y <= maxY + epsilon;
         }
 
+        // Released creatures gather just south of the middle of the start land (of the grid without land).
         public static WorldPosition IdlePosition(int unitNumber, EconomyConfig economy)
         {
             int slot = unitNumber - 1;
             int crowd = slot / economy.MaxUnitsPerCell;
-            var cell = new Cell(7 + (crowd % 3), 5 + (crowd / 3));
+            var center = LandRules.StartCenter(economy);
+            var cell = new Cell(center.X + (crowd % 3), center.Y - 2 + (crowd / 3));
             return CrowdPosition(cell, slot % economy.MaxUnitsPerCell, economy);
         }
 

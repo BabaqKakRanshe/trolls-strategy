@@ -8,6 +8,7 @@ using TrollStrategy.Presentation;
 using TrollStrategy.Presentation.Battle;
 using TrollStrategy.Presentation.Buildings;
 using TrollStrategy.Presentation.Feel;
+using TrollStrategy.Presentation.Island;
 using TrollStrategy.Presentation.Map;
 using TrollStrategy.Presentation.Units;
 using TrollStrategy.Presentation.Visuals;
@@ -34,6 +35,8 @@ namespace TrollStrategy.Bootstrap
         [SerializeField] private SelectionBoxRenderer _selectionBox;
         [SerializeField] private HaulRouteVisualizer _routeVisualizer;
         [SerializeField] private MapInputHandler _inputHandler;
+        [Tooltip("Shows the bought, wild and cleared land on the colony island; its IslandView is found in the scene.")]
+        [SerializeField] private LandPresenter _land;
 
         [Header("UI")]
         [SerializeField] private ColonyHud _hud;
@@ -86,6 +89,7 @@ namespace TrollStrategy.Bootstrap
             if (_selectionBox == null) _selectionBox = FindAnyObjectByType<SelectionBoxRenderer>();
             if (_routeVisualizer == null) _routeVisualizer = FindAnyObjectByType<HaulRouteVisualizer>();
             if (_inputHandler == null) _inputHandler = FindAnyObjectByType<MapInputHandler>();
+            if (_land == null) _land = FindAnyObjectByType<LandPresenter>();
             if (_hud == null) _hud = FindAnyObjectByType<ColonyHud>();
             if (_battleHud == null) _battleHud = FindAnyObjectByType<BattleHud>();
 
@@ -131,10 +135,15 @@ namespace TrollStrategy.Bootstrap
                 _selectionBox.Init(_interaction, _unitManager, _camera, _worldView, _buildingManager);
 
             if (_routeVisualizer != null)
-                _routeVisualizer.Init(_session, _worldView);
+                _routeVisualizer.Init(_session, _interaction, _worldView, _camera);
 
             if (_inputHandler != null)
                 _inputHandler.Init(_interaction, _selectionBox);
+
+            if (_land != null)
+                _land.Init(_session, _interaction, _worldView, _camera, FindAnyObjectByType<IslandView>());
+            else if (_session.CurrentSnapshot.Land != null)
+                Debug.LogError($"{nameof(GameBootstrap)} has no {nameof(LandPresenter)}; the island does not show the land.", this);
 
             if (_hud != null)
             {

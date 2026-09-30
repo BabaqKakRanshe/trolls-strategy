@@ -15,7 +15,16 @@ namespace TrollStrategy.Application
         ChoosingWorkTarget,
         ChoosingHaulSource,
         ChoosingHaulCargo,
-        ChoosingHaulDestination
+        ChoosingHaulDestination,
+        ManagingLand
+    }
+
+    /// <summary>What the land mode offers for the block the player picked.</summary>
+    public enum LandOffer
+    {
+        None,
+        Buy,
+        Clear
     }
 
     public class InteractionMode
@@ -26,6 +35,10 @@ namespace TrollStrategy.Application
         public int Amount { get; private set; }
         public string SourceId { get; private set; }
         public string BuildingId { get; private set; }
+        /// <summary>Land mode: the picked block, -1 when none is picked.</summary>
+        public int LandX { get; private set; } = -1;
+        public int LandY { get; private set; } = -1;
+        public LandOffer LandOffer { get; private set; }
 
         public static InteractionMode Neutral => new() { Type = InteractionModeType.Neutral };
         public static InteractionMode PlacingBuilding(BuildingKind kind) => new() { Type = InteractionModeType.PlacingBuilding, BuildingKind = kind };
@@ -47,6 +60,13 @@ namespace TrollStrategy.Application
         {
             Type = InteractionModeType.ChoosingHaulDestination,
             SourceId = sourceId
+        };
+        public static InteractionMode ManagingLand(int x = -1, int y = -1, LandOffer offer = LandOffer.None) => new()
+        {
+            Type = InteractionModeType.ManagingLand,
+            LandX = offer == LandOffer.None ? -1 : x,
+            LandY = offer == LandOffer.None ? -1 : y,
+            LandOffer = offer
         };
     }
 
@@ -339,6 +359,107 @@ namespace TrollStrategy.Application
                 Refuse("На поле не осталось места для этой постройки.");
         }
 
+        /// <summary>
+        /// Land mode (L, the HUD's "Земля"): the map marks the blocks that can be bought; a click on one offers to buy
+        /// it, a click on the colony's wild land offers to clear it. Nothing is built in this mode. Again: leaves it.
+        /// </summary>
+        public void ToggleLandMode()
+        {
+            if (_mode.Type == InteractionModeType.ManagingLand)
+            {
+                _mode = InteractionMode.Neutral;
+                _message = "Режим земли закрыт.";
+                Emit();
+                return;
+            }
+            var land = _session.CurrentSnapshot.Land;
+            if (land == null)
+            {
+                Refuse("Здесь земля не покупается.");
+                return;
+            }
+            _commandsOpen = false;
+            _mode = InteractionMode.ManagingLand();
+            _message = LandPrompt(land);
+            Emit();
+        }
+
+        /// <summary>Land mode: the player clicked block (x, y) of the land.</summary>
+        public void ChooseLandBlock(int x, int y)
+        {
+            if (_mode.Type != InteractionModeType.ManagingLand) return;
+            var land = _session.CurrentSnapshot.Land;
+            if (land == null) return;
+            if (!land.Inside(x, y))
+            {
+                Refuse("За краем острова земли нет.");
+                return;
+            }
+            var block = land.Block(x, y);
+            if (block.Cleared)
+            {
+                _mode = InteractionMode.ManagingLand();
+                _message = "Эта земля уже расчищена: здесь можно строить.";
+            }
+            else if (block.Clearing)
+            {
+                _mode = InteractionMode.ManagingLand();
+                _message = $"Участок расчищают: осталось {Seconds(block.ClearSecondsLeft)} с.";
+            }
+            else if (block.Owned)
+            {
+                _mode = InteractionMode.ManagingLand(x, y, LandOffer.Clear);
+                var clear = _session.CanClearLand(x, y);
+                _message = $"Расчистить участок: {Seconds(land.ClearSeconds)} с" +
+                           (land.ClearGold > 0 ? $", {land.ClearGold} зол." : ", бесплатно") +
+                           (clear.Ok ? ". Пока лес не сведён, строить здесь нельзя." : $". {clear.Error}.");
+            }
+            else if (block.CanBuy)
+            {
+                _mode = InteractionMode.ManagingLand(x, y, LandOffer.Buy);
+                var buy = _session.CanBuyLand(x, y);
+                _message = buy.Ok
+                    ? $"Купить участок {land.BlockSize}×{land.BlockSize} за {land.NextPrice} зол.? Он поднимется из облаков диким."
+                    : $"Участок стоит {land.NextPrice} зол. {buy.Error}.";
+            }
+            else
+            {
+                // the session refuses it with the reason, where the player clicked
+                _mode = InteractionMode.ManagingLand();
+                var refused = _session.Dispatch(new BuyLandCommand(x, y));
+                _message = refused.Ok ? LandPrompt(_session.CurrentSnapshot.Land) : refused.Error;
+            }
+            Emit();
+        }
+
+        /// <summary>Land mode: buys or clears the picked block.</summary>
+        public CommandResult ConfirmLand()
+        {
+            if (_mode.Type != InteractionModeType.ManagingLand || _mode.LandOffer == LandOffer.None)
+                return CommandResult.Fail("Сначала выберите участок");
+            int x = _mode.LandX, y = _mode.LandY;
+            bool buy = _mode.LandOffer == LandOffer.Buy;
+            var result = _session.Dispatch(buy ? new BuyLandCommand(x, y) : new ClearLandCommand(x, y));
+            if (result.Ok)
+            {
+                _mode = InteractionMode.ManagingLand();
+                _message = buy
+                    ? "Участок куплен и поднимается из облаков. Расчистите его, чтобы строить."
+                    : "Расчистка началась: деревья и камни уберут за " + Seconds(_session.Catalog.Economy.LandClearSeconds) + " с.";
+            }
+            else
+            {
+                _message = result.Error;
+            }
+            Emit();
+            return result;
+        }
+
+        private static string LandPrompt(LandSnapshot land) =>
+            $"Участки в рамке продаются: следующий за {land.NextPrice} зол. Своя дикая земля расчищается кликом.";
+
+        private static int Seconds(float seconds) => (int)Math.Ceiling(seconds);
+
         public void BeginWorkTarget()
         {
             if (!HasSelection()) return;
@@ -600,7 +721,13 @@ namespace TrollStrategy.Application
         public void CancelOrClear()
         {
             _commandsOpen = false;
-            if (_mode.Type != InteractionModeType.Neutral)
+            // the land mode first drops a picked block, then closes
+            if (_mode.Type == InteractionModeType.ManagingLand && _mode.LandOffer != LandOffer.None)
+            {
+                _mode = InteractionMode.ManagingLand();
+                _message = "Выберите участок.";
+            }
+            else if (_mode.Type != InteractionModeType.Neutral)
             {
                 _mode = InteractionMode.Neutral;
                 _message = "Команда отменена.";

@@ -141,6 +141,22 @@ namespace TrollStrategy.Domain
         public SendToBarracksCommand(IReadOnlyList<string> unitIds) => UnitIds = unitIds;
     }
 
+    /// <summary>Buys a block of land next to the colony's own; it comes wild (LandRules).</summary>
+    public sealed class BuyLandCommand : IGameCommand
+    {
+        public int BlockX { get; }
+        public int BlockY { get; }
+        public BuyLandCommand(int blockX, int blockY) { BlockX = blockX; BlockY = blockY; }
+    }
+
+    /// <summary>Starts clearing a wild block of the colony's land (LandRules).</summary>
+    public sealed class ClearLandCommand : IGameCommand
+    {
+        public int BlockX { get; }
+        public int BlockY { get; }
+        public ClearLandCommand(int blockX, int blockY) { BlockX = blockX; BlockY = blockY; }
+    }
+
     /// <summary>Takes the rewards of the finished current quest and begins the next one.</summary>
     public sealed class ClaimQuestRewardCommand : IGameCommand
     {
