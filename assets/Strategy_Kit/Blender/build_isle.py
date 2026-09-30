@@ -21,6 +21,13 @@ PFX = "CI_"
 GROUPS = ["Terrain", "Water", "Blocks", "Wild", "Cover", "Rim", "Decor", "Nature", "Props", "Backdrop", "Sky",
           "Rig", "Preview_start", "Preview_mid", "Preview_max"]
 SIDES = {"S": (0, -1), "E": (1, 0), "N": (0, 1), "W": (-1, 0)}
+# солнце низко (32° над горизонтом) и тёплое: длинные тени читаются с высоты камеры; направление в осях Blender
+SUN_DIR = (-0.69468, 0.48642, -0.52992)
+SUN_COLOR = (1.0, 0.92, 0.8)
+GAME_AMBIENT = [0.55, 0.62, 0.76]              # sRGB, RenderSettings.ambientLight острова
+# sRGB: фон камеры, туман и дымка острова в игре. Синее, чем LOOKDEV["fog"]: Tonemapping Neutral в URP гасит
+# синеву сильнее AgX, с этим цветом небо в кадре игры выходит (168, 187, 200)
+GAME_SKY = [0.64, 0.78, 0.94]
 
 
 def parse_args():
@@ -510,9 +517,9 @@ def build_scene(V, BA, BC, VC, TR, meshes, mat, wmat):
         print("camera %-5s distance %.1f at (%.1f, %.1f, %.1f)" % ((stage, d) + tuple(pos)))
     scn.camera = cams["start"]
     sd = bpy.data.lights.new(PFX + "Sun", "SUN")
-    sd.energy, sd.color = 5.0, (1.0, 0.95, 0.86)
+    sd.energy, sd.color = 5.0, SUN_COLOR
     so = bpy.data.objects.new(PFX + "Sun", sd)
-    so.rotation_euler = Vector((-0.369, 0.527, -0.766)).normalized().to_track_quat("-Z", "Y").to_euler()
+    so.rotation_euler = Vector(SUN_DIR).normalized().to_track_quat("-Z", "Y").to_euler()
     C["Rig"].objects.link(so)
     world = bpy.data.worlds.get("AM_World") or bpy.data.worlds.new("AM_World")
     world.use_nodes = True
@@ -695,15 +702,7 @@ def export_isle(scn, G, V, BA, BC, mat, root):
     print("isle static: %s" % ", ".join("%s %d" % (n, _tris(m)) for n, m in static_meshes))
 
     # ------------------------------------------------------------ раскладка
-    sun_fwd = BA.to_unity_vec(Vector((-0.369, 0.527, -0.766)).normalized())
-    LD = G.LOOKDEV
-
-    def srgb(h):
-        return [round(v, 4) for v in V.hex2rgb(h)]
-
-    def lin2srgb(c):
-        return [round(1.055 * v ** (1 / 2.4) - 0.055 if v > 0.0031308 else 12.92 * v, 4) for v in c]
-
+    sun_fwd = BA.to_unity_vec(Vector(SUN_DIR).normalized())
     stages = []
     for name, st in G.STAGES.items():
         stages.append({"name": name, "owned": [by * G.GRID + bx for bx, by in st["owned"]],
@@ -726,14 +725,21 @@ def export_isle(scn, G, V, BA, BC, mat, root):
         "objects": items,
         "stages": stages,
         "camera": {"fov": 45.0, "pitch": 45.0, "offsetX": 1.5, "distancePerSide": 1.16},
-        "sun": {"forward": sun_fwd, "color": [1.0, 0.95, 0.86], "intensity": 1.5},
-        "ambient": {"color": lin2srgb(LD["ambient"])},
-        "background": srgb(LD["fog"]),
-        "fog": {"color": srgb(LD["fog"]), "startPerDistance": 0.85, "endPerDistance": 3.0},
-        "post": {"exposure": 0.1, "saturation": 12.0, "bloomThreshold": 0.9, "bloomIntensity": 0.35,
+        "sun": {"forward": sun_fwd, "color": list(SUN_COLOR), "intensity": 1.8, "shadowStrength": 0.92},
+        # плоский амбиент Unity темнее и холоднее мира Blender: с ним тени не заливаются и уходят в синеву
+        "ambient": {"color": GAME_AMBIENT},
+        "background": GAME_SKY,
+        "fog": {"color": GAME_SKY, "startPerDistance": 0.85, "endPerDistance": 3.0},
+        "post": {"exposure": -0.1, "saturation": 4.0, "contrast": 8.0, "temperature": 0.0,
+                 "bloomThreshold": 0.9, "bloomIntensity": 0.35,
                  "bloomScatter": 0.6, "dofStartPerDistance": 1.4, "dofEndPerDistance": 2.0, "dofMaxRadius": 1.0,
-                 "vignette": 0.2, "vignetteSmoothness": 0.45, "lift": [1.0, 1.0, 1.005, 0.0],
+                 "vignette": 0.0, "vignetteSmoothness": 0.45, "lift": [1.0, 1.0, 1.005, 0.0],
                  "gamma": [1.0, 1.0, 1.0, 0.0], "gain": [1.05, 1.02, 0.97, 0.0]},
+        # дымка (IslandHaze в игре): ниже газона всё тонет по высоте в цвете неба — столбы, облака пустых ячеек,
+        # корни спутников; края кадра светлеют вместо тёмной виньетки. Глубины — метры вниз от газона
+        "haze": {"color": GAME_SKY, "startDepth": 2.0, "fullDepth": 16.0, "opacity": 1.0,
+                 "edgeColor": [0.96, 0.98, 1.0], "edgeIntensity": 0.55, "edgeStart": 0.35, "edgeFull": 1.1,
+                 "edgeTop": 0.25},
         "tris": tris,
     }
     lay = os.path.join(unity, "Layout", "isle_layout.json")

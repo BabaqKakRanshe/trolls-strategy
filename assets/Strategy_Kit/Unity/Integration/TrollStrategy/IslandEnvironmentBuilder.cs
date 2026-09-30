@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using TrollStrategy.Content;
 using TrollStrategy.Presentation.Battle;
 using TrollStrategy.Presentation.Island;
 using TrollStrategy.Presentation.Map;
@@ -40,6 +41,7 @@ namespace TrollStrategy.Editor.Setup
         private const string MaterialsRoot = "Assets/Vitaria/Materials";
         private const string PrefabFolder = "Assets/Game/Prefabs/Environments";
         private const string ScenePath = "Assets/Game/Scenes/MainColonyScene.unity";
+        private const string EconomyPath = "Assets/Game/Content/Definitions/EconomyConfig.asset";
         public const string SceneRootName = ColonyEnvironmentBuilder.SceneRootName;
         private const string SunName = "ColonySun";
         private const string VolumeName = "ColonyVolume";
@@ -117,6 +119,7 @@ namespace TrollStrategy.Editor.Setup
             public float[] forward;
             public float[] color;
             public float intensity;
+            public float shadowStrength;
         }
 
         [Serializable]
@@ -138,6 +141,8 @@ namespace TrollStrategy.Editor.Setup
         {
             public float exposure;
             public float saturation;
+            public float contrast;
+            public float temperature;
             public float bloomThreshold;
             public float bloomIntensity;
             public float bloomScatter;
@@ -149,6 +154,21 @@ namespace TrollStrategy.Editor.Setup
             public float[] lift;
             public float[] gamma;
             public float[] gain;
+        }
+
+        // IslandHaze: height fog under the lawn and a light edge haze; missing from the layout means no haze
+        [Serializable]
+        private sealed class IsleHaze
+        {
+            public float[] color;
+            public float startDepth;
+            public float fullDepth;
+            public float opacity;
+            public float[] edgeColor;
+            public float edgeIntensity;
+            public float edgeStart;
+            public float edgeFull;
+            public float edgeTop;
         }
 
         [Serializable]
@@ -169,6 +189,7 @@ namespace TrollStrategy.Editor.Setup
             public float[] background;
             public IsleFog fog;
             public IslePost post;
+            public IsleHaze haze;
         }
 #pragma warning restore 0649
 
@@ -197,7 +218,7 @@ namespace TrollStrategy.Editor.Setup
             if (Build() == null) throw new InvalidOperationException($"Island prefab was not built from {LayoutPath}");
             var scene = active.path == ScenePath ? active : EditorSceneManager.OpenScene(ScenePath);
             InstallIntoOpenScene();
-            ThreeDSceneSetup.ConfigureRendering(Camera.main);     // URP shadows 60 m, MSAA only, as for the meadow
+            ThreeDSceneSetup.ConfigureRendering(Camera.main);     // URP shadows 100 m, MSAA only, as for the meadow
             DioramaSurfaceSetup.ConfigureContactShadows();
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
@@ -286,8 +307,8 @@ namespace TrollStrategy.Editor.Setup
             int cells = layout.grid != null ? layout.grid.cells : 40;
             if (worldView.GridWidth != cells || worldView.GridHeight != cells)
                 Debug.Log($"[Isle] The island grid is {cells}x{cells} cells, the game grid {worldView.GridWidth}x" +
-                          $"{worldView.GridHeight}: the island is centred on the game grid; the start zone is the middle " +
-                          "20x20 cells until the game grid becomes 40x40");
+                          $"{worldView.GridHeight}: the island is centred on the game grid and its blocks no longer " +
+                          "match the game's land blocks");
 
             // old procedural ground (if any is left) and the previous environment
             foreach (var behaviour in grid.GetComponents<MonoBehaviour>())
@@ -314,8 +335,9 @@ namespace TrollStrategy.Editor.Setup
         }
 
         /// <summary>
-        /// The island look from the layout: sun, flat ambient, linear fog, camera background and post-processing,
-        /// the camera rig and a camera framing of the docked land. Needs the island in the scene.
+        /// The island look from the layout: sun, flat ambient, linear fog, camera background and post-processing
+        /// with the island haze (<see cref="IslandHaze"/> on the colony renderer), the camera rig and a camera framing
+        /// of the docked land. Needs the island in the scene.
         /// </summary>
         public static void ApplyLook(Camera camera)
         {
@@ -336,7 +358,7 @@ namespace TrollStrategy.Editor.Setup
             sun.color = Rgb(sunData.color, new Color(1f, .95f, .86f));
             sun.intensity = sunData.intensity > 0f ? sunData.intensity : 1.5f;
             sun.shadows = LightShadows.Soft;
-            sun.shadowStrength = .8f;
+            sun.shadowStrength = sunData.shadowStrength > 0f ? Mathf.Clamp01(sunData.shadowStrength) : .8f;
             RenderSettings.sun = sun;
             EditorUtility.SetDirty(sun);
 
@@ -351,7 +373,8 @@ namespace TrollStrategy.Editor.Setup
             RenderSettings.fogColor = Rgb(fogData.color, background);
 
             var post = layout.post ?? new IslePost();
-            var profile = EnsureVolumeProfile(layout, post);
+            var profile = EnsureVolumeProfile(layout, post, view.transform.position.y, RenderSettings.fogColor);
+            DioramaSurfaceSetup.ConfigureIslandHaze();
             var volumeObject = GameObject.Find(VolumeName);
             if (volumeObject == null) volumeObject = new GameObject(VolumeName);
             GameObjectUtility.RemoveMonoBehavioursWithMissingScript(volumeObject);
@@ -458,7 +481,11 @@ namespace TrollStrategy.Editor.Setup
             }
         }
 
-        private static VolumeProfile EnsureVolumeProfile(IsleLayout layout, IslePost post)
+        /// <param name="lawnHeight">World height of the island root (the lawn): the haze depths count down from
+        /// it.</param>
+        /// <param name="fogColor">The linear fog's colour, the haze's colour when the layout gives none.</param>
+        private static VolumeProfile EnsureVolumeProfile(IsleLayout layout, IslePost post, float lawnHeight,
+            Color fogColor)
         {
             EnsureFolder(PrefabFolder);
             var path = PrefabFolder + "/" + layout.name + "_Volume.asset";
@@ -473,7 +500,8 @@ namespace TrollStrategy.Editor.Setup
             var color = Get<ColorAdjustments>(profile);
             color.postExposure.Override(post.exposure);
             color.saturation.Override(post.saturation);
-            color.contrast.Override(0f);
+            color.contrast.Override(post.contrast);
+            Get<WhiteBalance>(profile).temperature.Override(post.temperature);
             var lgg = Get<LiftGammaGain>(profile);
             lgg.lift.Override(Vec4(post.lift, new Vector4(1f, 1f, 1f, 0f)));
             lgg.gamma.Override(Vec4(post.gamma, new Vector4(1f, 1f, 1f, 0f)));
@@ -491,6 +519,18 @@ namespace TrollStrategy.Editor.Setup
             var vignette = Get<Vignette>(profile);
             vignette.intensity.Override(post.vignette);
             vignette.smoothness.Override(Positive(post.vignetteSmoothness, .45f));
+            var hazeData = layout.haze;
+            var haze = Get<IslandHaze>(profile);
+            haze.fogColor.Override(Rgb(hazeData?.color, fogColor));
+            float startDepth = hazeData != null ? Mathf.Max(0f, hazeData.startDepth) : 0f;
+            haze.fogStart.Override(lawnHeight - startDepth);
+            haze.fogFull.Override(lawnHeight - Mathf.Max(startDepth + .1f, hazeData?.fullDepth ?? 0f));
+            haze.fogOpacity.Override(Mathf.Clamp01(hazeData?.opacity ?? 0f));
+            haze.edgeColor.Override(Rgb(hazeData?.edgeColor, Color.white));
+            haze.edgeIntensity.Override(Mathf.Clamp01(hazeData?.edgeIntensity ?? 0f));
+            float edgeStart = Mathf.Max(0f, hazeData?.edgeStart ?? .45f);
+            haze.edgeRange.Override(new Vector2(edgeStart, Mathf.Max(edgeStart + .05f, hazeData?.edgeFull ?? 1.05f)));
+            haze.edgeTop.Override(Mathf.Clamp01(hazeData?.edgeTop ?? 1f));
             EditorUtility.SetDirty(profile);
             AssetDatabase.SaveAssetIfDirty(profile);
             return profile;
@@ -517,6 +557,19 @@ namespace TrollStrategy.Editor.Setup
             if (text == null || layout == null) return;
             var importer = AssetImporter.GetAtPath(PrefabPath(layout));
             if (importer == null || importer.userData != SourceHash(text.text)) Build();
+        }
+
+        /// <summary>
+        /// The blocks a new game starts with cleared: the game's (EconomyConfig, Start Land) — the island's edit-time
+        /// preview must show what Play Mode will. The kit's grid.start (its own "start" stage) only without land.
+        /// </summary>
+        private static RectInt StartBlocks(IsleGrid grid)
+        {
+            var economy = AssetDatabase.LoadAssetAtPath<EconomyConfig>(EconomyPath);
+            if (economy != null && economy.LandEnabled) return economy.StartLand;
+            return grid.start != null && grid.start.Length >= 4
+                ? new RectInt(grid.start[0], grid.start[1], grid.start[2], grid.start[3])
+                : new RectInt(2, 2, 4, 4);
         }
 
         public static GameObject Build()
@@ -670,9 +723,7 @@ namespace TrollStrategy.Editor.Setup
                 }
                 for (int i = 0; i < views.Length; i++)
                     if (views[i] == null) missing.Add($"block {i % side},{i / side}");
-                var start = grid.start != null && grid.start.Length >= 4
-                    ? new RectInt(grid.start[0], grid.start[1], grid.start[2], grid.start[3])
-                    : new RectInt(2, 2, 4, 4);
+                var start = StartBlocks(grid);
                 var rise = layout.rise ?? new IsleRise { depth = 8f, seconds = 2.2f };
                 view.Configure(side, Positive(grid.blockSize, 5f), start, Positive(layout.wallStep, 2f),
                     Positive(rise.depth, 8f), Positive(rise.seconds, 2.2f), views);

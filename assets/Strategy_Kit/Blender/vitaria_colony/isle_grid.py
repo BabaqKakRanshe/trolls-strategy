@@ -2,7 +2,8 @@
 Колония на парящем острове, который растёт блоками (Colony_Isle, сборка — build_isle.py).
 
 Зона стройки — сетка GRID x GRID блоков по BLOCK м (8 x 8 по 5 м = 40 x 40 клеток по 1 м), старт —
-середина 4 x 4 блока (20 x 20). Каждый блок — свой каменный столб: газон ровно по 5 x 5 м на уровне
+3 x 3 блока (15 x 15, блоки 3..5: ровно в середину сетки 8 x 8 три блока не встают, старт сдвинут на
+полблока к северо-востоку, под стартовые склад и рынок игры). Каждый блок — свой каменный столб: газон ровно по 5 x 5 м на уровне
 0, свес дёрна по краю и пласты скалы до своей глубины. Глубина растёт к середине сетки, поэтому низ
 острова из многих столбов — перевёрнутый купол. Стены между соседними купленными блоками прячутся
 под газоном соседа, а у более мелкого соседа видна стена более глубокого — это правильный уступ.
@@ -28,7 +29,7 @@ from . import island as I
 NAME = "Colony_Isle"
 BLOCK = 5.0
 GRID = 8
-START = (2, 2, 4, 4)          # (bx, by, w, h) стартовой зоны в блоках
+START = (3, 3, 3, 3)          # (bx, by, w, h) стартовой зоны в блоках — EconomyConfig «Земля» в игре
 HALF = GRID * BLOCK / 2.0     # 20 м
 CELLS = int(GRID * BLOCK)     # 40 клеток
 
@@ -91,13 +92,13 @@ COVER = dict(items=[("Env_CloudPuff_A", 3), ("Env_CloudPuff_C", 2), ("Env_CloudP
 # ---------------------------------------------------------------------------------------
 # этапы игры для кадров: купленные блоки, дикие, поднимающийся, здания (SW-клетка, вид)
 # ---------------------------------------------------------------------------------------
-_start_blocks = [(bx, by) for bx in range(2, 6) for by in range(2, 6)]
+_start_blocks = [(bx, by) for bx in range(START[0], START[0] + START[2]) for by in range(START[1], START[1] + START[3])]
 _all_blocks = [(bx, by) for bx in range(GRID) for by in range(GRID)]
-B_START = [("Bld_Market", 22, 17), ("Bld_Warehouse", 22, 23), ("Bld_LumberCamp", 13, 23), ("Bld_Farm", 14, 13),
-           ("Bld_Field", 18, 13)]
+B_START = [("Bld_Market", 22, 17), ("Bld_Warehouse", 22, 23), ("Bld_LumberCamp", 16, 23), ("Bld_Farm", 15, 16),
+           ("Bld_Field", 18, 16)]
 B_MID = B_START + [("Bld_Mine", 12, 17), ("Bld_Forge", 17, 21), ("Bld_Barracks", 26, 22), ("Bld_Smeltery", 16, 25),
-                   ("Bld_Tannery", 26, 12), ("Bld_Armory", 20, 26), ("Bld_ShieldWorkshop", 26, 17),
-                   ("Bld_LumberMill", 12, 26), ("Bld_Enchanter", 19, 17), ("Bld_Field", 31, 16), ("Bld_Farm", 31, 21)]
+                   ("Bld_Tannery", 26, 26), ("Bld_Armory", 20, 26), ("Bld_ShieldWorkshop", 26, 17),
+                   ("Bld_LumberMill", 11, 21), ("Bld_Enchanter", 19, 21), ("Bld_Field", 31, 16), ("Bld_Farm", 31, 21)]
 B_MAX = B_MID + [("Bld_Mine", 4, 12), ("Bld_LumberCamp", 4, 27), ("Bld_LumberMill", 5, 31), ("Bld_Field", 12, 4),
                  ("Bld_Field", 16, 4), ("Bld_Farm", 21, 5), ("Bld_Barracks", 32, 30), ("Bld_Warehouse", 27, 32),
                  ("Bld_Smeltery", 33, 8), ("Bld_Market", 15, 33), ("Bld_Tannery", 8, 8), ("Bld_Forge", 35, 25),
@@ -105,8 +106,8 @@ B_MAX = B_MID + [("Bld_Mine", 4, 12), ("Bld_LumberCamp", 4, 27), ("Bld_LumberMil
 STAGES = {
     # камера — формула игры: середина владений, отъезд = сторона рамки владений x 1.16
     "start": dict(owned=_start_blocks, wild=[], rising=None, buildings=B_START),
-    "mid": dict(owned=_start_blocks + [(6, 2), (6, 3), (6, 4), (3, 6), (4, 6), (7, 3)], wild=[(3, 6), (4, 6)],
-                rising=(7, 3), rise=-3.2, buildings=B_MID),
+    "mid": dict(owned=_start_blocks + [(2, 3), (2, 4), (6, 3), (6, 4), (3, 6), (4, 6), (7, 3)],
+                wild=[(3, 6), (4, 6)], rising=(7, 3), rise=-3.2, buildings=B_MID),
     "max": dict(owned=_all_blocks, wild=[(0, 7), (7, 0)], rising=None, buildings=B_MAX),
 }
 
