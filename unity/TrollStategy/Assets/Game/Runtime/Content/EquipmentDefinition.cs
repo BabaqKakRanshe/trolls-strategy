@@ -13,6 +13,8 @@ namespace TrollStrategy.Content
         [SerializeField, Min(0)] private int _damageBonus;
         [SerializeField, Min(0)] private int _armorBonus;
         [SerializeField, Min(0)] private int _startingQuantity;
+        [Tooltip("Inventory picture; the resources-icons frame named by the item id (ResourceAtlasImporter).")]
+        [SerializeField] private Sprite _icon;
 
         public string ItemId => _itemId;
         public string DisplayName => _displayName;
@@ -20,6 +22,7 @@ namespace TrollStrategy.Content
         public int DamageBonus => _damageBonus;
         public int ArmorBonus => _armorBonus;
         public int StartingQuantity => _startingQuantity;
+        public Sprite Icon => _icon;
 
         public void Init(string itemId, string displayName, EquipmentSlot slot,
             int damageBonus, int armorBonus, int startingQuantity)

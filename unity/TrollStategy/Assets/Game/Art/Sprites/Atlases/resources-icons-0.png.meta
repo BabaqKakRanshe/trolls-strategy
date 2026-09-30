@@ -96,7 +96,7 @@ TextureImporter:
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 0
+    enableMipMap: 1
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -124,7 +124,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -205,10 +205,10 @@ TextureImporter:
       name: iron-ore
       rect:
         serializedVersion: 2
-        x: 702
-        y: 165
-        width: 216
-        height: 200
+        x: 1
+        y: 769
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -227,10 +227,10 @@ TextureImporter:
       name: iron-ingot
       rect:
         serializedVersion: 2
-        x: 256
-        y: 1
-        width: 220
-        height: 166
+        x: 257
+        y: 769
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -249,10 +249,10 @@ TextureImporter:
       name: wheat
       rect:
         serializedVersion: 2
-        x: 1
-        y: 401
-        width: 234
-        height: 268
+        x: 513
+        y: 769
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -271,10 +271,10 @@ TextureImporter:
       name: violet-crystal
       rect:
         serializedVersion: 2
-        x: 503
-        y: 121
-        width: 197
-        height: 244
+        x: 1
+        y: 1
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -293,10 +293,10 @@ TextureImporter:
       name: animal-hide
       rect:
         serializedVersion: 2
-        x: 256
-        y: 169
-        width: 245
-        height: 246
+        x: 769
+        y: 769
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -315,10 +315,10 @@ TextureImporter:
       name: leather
       rect:
         serializedVersion: 2
-        x: 625
-        y: 367
-        width: 259
-        height: 202
+        x: 1
+        y: 513
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -337,10 +337,10 @@ TextureImporter:
       name: enchanted-sword
       rect:
         serializedVersion: 2
-        x: 1
-        y: 671
-        width: 335
-        height: 352
+        x: 513
+        y: 257
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -359,10 +359,10 @@ TextureImporter:
       name: wooden-shield
       rect:
         serializedVersion: 2
-        x: 237
-        y: 417
-        width: 216
-        height: 252
+        x: 769
+        y: 513
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -381,10 +381,10 @@ TextureImporter:
       name: planks
       rect:
         serializedVersion: 2
-        x: 605
-        y: 571
-        width: 261
-        height: 230
+        x: 513
+        y: 513
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -403,10 +403,10 @@ TextureImporter:
       name: iron-armor
       rect:
         serializedVersion: 2
-        x: 338
-        y: 772
-        width: 265
-        height: 251
+        x: 769
+        y: 257
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -425,10 +425,10 @@ TextureImporter:
       name: iron-sword
       rect:
         serializedVersion: 2
-        x: 1
-        y: 134
-        width: 253
-        height: 265
+        x: 257
+        y: 257
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -447,10 +447,10 @@ TextureImporter:
       name: logs
       rect:
         serializedVersion: 2
-        x: 605
-        y: 803
-        width: 271
-        height: 220
+        x: 257
+        y: 513
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -469,10 +469,10 @@ TextureImporter:
       name: coins
       rect:
         serializedVersion: 2
-        x: 455
-        y: 424
-        width: 168
-        height: 145
+        x: 1
+        y: 257
+        width: 254
+        height: 254
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -483,6 +483,50 @@ TextureImporter:
       bones: []
       spriteID: 5fdfcde3ebc1aa844a008ae0791f0ead
       internalID: 638093292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rusty-sword
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 1
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8cfe9debf5c47684193a23013b1a06d5
+      internalID: 1059859425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: patched-armor
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 1
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cad41314c675484387788189a6cc2cf
+      internalID: 1449877732
       vertices: []
       indices: 
       edges: []
@@ -512,7 +556,9 @@ TextureImporter:
       iron-sword: 1512361336
       leather: 1084967311
       logs: 1284599114
+      patched-armor: 1449877732
       planks: 1067552197
+      rusty-sword: 1059859425
       violet-crystal: 534537650
       wheat: -250620656
       wooden-shield: 1574400780

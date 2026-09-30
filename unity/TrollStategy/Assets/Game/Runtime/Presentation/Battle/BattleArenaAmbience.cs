@@ -78,6 +78,10 @@ namespace TrollStrategy.Presentation.Battle
         [SerializeField] private List<Socket> _sockets = new();
         [Tooltip("Spray at the waterfall feet; off leaves the smoke and embers running.")]
         [SerializeField] private bool _mist = true;
+        [Tooltip("Smoke and mist meshes of an environment without a BattleArenaSet (the colony); an arena takes its set's.")]
+        [SerializeField] private GameObject[] _smoke = Array.Empty<GameObject>();
+        [Tooltip("Ember meshes of an environment without a BattleArenaSet.")]
+        [SerializeField] private GameObject[] _spark = Array.Empty<GameObject>();
 
         // runtime state only: never carried over by serialization into a clone
         [NonSerialized] private readonly List<Particle> _live = new();
@@ -117,6 +121,13 @@ namespace TrollStrategy.Presentation.Battle
 
         public void AddSway(Transform target, float degrees, float frequency, float phase) =>
             _sways.Add(new Sway { Target = target, Degrees = degrees, Frequency = frequency, Phase = phase });
+
+        /// <summary>Effect meshes for an environment that carries no <see cref="BattleArenaSet"/>.</summary>
+        public void ConfigureEffects(GameObject[] smoke, GameObject[] spark)
+        {
+            _smoke = smoke ?? Array.Empty<GameObject>();
+            _spark = spark ?? Array.Empty<GameObject>();
+        }
 
         public void AddSocket(SocketKind kind, Vector3 position, float size) =>
             _sockets.Add(new Socket { Kind = kind, Position = position, Size = Mathf.Max(.05f, size) });
@@ -232,7 +243,7 @@ namespace TrollStrategy.Presentation.Battle
 
         private void Emit()
         {
-            if (_set == null) return;
+            if (_set == null && _smoke.Length == 0 && _spark.Length == 0) return;
             for (int i = 0; i < _sockets.Count; i++)
             {
                 if (_clock < _nextEmit[i]) continue;
@@ -240,7 +251,7 @@ namespace TrollStrategy.Presentation.Battle
                 _nextEmit[i] = _clock + Interval(socket.Kind);
                 if (socket.Kind == SocketKind.Mist && !_mist) continue;
                 if (_live.Count >= MaxLiveParticles) continue;
-                var source = _set.Effect(socket.Kind == SocketKind.Embers ? ArenaFx.Spark : ArenaFx.Smoke, _random.Next());
+                var source = Effect(socket.Kind == SocketKind.Embers, _random.Next());
                 if (source == null) continue;
                 bool mist = socket.Kind == SocketKind.Mist;
                 var piece = Take(source, mist);
@@ -252,6 +263,17 @@ namespace TrollStrategy.Presentation.Battle
                     _ => MistPuff(piece, source, origin, socket.Size)
                 });
             }
+        }
+
+        private GameObject Effect(bool ember, int variant)
+        {
+            if (_set != null) return _set.Effect(ember ? ArenaFx.Spark : ArenaFx.Smoke, variant);
+            var pool = ember ? _spark : _smoke;
+            if (pool == null || pool.Length == 0) return null;
+            int start = (variant % pool.Length + pool.Length) % pool.Length;
+            for (int i = 0; i < pool.Length; i++)
+                if (pool[(start + i) % pool.Length] != null) return pool[(start + i) % pool.Length];
+            return null;
         }
 
         private float Interval(SocketKind kind) => kind switch

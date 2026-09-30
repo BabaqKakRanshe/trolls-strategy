@@ -92,7 +92,7 @@ namespace TrollStrategy.Presentation.Buildings
         }
 
         private void Ring(Vector3 position, Color color, float radius) =>
-            WorldPing.Show(position + _worldView.GroundOffset(.03f), _worldView.GroundRotation, color, radius, .5f);
+            WorldPing.Show(position + _worldView.GroundOffset(.06f), _worldView.GroundRotation, color, radius, .5f);
 
         public Sprite GetOutgoingProductSprite(string buildingId) =>
             buildingId != null && _views.TryGetValue(buildingId, out var view)

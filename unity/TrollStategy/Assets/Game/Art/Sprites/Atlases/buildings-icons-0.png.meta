@@ -70,7 +70,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -84,7 +84,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 126
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -152,9 +152,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1
-        y: 95
-        width: 32
-        height: 32
+        y: 385
+        width: 126
+        height: 126
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -173,10 +173,10 @@ TextureImporter:
       name: BuildingIcon_Enchanter
       rect:
         serializedVersion: 2
-        x: 1
-        y: 61
-        width: 32
-        height: 32
+        x: 129
+        y: 385
+        width: 126
+        height: 126
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -195,10 +195,10 @@ TextureImporter:
       name: BuildingIcon_LumberCamp
       rect:
         serializedVersion: 2
-        x: 1
-        y: 27
-        width: 32
-        height: 32
+        x: 257
+        y: 385
+        width: 126
+        height: 126
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -217,12 +217,12 @@ TextureImporter:
       name: BuildingIcon_LumberMill
       rect:
         serializedVersion: 2
-        x: 1
-        y: 3
-        width: 32
-        height: 22
+        x: 385
+        y: 385
+        width: 126
+        height: 126
       alignment: 9
-      pivot: {x: 0.5, y: 0.59090906}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -239,10 +239,10 @@ TextureImporter:
       name: BuildingIcon_Warehouse
       rect:
         serializedVersion: 2
-        x: 35
-        y: 95
-        width: 32
-        height: 32
+        x: 1
+        y: 257
+        width: 126
+        height: 126
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -261,12 +261,12 @@ TextureImporter:
       name: BuildingIcon_Mine
       rect:
         serializedVersion: 2
-        x: 69
-        y: 96
-        width: 32
-        height: 31
+        x: 129
+        y: 257
+        width: 126
+        height: 126
       alignment: 9
-      pivot: {x: 0.5, y: 0.48387095}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -283,10 +283,10 @@ TextureImporter:
       name: BuildingIcon_Armory
       rect:
         serializedVersion: 2
-        x: 103
-        y: 101
-        width: 22
-        height: 26
+        x: 257
+        y: 257
+        width: 126
+        height: 126
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -305,12 +305,12 @@ TextureImporter:
       name: BuildingIcon_Market
       rect:
         serializedVersion: 2
-        x: 69
-        y: 63
-        width: 31
-        height: 31
+        x: 385
+        y: 257
+        width: 126
+        height: 126
       alignment: 9
-      pivot: {x: 0.516129, y: 0.48387095}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -327,10 +327,10 @@ TextureImporter:
       name: BuildingIcon_Farm
       rect:
         serializedVersion: 2
-        x: 35
-        y: 63
-        width: 30
-        height: 30
+        x: 1
+        y: 129
+        width: 126
+        height: 126
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -349,10 +349,10 @@ TextureImporter:
       name: BuildingIcon_ShieldWorkshop
       rect:
         serializedVersion: 2
-        x: 35
-        y: 29
-        width: 26
-        height: 32
+        x: 129
+        y: 129
+        width: 126
+        height: 126
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -371,10 +371,10 @@ TextureImporter:
       name: BuildingIcon_Forge
       rect:
         serializedVersion: 2
-        x: 35
-        y: 1
-        width: 30
-        height: 26
+        x: 257
+        y: 129
+        width: 126
+        height: 126
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -393,12 +393,12 @@ TextureImporter:
       name: BuildingIcon_Tannery
       rect:
         serializedVersion: 2
-        x: 63
-        y: 30
-        width: 28
-        height: 31
+        x: 385
+        y: 129
+        width: 126
+        height: 126
       alignment: 9
-      pivot: {x: 0.53571427, y: 0.516129}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -415,10 +415,10 @@ TextureImporter:
       name: BuildingIcon_Smeltery
       rect:
         serializedVersion: 2
-        x: 67
-        y: 2
-        width: 30
-        height: 26
+        x: 1
+        y: 1
+        width: 126
+        height: 126
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -437,12 +437,12 @@ TextureImporter:
       name: BuildingIcon_Field
       rect:
         serializedVersion: 2
-        x: 93
-        y: 33
-        width: 30
-        height: 28
+        x: 129
+        y: 1
+        width: 126
+        height: 126
       alignment: 9
-      pivot: {x: 0.5, y: 0.4642857}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

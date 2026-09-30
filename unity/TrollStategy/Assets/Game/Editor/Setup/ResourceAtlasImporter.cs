@@ -42,11 +42,14 @@ namespace TrollStrategy.Editor.Setup
         }
         [Serializable] private sealed class AtlasRect { public int x; public int y; public int w; public int h; }
 
+        [MenuItem("TrollStrategy/Import Icon Atlases")]
         public static void Import()
         {
             SyncSharedSource();
-            var products = ImportAtlas("resources-icons", 362f, RequiredProducts);
-            var icons = ImportAtlas("buildings-icons", 32f,
+            // painted icons, not pixel art: bilinear, and mipmaps for the resources shrunk into hands and coins
+            var products = ImportAtlas("resources-icons", 362f, true, RequiredProducts);
+            // one 126 px frame = one world unit
+            var icons = ImportAtlas("buildings-icons", 126f, false,
                 Enum.GetNames(typeof(BuildingKind)).Select(name => "BuildingIcon_" + name));
 
             SetProduct("Mine", products["iron-ore"]);
@@ -61,11 +64,13 @@ namespace TrollStrategy.Editor.Setup
             SetSaleIncome("Market", products["coins"]);
             foreach (BuildingKind kind in Enum.GetValues(typeof(BuildingKind)))
                 SetBuildingIcon(kind, icons["BuildingIcon_" + kind]);
+            int equipment = SetEquipmentIcons(products);
             AssetDatabase.SaveAssets();
-            Debug.Log($"[ResourceAtlasImporter] Imported {products.Count} resources and {icons.Count} building icons.");
+            Debug.Log($"[ResourceAtlasImporter] Imported {products.Count} resources and {icons.Count} building icons; " +
+                      $"{equipment} equipment icons by item id.");
         }
 
-        private static Dictionary<string, Sprite> ImportAtlas(string atlasName, float pixelsPerUnit,
+        private static Dictionary<string, Sprite> ImportAtlas(string atlasName, float pixelsPerUnit, bool mipmaps,
             IEnumerable<string> requiredNames)
         {
             string texturePath = Folder + "/" + atlasName + "-0.png";
@@ -115,8 +120,8 @@ namespace TrollStrategy.Editor.Setup
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Multiple;
             importer.spritePixelsPerUnit = pixelsPerUnit;
-            importer.filterMode = FilterMode.Point;
-            importer.mipmapEnabled = false;
+            importer.filterMode = FilterMode.Bilinear;
+            importer.mipmapEnabled = mipmaps;
             importer.alphaIsTransparency = true;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             AssetSlicer.SaveSlices(importer, slices);
@@ -181,6 +186,29 @@ namespace TrollStrategy.Editor.Setup
             {
                 PrefabUtility.UnloadPrefabContents(root);
             }
+        }
+
+        /// <summary>Equipment icons are the resource frames named by the item id (iron-sword, rusty-sword, ...).</summary>
+        private static int SetEquipmentIcons(IReadOnlyDictionary<string, Sprite> products)
+        {
+            int assigned = 0;
+            foreach (var guid in AssetDatabase.FindAssets("t:EquipmentDefinition", new[] { DefinitionFolder.TrimEnd('/') }))
+            {
+                var definition = AssetDatabase.LoadAssetAtPath<EquipmentDefinition>(AssetDatabase.GUIDToAssetPath(guid));
+                if (definition == null || string.IsNullOrEmpty(definition.ItemId)) continue;
+                if (!products.TryGetValue(definition.ItemId, out var sprite))
+                {
+                    Debug.LogWarning($"[ResourceAtlasImporter] No resources-icons frame for equipment {definition.ItemId}", definition);
+                    continue;
+                }
+                assigned++;
+                if (definition.Icon == sprite) continue;
+                var serialized = new SerializedObject(definition);
+                serialized.FindProperty("_icon").objectReferenceValue = sprite;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(definition);
+            }
+            return assigned;
         }
 
         private static void SetBuildingIcon(BuildingKind kind, Sprite sprite)

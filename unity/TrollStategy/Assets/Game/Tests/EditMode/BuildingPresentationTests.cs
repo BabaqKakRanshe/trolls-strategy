@@ -207,9 +207,9 @@ namespace TrollStrategy.Tests
         }
 
         [TestCase(BuildingKind.Mine, "KitMine", "Bld_Mine")]
-        [TestCase(BuildingKind.Warehouse, "KitWarehouse", "Bld_House")]
+        [TestCase(BuildingKind.Warehouse, "KitWarehouse", "Bld_Warehouse")]
         [TestCase(BuildingKind.Market, "KitMarket", "Bld_Market")]
-        [TestCase(BuildingKind.Barracks, "KitBarracks", "Bld_House")]
+        [TestCase(BuildingKind.Barracks, "KitBarracks", "Bld_Barracks")]
         public void BuildingPrefab_UsesVitariaModelAndPalette(BuildingKind kind, string childName, string sourceName)
         {
             string path = $"Assets/Game/Prefabs/Buildings/{kind}.prefab";
@@ -222,8 +222,6 @@ namespace TrollStrategy.Tests
                 Assert.That(visual, Is.Not.Null);
                 var anchor = model.Find("EntranceAnchor");
                 Assert.That(anchor, Is.Not.Null);
-                if (kind == BuildingKind.Warehouse || kind == BuildingKind.Barracks)
-                    Assert.That(model.Find("OpenDoorway"), Is.Not.Null);
                 var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(
                     "Assets/Game/Content/Definitions/GameContentCatalog.asset");
                 var def = catalog.GetBuilding(kind);
@@ -248,8 +246,10 @@ namespace TrollStrategy.Tests
                 {
                     string meshPath = AssetDatabase.GetAssetPath(renderer.GetComponent<MeshFilter>()?.sharedMesh);
                     Assert.That(meshPath, Does.EndWith($"/{sourceName}.fbx"));
-                    Assert.That(AssetDatabase.GetAssetPath(renderer.sharedMaterial),
-                        Is.EqualTo("Assets/Vitaria/Materials/Vitaria_Palette.mat"));
+                    // fire, embers, lanterns and runes glow from a second slot; the palette itself has no emission
+                    var materials = renderer.sharedMaterials.Select(AssetDatabase.GetAssetPath).ToArray();
+                    Assert.That(materials[0], Is.EqualTo(PaletteMaterial));
+                    Assert.That(materials.Skip(1), Has.All.EqualTo(FxMaterial));
                 }
             }
             finally
@@ -257,6 +257,82 @@ namespace TrollStrategy.Tests
                 PrefabUtility.UnloadPrefabContents(root);
             }
         }
+
+        private const string PaletteMaterial = "Assets/Vitaria/Materials/Vitaria_Palette.mat";
+        private const string FxMaterial = "Assets/Vitaria/Materials/Vitaria_FX.mat";
+
+        // The kit's building contract (BuildingKitDetailsMigration): one model scale, a trodden-earth pad over the
+        // whole footprint, the entrance path on its front edge with the workers' anchor just inside it, gold corners.
+        [TestCaseSource(nameof(AllKinds))]
+        public void BuildingPrefab_FollowsTheKitContract(BuildingKind kind)
+        {
+            var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>("Assets/Game/Content/Definitions/GameContentCatalog.asset");
+            var def = catalog.GetBuilding(kind);
+            var root = PrefabUtility.LoadPrefabContents($"Assets/Game/Prefabs/Buildings/{kind}.prefab");
+            try
+            {
+                var model = root.transform.Find("Model");
+                Assert.That(model, Is.Not.Null);
+                var kit = model.Find($"Kit{kind}");
+                Assert.That(kit, Is.Not.Null);
+                Assert.That(kit.localPosition.magnitude, Is.LessThan(1e-4f), "Kit models sit at the footprint centre");
+                Assert.That(kit.localScale.x, Is.EqualTo(BuildingKitDetailsMigrationScale).Within(1e-5f));
+                Assert.That(kit.localScale.y, Is.EqualTo(BuildingKitDetailsMigrationScale).Within(1e-5f));
+                Assert.That(kit.localScale.z, Is.EqualTo(BuildingKitDetailsMigrationScale).Within(1e-5f));
+
+                float halfW = def.Width * .5f, halfH = def.Height * .5f;
+                var pad = model.Find("Footprint");
+                Assert.That(pad, Is.Not.Null, "Trodden earth under the building");
+                Assert.That(AssetDatabase.GetAssetPath(pad.GetComponentInChildren<MeshFilter>()?.sharedMesh),
+                    Does.EndWith($"/Env_Footprint_{def.Width}x{def.Height}.fbx"));
+                Assert.That(pad.localPosition.magnitude, Is.LessThan(1e-4f));
+
+                var path = model.Find("EntrancePath");
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.localPosition.x, Is.EqualTo(0f).Within(1e-4f));
+                Assert.That(path.localPosition.y, Is.EqualTo(-halfH - .08f).Within(1e-3f), "Path straddles the front edge");
+                var anchor = model.Find("EntranceAnchor");
+                Assert.That(anchor, Is.Not.Null);
+                Assert.That(anchor.localPosition.y, Is.EqualTo(-halfH + .12f).Within(1e-3f),
+                    "Workers gather 12 cm inside the front edge, on the path");
+
+                var rim = model.Find("SelectionRim");
+                Assert.That(rim, Is.Not.Null);
+                Assert.That(rim.childCount, Is.EqualTo(4));
+                foreach (var (name, x, y) in new[] { ("CornerSW", -1, -1), ("CornerSE", 1, -1), ("CornerNE", 1, 1), ("CornerNW", -1, 1) })
+                {
+                    var corner = rim.Find(name);
+                    Assert.That(corner, Is.Not.Null, name);
+                    Assert.That(corner.localPosition.x, Is.EqualTo(x * halfW).Within(1e-3f), name);
+                    Assert.That(corner.localPosition.y, Is.EqualTo(y * halfH).Within(1e-3f), name);
+                }
+                var bar = root.transform.Find("ProductionProgress");
+                if (bar != null)
+                {
+                    // the roof must not cut through the production bar: -Z of the prefab root is up
+                    float top = 0f;
+                    foreach (var filter in kit.GetComponentsInChildren<MeshFilter>(true))
+                    {
+                        var bounds = filter.sharedMesh.bounds;
+                        var toRoot = root.transform.worldToLocalMatrix * filter.transform.localToWorldMatrix;
+                        for (int c = 0; c < 8; c++)
+                            top = Mathf.Max(top, -toRoot.MultiplyPoint3x4(bounds.center + Vector3.Scale(bounds.extents,
+                                new Vector3((c & 1) == 0 ? -1 : 1, (c & 2) == 0 ? -1 : 1, (c & 4) == 0 ? -1 : 1))).z);
+                    }
+                    Assert.That(-bar.localPosition.z, Is.GreaterThanOrEqualTo(Mathf.Max(2.1f, top + .3f) - .001f),
+                        "Production bar floats above the model, not lower than BuildingBase put it");
+                }
+                foreach (var retired in new[] { "EntranceSill", "Doorstep", "EntranceApproach", "DoorJambLeft",
+                             "DoorJambRight", "DoorLintel", "OpenDoorway", "OpenDoorLeaf" })
+                    Assert.That(model.Find(retired), Is.Null, $"{retired} went with the kit contract");
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
+        }
+
+        private const float BuildingKitDetailsMigrationScale = .5f;   // vitaria_buildings.KIT_SCALE
 
         [TestCaseSource(nameof(VitariaKinds))]
         public void VitariaBuildingPrefab_FitsFootprintWithEntrance(BuildingKind kind)

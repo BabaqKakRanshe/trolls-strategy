@@ -1,6 +1,6 @@
 ﻿<Solution>
   <Project Path="TrollStrategy.Runtime.csproj" />
-  <Project Path="TrollStrategy.Editor.csproj" />
   <Project Path="TrollStrategy.EditModeTests.csproj" />
+  <Project Path="TrollStrategy.Editor.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>

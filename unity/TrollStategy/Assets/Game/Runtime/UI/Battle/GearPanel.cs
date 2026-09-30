@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TrollStrategy.Application;
+using TrollStrategy.Content;
 using TrollStrategy.Presentation.Audio;
 using UnityEngine.UIElements;
 
@@ -48,6 +49,8 @@ namespace TrollStrategy.UI
             foreach (var equipment in deployment.Equipment)
             {
                 var button = Ui.StackButton("battle-card battle-card--gear", out var title, out var hint);
+                button.Insert(0, Ui.Art(IconOf(deployment, equipment.DefinitionId), equipment.DisplayName,
+                    "battle-card__icon"));
                 string itemId = equipment.Id;
                 UiFeel.Bind(button, () => Toggle(itemId), silentClick: true);
                 _list.Add(button);
@@ -91,6 +94,13 @@ namespace TrollStrategy.UI
             return $"{_deployment.UnitName(unitId)} · {(cell.HasValue ? "На поле: " + BattleDeployment.CellName(cell.Value) : "Выбери синюю клетку")}\n" +
                 $"{definition.CombatHealth} HP · {damage} урон · {armor} броня · дальность {definition.AttackRange}\n" +
                 (placed ? "Выдай снаряжение ниже · при старте уйдёт с работы" : "Сначала поставь на поле, чтобы выдать снаряжение");
+        }
+
+        private static UnityEngine.Sprite IconOf(BattleDeployment deployment, string definitionId)
+        {
+            foreach (EquipmentDefinition definition in deployment.Session.Catalog.Equipment)
+                if (definition != null && definition.ItemId == definitionId) return definition.Icon;
+            return null;
         }
 
         private void RemoveSelected()

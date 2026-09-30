@@ -169,7 +169,7 @@ namespace TrollStrategy.Presentation.Feel
             if (!TryBuilding(buildingId, out var position)) return;
             var view = _buildings.Views[buildingId];
             if (view.Model != null) Juice.Punch(view.Model.transform, .1f, .35f);
-            WorldPing.Show(position + _worldView.GroundOffset(.03f), _worldView.GroundRotation, TargetColor,
+            WorldPing.Show(position + _worldView.GroundOffset(.06f), _worldView.GroundRotation, TargetColor,
                 1.1f * _worldView.CellSize, .5f);
         }
     }

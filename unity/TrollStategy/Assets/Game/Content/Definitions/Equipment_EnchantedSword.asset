@@ -18,3 +18,4 @@ MonoBehaviour:
   _damageBonus: 4
   _armorBonus: 0
   _startingQuantity: 0
+  _icon: {fileID: 1465269554, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}

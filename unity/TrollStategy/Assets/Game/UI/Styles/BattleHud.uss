@@ -133,6 +133,27 @@
 
 .battle-card--gear {
     width: 316px;
+    padding-left: 64px;
+}
+
+.battle-card__icon {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background-color: var(--surface-sunken);
+    align-items: center;
+    justify-content: center;
+}
+
+.battle-card__icon .card__image {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    right: 2px;
+    bottom: 2px;
 }
 
 .battle-selected__details {

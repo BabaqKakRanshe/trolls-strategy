@@ -108,8 +108,8 @@ namespace TrollStrategy.Editor.Setup
 
             var worldView = gridGo.AddComponent<TilemapWorldView>();
             worldView.Init(grid, null, null, catalog.Economy);
-
-            EnvironmentBuilder.BuildEnvironment(gridGo.transform);
+            // the ground, light and background come from the Vitaria kit: ThreeDSceneSetup.ApplyToOpenScene below
+            // installs Colony_Meadow through ColonyEnvironmentBuilder.InstallIntoOpenScene
 
             // 3. Presentation Systems
             var managersGo = new GameObject("GameSystems");
