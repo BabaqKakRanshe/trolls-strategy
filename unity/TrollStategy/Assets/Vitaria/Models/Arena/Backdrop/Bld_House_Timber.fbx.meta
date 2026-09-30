@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Vitaria_FX
+    second: {fileID: 2100000, guid: 30e7f9b7b3054494bb68d568d2f63e2c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Vitaria_Palette
     second: {fileID: 2100000, guid: 686f7c2ec69169d42bc59bca875789d6, type: 2}
   - first:
