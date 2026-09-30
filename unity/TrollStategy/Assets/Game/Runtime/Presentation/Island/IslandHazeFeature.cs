@@ -7,20 +7,23 @@ namespace TrollStrategy.Presentation.Island
 {
     /// <summary>
     /// Renderer feature of the colony renderer that draws <see cref="IslandHaze"/> (Hidden/TrollStrategy/IslandHaze):
-    /// one full-screen pass over the camera colour before post-processing, reading the depth texture. It runs only for
+    /// one full-screen pass over the camera colour after the opaque world, reading the depth texture. It runs only for
     /// cameras with post-processing whose volumes turn the haze on, so the battle arena and the building showcase
     /// never get it.
+    /// <para>Transparent things draw after it: sprites, shadows and world labels write no depth, so a haze after them
+    /// would take the depth behind them and paint over a price that stands above the empty sky.</para>
     /// </summary>
     public sealed class IslandHazeFeature : ScriptableRendererFeature
     {
         public const string ShaderResource = "Shaders/IslandHaze";
+        public const RenderPassEvent Event = RenderPassEvent.BeforeRenderingTransparents;
 
         private Material _material;
         private HazePass _pass;
 
         public override void Create()
         {
-            _pass = new HazePass { renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing };
+            _pass = new HazePass { renderPassEvent = Event };
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
@@ -128,7 +131,7 @@ namespace TrollStrategy.Presentation.Island
                             pass.block);
                     });
                 }
-                // the hazed frame is the camera colour from here on: post-processing reads it
+                // the hazed frame is the camera colour from here on: transparents draw into it, post-processing reads it
                 resources.cameraColor = destination;
             }
         }

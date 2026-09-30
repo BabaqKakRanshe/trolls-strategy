@@ -32,11 +32,9 @@ namespace TrollStrategy.Presentation.Island
         [SerializeField, Min(0f)] private float _cornerInset = .2f;
         [Tooltip("Height of the price over the block, m.")]
         [SerializeField] private float _priceHeight = .6f;
-        [Tooltip("Height of the clearing bar, and of the offer over wild land, m. Both stand at the block's front " +
-                 "(south) edge, so its own trees do not hide them from the camera in the south.")]
-        [SerializeField] private float _barHeight = 3f;
-        [Tooltip("How far inside the south edge the bar and the wild-land offer stand, cells.")]
-        [SerializeField, Min(0f)] private float _frontInset = .8f;
+        [Tooltip("The clearing bar and the offer over wild land stand over the middle of the block, this far above " +
+                 "its tallest tree or stone, m: like a building's label, nothing on the block covers them.")]
+        [SerializeField, Min(0f)] private float _wildGap = .3f;
 
         private GameSession _session;
         private InteractionController _interaction;
@@ -50,6 +48,8 @@ namespace TrollStrategy.Presentation.Island
         private InteractionModeType _lastMode;
         private readonly Dictionary<int, Marker> _markers = new();
         private readonly Dictionary<int, ClearBar> _bars = new();
+        // height of each wild block's tallest object over the lawn, m, measured while all of it still stands
+        private readonly Dictionary<int, float> _wildTops = new();
 
         private sealed class Marker
         {
@@ -201,7 +201,7 @@ namespace TrollStrategy.Presentation.Island
             if (_bars.TryGetValue(index, out var bar)) return bar;
             if (_worldView == null) return null;
             var panel = WorldPanel.Create($"LandClearBar_{x}_{y}", transform, 60, Pivot.BottomCenter, "land-bar");
-            panel.transform.position = BlockFront(x, y) + _worldView.GroundOffset(_barHeight);
+            panel.transform.position = OverWild(x, y);
             bar = new ClearBar { Panel = panel, Label = panel.AddLabel("world-label land-bar__label") };
             var track = Part(panel.Content, "land-bar__track");
             bar.Fill = Part(track, "land-bar__fill");
@@ -235,10 +235,10 @@ namespace TrollStrategy.Presentation.Island
                     if (marker.Label == null) continue;
                     bool forSale = !block.Owned;
                     marker.Price.gameObject.SetActive(forSale || picked);
-                    // over wild land the offer stands at the front edge, clear of the block's trees
+                    // over wild land the offer stands above the block's trees, where the clearing bar will be
                     marker.Price.transform.position = forSale
                         ? marker.Root.position + _worldView.GroundOffset(_priceHeight)
-                        : BlockFront(block.X, block.Y) + _worldView.GroundOffset(_barHeight);
+                        : OverWild(block.X, block.Y);
                     marker.Label.text = forSale ? Gold(land.NextPrice) : "Расчистить?";
                     marker.Label.EnableInClassList("land-price--short", forSale && snapshot.Gold < land.NextPrice);
                     marker.Label.EnableInClassList("land-price--picked", picked);
@@ -333,13 +333,43 @@ namespace TrollStrategy.Presentation.Island
             return _island != null ? _island.transform.TransformPoint(_island.BlockCenter(x, y)) : Vector3.zero;
         }
 
-        /// <summary>Middle of the block's south edge, a little inside it, world space.</summary>
-        private Vector3 BlockFront(int x, int y)
+        /// <summary>
+        /// Over the middle of block (x, y) and <see cref="_wildGap"/> above its tallest tree or stone, world space — as a
+        /// building's label stands over its model, so from the colony camera nothing on the block covers it. Measured
+        /// once, while the whole wild land stands, so the bar does not sink as the clearing takes the trees away.
+        /// </summary>
+        private Vector3 OverWild(int x, int y)
         {
-            int size = _land != null ? _land.BlockSize : 5;
-            if (_worldView == null) return BlockWorld(x, y);
-            float cell = _worldView.CellSize;
-            return _worldView.MapToWorld(new Vector3((x + .5f) * size * cell, (y * size + _frontInset) * cell, 0f));
+            int index = y * _land.BlocksPerSide + x;
+            if (!_wildTops.TryGetValue(index, out float top))
+            {
+                float? measured = WildTop(x, y);
+                top = measured ?? 0f;
+                if (measured.HasValue) _wildTops[index] = top;
+            }
+            return BlockWorld(x, y) + _worldView.GroundOffset(top + _wildGap);
+        }
+
+        /// <summary>
+        /// Height over the lawn of the tallest wild object the block shows, m, as it stands once docked (a block still
+        /// coming up out of the clouds counts from where it will stop); null while it shows none.
+        /// </summary>
+        private float? WildTop(int x, int y)
+        {
+            var block = _island != null ? _island.Block(x, y) : null;
+            if (block == null || block.Wild == null || block.Land == null) return null;
+            var up = _worldView.GroundOffset(1f);
+            // measured from the block's land: docked, its origin lies on the lawn; rising, it carries the trees down
+            float? top = null;
+            foreach (var renderer in block.Wild.GetComponentsInChildren<Renderer>(false))
+            {
+                var bounds = renderer.bounds;
+                var extents = bounds.extents;
+                float height = Vector3.Dot(bounds.center - block.Land.position, up) +
+                               Mathf.Abs(up.x) * extents.x + Mathf.Abs(up.y) * extents.y + Mathf.Abs(up.z) * extents.z;
+                top = top.HasValue ? Mathf.Max(top.Value, height) : height;
+            }
+            return top;
         }
 
         private static VisualElement Part(VisualElement parent, string className)
