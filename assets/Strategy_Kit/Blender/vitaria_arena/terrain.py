@@ -210,11 +210,27 @@ class Terrace:
     def __init__(self, name, ctrl, z, bottom=BED_Z, wob=0.14, seed=0, hills=0.0, flat=None,
                  grid=0.7, grass=(0.42, 0.95), col_w=(1.3, 2.8), lip=True, cliff=True,
                  open_ranges=(), step=0.42, lean=0.1, batter=0.42, ramp="arena_grass", wide=0.22,
-                 shelves=None, shelf_jit=0.3, notch=0.18, calm=None):
+                 shelves=None, shelf_jit=0.3, notch=0.18, calm=None, patches=None, extra_pts=None, fade=None,
+                 deep=None):
         self.name, self.z, self.bottom, self.seed = name, z, bottom, seed
         self.hills, self.flat, self.grid, self.grass = hills, flat, grid, grass
         # calm(x, y) -> 0..1: где пятна травы гасятся к середине рампы (поле под стройку колонии)
         self.calm = calm
+        # patches(x, y) -> сдвиг по рампе после calm: пятна травы и межа поля колонии
+        self.patches = patches
+        # extra_pts: [(x, y)] — вершины травы сверх сетки (межа: ряды точек вдоль края поля)
+        self.extra_pts = list(extra_pts or [])
+        # fade: (рампа, z низа, z верха[, разброс ярусов]) — скала красится по высоте рампой (UV каждой
+        # вершины): у парящего острова низ голубеет и уходит в дымку; разброс даёт каждому ярусу свой
+        # тон — горизонтальные пласты. None — как раньше, swatch-и по граням.
+        self.fade = fade
+        # deep: dict(bottom, shelves, batter) — парящий остров. Столб над более низкой соседкой (floors)
+        # кончается чуть ниже её травы; столб над пустотой — наружный обрыв острова: уходит до deep
+        # bottom, ярусами deep shelves, с batter < 0 (низ уже верха). None — все столбы до self.bottom.
+        self.deep = deep
+        self.floors = []             # [(контур, z)] более низких соседей: задаёт сборка, как occluders
+        # edge_height(x, y) -> z вершин контура в build_top; None — все на self.z (как было)
+        self.edge_height = None
         self.ramp, self.wide = ramp, wide          # рампа травы; доля широких скальных плит
         self.col_w, self.lip, self.cliff, self.open_ranges = col_w, lip, cliff, open_ranges
         self.lean, self.batter = lean, batter
@@ -268,6 +284,8 @@ class Terrace:
             if k > 0:
                 mid = (lo + hi) / 2
                 t = mid + (t - mid) * (1.0 - 0.75 * k)
+        if self.patches is not None:
+            t += self.patches(x, y)
         return clamp(t, 0.0, 1.0)
 
     # -------------------------------------------------------------- top
@@ -292,13 +310,23 @@ class Terrace:
                 xx += g
             yy += g * 0.866
             row += 1
+        if self.extra_pts:
+            ex = [Vector((px, py)) for px, py in self.extra_pts
+                  if in_view(px, py, 2.0) and point_in_poly(px, py, self.outline) and
+                  dist_to_outline(px, py, self.outline) > 0.08]
+            if ex:
+                # точки сетки у самых рядов межи убираем: иначе тонкие треугольники-щепки
+                inner = [p for p in inner if min((p - q).length for q in ex) > g * 0.3] + ex
         res = geometry.delaunay_2d_cdt(pts2 + inner, [], [list(range(n_out))], 1, 1e-5)
         vco, faces = res[0], res[2]
         bm, uvl = a.bm, a.uv
         verts = []
         for v in vco:
             r = dist_to_outline(v.x, v.y, self.outline)
-            z = self.height(v.x, v.y, r) if r > 1e-4 else self.z
+            if r > 1e-4:
+                z = self.height(v.x, v.y, r)
+            else:
+                z = self.edge_height(v.x, v.y) if self.edge_height is not None else self.z
             verts.append((bm.verts.new((v.x, v.y, z)), self.grass_t(v.x, v.y, r)))
         used = 0
         for f in faces:
@@ -386,38 +414,121 @@ class Terrace:
         else:
             n_tiers = max(1, min(4, int(round(H / 2.9))))
         self._tiers = n_tiers
+        strata = self.deep is not None and self.deep.get("strata") is not None
         s = rng.uniform(0, 0.6)
         j = 0
         while s < total:
             # в основном столбы, изредка широкая плита — ломает ритм «частокола»
             w = rng.uniform(2.3, 3.2) if rng.random() < self.wide else rng.uniform(*self.col_w)
             sc = s + w * 0.5
-            while j + 1 < len(L) - 1 and L[j + 1] < sc:
-                j += 1
-            t = (sc - L[j]) / max(1e-9, L[j + 1] - L[j])
-            i0, i1 = j % n, (j + 1) % n
-            P = pts[i0].lerp(pts[i1], t)
-            N = nrm[i0].lerp(nrm[i1], t).normalized()
+            P, N, j = self._at(L, sc, j)
+            base = self._column_base(P, N)
+            if strata and base[3] is None:       # наружный обрыв строят пласты (_build_strata)
+                s += w * 0.8
+                continue
+            if base[3] not in (None, 1.0):       # наружный обрыв острова — столбы шире
+                w *= base[3]
+                sc = s + w * 0.5
+                P, N, j = self._at(L, sc, j)
             T = Vector((-N.y, N.x, 0.0))
             probe = P + N * 0.35
             buried = any(point_in_poly(probe.x, probe.y, o) for o in self.occluders)
             if not buried and not self._open((sc % total) / total) and in_view(P.x, P.y, 3.0):
-                self._column(a, rng, P, N, T, w, z_top, n_tiers, colf)
+                self._column(a, rng, P, N, T, w, z_top, n_tiers, colf, *base[:3])
             s += w * rng.uniform(0.74, 0.86)
+        if strata and not self.deep.get("union"):
+            self._build_strata(a)
         if boulders and self.bottom <= WATER_Z:
             self._waterline(a, rng, total, L)
 
-    def _column(self, a, rng, P, N, T, w, z_top, n_tiers, colf):
-        H = z_top - self.bottom
-        if self.shelves is not None:
+    def _at(self, L, sc, j):
+        """Точка и нормаль контура на длине дуги sc (j — текущий отрезок, растёт монотонно)."""
+        pts, nrm, n = self.outline, self.normals, len(self.outline)
+        while j + 1 < len(L) - 1 and L[j + 1] < sc:
+            j += 1
+        t = (sc - L[j]) / max(1e-9, L[j + 1] - L[j])
+        i0, i1 = j % n, (j + 1) % n
+        return pts[i0].lerp(pts[i1], t), nrm[i0].lerp(nrm[i1], t).normalized(), j
+
+    def _floor_z(self, P, N):
+        """Трава более низкой соседки под кромкой в точке P (самая высокая из floors) или None — пустота."""
+        probe = P + N * 0.7
+        fz = None
+        for poly, z in self.floors:
+            if point_in_poly(probe.x, probe.y, poly):
+                fz = z if fz is None else max(fz, z)
+        return fz
+
+    def _deep_bottom(self, P):
+        """Низ наружного обрыва: гуляет на jag м — одни места свисают ниже, другие кончаются выше;
+        рваный низ острова вместо ровного дна коробки."""
+        d = self.deep
+        sd = d.get("nseed", self.seed * 1.9)
+        return d["bottom"] + d.get("jag", 0.0) * noise.noise(Vector((P.x * 0.21, P.y * 0.21, sd)))
+
+    def _column_base(self, P, N):
+        """(низ, полки, откос, множитель ширины) столба: как у всей террасы, а у парящего острова — по тому,
+        что под столбом: трава соседки (короткий столб чуть ниже неё; множитель 1) или пустота (наружный
+        обрыв; множитель deep wscale, а при пластах — None: там столбов нет)."""
+        if self.deep is None:
+            return self.bottom, self.shelves, self.batter, 1.0
+        fz = self._floor_z(P, N)
+        if fz is not None:
+            return fz - 1.0, self.shelves, self.batter, 1.0
+        d = self.deep
+        wscale = None if d.get("strata") is not None else d.get("wscale", 1.0)
+        return self._deep_bottom(P), d.get("shelves", self.shelves), d.get("batter", self.batter), wscale
+
+    # -------------------------------------------------------------- strata (парящий остров)
+    def _build_strata(self, a):
+        """Наружный обрыв пластами: вдоль каждого участка кромки над пустотой — сплошные ленты-пласты,
+        каждая чуть отступает внутрь (deep batter на пласт) и гуляет в плане (amp) и по высоте (wave);
+        грань пласта наклонена назад (lean), между пластами — узкий уступ. Тон каждого пласта свой
+        (разброс fade), уступы светлее, свесы темнее: горизонтальная слоистость, как у скал на
+        референсах, вместо кладки из столбов."""
+        pts, nrm = self.outline, self.normals
+        n = len(pts)
+        flags = []
+        for P, N in zip(pts, nrm):
+            probe = P + N * 0.35
+            buried = any(point_in_poly(probe.x, probe.y, o) for o in self.occluders)
+            flags.append(not buried and self._floor_z(P, N) is None and in_view(P.x, P.y, 3.0))
+        runs = []
+        if all(flags):
+            runs.append((list(range(n)), True))
+        elif any(flags):
+            start = flags.index(False)
+            cur = []
+            for k in range(1, n + 1):
+                i = (start + k) % n
+                if flags[i]:
+                    cur.append(i)
+                elif cur:
+                    runs.append((cur, False))
+                    cur = []
+            if cur:
+                runs.append((cur, False))
+        for idx, closed in runs:
+            if not closed:                       # на стык с короткими столбами — по точке с каждой стороны
+                idx = [(idx[0] - 1) % n] + idx + [(idx[-1] + 1) % n]
+            if len(idx) >= 2:
+                strata_bands(a, [pts[i] for i in idx], [nrm[i] for i in idx], closed, [self.z - 0.36] * len(idx),
+                             self.deep, self.fade, self._deep_bottom)
+
+    def _column(self, a, rng, P, N, T, w, z_top, n_tiers, colf, bottom=None, shelves=None, batter=None):
+        bottom = self.bottom if bottom is None else bottom
+        shelves = self.shelves if shelves is None else shelves
+        batter = self.batter if batter is None else batter
+        H = z_top - bottom
+        if shelves is not None:
             cuts = sorted(min(0.9, max(0.08, c + rng.uniform(-1, 1) * self.shelf_jit / max(1.0, H)))
-                          for c in self.shelves)
+                          for c in shelves)
         else:
             cuts = sorted(rng.uniform(0.18, 0.82) for _ in range(n_tiers - 1))
         top = z_top - rng.uniform(0.0, 0.14)
         if rng.random() < self.notch:                       # выщербина: столб начинается ниже кромки
             top -= rng.uniform(0.35, 0.9)
-        levels = [top] + [z_top - H * c + rng.uniform(-0.12, 0.12) for c in cuts] + [self.bottom]
+        levels = [top] + [z_top - H * c + rng.uniform(-0.12, 0.12) for c in cuts] + [bottom]
         for k in range(1, len(levels) - 1):                 # ярус не тоньше 0.5 м
             levels[k] = min(levels[k], levels[k - 1] - 0.5)
         D = rng.uniform(1.1, 1.6)
@@ -426,7 +537,7 @@ class Terrace:
             zt, zb = levels[k], levels[k + 1] - (0.03 if k < len(levels) - 2 else 0.0)
             if zt - zb < 0.2:
                 continue
-            out = -0.07 + step0 + k * self.batter + rng.uniform(-0.08, 0.1)       # нижние ярусы шире
+            out = -0.07 + step0 + k * batter + rng.uniform(-0.08, 0.1)       # нижние ярусы шире
             ww = w * rng.uniform(0.92, 1.08)
             b1, b2 = rng.uniform(0.04, 0.3), rng.uniform(0.02, 0.26)
             m = rng.uniform(-0.18, 0.18) * ww
@@ -448,7 +559,28 @@ class Terrace:
             _prism(bm, ring(zb, 0.0), ring(zt, lean))
             bm.normal_update()
             bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-            a.add(bm, colf)
+            if self.fade:
+                amp = self.fade[3] if len(self.fade) > 3 else 0.05
+                self._add_faded(a, bm, rng.uniform(-1.0, 1.0) * amp)
+            else:
+                a.add(bm, colf)
+
+    def _add_faded(self, a, part, jit=0.0):
+        """Грани столба с UV по высоте вершины на рампе fade: плавный переход кромка -> дымка.
+        Верх ярусов (полки) на тон светлее, низ (свес) темнее."""
+        ramp, z0, z1 = self.fade[:3]
+        vmap = {v: a.bm.verts.new(v.co) for v in part.verts}
+        for f in part.faces:
+            try:
+                nf = a.bm.faces.new([vmap[v] for v in f.verts])
+            except ValueError:
+                continue
+            nz = f.normal.z
+            bump = 0.08 if nz > 0.55 else (-0.08 if nz < -0.5 else 0.0)
+            for l in nf.loops:
+                t = clamp((l.vert.co.z - z0) / (z1 - z0) + bump + jit)
+                l[a.uv].uv = ramp_uv(ramp, t)
+        part.free()
 
     def _waterline(self, a, rng, total, L):
         """Валуны и пена у подножия, где скала входит в воду."""
@@ -472,6 +604,184 @@ class Terrace:
                             jitter=0.25, rng=rng, rot=(0, 0, rng.uniform(0, 360)), cut=-r * 0.35),
                       cliff_color(self.seed + 3, self.z, self.z - self.bottom))
             s += rng.uniform(1.6, 3.2)
+
+
+# =========================================================================================
+# пласты наружного обрыва парящего острова
+# =========================================================================================
+def strata_bands(a, P, N, closed, z_tops, deep, fade, bottom_of):
+    """Пласты вдоль кромки P (нормали N наружу), верх в точке i — z_tops[i] (под свесом дёрна).
+    Уровни общие для всего острова: абсолютные высоты от deep zref (выше — через up_step м), шум — по
+    мировым координатам. Пласт узнаётся по ключу — номеру его нижнего уровня: от ключа тон, наклон
+    грани, отступ и шум, одинаковые по всей кромке. Каждый пласт на batter м отступает внутрь,
+    гуляет в плане (amp) и по высоте (wave), грань наклонена (lean: назад — светлее, нависает —
+    темнее), между пластами — узкий уступ. Низ — bottom_of(P) (рваный)."""
+    d = deep
+    bm, uvl = a.bm, a.uv
+    ztop_max = max(z_tops)
+    zref = d.get("zref", ztop_max)
+    H = zref - d["bottom"]
+    up = d.get("up_step", 0.9)
+    lows = [zref - H * c for c in d["strata"]]
+    bounds = []
+    k = 1
+    while zref + up * k < ztop_max - 0.25:
+        bounds.append((zref + up * k, -k))
+        k += 1
+    bounds.reverse()
+    bounds += [(z, i + 1) for i, z in enumerate(lows) if z < ztop_max - 0.25]
+    keys = [kk for _, kk in bounds] + [len(lows) + 1]
+    K = len(keys)
+    wav, amp, lean = d.get("wave", 0.35), d.get("amp", 0.3), d.get("lean", 0.16)
+    batter, crack = d.get("batter", -0.4), d.get("crack", 0.14)
+    ns = d.get("nseed", 0.5)
+    ramp, z0, z1 = fade[:3]
+    jamp = fade[3] if len(fade) > 3 else 0.05
+
+    def rnd(key, salt):
+        return random.Random(key * 7919 + salt).uniform(-1.0, 1.0)
+
+    jit = [rnd(kk, 13) * jamp for kk in keys]
+    leans = [lean * (0.35 + 1.05 * rnd(kk, 29)) for kk in keys]
+    m = len(P)
+    Z, OFF = [], []
+    for i in range(m):
+        x, y = P[i].x, P[i].y
+        zt = z_tops[i]
+        zb = bottom_of(P[i])
+        col = [zt]
+        first = None
+        for bi, (zl, kk) in enumerate(bounds):
+            if zl >= zt - 0.25:                  # уровень выше верха этой точки: пласт схлопнут
+                col.append(zt)
+                continue
+            if first is None:
+                first = bi
+            zk = zl + wav * noise.noise(Vector((x * 0.12, y * 0.12, kk * 3.7 + ns)))
+            zk = min(zk, col[-1] - 0.25)
+            col.append(max(zk, zb))
+        if first is None:
+            first = len(bounds)
+        col.append(min(zb, col[-1]))
+        Z.append(col)
+        off = []
+        for b, kk in enumerate(keys):
+            o = batter * max(0, kk - 1) + amp * noise.noise(Vector((x * 0.3, y * 0.3, kk * 5.1 + ns + 2.2))) + \
+                crack * noise.noise(Vector((x * 1.1, y * 1.1, kk * 0.35 + ns + 4.4)))      # трещины через пласты
+            if b <= first:
+                o = min(o * 0.4, 0.08)                                              # верх — под свесом дёрна
+            off.append(o)
+        OFF.append(off)
+
+    def vert(i, o, z):
+        q = P[i] + N[i] * o
+        return bm.verts.new((q.x, q.y, z))
+
+    top = [[vert(i, OFF[i][b], Z[i][b]) for i in range(m)] for b in range(K)]
+    bot = [[vert(i, OFF[i][b] - leans[b], Z[i][b + 1]) for i in range(m)] for b in range(K)]
+    segs = range(m if closed else m - 1)
+
+    def face(vs, want, t_of):
+        try:
+            f = bm.faces.new(vs)
+        except ValueError:
+            return
+        f.normal_update()
+        if f.normal.dot(want) < 0:
+            f.normal_flip()
+        for l in f.loops:
+            l[uvl].uv = ramp_uv(ramp, t_of(l.vert.co.z, f.normal.z))
+
+    for b in range(K):
+        for i in segs:
+            i2 = (i + 1) % m
+            if Z[i][b] - Z[i][b + 1] < 0.04 and Z[i2][b] - Z[i2][b + 1] < 0.04:
+                continue
+            out = (N[i] + N[i2]).normalized()
+            face((top[b][i], top[b][i2], bot[b][i2], bot[b][i]), out,
+                 lambda z, nz, b=b: clamp((z - z0) / (z1 - z0) + jit[b] + 0.12 * nz))
+            if b + 1 < K:
+                pr = (OFF[i][b + 1] + OFF[i2][b + 1]) - (OFF[i][b] + OFF[i2][b] - 2 * leans[b]) > 0
+                want = Vector((0, 0, 1 if pr else -1))
+                face((bot[b][i], bot[b][i2], top[b + 1][i2], top[b + 1][i]), want,
+                     lambda z, nz, b=b: clamp((z - z0) / (z1 - z0) + jit[b] + (0.09 if nz > 0 else -0.09)))
+    loose = [v for row in top + bot for v in row if not v.link_faces]
+    if loose:
+        bmesh.ops.delete(bm, geom=loose, context="VERTS")
+
+
+def union_outline(polys, res=0.05, step=0.4):
+    """Внешний контур объединения многоугольников (растр PIL + marching squares): кромка острова из
+    нескольких террас одной лентой. Возвращает (контур CCW, число найденных контуров)."""
+    import numpy as np
+    from PIL import Image, ImageDraw
+    xs = [p[0] for poly in polys for p in poly]
+    ys = [p[1] for poly in polys for p in poly]
+    x0, x1, y0, y1 = min(xs) - 1.0, max(xs) + 1.0, min(ys) - 1.0, max(ys) + 1.0
+    W, Hh = int((x1 - x0) / res) + 2, int((y1 - y0) / res) + 2
+    img = Image.new("L", (W, Hh), 0)
+    dr = ImageDraw.Draw(img)
+    for poly in polys:
+        dr.polygon([((p[0] - x0) / res, (y1 - p[1]) / res) for p in poly], fill=255)
+    g = (np.asarray(img) > 127).astype(np.int8)
+    # marching squares по клеткам (r, c): углы TL, TR, BR, BL
+    tl, tr_, br, bl = g[:-1, :-1], g[:-1, 1:], g[1:, 1:], g[1:, :-1]
+    case = tl * 8 + tr_ * 4 + br * 2 + bl
+    rs, cs = np.nonzero((case > 0) & (case < 15))
+    # точки на серединах рёбер клетки: T, R, B, L (в координатах пикселей: x = c, y = r)
+    def mid(r, c, e):
+        return {"T": (c + 0.5, r), "R": (c + 1.0, r + 0.5), "B": (c + 0.5, r + 1.0), "L": (c, r + 0.5)}[e]
+    table = {1: [("L", "B")], 2: [("B", "R")], 3: [("L", "R")], 4: [("T", "R")], 5: [("L", "T"), ("B", "R")],
+             6: [("T", "B")], 7: [("L", "T")], 8: [("L", "T")], 9: [("T", "B")], 10: [("T", "R"), ("L", "B")],
+             11: [("T", "R")], 12: [("L", "R")], 13: [("B", "R")], 14: [("L", "B")]}
+    nxt = {}
+    for r, c in zip(rs.tolist(), cs.tolist()):
+        for e0, e1 in table[int(case[r, c])]:
+            p0, p1 = mid(r, c, e0), mid(r, c, e1)
+            nxt.setdefault(p0, []).append(p1)
+            nxt.setdefault(p1, []).append(p0)
+    seen, loops = set(), []
+    for start in list(nxt.keys()):
+        if start in seen:
+            continue
+        loop, prev, cur = [start], None, start
+        seen.add(start)
+        while True:
+            cand = [q for q in nxt[cur] if q != prev and q not in seen]
+            if not cand:
+                break
+            prev, cur = cur, cand[0]
+            seen.add(cur)
+            loop.append(cur)
+        loops.append(loop)
+    best = max(loops, key=len)
+    pts = [Vector((x0 + px * res + res * 0.5, y1 - py * res - res * 0.5, 0.0)) for px, py in best]
+    pts = resample_closed(ccw(pts), step)
+    return pts, len([lp for lp in loops if len(lp) > 20])
+
+
+def build_island_strata(a, terraces, deep, fade, step=0.4):
+    """Наружный обрыв парящего острова одной лентой пластов по общему контуру всех террас. Верх
+    ленты в каждой точке — под дёрном той террасы, чья это кромка (самая высокая рядом внутри)."""
+    outline, n_loops = union_outline([t.outline for t in terraces], step=step)
+    normals = edge_normals(outline)
+    z_tops = []
+    for P, N in zip(outline, normals):
+        q = P - N * 0.3
+        zs = [t.z for t in terraces if point_in_poly(q.x, q.y, t.outline)]
+        if not zs:
+            zs = [min(terraces, key=lambda t: dist_to_outline(P.x, P.y, t.outline)).z]
+        z_tops.append(max(zs) - 0.36)
+    # ступенька верха между террасами: в пределах 0.6 м берём более низкий верх (он у обеих под дёрном)
+    m = len(outline)
+    zt2 = [min(z_tops[(i + k) % m] for k in (-1, 0, 1)) for i in range(m)]
+    sd = deep.get("nseed", 0.5)
+
+    def bottom_of(P):
+        return deep["bottom"] + deep.get("jag", 0.0) * noise.noise(Vector((P.x * 0.21, P.y * 0.21, sd)))
+
+    strata_bands(a, outline, normals, True, zt2, deep, fade, bottom_of)
+    return outline, n_loops
 
 
 # =========================================================================================

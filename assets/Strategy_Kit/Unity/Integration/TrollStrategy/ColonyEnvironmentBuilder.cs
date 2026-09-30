@@ -32,12 +32,14 @@ namespace TrollStrategy.Editor.Setup
     {
         private const string LayoutFolder = "Assets/Vitaria/Layout";
         private const string ModelsRoot = "Assets/Vitaria/Models";
-        private const string ColonyModelsRoot = ModelsRoot + "/Colony";
         private const string MaterialsRoot = "Assets/Vitaria/Materials";
         private const string PrefabFolder = "Assets/Game/Prefabs/Environments";
         private const string ScenePath = "Assets/Game/Scenes/MainColonyScene.unity";
         public const string SceneRootName = "ColonyEnvironment";
-        private const string BuilderVersion = "1";       // bump to rebuild colony prefabs after changing this script
+        private const string BuilderVersion = "2";       // bump to rebuild colony prefabs after changing this script
+        // wind from the west: trees and bushes lean east-west, about the world north-south axis (Unity +Z).
+        // BattleArenaAmbience sways about the target's local X, so the wind pivot turns local X onto world +Z.
+        private static readonly Quaternion WindAxis = Quaternion.Euler(0f, -90f, 0f);
 
 #pragma warning disable 0649   // filled by JsonUtility
         [Serializable]
@@ -136,6 +138,8 @@ namespace TrollStrategy.Editor.Setup
                 throw new InvalidOperationException($"Colony prefab was not built from {layoutPath}");
             var scene = active.path == ScenePath ? active : EditorSceneManager.OpenScene(ScenePath);
             InstallIntoOpenScene();
+            // shadows out to the far ridge and MSAA only; the camera keeps its framing
+            ThreeDSceneSetup.ConfigureRendering(Camera.main);
             DioramaSurfaceSetup.ConfigureContactShadows();
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
@@ -270,7 +274,8 @@ namespace TrollStrategy.Editor.Setup
                 return null;
             }
 
-            var models = IndexModels();
+            var duplicates = new List<string>();
+            var models = IndexModels(duplicates);
             var root = new GameObject(layout.name);
             try
             {
@@ -307,8 +312,20 @@ namespace TrollStrategy.Editor.Setup
                     if (item.spin != 0f) ambience.AddSpinner(instance.transform, Vector3.back, item.spin, item.gust);
                     if (item.flicker != 0f) ambience.AddFlame(instance.transform, .12f * item.flicker);
                     if (item.sway != null && item.sway.Length >= 2)
-                        ambience.AddSway(instance.transform, item.sway[0], item.sway[1],
-                            item.sway.Length >= 3 ? item.sway[2] : 0f);
+                    {
+                        var target = instance.transform;
+                        if (string.Equals(item.group, "Nature", StringComparison.Ordinal))
+                        {
+                            // one wind for every tree: a pivot at the trunk base, the model keeps its own yaw under it
+                            var pivot = new GameObject(instance.name + "_Wind").transform;
+                            pivot.SetParent(instance.transform.parent, false);
+                            pivot.localPosition = instance.transform.localPosition;
+                            pivot.localRotation = WindAxis;
+                            instance.transform.SetParent(pivot, true);
+                            target = pivot;
+                        }
+                        ambience.AddSway(target, item.sway[0], item.sway[1], item.sway.Length >= 3 ? item.sway[2] : 0f);
+                    }
                     if (item.scroll != 0f)
                     {
                         var renderer = instance.GetComponentInChildren<Renderer>();
@@ -332,18 +349,22 @@ namespace TrollStrategy.Editor.Setup
                     return null;
                 }
                 // an incomplete environment is never marked up to date, so a later model import rebuilds it
+                bool complete = missing.Count == 0 && duplicates.Count == 0;
                 var importer = AssetImporter.GetAtPath(PrefabPath(layout));
                 var text = AssetDatabase.LoadAssetAtPath<TextAsset>(layoutPath);
                 if (importer != null && text != null)
                 {
-                    importer.userData = missing.Count == 0 ? SourceHash(text.text) : string.Empty;
+                    importer.userData = complete ? SourceHash(text.text) : string.Empty;
                     EditorUtility.SetDirty(importer);
                     AssetDatabase.WriteImportSettingsIfDirty(PrefabPath(layout));
                 }
                 var summary = $"[Colony] {layout.name}: {placed} objects, {sockets} sockets -> {PrefabPath(layout)}";
+                if (duplicates.Count > 0)
+                    Debug.LogError($"{summary}; model names found twice in {ModelsRoot} (delete the stale file): " +
+                                   string.Join("; ", duplicates), prefab);
                 if (missing.Count > 0)
                     Debug.LogWarning($"{summary}; missing models: {string.Join(", ", missing)}", prefab);
-                else
+                else if (duplicates.Count == 0)
                     Debug.Log(summary, prefab);
                 return prefab;
             }
@@ -421,9 +442,12 @@ namespace TrollStrategy.Editor.Setup
             return added;
         }
 
-        private static Dictionary<string, GameObject> IndexModels()
+        /// <summary>Kit models by file name. Names are unique across Assets/Vitaria/Models (the kit checks it on
+        /// export); a name found twice is reported in <paramref name="duplicates"/> and not guessed.</summary>
+        private static Dictionary<string, GameObject> IndexModels(List<string> duplicates = null)
         {
             var models = new Dictionary<string, GameObject>(StringComparer.Ordinal);
+            var paths = new Dictionary<string, string>(StringComparer.Ordinal);
             if (!AssetDatabase.IsValidFolder(ModelsRoot)) return models;
             foreach (var guid in AssetDatabase.FindAssets("t:Model", new[] { ModelsRoot }))
             {
@@ -431,9 +455,13 @@ namespace TrollStrategy.Editor.Setup
                 var model = AssetDatabase.LoadAssetAtPath<GameObject>(path);
                 if (model == null) continue;
                 var key = Path.GetFileNameWithoutExtension(path);
-                // colony exports win over same-named models elsewhere in the kit
-                if (!models.ContainsKey(key) || path.StartsWith(ColonyModelsRoot + "/", StringComparison.Ordinal))
-                    models[key] = model;
+                if (paths.TryGetValue(key, out var other) && other != path)
+                {
+                    duplicates?.Add($"{key} ({other}, {path})");
+                    continue;
+                }
+                paths[key] = path;
+                models[key] = model;
             }
             return models;
         }

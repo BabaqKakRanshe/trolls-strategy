@@ -12,15 +12,15 @@ from vitaria_buildings.common import Frame, fence_line
 
 NAME = "Bld_Field"
 TITLE = "Поле"
-TARGET = (4.4, 4.0, 1.7)
+TARGET = (5.3, 5.2, 1.7)     # след 3x3 при масштабе 0.5
 
-PW, PD = 3.90, 3.40          # делянка
-PY = 0.15                    # центр делянки сдвинут назад: спереди место под тачку и снопы
+PW, PD = 4.70, 4.10          # делянка (была 3.9 x 3.4: при общем масштабе 0.5 не заполняла след 3x3)
+PY = 0.2                     # центр делянки сдвинут назад: спереди место под тачку и снопы
 ZP = 0.13                    # верх делянки
-ROWS = [-1.25 + i * 0.46 for i in range(7)]   # 2 борозды, 2 ряда всходов, 3 ряда пшеницы
+ROWS = [-1.48 + i * 0.555 for i in range(7)]  # 2 борозды, 2 ряда всходов, 3 ряда пшеницы
 RX = PW / 2 - 0.17           # концы гребней
-SC = (0.55, 0.80)            # пугало — между первым и вторым рядом пшеницы
-FX = 2.12                    # линия изгороди по бокам
+SC = (0.66, 1.01)            # пугало — между первым и вторым рядом пшеницы
+FX = 2.52                    # линия изгороди по бокам
 EAR = by_normal("wheat_light", "wheat", "wheat", 0.2)
 SOIL = by_normal("soil_light", "soil_mid", "soil_mid", 0.85)
 
@@ -178,19 +178,19 @@ def build(a):
     # всходы: второй ряд выше первого — рост читается и внутри зелёной полосы
     for i, h in ((2, 0.24), (3, 0.36)):
         _ridge(a, -RX, RX, ROWS[i])
-        for k in range(12):
-            x = -1.60 + k * 0.29 + rng.uniform(-0.03, 0.03)
+        for k in range(14):
+            x = -2.0 + k * 0.308 + rng.uniform(-0.03, 0.03)
             _sprout(a, x, ROWS[i] + rng.uniform(-0.03, 0.03), ZP + 0.08, rng, h)
 
     # пшеница: к заднему ряду выше, силуэт поднимается ступенькой
     for i, hmax in ((4, 0.78), (5, 0.88), (6, 0.96)):
         _ridge(a, -RX, RX, ROWS[i])
-        for k in range(11):
-            x = -1.64 + k * 0.328 + rng.uniform(-0.03, 0.03)
+        for k in range(13):
+            x = -2.0 + k * 0.333 + rng.uniform(-0.03, 0.03)
             y = ROWS[i] + rng.uniform(-0.04, 0.04)
             if i in (4, 5) and abs(x - SC[0]) < 0.24:
                 continue                      # место под пугало
-            _wheat_bush(a, x, y, ZP + 0.06, rng, hmax, 5 if (k + i) % 2 else 4)
+            _wheat_bush(a, x, y, ZP + 0.06, rng, hmax, 4 if (k + i) % 2 else 3)
 
     _scarecrow(a, Frame((SC[0], SC[1], ZP), rz=-8, s=0.94))
 
@@ -202,6 +202,6 @@ def build(a):
     fence_line(a, (FX, yb), (FX, yf), h=0.62, posts=4, rails=(0.24, 0.46), post_s=0.12)
 
     # передние углы: справа тачка с колосьями, слева суслон из двух снопов
-    _wheelbarrow(a, Frame((1.40, -1.84, 0.0), rz=-150, s=0.9))
-    _sheaf(a, Frame((-1.64, -1.84, 0.0), rot=(0, 10, 0), s=1.12))
-    _sheaf(a, Frame((-1.30, -1.90, 0.0), rot=(0, -10, 8), s=1.12))
+    _wheelbarrow(a, Frame((1.75, -2.2, 0.0), rz=-150, s=0.9))
+    _sheaf(a, Frame((-2.0, -2.2, 0.0), rot=(0, 10, 0), s=1.12))
+    _sheaf(a, Frame((-1.66, -2.26, 0.0), rot=(0, -10, 8), s=1.12))

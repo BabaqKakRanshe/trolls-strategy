@@ -94,7 +94,9 @@ def icon_scene(samples):
     return scn, cam, ground
 
 
-def frame_camera(cam, objs, az, el, pad=0.07):
+def frame_camera(cam, objs, az, el, pad=0.07, focus=None):
+    """focus (x0, x1, y0, y1) в осях модели: кадр по вершинам только внутри рамки (у плавильни —
+    печь без углов мощёного двора, иначе печь в иконке мелкая)."""
     d = Vector((math.sin(math.radians(az)) * math.cos(math.radians(el)),
                 -math.cos(math.radians(az)) * math.cos(math.radians(el)), math.sin(math.radians(el))))
     fwd = -d
@@ -104,6 +106,8 @@ def frame_camera(cam, objs, az, el, pad=0.07):
     for ob in objs:
         mw = ob.matrix_world
         for v in ob.data.vertices:
+            if focus and not (focus[0] <= v.co.x <= focus[1] and focus[2] <= v.co.y <= focus[3]):
+                continue
             w = mw @ v.co
             xs.append(w.dot(right))
             ys.append(w.dot(up))
@@ -138,7 +142,7 @@ def build_subject(V, mat, placements, key):
     return out
 
 
-def render_icon(scn, cam, subject, az, el, path):
+def render_icon(scn, cam, subject, az, el, path, focus=None):
     objs = []
     for me, loc, rot, s in subject:
         ob = bpy.data.objects.new(me.name + "_icon", me)
@@ -149,7 +153,7 @@ def render_icon(scn, cam, subject, az, el, path):
         objs.append(ob)
     for vl in scn.view_layers:
         vl.update()
-    frame_camera(cam, objs, az, el)
+    frame_camera(cam, objs, az, el, focus=focus)
     scn.render.filepath = path
     bpy.ops.render.render(write_still=True, scene=scn.name)
     for ob in objs:
@@ -219,9 +223,10 @@ def main():
     ref_dir = BA.find_ref(HERE, None)
     if ref_dir and ref_dir not in sys.path:
         sys.path.insert(0, ref_dir)
-    for mod in ("bld_barracks", "bld_warehouse"):             # свои модели казармы и склада (Ref_Buildings)
-        m = importlib.reload(importlib.import_module("parts." + mod))
-        BA.build_mesh(V, m.NAME, m.build, mat)
+    import vitaria_buildings as VB                            # свои модели казармы и склада (Ref_Buildings)
+    VB = importlib.reload(VB)
+    for me, line in VB.build_ref_player(V, BA.build_mesh, mat):
+        print(line)
     scn, cam, ground = icon_scene(o["samples"])
     todo = []
     if o["only"] in (None, "buildings"):
@@ -237,7 +242,8 @@ def main():
             path = os.path.join(tmp, key + ".png")
             keys = o["keys"].split(",") if o["keys"] else None
             if keys is None or key in keys or not os.path.exists(path):    # --keys: перерисовать только эти
-                render_icon(scn, cam, build_subject(V, mat, placements, key), az, el, path)
+                focus = VI.ICON_FOCUS.get(key)
+                render_icon(scn, cam, build_subject(V, mat, placements, key), az, el, path, focus)
                 print("icon", fname)
             frames.append((fname, path))
         pack(atlas, frames, out_dir)

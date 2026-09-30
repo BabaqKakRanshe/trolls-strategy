@@ -58,19 +58,24 @@ def animal_hide(a):
 
 
 def leather(a):
-    """Кожа: сложенный лист и два свёртка; на торцах свёртков видны витки (светлая изнанка)."""
-    side = by_normal("leather", "leather_dark", "leather_dark", 0.5)
-    a.add(p_box((0.64, 0.46, 0.05), loc=(0, 0.02, 0.025), rot=(0, 0, 6), bevel=0.015), side)
-    a.add(p_box((0.6, 0.4, 0.04), loc=(0.02, 0.0, 0.07), rot=(0, 0, -4), bevel=0.012),
-          by_normal("leather", "leather_dark", "leather_dark", 0.5))
-    for y, z, rz in ((-0.08, 0.18, 4), (0.13, 0.18, -3)):
-        a.add(p_cyl(0.105, 0.105, 0.54, 12, loc=(-0.27, y, z), rot=(0, 90, rz)),
-              lambda f: "leather_dark" if abs(f.normal.x) > 0.7 else "leather")
-        for x0, sgn in ((-0.275, -1), (0.275, 1)):               # торцы: виток изнанки и тёмная сердцевина
-            a.add(p_cyl(0.088, 0.088, 0.012, 12, loc=(x0, y, z), rot=(0, 90 * sgn, rz)), "hide_light")
-            a.add(p_cyl(0.05, 0.05, 0.02, 10, loc=(x0, y, z), rot=(0, 90 * sgn, rz)), "hide_dark")
-            a.add(p_cyl(0.022, 0.022, 0.026, 8, loc=(x0, y, z), rot=(0, 90 * sgn, rz)), "leather_dark")
-        a.add(p_cyl(0.112, 0.112, 0.06, 12, loc=(0.06, y, z), rot=(0, 90, rz)), "wood_dark")    # ремень
+    """Кожа: стопка из трёх выделанных листов, перехваченная ремнём с медной пряжкой.
+    Прежние два свёртка на мелких размерах читались брёвнами — плоская стопка другой формы,
+    а тёплый рыжий верх отделяет её от коры и досок."""
+    top = by_normal("leather_light", "leather", "leather_dark", 0.5)
+    rng = random.Random(9)
+    for k, (w, d, rz) in enumerate(((0.62, 0.48, 4), (0.6, 0.46, -5), (0.58, 0.45, 3))):
+        z = 0.03 + k * 0.058
+        a.add(p_box((w, d, 0.05), loc=(rng.uniform(-0.02, 0.02), rng.uniform(-0.02, 0.02), z),
+                    rot=(0, 0, rz), bevel=0.018), top)
+        # загнутый угол верхнего листа — «кожа», а не доска
+    a.add(p_prism([(0.0, 0.0), (0.16, 0.0), (0.0, 0.14)], 0.02, loc=(0.2, -0.2, 0.2), rot=(90, 0, 18)), "hide_light")
+    # стежок по кромке верхнего листа: светлый пунктир
+    for k in range(6):
+        a.add(p_box((0.05, 0.012, 0.008), loc=(-0.2 + k * 0.08, -0.205, 0.2), rot=(0, 0, 3), bevel=0.0), "hide_light")
+    # ремень поперёк стопки и медная пряжка на фасаде
+    a.add(p_box((0.08, 0.52, 0.215), loc=(0.05, 0.0, 0.11), rot=(0, 0, 3), bevel=0.012), "wood_dark")
+    a.add(p_box((0.13, 0.03, 0.1), loc=(0.05, -0.255, 0.12), rot=(0, 0, 3), bevel=0.01), "copper")
+    a.add(p_box((0.07, 0.034, 0.05), loc=(0.05, -0.26, 0.12), rot=(0, 0, 3), bevel=0.0), "wood_dark")
 
 
 def iron_sword(a):
@@ -92,7 +97,34 @@ def wooden_shield(a):
 
 
 def iron_armor(a):
-    breastplate(a, Frame((0, 0, 0)), col="iron_light", trim="iron")
+    # золотая кайма и кожаные ремни: одной серой кирасой она сливалась со слитками
+    breastplate(a, Frame((0, 0, 0)), col="iron_light", trim="gold")
+    for sx in (-1, 1):
+        a.add(p_box((0.05, 0.03, 0.34), loc=(sx * 0.13, -0.13, 0.2), bevel=0.0), "leather")
+
+
+def rusty_sword(a):
+    """Ржавый меч: тёмный клинок в рыжих пятнах, щербина на лезвии, обмотка вместо рукояти."""
+    fr = Frame((0, 0, 0), rot=(0, -38, 0))
+    sword(a, fr, L=0.95, guard="iron_dark", grip="burlap_dark", blade="iron", pommel="iron_dark")
+    rng = random.Random(4)
+    body = (0.95 - 0.32) * 0.8
+    for k in range(6):
+        z = 0.34 + rng.uniform(0.0, body)
+        fr.box(a, (rng.uniform(0.04, 0.08), 0.05, rng.uniform(0.04, 0.09)), (rng.uniform(-0.03, 0.03), -0.003, z),
+               col=rng.choice(["iron_ore_vein", "copper_dark", "leather"]), bevel=0.0)
+    fr.box(a, (0.05, 0.06, 0.06), (0.06, 0.0, 0.3 + body * 0.62), col="black", bevel=0.0)     # щербина
+
+
+def patched_armor(a):
+    """Латаная броня: тусклая кираса, кожаные заплаты на заклёпках и верёвка вместо ремня."""
+    breastplate(a, Frame((0, 0, 0)), col="iron", trim="iron_dark")
+    for (x, z, w, h, col) in ((-0.1, 0.25, 0.14, 0.12, "leather"), (0.12, 0.13, 0.12, 0.1, "burlap"),
+                              (0.06, 0.34, 0.09, 0.08, "hide")):
+        a.add(p_box((w, 0.03, h), loc=(x, -0.135, z), rot=(0, 6, 0), bevel=0.0), col)
+        for dx in (-w / 2 + 0.02, w / 2 - 0.02):
+            a.add(p_box((0.022, 0.02, 0.022), loc=(x + dx, -0.152, z + h / 2 - 0.02), bevel=0.0), "iron_light")
+    a.add(p_cyl(0.215, 0.2, 0.035, 10, loc=(0, 0, 0.08)), "rope")
 
 
 def crystal_cluster(a):
@@ -120,6 +152,9 @@ RESOURCE_ICONS = {
     "enchanted-sword": [(enchanted_sword, (0, 0, 0), (0, 0, 0), 1.0)],
     "iron-armor": [(iron_armor, (0, 0, 0), (0, 0, 15), 1.0)],
     "violet-crystal": [(crystal_cluster, (0, 0, 0), (0, 0, 10), 1.0)],
+    # стартовое снаряжение отряда (EquipmentDefinition rusty-sword, patched-armor)
+    "rusty-sword": [(rusty_sword, (0, 0, 0), (0, 0, 0), 1.0)],
+    "patched-armor": [(patched_armor, (0, 0, 0), (0, 0, 15), 1.0)],
 }
 
 # BuildingKind -> меш здания (как в префабах; казарма и склад — свои модели из Ref_Buildings)
@@ -129,3 +164,7 @@ BUILDING_ICONS = {
     "Market": "Bld_Market", "Farm": "Bld_Farm", "ShieldWorkshop": "Bld_ShieldWorkshop", "Forge": "Bld_Forge",
     "Tannery": "Bld_Tannery", "Smeltery": "Bld_Smeltery", "Field": "Bld_Field",
 }
+
+# Кадр иконки по части модели: (x0, x1, y0, y1) в осях меша. Плавильня стоит посреди мощёного двора
+# 4.9 x 4.3 (след 3x3) — по всей модели печь в иконке выходила мелкой.
+ICON_FOCUS = {"BuildingIcon_Smeltery": (-1.75, 1.75, -1.55, 1.7)}

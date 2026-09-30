@@ -281,6 +281,48 @@
       "w": 254,
       "h": 254
      }
+    },
+    {
+     "filename": "rusty-sword.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 257,
+      "y": 769,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "patched-armor.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 513,
+      "y": 769,
+      "w": 254,
+      "h": 254
+     }
     }
    ]
   }

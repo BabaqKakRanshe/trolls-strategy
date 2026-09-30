@@ -129,17 +129,46 @@ namespace Vitaria.EditorTools
             SetColor(mat, Color.white, "_BaseColor", "_Color");
             SetFloat(mat, 0.12f, "_Smoothness", "_Glossiness");
             SetFloat(mat, 0f, "_Metallic");
-            if (emission != null)
-            {
-                SetTex(mat, emission, "_EmissionMap");
-                SetColor(mat, Color.white * 2.5f, "_EmissionColor");
-                mat.EnableKeyword("_EMISSION");
-                mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.BakedEmissive;
-            }
+            // The palette itself never glows: glowing faces (fire, coals, lanterns, runes) are exported into a
+            // second slot, Vitaria_FX — the same palette with emission. One rule for the arena, the colony
+            // and the buildings; before, this menu switched the palette's emission on and made every glowing
+            // swatch glow twice where Vitaria_FX was also used.
+            mat.DisableKeyword("_EMISSION");
+            SetColor(mat, Color.black, "_EmissionColor");
+            mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.EmissiveIsBlack;
             mat.enableInstancing = true;
             EditorUtility.SetDirty(mat);
+            GetOrCreateFxMaterial(mat, emission);
             AssetDatabase.SaveAssets();
             return mat;
+        }
+
+        /// <summary>Vitaria_FX: a copy of the palette with emission from Vitaria_Palette_Emission (only the glowing
+        /// swatches are bright there). FBX slots named Vitaria_FX are remapped onto it on import.</summary>
+        public static Material GetOrCreateFxMaterial(Material palette, Texture2D emission)
+        {
+            var path = WaterMaterialPath("Vitaria_FX");
+            var fx = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (fx == null)
+            {
+                fx = new Material(palette) { name = "Vitaria_FX" };
+                AssetDatabase.CreateAsset(fx, path);
+            }
+            else if (fx.shader != palette.shader)
+            {
+                fx.shader = palette.shader;
+            }
+            Texture baseMap = palette.HasProperty("_BaseMap") ? palette.GetTexture("_BaseMap") : null;
+            if (baseMap == null) baseMap = palette.mainTexture;
+            SetTex(fx, baseMap, "_BaseMap", "_MainTex");
+            SetColor(fx, Color.white, "_BaseColor", "_Color");
+            if (emission != null) SetTex(fx, emission, "_EmissionMap");
+            SetColor(fx, Color.white * 1.6f, "_EmissionColor");
+            fx.EnableKeyword("_EMISSION");
+            fx.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            fx.enableInstancing = true;
+            EditorUtility.SetDirty(fx);
+            return fx;
         }
 
         static Shader FindLitShader()
@@ -183,6 +212,7 @@ namespace Vitaria.EditorTools
                 var name = Path.GetFileNameWithoutExtension(path);
                 if (name == "Vitaria_Scene") continue;
                 if (path.StartsWith(ArenaModelsRoot + "/")) continue;     // arenas are assembled by the game
+                if (path.StartsWith(ModelsRoot + "/Isle/")) continue;     // so is the island (IslandEnvironmentBuilder)
                 var model = AssetDatabase.LoadAssetAtPath<GameObject>(path);
                 if (model == null) continue;
                 var category = Path.GetFileName(Path.GetDirectoryName(path));
@@ -356,9 +386,11 @@ namespace Vitaria.EditorTools
             mi.importBlendShapes = false;
             mi.importNormals = ModelImporterNormals.Import;
             mi.importTangents = ModelImporterTangents.None;
-            // lightmap UVs, in case you bake GI; arenas are spawned at runtime and their merged meshes
-            // (tens of thousands of triangles in hundreds of pieces) would only slow the import down
-            mi.generateSecondaryUV = !assetPath.StartsWith(VitariaTools.ArenaModelsRoot + "/");
+            // lightmap UVs, in case you bake GI; arenas, the colony and the island are spawned at runtime and their
+            // merged meshes (tens of thousands of triangles in hundreds of pieces) would only slow the import down
+            mi.generateSecondaryUV = !assetPath.StartsWith(VitariaTools.ArenaModelsRoot + "/") &&
+                                     !assetPath.StartsWith(VitariaTools.ModelsRoot + "/Colony/") &&
+                                     !assetPath.StartsWith(VitariaTools.ModelsRoot + "/Isle/");
             mi.isReadable = false;
             VitariaTools.AddMaterialRemaps(mi);
         }

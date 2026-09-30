@@ -10,126 +10,6 @@
   ]
  },
  {
-  "asset": "Bld_Mine",
-  "category": "Buildings",
-  "tris": 4357,
-  "size_unity": [
-   4.729,
-   2.899,
-   4.196
-  ]
- },
- {
-  "asset": "Bld_Market",
-  "category": "Buildings",
-  "tris": 5500,
-  "size_unity": [
-   4.492,
-   3.66,
-   3.857
-  ]
- },
- {
-  "asset": "Bld_Smeltery",
-  "category": "Buildings",
-  "tris": 4064,
-  "size_unity": [
-   3.654,
-   3.4,
-   2.89
-  ]
- },
- {
-  "asset": "Bld_Forge",
-  "category": "Buildings",
-  "tris": 5688,
-  "size_unity": [
-   4.262,
-   3.905,
-   3.626
-  ]
- },
- {
-  "asset": "Bld_Armory",
-  "category": "Buildings",
-  "tris": 5036,
-  "size_unity": [
-   4.296,
-   4.085,
-   3.272
-  ]
- },
- {
-  "asset": "Bld_Field",
-  "category": "Buildings",
-  "tris": 5169,
-  "size_unity": [
-   4.362,
-   1.758,
-   4.321
-  ]
- },
- {
-  "asset": "Bld_Farm",
-  "category": "Buildings",
-  "tris": 5159,
-  "size_unity": [
-   5.108,
-   4.053,
-   4.421
-  ]
- },
- {
-  "asset": "Bld_Tannery",
-  "category": "Buildings",
-  "tris": 4660,
-  "size_unity": [
-   4.19,
-   3.105,
-   3.384
-  ]
- },
- {
-  "asset": "Bld_LumberCamp",
-  "category": "Buildings",
-  "tris": 4638,
-  "size_unity": [
-   4.262,
-   3.24,
-   3.471
-  ]
- },
- {
-  "asset": "Bld_LumberMill",
-  "category": "Buildings",
-  "tris": 4960,
-  "size_unity": [
-   5.45,
-   3.624,
-   3.251
-  ]
- },
- {
-  "asset": "Bld_ShieldWorkshop",
-  "category": "Buildings",
-  "tris": 5012,
-  "size_unity": [
-   3.91,
-   3.3,
-   3.241
-  ]
- },
- {
-  "asset": "Bld_Enchanter",
-  "category": "Buildings",
-  "tris": 2806,
-  "size_unity": [
-   3.554,
-   4.29,
-   3.554
-  ]
- },
- {
   "asset": "Tree_Pine_A",
   "category": "Nature",
   "tris": 60,
@@ -1100,6 +980,136 @@
   ]
  },
  {
+  "asset": "Bld_Keep",
+  "category": "Backdrop",
+  "tris": 4188,
+  "size_unity": [
+   2.72,
+   5.9,
+   3.0
+  ]
+ },
+ {
+  "asset": "Bld_Mine",
+  "category": "Buildings",
+  "tris": 3365,
+  "size_unity": [
+   4.729,
+   2.899,
+   4.196
+  ]
+ },
+ {
+  "asset": "Bld_Market",
+  "category": "Buildings",
+  "tris": 4188,
+  "size_unity": [
+   4.492,
+   3.66,
+   3.52
+  ]
+ },
+ {
+  "asset": "Bld_Smeltery",
+  "category": "Buildings",
+  "tris": 3580,
+  "size_unity": [
+   4.9,
+   3.4,
+   4.3
+  ]
+ },
+ {
+  "asset": "Bld_Forge",
+  "category": "Buildings",
+  "tris": 3272,
+  "size_unity": [
+   3.52,
+   3.905,
+   3.52
+  ]
+ },
+ {
+  "asset": "Bld_Armory",
+  "category": "Buildings",
+  "tris": 3048,
+  "size_unity": [
+   3.52,
+   3.883,
+   3.174
+  ]
+ },
+ {
+  "asset": "Bld_Field",
+  "category": "Buildings",
+  "tris": 4447,
+  "size_unity": [
+   5.162,
+   1.758,
+   5.09
+  ]
+ },
+ {
+  "asset": "Bld_Farm",
+  "category": "Buildings",
+  "tris": 3495,
+  "size_unity": [
+   5.125,
+   4.053,
+   4.421
+  ]
+ },
+ {
+  "asset": "Bld_Tannery",
+  "category": "Buildings",
+  "tris": 3124,
+  "size_unity": [
+   3.52,
+   3.122,
+   3.384
+  ]
+ },
+ {
+  "asset": "Bld_LumberCamp",
+  "category": "Buildings",
+  "tris": 3406,
+  "size_unity": [
+   3.52,
+   3.24,
+   3.471
+  ]
+ },
+ {
+  "asset": "Bld_LumberMill",
+  "category": "Buildings",
+  "tris": 3232,
+  "size_unity": [
+   5.45,
+   3.624,
+   3.266
+  ]
+ },
+ {
+  "asset": "Bld_ShieldWorkshop",
+  "category": "Buildings",
+  "tris": 2932,
+  "size_unity": [
+   3.52,
+   3.321,
+   3.241
+  ]
+ },
+ {
+  "asset": "Bld_Enchanter",
+  "category": "Buildings",
+  "tris": 2358,
+  "size_unity": [
+   3.52,
+   4.29,
+   3.52
+  ]
+ },
+ {
   "asset": "Env_Haystack",
   "category": "Colony",
   "tris": 118,
@@ -1114,8 +1124,8 @@
   "category": "Colony",
   "tris": 3306,
   "size_unity": [
-   4.425,
-   5.8,
+   4.585,
+   6.08,
    3.436
   ]
  },
@@ -1124,8 +1134,8 @@
   "category": "Colony",
   "tris": 1964,
   "size_unity": [
-   2.295,
-   2.295,
+   2.811,
+   2.811,
    0.58
   ]
  },
@@ -1145,7 +1155,7 @@
   "tris": 146,
   "size_unity": [
    0.695,
-   0.022,
+   0.028,
    0.633
   ]
  },
@@ -1160,6 +1170,36 @@
   ]
  },
  {
+  "asset": "Env_Footprint_2x2",
+  "category": "Colony",
+  "tris": 300,
+  "size_unity": [
+   1.969,
+   0.028,
+   1.975
+  ]
+ },
+ {
+  "asset": "Env_Footprint_3x3",
+  "category": "Colony",
+  "tris": 465,
+  "size_unity": [
+   2.978,
+   0.028,
+   2.99
+  ]
+ },
+ {
+  "asset": "Env_Footprint_3x2",
+  "category": "Colony",
+  "tris": 380,
+  "size_unity": [
+   2.984,
+   0.028,
+   1.977
+  ]
+ },
+ {
   "asset": "Bld_Barn",
   "category": "Backdrop",
   "tris": 2712,
@@ -1170,13 +1210,33 @@
   ]
  },
  {
-  "asset": "Bld_Keep",
+  "asset": "Bld_Cottage_Muted",
   "category": "Backdrop",
-  "tris": 4188,
+  "tris": 2260,
   "size_unity": [
-   2.72,
-   5.9,
-   3.0
+   3.17,
+   3.085,
+   2.78
+  ]
+ },
+ {
+  "asset": "Bld_House_Stone_Muted",
+  "category": "Backdrop",
+  "tris": 3006,
+  "size_unity": [
+   3.279,
+   3.725,
+   2.96
+  ]
+ },
+ {
+  "asset": "Bld_House_Timber_Muted",
+  "category": "Backdrop",
+  "tris": 3712,
+  "size_unity": [
+   3.429,
+   4.105,
+   3.06
   ]
  },
  {
@@ -1192,19 +1252,19 @@
  {
   "asset": "Colony_Meadow_Ground",
   "category": "ColonyMeadow",
-  "tris": 12672,
+  "tris": 14214,
   "size_unity": [
    108.286,
    5.504,
-   56.498
+   56.475
   ]
  },
  {
   "asset": "Colony_Meadow_Cliffs",
   "category": "ColonyMeadow",
-  "tris": 7720,
+  "tris": 7640,
   "size_unity": [
-   107.56,
+   107.953,
    7.04,
    57.776
   ]
@@ -1212,11 +1272,11 @@
  {
   "asset": "Colony_Meadow_Roads",
   "category": "ColonyMeadow",
-  "tris": 960,
+  "tris": 1098,
   "size_unity": [
-   12.135,
+   12.361,
    0.229,
-   17.424
+   18.936
   ]
  },
  {
@@ -1232,11 +1292,11 @@
  {
   "asset": "Colony_Meadow_Foam",
   "category": "ColonyMeadow",
-  "tris": 200,
+  "tris": 760,
   "size_unity": [
-   2.879,
+   4.41,
    0.358,
-   3.394
+   25.34
   ]
  },
  {
@@ -1260,21 +1320,71 @@
   ]
  },
  {
-  "asset": "Colony_Meadow_Scatter",
+  "asset": "Colony_Meadow_Scatter_A",
   "category": "ColonyMeadow",
-  "tris": 78845,
+  "tris": 4874,
   "size_unity": [
-   102.117,
-   10.955,
-   52.131
+   19.072,
+   10.1,
+   19.015
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Scatter_B",
+  "category": "ColonyMeadow",
+  "tris": 8719,
+  "size_unity": [
+   18.104,
+   0.663,
+   16.625
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Scatter_C",
+  "category": "ColonyMeadow",
+  "tris": 8162,
+  "size_unity": [
+   16.071,
+   2.989,
+   14.918
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Scatter_D",
+  "category": "ColonyMeadow",
+  "tris": 2227,
+  "size_unity": [
+   24.884,
+   9.465,
+   13.508
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Scatter_E",
+  "category": "ColonyMeadow",
+  "tris": 8278,
+  "size_unity": [
+   18.692,
+   7.307,
+   16.458
+  ]
+ },
+ {
+  "asset": "Colony_Meadow_Scatter_F",
+  "category": "ColonyMeadow",
+  "tris": 4933,
+  "size_unity": [
+   25.27,
+   7.924,
+   18.643
   ]
  },
  {
   "asset": "Bld_Barracks",
   "category": "Buildings",
-  "tris": 4538,
+  "tris": 2874,
   "size_unity": [
-   6.095,
+   5.52,
    4.235,
    3.795
   ]
@@ -1282,9 +1392,9 @@
  {
   "asset": "Bld_Warehouse",
   "category": "Buildings",
-  "tris": 3756,
+  "tris": 2540,
   "size_unity": [
-   5.323,
+   5.365,
    4.416,
    4.36
   ]

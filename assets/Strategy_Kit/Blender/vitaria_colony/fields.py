@@ -89,3 +89,35 @@ def field_patch(a, terrace, cx, cy, w, d, ang, kind="wheat", seed=0, lift=0.02):
             sec = [(-wd / 2, 0.0), (wd / 2, 0.0), (wd * 0.22, h), (-wd * 0.22, h)]
             a.add(p_prism(sec, L, loc=(x, y, z), rot=(0, 0, ang + 90)), RIDGE)
             u += L + rng.uniform(0.04, 0.1)
+
+
+def dirt_yard(a, terrace, x, y, r, seed=0, lift=0.02):
+    """Утоптанная площадка: светлая середина, тёмный неровный край (рампа dirt), как у дорог."""
+    from build_vitaria import ramp_uv
+    rng = random.Random(seed * 17 + 3)
+    bm, uvl = a.bm, a.uv
+    n = 18
+    c = bm.verts.new((x, y, terrace.height(x, y) + lift))
+    rings = []
+    for f, tt, dz in ((0.6, 0.72, 0.0), (1.0, 0.1, -0.008)):
+        ring = []
+        for k in range(n):
+            ang = math.tau * k / n
+            rr = r * (1 + 0.12 * math.sin(ang * 3 + seed) + rng.uniform(-0.06, 0.06)) * f
+            px, py = x + math.cos(ang) * rr, y + math.sin(ang) * rr
+            ring.append((bm.verts.new((px, py, terrace.height(px, py) + lift + dz)),
+                         tt + rng.uniform(-0.06, 0.06)))
+        rings.append(ring)
+    tmap = {c: 0.86}
+    for ring in rings:
+        for v, t in ring:
+            tmap[v] = t
+    polys = [(c, rings[0][k][0], rings[0][(k + 1) % n][0]) for k in range(n)]
+    polys += [(rings[0][k][0], rings[1][k][0], rings[1][(k + 1) % n][0], rings[0][(k + 1) % n][0]) for k in range(n)]
+    for q in polys:
+        f = bm.faces.new(q)
+        f.normal_update()
+        if f.normal.z < 0:
+            f.normal_flip()
+        for l in f.loops:
+            l[uvl].uv = ramp_uv("dirt", tmap[l.vert])

@@ -856,8 +856,10 @@ def export_all(VA, meshes, scn, cam, sun, unity, root):
     fwd = cw.to_3x3() @ Vector((0, 0, -1))
     up = cw.to_3x3() @ Vector((0, 1, 0))
     sun_fwd = sun.matrix_world.to_3x3() @ Vector((0, 0, -1))
+    import build_vitaria as V
     layout = {
         "name": M.NAME,
+        "kitVersion": V.KIT_VERSION,
         "board": {"width": 9, "height": 5, "hexAcrossFlats": 2.0,
                   "note": "координаты относительно середины поля (BattleBoardView.middle)"},
         "objects": items,

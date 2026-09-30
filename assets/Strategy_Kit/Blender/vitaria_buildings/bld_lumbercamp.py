@@ -51,10 +51,10 @@ def _tent(a):
     Frame((XT, YT, zb), s=(hx, hy, 1.0)).cyl(a, math.sqrt(2), 0.0, ht, 4, spin=45, col="roof")
     for sy in (-1, 1):
         a.add(p_box((2 * hx + 0.07, 0.07, 0.14), loc=(XT, YT + sy * hy, zb - 0.06), bevel=0.02), "roof_dark")
-        _flap_row(a, Frame((XT, YT + sy * (hy + 0.004), zb - 0.10)), 2 * hx + 0.07, 8)
+        _flap_row(a, Frame((XT, YT + sy * (hy + 0.004), zb - 0.10)), 2 * hx + 0.07, 6)
     for sx in (-1, 1):
         a.add(p_box((0.07, 2 * hy + 0.08, 0.13), loc=(XT + sx * hx, YT, zb - 0.065), bevel=0.02), "roof_dark")
-        _flap_row(a, Frame((XT + sx * (hx + 0.004), YT, zb - 0.10), rz=90), 2 * hy + 0.07, 6)
+        _flap_row(a, Frame((XT + sx * (hx + 0.004), YT, zb - 0.10), rz=90), 2 * hy + 0.07, 5)
     # навершие и флажок: единственная тонкая вертикаль над шатром, держит силуэт
     zt = zb + ht
     a.add(p_cyl(0.035, 0.03, 0.40, 6, loc=(XT, YT, zt - 0.12)), "wood_dark")
@@ -236,9 +236,9 @@ def build(a):
     # герой: пень r 0.58 слева спереди, топор поднят топорищем к центру участка
     _stump(a, SX_, SY_)
     _stuck_axe(a, (SX_ + 0.18, SY_ + 0.02, 0.56), rz=165)
-    _chips(a, SX_, SY_, 11, 0.72, 1.02, 150, 350, seed=21)
+    _chips(a, SX_, SY_, 7, 0.72, 1.02, 150, 350, seed=21)
 
     # штабель чуть развёрнут: правые торцы ловят ракурс 3/4, длинный бок — фасад
     _log_stack(a, Frame((0.86, -0.60, 0), rz=-10))
     _fir(a, 1.50, 1.12)
-    _chips(a, XT + 0.44, YT - 0.30, 5, 0.34, 0.55, 200, 340, seed=22)
+    _chips(a, XT + 0.44, YT - 0.30, 3, 0.34, 0.55, 200, 340, seed=22)

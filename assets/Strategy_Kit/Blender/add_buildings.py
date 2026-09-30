@@ -187,6 +187,8 @@ def main():
     show = bpy.data.collections.get("Showcase")
 
     created, objs = [], []
+    V.BEVEL_MIN = VB.BEVEL_MIN               # здания поля: без невидимых фасок на мелочи
+    report = []
     for m in mods:
         a = V.Asset(m.NAME)
         m.build(a)
@@ -200,6 +202,11 @@ def main():
             me.materials.append(mat)
         me.validate()
         me.update()
+        # кровля по цепочке и слот Vitaria_FX (материалы: палитра первой, FX второй)
+        while len(me.materials) > 1:
+            me.materials.pop()
+        themed, hot = VB.finish(V, me)
+        report.append(VB.check(me) + ("  roof %d" % themed if themed else "") + ("  fx %d" % hot if hot else ""))
         o = bpy.data.objects.get(m.NAME)
         if o is None or o.data is not me:
             o = bpy.data.objects.new(m.NAME, me)
@@ -215,6 +222,9 @@ def main():
                 print("asset mark skipped:", ex)
         objs.append((o, m))
         print("built %-20s %s" % (m.NAME, "new" if o.name in created else "updated"))
+
+    V.BEVEL_MIN = 0.0
+    print("\n".join(["контракт зданий (кит %.2f):" % VB.KIT_SCALE] + report))
 
     # витрина: порядок как у полной пересборки — здания кита, затем пакет
     # Витрина выстраивается заново целиком: у обновлённого здания мог измениться габарит,

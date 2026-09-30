@@ -49,6 +49,10 @@ def parse_args():
 # ----------------------------------------------------------------------------------------
 # palette
 # ----------------------------------------------------------------------------------------
+# Версия кита: пишется в раскладки (kitVersion) и в Unity/Assets/Vitaria/kit_version.json (build_all.py).
+# Поднимать при любом изменении, которое меняет модели, палитру или раскладки в Unity.
+KIT_VERSION = "2026.09.29"
+
 TEX = 256
 NCELL = 16                      # 16x16 swatches of 16px
 # Гамма KayKit: высокая насыщенность, холодный камень, синяя кровля, тёплое дерево.
@@ -104,8 +108,22 @@ PALETTE = [
     ("sod", "#7a9a3a"), ("sod_dark", "#587a2c"),
     # --- эффекты арены (vitaria_arena/fx.py): пыль и дым — непрозрачные меши, исчезают масштабом
     ("dust", "#d8cbb2"), ("dust_dark", "#b3a288"), ("smoke", "#b4bac2"), ("smoke_dark", "#8e959f"),
+    # --- кровли по цепочкам производства (THEMES) и приглушённые крыши фона колонии
+    ("thatch", "#d8a947"), ("thatch_dark", "#b0822e"), ("thatch_light", "#ecc566"),
+    ("tile", "#c65f3a"), ("tile_dark", "#9c4529"), ("tile_light", "#df7e55"),
+    ("slate", "#5b6680"), ("slate_dark", "#444e66"), ("slate_light", "#7985a0"),
+    ("roof_old", "#8b7f70"), ("roof_old_dark", "#6d6356"), ("roof_old_light", "#a39888"),
+    ("leather_light", "#b8683a"),
 ]
 EMISSIVE = {"glow", "glow_hot", "lantern_glow", "arcane", "rune", "ember"}
+# Темы кровли: перекраска синей черепицы кита (roof*) целиком по мешу — вместе с флагами и тентами
+# того же swatch-а (это «цвет здания»). Какая тема у какого здания — vitaria_buildings.ROOF_THEME.
+THEMES = {
+    "thatch": {"roof": "thatch", "roof_dark": "thatch_dark", "roof_light": "thatch_light"},
+    "tile": {"roof": "tile", "roof_dark": "tile_dark", "roof_light": "tile_light"},
+    "slate": {"roof": "slate", "roof_dark": "slate_dark", "roof_light": "slate_light"},
+    "old": {"roof": "roof_old", "roof_dark": "roof_old_dark", "roof_light": "roof_old_light"},
+}
 # Рампы узкие: у KayKit земля читается как плоский тайл, а не как градиент.
 RAMPS = [
     ("grass", [(0.0, "#6faf35"), (0.35, "#7fbc3a"), (0.7, "#93c942"), (1.0, "#a8d44b")]),
@@ -117,6 +135,11 @@ RAMPS = [
     ("zone_red", [(0.0, "#a05738"), (0.35, "#ae6343"), (0.7, "#bc704f"), (1.0, "#cb7d5b")]),
     # трава арены: оливковая, как луг на макете боя, светлее и желтее травы плиток
     ("arena_grass", [(0.0, "#8aa942"), (0.35, "#98b44a"), (0.7, "#a6be52"), (1.0, "#b4c85c")]),
+    # парящие острова: скала по высоте — светлая тёплая наверху, голубеет и растворяется в дымке
+    # внизу (t = 0 — цвет тумана, 1 — кромка); облака — голубоватый низ, белый верх
+    ("cliff_fade", [(0.0, "#b6d2ee"), (0.25, "#9db0c6"), (0.5, "#a7a5a2"), (0.72, "#bba98e"), (0.88, "#cbb794"),
+                    (1.0, "#d9c6a4")]),
+    ("cloud", [(0.0, "#a3b9d2"), (0.45, "#c6d4e4"), (1.0, "#e2eaf3")]),
 ]
 # Рампы занимают нижние строки текстуры. Первые две стоят на своих местах (14, 15) с самого
 # начала — на них сидят UV острова и дорожек; новые рампы растут вверх от 13-й строки,
@@ -141,6 +164,59 @@ def clamp(x, a=0.0, b=1.0):
 def ramp_uv(name, t):
     t = clamp(t)
     return ((2.0 + t * (TEX - 4.0)) / TEX, 1.0 - (RAMP_ROW[name] + 0.5) / NCELL)
+
+def recolor_mesh(me, mapping):
+    """Перекраска меша по swatch-ам: грани из ячейки src переезжают в ячейку dst (mapping {src: dst}).
+    Swatch-грань берёт один сэмпл — UV всех её углов в центре ячейки, так что хватает сравнить первый.
+    Возвращает число перекрашенных граней."""
+    if isinstance(mapping, str):
+        mapping = THEMES[mapping]
+    uvl = me.uv_layers.active
+    if uvl is None:
+        return 0
+    src = [(SW_UV[a], SW_UV[b]) for a, b in mapping.items()]
+    n = 0
+    for poly in me.polygons:
+        u, v = uvl.data[poly.loop_start].uv
+        for (cu, cv), dst in src:
+            if abs(u - cu) < 1e-4 and abs(v - cv) < 1e-4:
+                for li in poly.loop_indices:
+                    uvl.data[li].uv = dst
+                n += 1
+                break
+    return n
+
+def fx_material():
+    """Vitaria_FX — копия палитры: в Unity у неё эмиссия включена, у Vitaria_Palette выключена."""
+    m = bpy.data.materials.get("Vitaria_FX")
+    if m is None:
+        m = bpy.data.materials["Vitaria_Palette"].copy()
+        m.name = "Vitaria_FX"
+    return m
+
+def split_emissive(me, fx=None):
+    """Грани на светящихся swatch-ах (EMISSIVE: огонь, угли, фонари, руны) -> второй слот Vitaria_FX.
+    Меш остаётся одним объектом с двумя материалами; в Unity слот по имени ремапится на Vitaria_FX."""
+    fx = fx or fx_material()
+    cells = [SW_UV[n] for n in EMISSIVE]
+    uvl = me.uv_layers.active
+    if uvl is None:
+        return 0
+    hot = []
+    for poly in me.polygons:
+        u, v = uvl.data[poly.loop_start].uv
+        if any(abs(u - cu) < 1e-4 and abs(v - cv) < 1e-4 for cu, cv in cells):
+            hot.append(poly.index)
+    if not hot:
+        return 0
+    names = [m.name if m else "" for m in me.materials]
+    if fx.name not in names:
+        me.materials.append(fx)
+        names.append(fx.name)
+    fi = names.index(fx.name)
+    for i in hot:
+        me.polygons[i].material_index = fi
+    return len(hot)
 
 def lerp_stops(stops, t):
     for (t0, c0), (t1, c1) in zip(stops, stops[1:]):
@@ -209,13 +285,18 @@ def _place(b, loc, rot, mat):
     b.normal_update()
     return b
 
+# Фаска у брусков тоньше BEVEL_MIN не делается. 0 — как всегда (арена, фон). Здания поля колонии
+# собираются с 0.12: в игре они в масштабе 0.5, брусок 12 см кита = 6 см = 3 px на 1080p, его фаски
+# не видно, а стоит она +32 треугольника на брусок (44 вместо 12).
+BEVEL_MIN = 0.0
+
 def p_box(size, loc=(0, 0, 0), rot=(0, 0, 0), bevel=0.03, mat=None):
     """Box centred on loc. Фаска ненулевая по умолчанию: у KayKit скруглён каждый блок,
     острых рёбер в наборе нет. На тонких деталях bmesh сам зажмёт её по clamp_overlap."""
     b = bmesh.new()
     bmesh.ops.create_cube(b, size=1.0)
     bmesh.ops.scale(b, vec=Vector(size), verts=b.verts)
-    if bevel > 0:
+    if bevel > 0 and min(size) >= BEVEL_MIN:
         _bevel(b, bevel)
     return _place(b, loc, rot, mat)
 
