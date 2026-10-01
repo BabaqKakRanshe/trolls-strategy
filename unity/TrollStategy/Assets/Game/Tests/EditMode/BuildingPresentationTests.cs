@@ -135,12 +135,12 @@ namespace TrollStrategy.Tests
             AllKinds.Where(kind => kind > BuildingKind.Barracks).ToArray();
 
         [Test]
-        public void Catalog_SellsMineAndVitariaBuildingsButNotStorageOrTrade()
+        public void Catalog_SellsMineBarracksAndVitariaBuildingsButNotStorageOrTrade()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>("Assets/Game/Content/Definitions/GameContentCatalog.asset");
             foreach (var kind in AllKinds)
             {
-                bool expected = kind == BuildingKind.Mine || kind > BuildingKind.Barracks;
+                bool expected = kind == BuildingKind.Mine || kind >= BuildingKind.Barracks;
                 Assert.That(catalog.GetBuilding(kind).Constructible, Is.EqualTo(expected), kind.ToString());
             }
         }

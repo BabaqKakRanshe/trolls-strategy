@@ -28,7 +28,6 @@ namespace TrollStrategy.UI
             Add("Работа", "E", new Vector2(-122f, -8f), interaction.BeginWorkTarget, silent: false);
             Add("Перенос", "H", new Vector2(0f, -66f), interaction.BeginHaulTarget, silent: false);
             Add("Свободны", "R", new Vector2(122f, -8f), interaction.ReleaseSelected, silent: true);
-            Add("В бараки", null, new Vector2(0f, 54f), interaction.SendSelectedToBarracks, silent: true);
             Ui.Show(_fan, false);
         }
 

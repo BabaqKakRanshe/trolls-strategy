@@ -92,7 +92,7 @@ namespace TrollStrategy.Presentation.Buildings
             _camera = cameraObject.AddComponent<Camera>();
             _camera.orthographic = true;
             _camera.clearFlags = CameraClearFlags.SolidColor;
-            _camera.backgroundColor = new Color32(17, 24, 32, 255);
+            _camera.backgroundColor = new Color32(234, 240, 247, 255);
             _camera.cullingMask = 1 << Layer;
             _camera.nearClipPlane = .1f;
             _camera.farClipPlane = 100f;

@@ -54,7 +54,7 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void Catalog_OffersEveryConstructibleBuildingAtItsCatalogPrice()
+        public void Catalog_OffersEveryConstructibleBuildingAtItsCurrentPrice()
         {
             var constructible = _catalog.Buildings.Where(b => b != null && b.Constructible).ToList();
             Assert.That(_hud.Catalog.BuildingCount, Is.EqualTo(constructible.Count));
@@ -62,7 +62,11 @@ namespace TrollStrategy.Tests
             {
                 var buy = _hud.Catalog.BuyButton(building.Kind);
                 Assert.That(buy, Is.Not.Null, building.DisplayName);
-                Assert.That(Hint(buy), Is.EqualTo(Ui.Gold(building.Price)), building.DisplayName);
+                Assert.That(_hud.Catalog.PriceOf(building.Kind), Is.EqualTo(_session.BuildingPrice(building.Kind).ToString()),
+                    building.DisplayName);
+                if (_session.CurrentSnapshot.Buildings.All(standing => standing.Kind != building.Kind))
+                    Assert.That(_session.BuildingPrice(building.Kind), Is.EqualTo(building.Price),
+                        $"{building.DisplayName}: the first one costs its catalog price");
             }
 
             UiFeel.Press(_hud.Catalog.BuyButton(BuildingKind.Mine));
@@ -72,12 +76,29 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void Catalog_PricesTheNextCopy_OnceOneStands()
+        {
+            var mine = _catalog.GetBuilding(BuildingKind.Mine);
+            var cell = _session.FindFirstBuildingCell(BuildingKind.Mine);
+            Assert.That(cell.HasValue, Is.True);
+            Assert.That(_session.Dispatch(new BuildBuildingCommand(BuildingKind.Mine, cell.Value)).Ok, Is.True);
+            Refresh();
+
+            int next = _session.BuildingPrice(BuildingKind.Mine);
+            Assert.That(_hud.Catalog.PriceOf(BuildingKind.Mine), Is.EqualTo(next.ToString()));
+            if (_catalog.Economy.BuildingCopyPriceGrowth > 1f)
+                Assert.That(next, Is.GreaterThan(mine.Price), "The second mine costs more than the first");
+        }
+
+        [Test]
         public void Catalog_HireButtonPricesTheWholeGroup()
         {
             var goblin = _catalog.GetUnit(UnitKind.Goblin);
             _hud.Catalog.SetHireAmount(3);
             var hire = _hud.Catalog.HireButton(UnitKind.Goblin);
-            Assert.That(Hint(hire), Is.EqualTo(Ui.Gold(goblin.Price * 3)));
+            Assert.That(_hud.Catalog.PriceOf(UnitKind.Goblin), Is.EqualTo(_session.HirePrice(UnitKind.Goblin, 3).ToString()));
+            Assert.That(_session.HirePrice(UnitKind.Goblin, 3), Is.GreaterThanOrEqualTo(goblin.Price * 3),
+                "Each creature hired makes the next one no cheaper");
 
             UiFeel.Press(hire);
 
@@ -87,10 +108,26 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void Catalog_CreatureHint_SaysWhatItIsFor_NotItsRawStats()
+        {
+            var goblin = _catalog.GetUnit(UnitKind.Goblin);
+            string hint = _hud.Catalog.Hint(UnitKind.Goblin);
+
+            Assert.That(hint, Does.StartWith(goblin.Description.TrimEnd('.')));
+            Assert.That(hint, Does.Not.Contain("Сила").And.Not.Contain("Выносливость"));
+            Assert.That(hint, Does.Not.Contain("золота"), "The price stands under the token");
+
+            _hud.Catalog.SetHireAmount(3);
+
+            Assert.That(_hud.Catalog.Hint(UnitKind.Goblin), Does.Contain($"{_session.HirePrice(UnitKind.Goblin)} золота за одного"),
+                "While a group is hired the token shows its total, the hint the price of one");
+        }
+
+        [Test]
         public void UnaffordableHire_IsRefusedWithoutStartingPlacement()
         {
             var troll = _catalog.GetUnit(UnitKind.Troll);
-            Assume.That(troll.Price * CatalogPanel.MaxHireAmount, Is.GreaterThan(_session.CurrentSnapshot.Gold));
+            Assume.That(_session.HirePrice(troll.Kind, CatalogPanel.MaxHireAmount), Is.GreaterThan(_session.CurrentSnapshot.Gold));
             _hud.Catalog.SetHireAmount(CatalogPanel.MaxHireAmount);
             var hire = _hud.Catalog.HireButton(UnitKind.Troll);
             Assert.That(UiFeel.IsAvailable(hire), Is.False);
@@ -124,7 +161,8 @@ namespace TrollStrategy.Tests
 
             var hints = _hud.Inspect.Actions.Select(Hint).ToList();
             foreach (var unit in _catalog.Units)
-                Assert.That(hints.Contains(Ui.Gold(unit.Price)), Is.True, $"{unit.DisplayName}: {string.Join(", ", hints)}");
+                Assert.That(hints.Contains(Ui.Gold(_session.HirePrice(unit.Kind))), Is.True,
+                    $"{unit.DisplayName}: {string.Join(", ", hints)}");
 
             var goblin = _catalog.GetUnit(UnitKind.Goblin);
             var hireGoblin = _hud.Inspect.Actions.First(b => Title(b).Contains(goblin.DisplayName.ToLowerInvariant()));
@@ -149,6 +187,23 @@ namespace TrollStrategy.Tests
 
             Assert.That(_session.CurrentSnapshot.Gold, Is.EqualTo(gold + refund));
             Assert.That(_session.CurrentSnapshot.Units, Is.Empty);
+        }
+
+        [Test]
+        public void Inspect_UnitCard_SaysWhatTheCreatureIsFor_InPlainWords()
+        {
+            var troll = _catalog.GetUnit(UnitKind.Troll);
+            var id = BuyUnit(UnitKind.Troll);
+            _interaction.InspectSquad(id, null);
+            Refresh();
+
+            Assert.That(Text("inspect-note"), Does.StartWith(troll.Description.Trim()));
+            var rows = _hud.Root.Query<Label>(className: "kv__key").ToList().Where(key => Ui.IsShown(key.parent))
+                .ToDictionary(key => key.text, key => key.parent.Q<Label>(className: "kv__value").text);
+            foreach (var stat in new[] { "Сила", "Скорость", "Выносливость" })
+                Assert.That(rows.Keys, Has.No.Member(stat), "Raw stats say nothing to the player");
+            // a troll's 150 % stamina: one good a trip, and every second trip one more
+            Assert.That(rows["Носит за ходку"], Is.EqualTo("1–2"));
         }
 
         [Test]

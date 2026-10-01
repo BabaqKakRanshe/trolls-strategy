@@ -1,13 +1,45 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/BattleHud.uss" />
-    <ui:VisualElement name="battle-replay" class="panel battle-replay">
-        <ui:Label name="battle-replay-status" class="battle-replay__status t-bold" />
+    <ui:VisualElement name="battle-replay" class="battle-replay" picking-mode="Ignore">
+        <!-- during the fight: who still stands on each side -->
+        <ui:VisualElement name="battle-score" class="battle-facts halo" picking-mode="Ignore">
+            <ui:VisualElement name="battle-ours" class="battle-fact">
+                <ui:VisualElement name="battle-ours-icon" class="battle-fact__icon battle-fact__icon--side side-ours" picking-mode="Ignore" />
+                <ui:Label name="battle-ours-value" class="battle-fact__value t-black" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="battle-theirs" class="battle-fact">
+                <ui:VisualElement name="battle-theirs-icon" class="battle-fact__icon battle-fact__icon--side side-enemy" picking-mode="Ignore" />
+                <ui:Label name="battle-theirs-value" class="battle-fact__value t-black" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <!-- after the verdict: who came back, who fell, what was lost, and the reward waiting at home -->
+        <ui:VisualElement name="battle-outcome" class="battle-facts halo" picking-mode="Ignore">
+            <ui:Label name="battle-verdict" class="battle-verdict t-black" picking-mode="Ignore" />
+            <ui:VisualElement name="battle-survived" class="battle-fact">
+                <ui:VisualElement name="battle-survived-icon" class="battle-fact__icon battle-fact__icon--side side-ours" picking-mode="Ignore" />
+                <ui:Label name="battle-survived-value" class="battle-fact__value t-black" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="battle-fallen" class="battle-fact battle-fact--fallen">
+                <ui:VisualElement name="battle-fallen-icon" class="battle-fact__icon battle-fact__icon--side side-ours" picking-mode="Ignore" />
+                <ui:Label name="battle-fallen-value" class="battle-fact__value t-black" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="battle-lost" class="battle-fact">
+                <ui:VisualElement class="glyph glyph--damage battle-fact__glyph" picking-mode="Ignore" />
+                <ui:Label name="battle-lost-value" class="battle-fact__value t-black" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="battle-prize" class="battle-fact">
+                <ui:VisualElement name="battle-prize-icon" class="battle-fact__icon" picking-mode="Ignore" />
+                <ui:Label text="ждёт в колонии" class="battle-fact__note t-bold" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
         <ui:VisualElement class="spacer" picking-mode="Ignore" />
-        <ui:Button name="battle-pause" text="ПАУЗА" class="btn battle-replay__pause" />
-        <ui:Button name="battle-speed-1" text="1×" class="btn battle-replay__speed" />
-        <ui:Button name="battle-speed-2" text="2×" class="btn battle-replay__speed" />
-        <ui:Button name="battle-speed-4" text="4×" class="btn battle-replay__speed" />
-        <ui:Button name="battle-return" text="ВЕРНУТЬСЯ В КОЛОНИЮ" class="btn btn--primary battle-replay__return" />
+        <ui:Button name="battle-pause" class="btn btn-disc battle-disc">
+            <ui:VisualElement name="battle-pause-glyph" class="glyph glyph--pause" picking-mode="Ignore" />
+        </ui:Button>
+        <ui:Button name="battle-speed-1" text="1×" class="btn btn-disc battle-disc t-black" />
+        <ui:Button name="battle-speed-2" text="2×" class="btn btn-disc battle-disc t-black" />
+        <ui:Button name="battle-speed-4" text="4×" class="btn btn-disc battle-disc t-black" />
+        <ui:Button name="battle-return" text="В колонию" class="btn btn--primary battle-go" />
     </ui:VisualElement>
 </ui:UXML>

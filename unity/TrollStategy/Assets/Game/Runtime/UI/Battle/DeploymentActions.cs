@@ -5,27 +5,30 @@ using UnityEngine.UIElements;
 
 namespace TrollStrategy.UI
 {
-    /// <summary>Step 3: the squad count, what to do next, automatic placement and the start of the battle.</summary>
+    /// <summary>
+    /// The deployment's one line under the board, what to do next or why the last click was refused, and
+    /// its two actions on the right: automatic placement and the start of the battle.
+    /// </summary>
     public sealed class DeploymentActions
     {
-        private static readonly Color RefusalColor = new(1f, .55f, .45f, 1f);
+        private static readonly Color RefusalColor = new(.72f, .21f, .14f, 1f);
 
-        private readonly Label _squad;
         private readonly Label _hint;
         private BattleDeployment _deployment;
 
-        public DeploymentActions(VisualElement root, Action start)
+        public DeploymentActions(VisualElement actions, VisualElement hint, Action start, HudTooltip tooltip = null)
         {
-            _squad = Ui.Require<Label>(root, "battle-squad");
-            _hint = Ui.Require<Label>(root, "battle-hint");
-            AutoPlace = UiFeel.Bind(Ui.Require<Button>(root, "battle-auto"), () => _deployment?.AutoPlace());
+            _hint = Ui.Require<Label>(hint, "battle-hint");
+            AutoPlace = UiFeel.Bind(Ui.Require<Button>(actions, "battle-auto"), () => _deployment?.AutoPlace());
             // the battle's own start sound answers a start that goes through
-            Start = UiFeel.Bind(Ui.Require<Button>(root, "battle-start"), start, silentClick: true);
+            Start = UiFeel.Bind(Ui.Require<Button>(actions, "battle-start"), start, silentClick: true);
+            tooltip?.Attach(AutoPlace, () => "Авторасстановка", () => "Поставить бойцов из резерва на свободные синие клетки.");
+            tooltip?.Attach(Start, () => "Начать бой",
+                () => "Бой идёт сам. Павшие бойцы и их снаряжение не вернутся.");
         }
 
         public Button AutoPlace { get; }
         public Button Start { get; }
-        public string Squad => _squad.text;
         public string Hint => _hint.text;
 
         public void Attach(BattleDeployment deployment)
@@ -37,12 +40,9 @@ namespace TrollStrategy.UI
         public void Refresh()
         {
             if (_deployment == null) return;
-            int count = _deployment.Placements.Count;
-            Ui.SetText(_squad, $"3 · ОТРЯД {count} / {_deployment.MaxUnits}");
             Ui.SetText(_hint, _deployment.Message);
-            UiFeel.SetAvailable(AutoPlace, _deployment.CanAutoPlace);
+            UiFeel.SetAvailable(AutoPlace, _deployment.CanPlaceMore);
             UiFeel.SetAvailable(Start, _deployment.CanStart);
-            Ui.SetCaption(Start, count == 0 ? "СНАЧАЛА РАССТАВЬ БОЙЦОВ" : $"НАЧАТЬ БОЙ · {count} В ОТРЯДЕ");
         }
 
         /// <summary>"No": the hint shows the reason, shakes and flashes red.</summary>

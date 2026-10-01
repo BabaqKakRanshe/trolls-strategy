@@ -20,7 +20,7 @@ namespace TrollStrategy.Tests
             definition.Init(UnitKind.Goblin, "Гоблин", 40, 3, 5f, 100);
             var assignment = Assignment.Haul("mine-1", "market-1");
             assignment.Carried = 7;
-            var carrying = new UnitSnapshot("unit-1", 1, UnitKind.Goblin, "Гоблин", 3, 5f, 100,
+            var carrying = new UnitSnapshot("unit-1", UnitKind.Goblin, "Гоблин", 3, 5f, 100,
                 new WorldPosition(0f, 0f), assignment, "Несёт");
 
             try
@@ -33,7 +33,7 @@ namespace TrollStrategy.Tests
                 Assert.That(icon.transform.localPosition.y, Is.GreaterThan(0.5f));
 
                 assignment.Carried = 0;
-                view.UpdateVisuals(new UnitSnapshot("unit-1", 1, UnitKind.Goblin, "Гоблин", 3, 5f, 100,
+                view.UpdateVisuals(new UnitSnapshot("unit-1", UnitKind.Goblin, "Гоблин", 3, 5f, 100,
                     new WorldPosition(0f, 0f), assignment, "Разгрузил"), false);
                 Assert.That(icon.gameObject.activeSelf, Is.False);
             }
@@ -68,7 +68,7 @@ namespace TrollStrategy.Tests
 
                 // the colony grid's map plane: x east, y north, local -Z up
                 root.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-                view.Setup(new UnitSnapshot("unit-1", 1, kind, kind.ToString(), 3, 5f, 100, new WorldPosition(2f, 3f),
+                view.Setup(new UnitSnapshot("unit-1", kind, kind.ToString(), 3, 5f, 100, new WorldPosition(2f, 3f),
                     Assignment.Idle(), "Свободен"), definition, null);
                 var visual = root.transform.Find("SpriteVisual");
                 var lawn = root.transform.TransformPoint(Vector3.back * UnitView.GroundLift);
@@ -111,7 +111,6 @@ namespace TrollStrategy.Tests
             view.SetSpriteScale(1.75f);
             var snapshot = new UnitSnapshot(
                 "unit-1",
-                1,
                 UnitKind.Goblin,
                 "Гоблин",
                 3,
@@ -148,10 +147,10 @@ namespace TrollStrategy.Tests
             root.AddComponent<SpriteRenderer>();
             var view = root.AddComponent<UnitView>();
             var initial = new UnitSnapshot(
-                "unit-1", 1, UnitKind.Goblin, "Гоблин", 3, 5f, 100,
+                "unit-1", UnitKind.Goblin, "Гоблин", 3, 5f, 100,
                 new WorldPosition(0f, 0f), Assignment.Idle(), "Свободен", 4f);
             var nextStep = new UnitSnapshot(
-                "unit-1", 1, UnitKind.Goblin, "Гоблин", 3, 5f, 100,
+                "unit-1", UnitKind.Goblin, "Гоблин", 3, 5f, 100,
                 new WorldPosition(1f, 0f), Assignment.ToWork("mine-1"), "Идёт", 4f);
 
             try

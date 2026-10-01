@@ -5,9 +5,11 @@ using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Audio;
 using TrollStrategy.Presentation.Feel;
+using TrollStrategy.Presentation.Island;
 using TrollStrategy.Presentation.Visuals;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
@@ -28,6 +30,7 @@ namespace TrollStrategy.Presentation.Battle
         private Camera _battleCamera;
         private float _framedAspect;
         private readonly BattleArenaLighting _arenaLighting = new();
+        private VolumeProfile _arenaProfile;
         private Camera _colonyCamera;
         private AudioListener _colonyAudio;
         private MapInputHandler _colonyInput;
@@ -123,6 +126,7 @@ namespace TrollStrategy.Presentation.Battle
             }
             _hudWasVisible = colony.HudVisible;
             colony.HudVisible = false;
+            Soundscape.Enter(SoundScene.Battle);
             _colonyInput = colony.MapInput;
             if (_colonyInput != null)
             {
@@ -159,6 +163,7 @@ namespace TrollStrategy.Presentation.Battle
             _boardView = world.GetComponent<BattleBoardView>();
             _boardView.Init(board, mission, camera, new Vector3(1000f, 0f, 1000f), colony.Session.Catalog);
             _boardView.CellClicked += OnCellClicked;
+            _boardView.FighterDropped += OnFighterDropped;
             // a kill freezes the whole replay for a beat so it reads as the turning point it is
             _boardView.KillLanded += () => _hitStop = Mathf.Max(_hitStop, .1f);
             if (_boardView.Arena != null) _arenaLighting.Apply(_boardView.Arena, light);
@@ -172,16 +177,17 @@ namespace TrollStrategy.Presentation.Battle
             _screen.PauseToggled += TogglePause;
             _screen.SpeedChosen += SetSpeed;
             _screen.CloseRequested += Close;
+            _screen.KindDropped += OnKindDropped;
             _screen.Open(_deployment);
             ShowDeployment();
         }
 
-        /// <summary>The board shows the deployment: placed fighters, the selection and the hover ring.</summary>
+        /// <summary>The board shows the deployment: placed fighters, the selection, the hover ring and dragging.</summary>
         private void ShowDeployment()
         {
             _boardView.ShowPlayerPlacements(_deployment.Placements, _deployment.UnitKinds);
             _boardView.ShowSelection(_deployment.SelectedUnitId);
-            _boardView.PlacementHover = _report == null && !string.IsNullOrEmpty(_deployment.SelectedUnitId);
+            _boardView.Deploying = _report == null;
         }
 
         private void TogglePause()
@@ -189,6 +195,7 @@ namespace TrollStrategy.Presentation.Battle
             if (_report == null || _resultShown) return;
             _paused = !_paused;
             GameAudio.Play(_paused ? Sfx.Pause : Sfx.Unpause);
+            Soundscape.SetPaused(_paused);
             ShowReplay();
         }
 
@@ -199,24 +206,50 @@ namespace TrollStrategy.Presentation.Battle
             ShowReplay();
         }
 
-        private void ShowReplay() => _screen.ShowReplay(_paused, _speed, _elapsedMs / 1000f,
-            _boardView.AlivePlayers, _boardView.AliveEnemies);
+        private void ShowReplay() => _screen.ShowReplay(_paused, _speed, _boardView.AlivePlayers, _boardView.AliveEnemies);
 
         private void OnCellClicked(Cell cell)
         {
             if (_report != null) return;
-            switch (_deployment.ClickCell(cell))
+            Answer(_deployment.ClickCell(cell), cell);
+        }
+
+        private void OnFighterDropped(string unitId, Cell? cell)
+        {
+            if (_report != null) return;
+            Answer(_deployment.Drop(unitId, cell), cell);
+        }
+
+        // let go over the HUD or off the board: the kind stays in the reserve
+        private void OnKindDropped(UnitKind kind)
+        {
+            if (_report != null) return;
+            var pointer = MapPointer.Position;
+            if (UIInputUtils.IsOverDocument(pointer) || !_boardView.TryCellAt(pointer, out var cell)) return;
+            Answer(_deployment.PlaceKind(kind, cell), cell);
+        }
+
+        /// <summary>Answers the player's hand on the board: a ring where it landed, a sound, or why not.</summary>
+        private void Answer(DeploymentResult result, Cell? cell)
+        {
+            switch (result)
             {
-                case DeploymentClick.PickedUp:
-                    _boardView.PulseCell(cell, true);
+                case DeploymentResult.Placed:
+                case DeploymentResult.Moved:
+                    // the landing sound comes with the fighter
+                    if (cell.HasValue) _boardView.PulseCell(cell.Value, true);
+                    break;
+                case DeploymentResult.Selected:
+                    if (cell.HasValue) _boardView.PulseCell(cell.Value, true);
                     GameAudio.Play(Sfx.Select);
                     break;
-                case DeploymentClick.Placed:
-                    _boardView.PulseCell(cell, true);
+                case DeploymentResult.Deselected:
+                case DeploymentResult.Removed:
+                    GameAudio.Play(Sfx.UiBack);
                     break;
                 default:
                     // says no right where the player looked: red ring on the cell, a shake of the hint and why
-                    _boardView.PulseCell(cell, false);
+                    if (cell.HasValue) _boardView.PulseCell(cell.Value, false);
                     _screen.Refuse();
                     GameAudio.Play(Sfx.UiDenied);
                     break;
@@ -248,8 +281,20 @@ namespace TrollStrategy.Presentation.Battle
         private void Update()
         {
             float dt = Time.deltaTime;
-            if (_report != null && !_resultShown && Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+            var keyboard = Keyboard.current;
+            if (_report != null && !_resultShown && keyboard != null && keyboard.spaceKey.wasPressedThisFrame)
                 TogglePause();
+            // Esc is the way back: while deploying it first lets the selected fighter go
+            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
+            {
+                if (_report == null && _deployment.Deselect()) GameAudio.Play(Sfx.UiBack);
+                else
+                {
+                    GameAudio.Play(Sfx.UiBack);
+                    Close();
+                    return;
+                }
+            }
             if (_report == null || _resultShown)
             {
                 // preparation and aftermath: idle poses, cell hover, settling effects
@@ -281,6 +326,8 @@ namespace TrollStrategy.Presentation.Battle
         private void ShowResult()
         {
             _resultShown = true;
+            // the verdict stinger plays over silence
+            Soundscape.Enter(SoundScene.BattleResult);
             var run = _colony.Session.ActiveBattle;
             int fallen = run?.FallenUnitIds.Count ?? 0;
             int lostItems = run != null ? _deployment.LostItems(run.FallenUnitIds) : 0;
@@ -332,8 +379,29 @@ namespace TrollStrategy.Presentation.Battle
             var focus = _boardView.BoardCenter + new Vector3(0f, 0f, arena.FocusOffset);
             camera.transform.position = focus + new Vector3(0f, Mathf.Sin(pitch), -Mathf.Cos(pitch)) * distance;
             camera.transform.rotation = Quaternion.LookRotation(focus - camera.transform.position, Vector3.up);
+            // the island look: fog and depth of field back off with the camera, as in the colony
+            if (arena.HasLook)
+                IslandAtmosphere.Apply(distance, ArenaProfile(arena), arena.FogStartPerDistance,
+                    arena.FogEndPerDistance, arena.DofStartPerDistance, arena.DofEndPerDistance);
             // backdrop houses stand far behind the board; a backed-off camera would leave them unshadowed
             _arenaLighting.FitShadows(distance, arena.ShadowReach);
+        }
+
+        /// <summary>
+        /// The arena volume's own copy of its profile (the asset stays as the builder made it). The builder counts the
+        /// haze heights from y = 0, where the board stands; a board elsewhere moves them along.
+        /// </summary>
+        private VolumeProfile ArenaProfile(BattleArenaSet arena)
+        {
+            if (_arenaProfile != null || arena.Volume == null || arena.Volume.sharedProfile == null) return _arenaProfile;
+            _arenaProfile = arena.Volume.profile;
+            float ground = arena.transform.position.y;
+            if (ground != 0f && _arenaProfile.TryGet(out IslandHaze haze))
+            {
+                haze.fogStart.Override(haze.fogStart.value + ground);
+                haze.fogFull.Override(haze.fogFull.value + ground);
+            }
+            return _arenaProfile;
         }
 
         /// <summary>
@@ -371,6 +439,7 @@ namespace TrollStrategy.Presentation.Battle
             // the scene unloads next frame: switch its camera, listener and UI off before the colony's return
             gameObject.SetActive(false);
             RestoreColony();
+            Soundscape.Enter(SoundScene.Colony);
             if (_battleScene.IsValid() && _battleScene.isLoaded)
                 SceneManager.UnloadSceneAsync(_battleScene);
         }
@@ -385,6 +454,7 @@ namespace TrollStrategy.Presentation.Battle
                 _screen.PauseToggled -= TogglePause;
                 _screen.SpeedChosen -= SetSpeed;
                 _screen.CloseRequested -= Close;
+                _screen.KindDropped -= OnKindDropped;
                 _screen.Close();
             }
             if (_deployment != null) _deployment.Changed -= ShowDeployment;
@@ -401,6 +471,10 @@ namespace TrollStrategy.Presentation.Battle
         // a script reload in Play Mode drops the snapshot; the pipeline asset must not keep the battle's shadows
         private void OnDisable() => _arenaLighting.Restore();
 
-        private void OnDestroy() => RestoreColony();
+        private void OnDestroy()
+        {
+            RestoreColony();
+            if (_arenaProfile != null) Destroy(_arenaProfile);
+        }
     }
 }

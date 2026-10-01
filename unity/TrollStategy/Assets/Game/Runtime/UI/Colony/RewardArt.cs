@@ -7,8 +7,9 @@ using UnityEngine;
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// Pictures for rewards: a building's catalog icon, a creature's portrait, the market's coin for gold and
-    /// the barracks' icon for a battle. Null when the content has no art; callers show a monogram instead.
+    /// Pictures for rewards and the colony's counters: a building's catalog icon, a creature's portrait, the
+    /// market's coin for gold and the barracks' icon for a battle. Null when the content has no art; callers
+    /// show a monogram instead or hide the picture.
     /// </summary>
     public static class RewardArt
     {
@@ -33,6 +34,10 @@ namespace TrollStrategy.UI
 
         public static Sprite BuildingIcon(BuildingDefinition building) =>
             building == null ? null : building.Icon != null ? building.Icon : building.Sprite;
+
+        /// <summary>The icon of a kind of building; null when the catalog lacks it or its art.</summary>
+        public static Sprite BuildingIcon(GameContentCatalog catalog, BuildingKind kind) =>
+            catalog == null ? null : BuildingIcon(Building(catalog, kind));
 
         private static readonly Dictionary<Sprite, Sprite> s_tight = new();
 

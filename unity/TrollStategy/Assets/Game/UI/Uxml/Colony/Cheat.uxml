@@ -3,9 +3,11 @@
     <ui:Style src="../../Styles/ColonyHud.uss" />
     <ui:Style src="../../Styles/Progression.uss" />
     <ui:VisualElement name="cheat-overlay" class="overlay">
-        <ui:VisualElement class="panel dialog">
+        <ui:VisualElement class="sheet dialog">
             <ui:VisualElement class="dialog__header">
-                <ui:Label text="ЧИТ-МЕНЮ · F1" class="dialog__title t-bold" />
+                <ui:Label text="Чит-меню" class="dialog__title dialog__title--fit t-black" />
+                <ui:Label text="F1" class="hotkey" />
+                <ui:VisualElement class="spacer" />
                 <ui:Button name="cheat-close" text="×" class="btn btn-close" />
             </ui:VisualElement>
             <ui:Label text="Миссия 1 без ожидания открытия и перезарядки." class="dialog__text" />
@@ -15,7 +17,7 @@
             <ui:Button name="cheat-land-buy" text="Купить всю землю" class="btn" />
             <ui:Button name="cheat-land-clear" text="Расчистить всю землю" class="btn" />
             <ui:Button name="cheat-buildings" text="Открыть все постройки" class="btn" />
-            <ui:Button name="cheat-gold" text="+1000 золота" class="btn" />
+            <ui:Button name="cheat-gold" text="+1000 золота" class="btn btn--gold" />
             <ui:Label name="cheat-status" text="Если бойцов нет, быстрый бой наймёт 1 тролля и 3 гоблинов." class="note" />
         </ui:VisualElement>
     </ui:VisualElement>

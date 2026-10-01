@@ -1,9 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <ui:Style src="../../Styles/Theme.uss" />
-    <ui:Style src="../../Styles/BattleHud.uss" />
-    <ui:VisualElement name="battle-roster" class="panel battle-panel battle-roster">
-        <ui:Label text="1 · ВЫБЕРИ БОЙЦА" class="battle-panel__title t-bold" />
-        <ui:ScrollView name="battle-roster-list" class="battle-list" />
-        <ui:Label name="battle-roster-empty" text="Нет бойцов. Найми отряд в колонии." class="note" />
-    </ui:VisualElement>
-</ui:UXML>

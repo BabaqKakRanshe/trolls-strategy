@@ -5,6 +5,7 @@ using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.UI;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace TrollStrategy.Tests
@@ -27,7 +28,9 @@ namespace TrollStrategy.Tests
             _catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath);
             Assert.That(_catalog, Is.Not.Null, CatalogPath);
             _session = TestColony.NewSession(_catalog);
+            Assert.That(_session.DebugAddGold(1000).Ok, Is.True);
             Assert.That(_session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 2, _session.FindSpawnCell())).Ok, Is.True);
+            Assert.That(_session.Dispatch(new BuyUnitsCommand(UnitKind.Troll, 1, _session.FindSpawnCell())).Ok, Is.True);
             _mission = _catalog.Missions.First(mission => mission != null);
             _board = _mission.CreateBoard();
             _deployment = new BattleDeployment(_session, _mission, _board);
@@ -43,80 +46,118 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void Deployment_ListsTheColonysFighters_AndTheStartWaitsForASquad()
+        public void Deployment_ShowsTheMissionAndTheReserve_AndTheStartWaitsForASquad()
         {
             Assert.That(_hud.IsDeploying, Is.True);
             Assert.That(_hud.Replay.IsShown, Is.False);
-            Assert.That(_hud.Roster.Count, Is.EqualTo(_session.CurrentSnapshot.Units.Count));
-            Assert.That(_hud.Header.Title, Does.Contain("РАССТАНОВКА"));
-            Assert.That(_hud.Actions.Squad, Is.EqualTo($"3 · ОТРЯД 0 / {_mission.MaxPlayerUnits}"));
+            Assert.That(_hud.Header.Title, Is.EqualTo(_mission.DisplayName));
+            Assert.That(_hud.Header.Enemies, Is.EqualTo(_mission.Enemies.GroupBy(enemy => enemy.Kind)
+                .Select(group => group.Count().ToString()).ToArray()));
+            Assert.That(_hud.Header.Reward, Does.StartWith(_deployment.WinGold.Min.ToString()));
+
+            Assert.That(_hud.Squad.Count, Is.EqualTo(2), "a button per kind: goblins and trolls");
+            foreach (var kind in _deployment.Kinds)
+                Assert.That(_hud.Squad.ReserveOf(kind), Is.EqualTo(_deployment.ReserveOf(kind).ToString()));
+            Assert.That(_hud.Squad.KindButton(UnitKind.Goblin).ClassListContains("is-on"), Is.True, "picked first");
+            Assert.That(_hud.Squad.Squad, Is.EqualTo($"0/{_mission.MaxPlayerUnits}"));
+            Assert.That(_hud.Gear.IsShown, Is.False, "no fighter is selected");
+            Assert.That(_hud.Actions.Hint, Is.EqualTo("Нажми синюю клетку: встанет гоблин"));
+            Assert.That(UiFeel.IsAvailable(_hud.Actions.AutoPlace), Is.True);
             Assert.That(UiFeel.IsAvailable(_hud.Actions.Start), Is.False);
-            Assert.That(UiFeel.IsAvailable(_hud.Gear.Remove), Is.False);
         }
 
         [Test]
-        public void SelectingAFighterThenACell_PlacesIt_AndOpensTheStart()
+        public void PressingAKind_PicksWhoTheNextClickBrings()
         {
-            var unitId = _deployment.Roster[0].Id;
-            UiFeel.Press(_hud.Roster.CardOf(unitId));
-            Assert.That(_deployment.SelectedUnitId, Is.EqualTo(unitId));
-            Assert.That(_hud.Roster.CardOf(unitId).ClassListContains("is-on"), Is.True);
+            UiFeel.Press(_hud.Squad.KindButton(UnitKind.Troll));
+            Assert.That(_hud.Squad.KindButton(UnitKind.Troll).ClassListContains("is-on"), Is.True);
+            Assert.That(_hud.Squad.KindButton(UnitKind.Goblin).ClassListContains("is-on"), Is.False);
+            Assert.That(_hud.Actions.Hint, Is.EqualTo("Нажми синюю клетку: встанет тролль"));
 
-            Assert.That(_deployment.ClickCell(FreeCell()), Is.EqualTo(DeploymentClick.Placed));
+            Assert.That(_deployment.ClickCell(FreeCell()), Is.EqualTo(DeploymentResult.Placed));
 
-            Assert.That(_hud.Roster.HintOf(unitId), Does.Contain("на поле"));
-            Assert.That(_hud.Roster.CardOf(unitId).ClassListContains("is-placed"), Is.True);
+            string unitId = _deployment.SelectedUnitId;
+            Assert.That(_deployment.UnitKinds[unitId], Is.EqualTo(UnitKind.Troll));
+            Assert.That(_hud.Squad.ReserveOf(UnitKind.Troll), Is.EqualTo(_deployment.ReserveOf(UnitKind.Troll).ToString()));
+            Assert.That(_hud.Squad.Squad, Is.EqualTo($"1/{_mission.MaxPlayerUnits}"));
+            Assert.That(_hud.Gear.IsShown, Is.True);
+            Assert.That(_hud.Gear.Health, Is.EqualTo(_deployment.DefinitionOf(unitId).CombatHealth.ToString()));
             Assert.That(UiFeel.IsAvailable(_hud.Actions.Start), Is.True);
-            Assert.That(_hud.Actions.Start.text, Is.EqualTo("НАЧАТЬ БОЙ · 1 В ОТРЯДЕ"));
-            Assert.That(UiFeel.IsAvailable(_hud.Gear.Remove), Is.True);
-            Assert.That(_hud.Gear.Details, Does.Contain(_deployment.UnitName(unitId)));
         }
 
         [Test]
-        public void ACellClickWithoutAFighter_IsRefusedWithTheReason()
+        public void DraggingAKindOutOfTheReserve_HandsItToTheBattle()
         {
-            Assert.That(_deployment.ClickCell(FreeCell()), Is.EqualTo(DeploymentClick.Refused));
+            UnitKind? dropped = null;
+            _hud.KindDropped += kind => dropped = kind;
+
+            _hud.Squad.Press(UnitKind.Troll, Vector2.zero);
+            _hud.Squad.Drag(new Vector2(3f, 0f));
+            Assert.That(_hud.Squad.IsDragging, Is.False, "a twitch is still a click");
+            _hud.Squad.Drag(new Vector2(240f, -180f));
+            Assert.That(_hud.Squad.IsDragging, Is.True);
+            _hud.Squad.LetGo();
+
+            Assert.That(dropped, Is.EqualTo(UnitKind.Troll));
+            Assert.That(_hud.Squad.IsDragging, Is.False);
+        }
+
+        [Test]
+        public void AKindWithNobodyLeft_IsUnavailable_AndThePickMovesOn()
+        {
+            UiFeel.Press(_hud.Squad.KindButton(UnitKind.Troll));
+            while (_deployment.ReserveOf(UnitKind.Troll) > 0) _deployment.ClickCell(FreeCell());
+
+            Assert.That(UiFeel.IsAvailable(_hud.Squad.KindButton(UnitKind.Troll)), Is.False);
+            Assert.That(_hud.Squad.KindButton(UnitKind.Goblin).ClassListContains("is-on"), Is.True);
+            UiFeel.Press(_hud.Squad.KindButton(UnitKind.Troll));
+            Assert.That(_deployment.PickedKind, Is.EqualTo(UnitKind.Goblin));
+        }
+
+        [Test]
+        public void ARefusedClick_ShowsTheReasonUnderTheBoard()
+        {
+            var enemyCell = _mission.EnemyDeployment.First(cell => !_board.IsBlocked(cell));
+            Assert.That(_deployment.ClickCell(enemyCell), Is.EqualTo(DeploymentResult.Refused));
             _hud.Refuse();
 
-            Assert.That(_hud.Actions.Hint, Is.EqualTo("Сначала выбери бойца в списке слева"));
+            Assert.That(_hud.Actions.Hint, Is.EqualTo("Бойцов ставят на синие клетки"));
             Assert.That(_deployment.Placements, Is.Empty);
         }
 
         [Test]
-        public void AutoPlace_FillsTheSquad_AndRemoveTakesTheSelectedOffTheBoard()
+        public void AutoPlace_FillsTheSquad_AndTheCrossSendsTheSelectedBack()
         {
             UiFeel.Press(_hud.Actions.AutoPlace);
-            int squad = System.Math.Min(_mission.MaxPlayerUnits, _deployment.Roster.Count);
-            Assert.That(_deployment.Placements.Count, Is.EqualTo(squad));
+            Assert.That(_deployment.Placements.Count, Is.EqualTo(_deployment.SquadLimit));
             Assert.That(UiFeel.IsAvailable(_hud.Actions.AutoPlace), Is.False);
 
+            _deployment.ClickCell(_deployment.Placements[0].Cell);
             UiFeel.Press(_hud.Gear.Remove);
 
-            Assert.That(_deployment.Placements.Count, Is.EqualTo(squad - 1));
-            Assert.That(_hud.Actions.Hint, Does.Contain("убран с поля"));
+            Assert.That(_deployment.Placements.Count, Is.EqualTo(_deployment.SquadLimit - 1));
+            Assert.That(_hud.Gear.IsShown, Is.False);
+            Assert.That(UiFeel.IsAvailable(_hud.Actions.AutoPlace), Is.True);
         }
 
         [Test]
-        public void Gear_GoesOnlyToAFighterOnTheBoard()
+        public void Gear_GoesToTheSelectedFighter_AndIsHandedOverFromAnother()
         {
-            if (_deployment.Equipment.Count == 0)
-            {
-                Assert.That(_hud.Root.Q<Label>("battle-gear-empty").style.display.value, Is.Not.EqualTo(DisplayStyle.None));
-                return;
-            }
-            var itemId = _deployment.Equipment[0].Id;
-            var unitId = _deployment.Roster[0].Id;
-            UiFeel.Press(_hud.Roster.CardOf(unitId));
-            Assert.That(UiFeel.IsAvailable(_hud.Gear.ItemButton(itemId)), Is.False, "Gear waits until the fighter is placed");
-            UiFeel.Press(_hud.Gear.ItemButton(itemId));
-            Assert.That(_deployment.OwnerOf(itemId), Is.Null);
+            if (_deployment.Equipment.Count == 0) Assert.Ignore("The catalog starts the colony without gear");
+            var item = _deployment.Equipment[0];
+            _deployment.ClickCell(FreeCell());
+            string first = _deployment.SelectedUnitId;
+
+            UiFeel.Press(_hud.Gear.ItemButton(item.Id));
+            Assert.That(_deployment.OwnerOf(item.Id), Is.EqualTo(first));
+            Assert.That(_hud.Gear.ItemButton(item.Id).ClassListContains("is-on"), Is.True);
+            Assert.That(_hud.Gear.HintOf(item.Id), Does.Contain("Надето"));
 
             _deployment.ClickCell(FreeCell());
-            UiFeel.Press(_hud.Gear.ItemButton(itemId));
-
-            Assert.That(_deployment.OwnerOf(itemId), Is.EqualTo(unitId));
-            Assert.That(_hud.Gear.HintOf(itemId), Does.StartWith("Надето"));
-            Assert.That(_hud.Gear.ItemButton(itemId).ClassListContains("is-on"), Is.True);
+            Assert.That(_hud.Gear.ItemButton(item.Id).ClassListContains("is-taken"), Is.True, "worn by the first fighter");
+            UiFeel.Press(_hud.Gear.ItemButton(item.Id));
+            Assert.That(_deployment.OwnerOf(item.Id), Is.EqualTo(_deployment.SelectedUnitId));
+            Assert.That(_deployment.OwnerOf(item.Id), Is.Not.EqualTo(first));
         }
 
         [Test]
@@ -142,27 +183,35 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void Replay_ShowsTheFight_AndTheVerdictOffersTheWayHome()
+        public void Replay_ShowsBothSides_AndTheVerdictOffersTheWayHome()
         {
+            UiFeel.Press(_hud.Actions.AutoPlace);
             _hud.BeginReplay();
             Assert.That(_hud.IsDeploying, Is.False);
             Assert.That(_hud.Replay.IsShown, Is.True);
-            Assert.That(_hud.Banner.Text, Is.EqualTo("В БОЙ!"));
+            Assert.That(_hud.Banner.Text, Is.EqualTo("В бой!"));
 
-            _hud.ShowReplay(true, 2f, 3.2f, 2, 1);
-            Assert.That(_hud.Replay.Status, Does.StartWith("ПАУЗА · "));
-            Assert.That(_hud.Replay.Status, Does.Contain("Враги: 1 в строю"));
-            Assert.That(_hud.Replay.Pause.text, Is.EqualTo("ПРОДОЛЖИТЬ"));
+            _hud.ShowReplay(true, 2f, 2, 1);
+            Assert.That((_hud.Replay.Ours, _hud.Replay.Theirs), Is.EqualTo(("2", "1")));
+            Assert.That(_hud.Replay.IsPaused, Is.True);
+            Assert.That(_hud.Replay.Pause.ClassListContains("is-on"), Is.True);
             Assert.That(_hud.Replay.SpeedButton(2f).ClassListContains("is-on"), Is.True);
 
             _hud.ShowResult(BattleOutcome.PlayerVictory, 2, 0, 0);
-            Assert.That(_hud.Replay.Status, Does.StartWith("ПОБЕДА · награда ждёт в поселении"));
-            Assert.That(_hud.Header.Title, Does.EndWith("ПОБЕДА"));
+            Assert.That(_hud.Replay.Verdict, Is.EqualTo("Победа"));
+            Assert.That((_hud.Replay.Survived, _hud.Replay.Fallen), Is.EqualTo(("2", "0")));
+            Assert.That(_hud.Replay.ShowsLostGear, Is.False);
+            Assert.That(_hud.Replay.ShowsPrize, Is.True);
             Assert.That(Ui.IsShown(_hud.Replay.Return), Is.True);
             Assert.That(Ui.IsShown(_hud.Replay.Pause), Is.False);
+
+            _hud.ShowResult(BattleOutcome.EnemyVictory, 0, 2, 1);
+            Assert.That(_hud.Replay.Verdict, Is.EqualTo("Поражение"));
+            Assert.That(_hud.Replay.ShowsLostGear, Is.True);
+            Assert.That(_hud.Replay.ShowsPrize, Is.False);
         }
 
         private Cell FreeCell() => _mission.PlayerDeployment.First(cell =>
-            _board.CanPlace(cell) && !_deployment.Placements.Any(placement => placement.Cell == cell));
+            _board.CanPlace(cell) && _deployment.UnitAt(cell) == null);
     }
 }

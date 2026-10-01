@@ -1,35 +1,37 @@
 /*
- * HUD theme shared by every screen: colours, type and the building blocks (panels, buttons, captions).
- * Warm cream text and gold accents over the cool slate of the diorama's stone; greens and clays
- * follow ColonyPalette. Screens add layout only and use these variables instead of their own colours.
+ * HUD theme shared by every screen: colours, type and the building blocks.
+ *
+ * The look is "air": the island stays in view and the HUD barely has chrome. Text over the world is dark
+ * ink with a white halo, on a soft patch of mist where it runs to several lines (.float). White sheets
+ * with a soft shadow are kept for what floats above the game and must be read at once: dialogs, the
+ * hint card, the order prompt. Buttons are white pills; the one accent is the blue of the island's
+ * roofs, and coin gold marks spending and rewards. Screens add layout and sizes only, and use these
+ * variables instead of their own colours.
  */
 
 :root {
-    --ink: #F1E8D5;
-    --ink-muted: #B7BAA6;
-    --ink-dark: #251B10;
-    --gold: #E8C170;
-    --gold-light: #F4D48E;
-    --gold-deep: #A9782F;
-    --gold-glow: #FFF3CF;
-    --gold-ray: rgba(244, 212, 142, 0.11);
-    --surface: rgba(19, 27, 35, 0.94);
-    --surface-raised: #25333E;
-    --surface-sunken: #111820;
-    --surface-hover: #30424F;
-    --edge: #465A66;
-    --edge-dark: #0A0F14;
-    --grass: #6FA544;
-    --grass-deep: #3E6E26;
-    --grass-dark: #203F16;
-    --grass-light: #A8CA58;
-    --wood: #9A6446;
-    --wood-deep: #6A3F2E;
-    --clay: #CF573C;
-    --clay-deep: #8C3322;
-    --clay-light: #FF9A84;
-    --water: #73BED3;
-    --coin: #FFDB40;
+    --ink: #1E2A40;
+    --ink-soft: #3E4C64;
+    --ink-faint: #7C889C;
+    --paper: #FFFFFF;
+    --paper-soft: #F2F6FB;
+    --paper-line: rgba(30, 42, 64, 0.14);
+    --halo: rgba(255, 255, 255, 0.95);
+    --accent: #2F5BAE;
+    --accent-hover: #3B6BC4;
+    --accent-deep: #1F4488;
+    --accent-soft: #E1EAF9;
+    --accent-pulse: #C4D6F5;
+    --good: #3A7715;
+    --good-fill: #6FAE35;
+    --warn: #935700;
+    --bad: #B83624;
+    --bad-soft: #FBE6E1;
+    --coin: #F6C343;
+    --coin-hover: #FFD263;
+    --coin-deep: #8F6200;
+    --veil: rgba(228, 236, 245, 0.45);
+    --veil-deep: rgba(220, 230, 241, 0.72);
 }
 
 /* Root of the screen UI document: type and text colour inherit from here into every nested document. */
@@ -39,8 +41,8 @@
     top: 0;
     right: 0;
     bottom: 0;
-    -unity-font-definition: url("../Fonts/Rubik-Regular.ttf");
-    font-size: 17px;
+    -unity-font-definition: url("../Fonts/Nunito-SemiBold.ttf");
+    font-size: 18px;
     color: var(--ink);
 }
 
@@ -54,38 +56,42 @@
 }
 
 .t-medium {
-    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
 }
 
 .t-bold {
-    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
 }
 
+.t-black {
+    -unity-font-definition: url("../Fonts/Nunito-Black.ttf");
+}
+
+/* A short label over what it names: sentence case, never spaced out. */
 .t-caption {
-    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    color: var(--ink-muted);
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
+    font-size: 15px;
+    color: var(--ink-soft);
 }
 
 .t-muted {
-    color: var(--ink-muted);
+    color: var(--ink-soft);
 }
 
 .t-gold {
-    color: var(--gold);
+    color: var(--coin-deep);
 }
 
 .t-good {
-    color: var(--grass-light);
+    color: var(--good);
 }
 
 .t-warn {
-    color: var(--gold);
+    color: var(--warn);
 }
 
 .t-bad {
-    color: var(--clay-light);
+    color: var(--bad);
 }
 
 .t-wrap {
@@ -96,103 +102,141 @@
     flex-grow: 1;
 }
 
-/* A slab of stone: dark fill, light rim and a heavier bottom edge for the low-poly bevel. */
-.panel {
-    background-color: var(--surface);
-    border-width: 2px;
-    border-color: var(--edge);
-    border-bottom-width: 4px;
-    border-bottom-color: var(--edge-dark);
-    border-radius: 12px;
-    padding: 10px 14px;
+/*
+ * Text standing on the world: a soft white glow keeps dark ink readable over grass, roofs and clouds. A text
+ * outline would eat into the letters and leave small text thin and grey, so the glow is a shadow.
+ */
+.halo,
+.float {
+    text-shadow: 0 0 5px var(--halo);
 }
 
-/* A panel that must not let the map show through, such as a dialog in the middle of the screen.
-   The HUD blends in linear space, so even the 94% surface lets bright buildings bleed in. */
-.panel--solid {
-    background-color: #131B23;
+/* A block of text on the world: a patch of mist with no edge behind it, wider than the text. */
+.float {
+    background-image: url("../Sprites/mist.png");
+    -unity-slice-left: 60;
+    -unity-slice-right: 60;
+    -unity-slice-top: 60;
+    -unity-slice-bottom: 60;
+    padding: 18px 24px;
+}
+
+/* A patch of mist hugging one line or paragraph of text, for small text over a busy world. */
+.float--tight {
+    background-image: url("../Sprites/mist.png");
+    -unity-slice-left: 60;
+    -unity-slice-right: 60;
+    -unity-slice-top: 60;
+    -unity-slice-bottom: 60;
+    -unity-slice-scale: 0.4px;
+    align-self: flex-start;
+    padding: 4px 14px;
+    margin-left: -14px;
+    margin-right: -14px;
+}
+
+/*
+ * A white sheet floating above the game, with its shadow drawn into the picture. The picture reaches
+ * past the sheet (28 px left and right, 22 above, 36 below); the margins give that back to the layout
+ * and the padding keeps content off the shadow.
+ */
+.sheet {
+    background-image: url("../Sprites/sheet.png");
+    -unity-slice-left: 50;
+    -unity-slice-right: 50;
+    -unity-slice-top: 44;
+    -unity-slice-bottom: 58;
+    margin: -22px -28px -36px -28px;
+    padding: 38px 46px 50px 46px;
 }
 
 .divider {
-    height: 2px;
+    height: 1px;
     flex-shrink: 0;
-    background-color: var(--edge);
+    background-color: var(--paper-line);
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-/* Buttons. The hover lift and press dip are transitions; UiFeel adds sound and the refusal wobble. */
+/*
+ * Buttons: white pills with a hairline, so they hold their edge over clouds too. The hover lift and press
+ * dip are transitions; UiFeel adds sound and the refusal wobble. Buttons never wear the halo.
+ */
 .btn {
     flex-direction: row;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    min-height: 44px;
-    padding: 6px 16px;
-    background-color: var(--surface-raised);
+    min-height: 48px;
+    padding: 0 20px;
+    background-color: var(--paper);
     border-width: 2px;
-    border-color: var(--edge);
-    border-bottom-width: 4px;
-    border-bottom-color: var(--edge-dark);
-    border-radius: 10px;
+    border-color: var(--paper-line);
+    border-radius: 24px;
     color: var(--ink);
-    font-size: 16px;
-    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
+    font-size: 17px;
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
     -unity-text-align: middle-center;
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0);
     white-space: nowrap;
-    transition-property: scale, background-color, opacity;
-    transition-duration: 0.12s, 0.12s, 0.2s;
-    transition-timing-function: ease-out, ease-out, ease-out;
+    transition-property: scale, background-color, opacity, border-color;
+    transition-duration: 0.12s, 0.12s, 0.2s, 0.3s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .btn:hover {
-    background-color: var(--surface-hover);
-    scale: 1.04 1.04;
+    background-color: var(--paper-soft);
+    border-color: rgba(47, 91, 174, 0.35);
+    scale: 1.03 1.03;
 }
 
 .btn:active {
-    scale: 0.95 0.95;
+    scale: 0.96 0.96;
 }
 
 .btn--primary {
-    background-color: var(--grass-deep);
-    border-color: var(--grass);
-    border-bottom-color: var(--grass-dark);
+    background-color: var(--accent);
+    border-color: var(--accent-deep);
+    color: var(--paper);
 }
 
 .btn--primary:hover {
-    background-color: var(--grass);
+    background-color: var(--accent-hover);
+    border-color: var(--accent-deep);
 }
 
+/* Spending and taking gold: the coin's colour. */
 .btn--gold {
-    background-color: var(--gold);
-    border-color: var(--gold-light);
-    border-bottom-color: var(--gold-deep);
-    color: var(--ink-dark);
-    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+    background-color: var(--coin);
+    border-color: rgba(143, 98, 0, 0.45);
+    color: var(--ink);
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
 }
 
 .btn--gold:hover {
-    background-color: var(--gold-light);
+    background-color: var(--coin-hover);
+    border-color: rgba(143, 98, 0, 0.6);
 }
 
 .btn--danger {
-    background-color: var(--clay-deep);
-    border-color: var(--clay);
-    border-bottom-color: #4A170D;
+    color: var(--bad);
+    border-color: rgba(184, 54, 36, 0.3);
 }
 
 .btn--danger:hover {
-    background-color: #A6402C;
+    background-color: var(--bad-soft);
+    border-color: rgba(184, 54, 36, 0.5);
 }
 
+/* A switch that is on, a tab or a choice that is taken. */
 .btn.is-on {
-    background-color: var(--wood-deep);
-    border-color: var(--gold);
+    background-color: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-deep);
 }
 
 .btn.is-unavailable {
-    opacity: 0.5;
+    opacity: 0.45;
 }
 
 .btn.is-unavailable:hover {
@@ -201,14 +245,17 @@
 
 /* What the current quest asks for next. The HUD toggles .hud-pulse on its root so the rim breathes. */
 .btn.is-suggested {
-    border-color: var(--gold);
-    border-bottom-color: var(--gold-deep);
-    transition-property: scale, background-color, opacity, border-color;
-    transition-duration: 0.12s, 0.12s, 0.2s, 0.4s;
+    border-color: var(--accent);
 }
 
 .hud-pulse .btn.is-suggested {
-    border-color: var(--gold-glow);
+    border-color: var(--accent-hover);
+    background-color: var(--accent-soft);
+}
+
+.hud-pulse .btn--primary.is-suggested,
+.hud-pulse .btn--gold.is-suggested {
+    border-color: var(--ink);
 }
 
 .btn-icon {
@@ -216,6 +263,7 @@
     height: 40px;
     min-height: 40px;
     padding: 0;
+    border-radius: 20px;
     font-size: 24px;
 }
 
@@ -224,13 +272,165 @@
     height: 36px;
     min-height: 36px;
     padding: 0;
+    border-radius: 18px;
     font-size: 22px;
+    color: var(--ink-soft);
     background-color: rgba(0, 0, 0, 0);
     border-color: rgba(0, 0, 0, 0);
 }
 
 .btn-close:hover {
-    background-color: var(--surface-hover);
+    background-color: var(--paper-soft);
+    border-color: var(--paper-line);
+}
+
+/* A heading on a card that folds what is under it: no pill until hovered, and it does not grow, being wide. */
+.btn-flat {
+    background-color: rgba(0, 0, 0, 0);
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.btn-flat:hover {
+    background-color: var(--paper-soft);
+    border-color: var(--paper-line);
+    scale: 1 1;
+}
+
+/* A button that is a word on the world: accent ink with the halo and no pill; hovered, a soft pill shows under it. */
+.btn-link {
+    min-height: 0;
+    padding: 2px 10px 2px 6px;
+    background-color: rgba(0, 0, 0, 0);
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 14px;
+    color: var(--accent);
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
+    text-shadow: 0 0 5px var(--halo);
+}
+
+.btn-link:hover {
+    background-color: rgba(225, 234, 249, 0.9);
+    border-color: rgba(0, 0, 0, 0);
+    color: var(--accent-deep);
+}
+
+.btn-link > .glyph {
+    -unity-background-image-tint-color: var(--accent);
+}
+
+.btn-link:hover > .glyph {
+    -unity-background-image-tint-color: var(--accent-deep);
+}
+
+/*
+ * A round white button with its shadow drawn into the picture (disc.png: a 240 px circle in 320 px).
+ * Set width and height to 4/3 of the circle; the tint recolours the circle for states.
+ */
+.btn-disc {
+    padding: 0;
+    min-height: 0;
+    border-width: 0;
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: url("../Sprites/disc.png");
+    -unity-background-image-tint-color: var(--paper);
+    transition-property: scale, opacity, -unity-background-image-tint-color;
+    transition-duration: 0.12s, 0.2s, 0.3s;
+}
+
+.btn-disc:hover {
+    background-color: rgba(0, 0, 0, 0);
+    scale: 1.06 1.06;
+}
+
+.btn-disc.is-on {
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-image-tint-color: var(--accent);
+    color: var(--paper);
+}
+
+.btn-disc.is-suggested {
+    -unity-background-image-tint-color: var(--accent-soft);
+}
+
+.hud-pulse .btn-disc.is-suggested {
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-image-tint-color: var(--accent-pulse);
+}
+
+/* One-colour pictograms, white in the file and tinted here. */
+.glyph {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    -unity-background-image-tint-color: var(--ink);
+}
+
+.is-on > .glyph {
+    -unity-background-image-tint-color: var(--paper);
+}
+
+.is-suggested > .glyph {
+    -unity-background-image-tint-color: var(--accent-deep);
+}
+
+.glyph--idle {
+    background-image: url("../Icons/idle.svg");
+}
+
+.glyph--land {
+    background-image: url("../Icons/land.svg");
+}
+
+.glyph--grid {
+    background-image: url("../Icons/grid.svg");
+}
+
+.glyph--battle {
+    background-image: url("../Icons/battle.svg");
+}
+
+.glyph--catalog {
+    background-image: url("../Icons/catalog.svg");
+}
+
+.glyph--look {
+    background-image: url("../Icons/look.svg");
+}
+
+.glyph--auto {
+    background-image: url("../Icons/auto.svg");
+}
+
+.glyph--pause {
+    background-image: url("../Icons/pause.svg");
+}
+
+.glyph--play {
+    background-image: url("../Icons/play.svg");
+}
+
+.glyph--health {
+    background-image: url("../Icons/health.svg");
+}
+
+.glyph--damage {
+    background-image: url("../Icons/damage.svg");
+}
+
+.glyph--armor {
+    background-image: url("../Icons/armor.svg");
+}
+
+/*
+ * An arrow pointing up: "fold". Turned over, it points down: "unfold".
+ * The SVG imports cropped to the stroke (wider than tall), so it fits its square box instead of stretching.
+ */
+.glyph--chevron {
+    background-image: url("../Icons/chevron.svg");
+    -unity-background-scale-mode: scale-to-fit;
+    transition-property: rotate;
+    transition-duration: 0.2s;
 }
 
 /* Caption of a button that also carries a badge; inherits the button's type. */
@@ -241,67 +441,95 @@
 /* Two-line button: what it does, then its price or hint. */
 .btn-stack {
     flex-direction: column;
+    border-radius: 18px;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
 
 .btn__title {
-    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
-    font-size: 15px;
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
+    font-size: 16px;
     -unity-text-align: middle-center;
 }
 
 .btn__hint {
-    font-size: 12px;
-    color: var(--ink-muted);
+    font-size: 13px;
+    color: var(--ink-soft);
     -unity-text-align: middle-center;
 }
 
+.btn--primary .btn__hint {
+    color: rgba(255, 255, 255, 0.85);
+}
+
 .btn--gold .btn__hint {
-    color: var(--ink-dark);
+    color: var(--ink);
+}
+
+.btn--danger .btn__hint {
+    color: var(--bad);
 }
 
 .btn.is-unavailable .btn__hint {
-    color: var(--clay-light);
+    color: var(--bad);
 }
 
-/* Keyboard shortcut badge in a button's corner. */
+.btn--primary.is-unavailable .btn__hint {
+    color: var(--paper);
+}
+
+/* The key for a command, as a small keycap after its caption. */
 .hotkey {
-    position: absolute;
-    top: -9px;
-    right: -7px;
+    margin-left: 8px;
     padding: 1px 6px;
     border-radius: 6px;
-    border-width: 1px;
-    border-color: var(--edge);
-    background-color: var(--surface-sunken);
-    font-size: 11px;
-    color: var(--gold);
-    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
-}
-
-/* Small label-and-number block used for counters. */
-.stat {
-    flex-direction: column;
-    justify-content: center;
-    min-width: 118px;
-    padding: 4px 14px;
-    margin-right: 6px;
-    background-color: var(--surface-raised);
-    border-radius: 9px;
-    border-width: 1px;
-    border-color: var(--edge);
-}
-
-.stat__value {
-    font-size: 25px;
-    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
-}
-
-.stat__note {
+    background-color: rgba(30, 42, 64, 0.08);
     font-size: 12px;
-    color: var(--ink-muted);
+    color: var(--ink-soft);
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
 }
 
-/* Key and value rows in cards. */
+.btn--primary .hotkey {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--paper);
+}
+
+/* A text tab: the taken one is ink with a line under it. */
+.tab {
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 2px;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-bottom-width: 3px;
+    border-color: rgba(0, 0, 0, 0);
+    border-radius: 0;
+    color: var(--ink-soft);
+    font-size: 18px;
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
+    transition-property: border-color, color;
+    transition-duration: 0.15s, 0.15s;
+}
+
+.tab:hover {
+    color: var(--ink);
+}
+
+.tab.is-active {
+    color: var(--ink);
+    border-color: var(--ink);
+}
+
+.tab.is-suggested {
+    color: var(--accent);
+}
+
+.hud-pulse .tab.is-suggested {
+    border-color: var(--accent-pulse);
+}
+
+/* Key and value rows. */
 .kv {
     flex-direction: row;
     padding-top: 3px;
@@ -309,23 +537,24 @@
 }
 
 .kv__key {
-    width: 42%;
+    width: 40%;
     flex-shrink: 0;
-    font-size: 15px;
-    color: var(--ink-muted);
+    font-size: 16px;
+    color: var(--ink-soft);
 }
 
 .kv__value {
     flex-grow: 1;
     flex-shrink: 1;
-    font-size: 15px;
+    font-size: 16px;
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
     white-space: normal;
 }
 
 .note {
     margin-top: 6px;
-    font-size: 14px;
-    color: var(--ink-muted);
+    font-size: 15px;
+    color: var(--ink-soft);
     white-space: normal;
 }
 
@@ -349,7 +578,62 @@
     flex-shrink: 0;
 }
 
-/* Full-screen dim behind a dialog. */
+/* A creature's side in a battle, in the board's colours: blue under yours, red under the enemy. */
+.side-ours {
+    border-color: var(--accent);
+    background-color: var(--accent-soft);
+}
+
+.side-enemy {
+    border-color: var(--bad);
+    background-color: var(--bad-soft);
+}
+
+/*
+ * Hint card by the element under the pointer. left/top from HudTooltip mark the anchor of the card's
+ * picture, shadow included; the side class says which way the card opens from it.
+ */
+
+.tooltip {
+    position: absolute;
+    margin: 0;
+    translate: -50% -100%;
+    max-width: 420px;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.tooltip--below {
+    translate: 0 0;
+}
+
+.tooltip--left {
+    translate: -100% -50%;
+}
+
+.tooltip__text {
+    flex-shrink: 1;
+}
+
+.tooltip__title {
+    font-size: 17px;
+}
+
+.tooltip__body {
+    margin-top: 3px;
+    font-size: 15px;
+    color: var(--ink-soft);
+    white-space: normal;
+}
+
+.tooltip__key {
+    margin-left: 12px;
+    margin-top: 1px;
+    padding: 3px 9px;
+    font-size: 15px;
+}
+
+/* Behind a dialog the island stays in view, blurred under a pale veil. */
 .overlay {
     position: absolute;
     left: 0;
@@ -358,22 +642,23 @@
     bottom: 0;
     align-items: center;
     justify-content: center;
-    background-color: rgba(6, 10, 14, 0.72);
+    background-color: var(--veil);
+    backdrop-filter: blur(6px);
 }
 
-/* A light dim for a quick choice in the middle of an order; the map stays in view. */
+/* A quick choice in the middle of an order: the map stays sharp. */
 .overlay--soft {
-    background-color: rgba(6, 10, 14, 0.62);
+    backdrop-filter: none;
 }
 
-/* A deeper dim for a moment that should hold the whole screen, such as a reward. */
+/* A moment that should hold the whole screen, such as a reward. */
 .overlay--deep {
-    background-color: rgba(4, 7, 10, 0.86);
+    background-color: var(--veil-deep);
+    backdrop-filter: blur(10px);
 }
 
 .dialog {
     width: 580px;
-    padding: 20px 24px;
 }
 
 .dialog__header {
@@ -384,13 +669,19 @@
 
 .dialog__title {
     flex-grow: 1;
-    font-size: 24px;
+    font-size: 26px;
+}
+
+/* A title followed by its key: the title keeps its width and a spacer pushes the close button out. */
+.dialog__title--fit {
+    flex-grow: 0;
 }
 
 .dialog__text {
-    font-size: 16px;
+    font-size: 17px;
+    color: var(--ink-soft);
     white-space: normal;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .dialog .btn {

@@ -82,7 +82,6 @@ namespace TrollStrategy.Presentation.Feel
                 case SellUnitsCommand _:
                     GameAudio.Play(Sfx.Coins);
                     break;
-                case SendToBarracksCommand _:
                 case ReleaseUnitsCommand _:
                     GameAudio.Play(Sfx.UiBack);
                     break;

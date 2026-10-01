@@ -2,24 +2,24 @@
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/ColonyHud.uss" />
     <ui:Style src="../../Styles/Progression.uss" />
-    <ui:VisualElement name="catalog" class="panel catalog">
-        <ui:VisualElement class="catalog__header">
-            <ui:Label text="КАТАЛОГ" class="catalog__title t-bold" />
-            <ui:Button name="catalog-close" text="×" class="btn btn-close" />
+    <!-- a tray of round tokens along the bottom; CatalogPanel builds the tokens -->
+    <ui:VisualElement name="catalog" class="catalog" picking-mode="Ignore">
+        <ui:VisualElement class="catalog__side halo" picking-mode="Ignore">
+            <ui:Button name="tab-units" text="Существа" class="tab" />
+            <ui:Button name="tab-buildings" text="Здания" class="tab" />
+            <ui:Button name="catalog-close" text="×" class="btn btn-close catalog__close" />
         </ui:VisualElement>
-        <ui:VisualElement class="tabs">
-            <ui:Button name="tab-units" text="Существа" class="btn tab" />
-            <ui:Button name="tab-buildings" text="Здания" class="btn tab" />
-        </ui:VisualElement>
-        <ui:VisualElement name="units-page" class="catalog__page">
-            <ui:VisualElement class="stepper">
-                <ui:Label text="Нанимать группой" class="stepper__label" />
-                <ui:Button name="hire-less" text="−" class="btn btn-icon" />
-                <ui:Label name="hire-amount" text="1" class="stepper__value t-bold" />
-                <ui:Button name="hire-more" text="+" class="btn btn-icon" />
+        <ui:VisualElement name="units-page" class="catalog__page" picking-mode="Ignore">
+            <ui:VisualElement class="stepper halo" picking-mode="Ignore">
+                <ui:Label text="Нанимать по" class="stepper__label" picking-mode="Ignore" />
+                <ui:VisualElement class="stepper__row" picking-mode="Ignore">
+                    <ui:Button name="hire-less" text="−" class="btn btn-icon" />
+                    <ui:Label name="hire-amount" text="1" class="stepper__value t-black" picking-mode="Ignore" />
+                    <ui:Button name="hire-more" text="+" class="btn btn-icon" />
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="unit-cards" />
+            <ui:VisualElement name="unit-cards" class="tray halo" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:ScrollView name="buildings-page" class="catalog__page" />
+        <ui:VisualElement name="buildings-page" class="catalog__page tray halo" picking-mode="Ignore" />
     </ui:VisualElement>
 </ui:UXML>

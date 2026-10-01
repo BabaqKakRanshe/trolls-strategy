@@ -4,16 +4,18 @@
  * code with these classes. The panel settings map 100 panel pixels to one world unit, so a 24px label
  * stands 0.24 units tall up close; as the colony camera backs off, WorldPanel grows the panel so its
  * largest text keeps 18px on a 1080px screen, and far away it marks the content .world-panel--far,
- * under which details drop out. Colours come from Theme.uss.
+ * under which details drop out. Like the HUD, words are dark ink with a white rim and stand on no plate;
+ * numbers that fly (gold, damage) keep their colour and take an ink rim. Colours come from Theme.uss.
  */
 
 .world-label {
-    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
     color: var(--ink);
     -unity-text-align: middle-center;
     white-space: nowrap;
-    -unity-text-outline-width: 2px;
-    -unity-text-outline-color: var(--edge-dark);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: var(--halo);
+    text-shadow: 0 0 4px var(--halo);
     margin: 0;
     padding: 0;
 }
@@ -25,7 +27,7 @@
 
 .world-label--building-info {
     font-size: 19px;
-    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
 }
 
 /* Beside a hauler's cargo icon; far away the counts would crowd the haulers. */
@@ -40,21 +42,26 @@
 /* Why a building or order was refused, where it happened. */
 .world-label--toast {
     font-size: 50px;
+    color: var(--bad);
     -unity-text-outline-width: 3px;
 }
 
 /* Gold a sale brought, rising from the market. */
 .world-label--gain {
     font-size: 60px;
+    -unity-font-definition: url("../Fonts/Nunito-Black.ttf");
     color: var(--coin);
     -unity-text-align: middle-left;
     -unity-text-outline-width: 3px;
+    -unity-text-outline-color: #5C3F00;
 }
 
-/* Damage over a fighter; the size of the blow sets the font size in code. */
+/* Damage over a fighter; the size of the blow sets the font size and the colour in code. */
 .world-label--damage {
     font-size: 54px;
+    -unity-font-definition: url("../Fonts/Nunito-Black.ttf");
     -unity-text-outline-width: 3px;
+    -unity-text-outline-color: var(--ink);
 }
 
 /* Fighter health: the number over a bar with a pale chip that lags behind the fill. */
@@ -71,11 +78,14 @@
     width: 69px;
     height: 14px;
     padding: 3px;
-    background-color: var(--surface-sunken);
+    border-radius: 7px;
+    background-color: var(--ink);
 }
 
 .hp-bar__inside {
     flex-grow: 1;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .hp-bar__chip,
@@ -87,23 +97,22 @@
 }
 
 .hp-bar__chip {
-    background-color: var(--gold-glow);
+    background-color: var(--paper);
 }
 
-/* Land mode: the price over a block for sale; red while the treasury is short, gold on the picked block. */
+/* Land mode: the price over a block for sale; red while the treasury is short, blue on the picked block. */
 .land-price {
-    font-size: 64px;
-    color: var(--coin);
+    font-size: 58px;
     -unity-text-outline-width: 3px;
 }
 
 .land-price--short {
-    color: var(--clay-light);
+    color: var(--bad);
 }
 
 .land-price--picked {
-    font-size: 80px;
-    color: var(--gold-glow);
+    font-size: 76px;
+    color: var(--accent);
 }
 
 /* A block being cleared: seconds left over a bar that fills. */
@@ -112,7 +121,7 @@
 }
 
 .land-bar__label {
-    font-size: 60px;
+    font-size: 56px;
     margin-bottom: 6px;
     -unity-text-outline-width: 3px;
 }
@@ -121,11 +130,15 @@
     width: 360px;
     height: 40px;
     padding: 7px;
-    background-color: var(--surface-sunken);
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.92);
+    border-width: 2px;
+    border-color: var(--paper-line);
 }
 
 .land-bar__fill {
     height: 100%;
     width: 0;
-    background-color: var(--gold);
+    border-radius: 13px;
+    background-color: var(--coin);
 }

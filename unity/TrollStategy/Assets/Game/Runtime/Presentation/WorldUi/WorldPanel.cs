@@ -17,6 +17,10 @@ namespace TrollStrategy.Presentation.WorldUi
     /// Where a world unit takes fewer than <see cref="FarPixelsPerUnit"/> px on screen, the content has the
     /// <c>world-panel--far</c> class, under which styles drop details.
     /// </para>
+    /// <para>
+    /// Panels stand on <see cref="Layer"/>, which the colony renderer draws after post-processing
+    /// (<see cref="WorldUiFeature"/>), so depth of field and grading never reach them.
+    /// </para>
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     [DefaultExecutionOrder(1000)]   // after the camera rigs have placed the camera for this frame
@@ -31,6 +35,8 @@ namespace TrollStrategy.Presentation.WorldUi
         /// <summary>A world unit smaller on screen than this, px, makes the content far.</summary>
         public const float FarPixelsPerUnit = 30f;
         public const string FarClass = "world-panel--far";
+        /// <summary>Unity's built-in UI layer: drawn by <see cref="WorldUiFeature"/>, not by the renderer's own passes.</summary>
+        public const int Layer = 5;
 
         [Tooltip("USS classes of the content element, for panels placed in prefabs.")]
         [SerializeField] private string[] _classes = Array.Empty<string>();
@@ -123,7 +129,7 @@ namespace TrollStrategy.Presentation.WorldUi
                 s_warned = true;
                 Debug.LogError("World labels have no panel settings; the bootstrap's World Panel field is empty.");
             }
-            var go = new GameObject(name);
+            var go = new GameObject(name) { layer = Layer };
             if (parent != null) go.transform.SetParent(parent, false);
             var document = go.AddComponent<UIDocument>();
             document.panelSettings = Settings;
@@ -193,6 +199,7 @@ namespace TrollStrategy.Presentation.WorldUi
 
         private void OnEnable()
         {
+            gameObject.layer = Layer;           // panels placed in prefabs too
             Attach();
             ApplySorting();
         }

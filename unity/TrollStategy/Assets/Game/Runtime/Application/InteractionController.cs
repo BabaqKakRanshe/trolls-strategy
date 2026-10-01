@@ -700,15 +700,6 @@ namespace TrollStrategy.Application
             }
         }
 
-        public void SendSelectedToBarracks()
-        {
-            if (!HasSelection()) return;
-            var ids = new List<string>(_selected);
-            var result = _session.Dispatch(new SendToBarracksCommand(ids));
-            _commandsOpen = false;
-            FinishCommand(result.Ok, result.Ok ? "Юниты отправлены в бараки." : result.Error);
-        }
-
         public void ReleaseSelected()
         {
             if (!HasSelection()) return;

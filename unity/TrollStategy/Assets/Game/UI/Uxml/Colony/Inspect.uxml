@@ -2,10 +2,10 @@
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/ColonyHud.uss" />
     <ui:Style src="../../Styles/Progression.uss" />
-    <ui:VisualElement name="inspect" class="panel inspect">
+    <ui:VisualElement name="inspect" class="float inspect">
         <ui:VisualElement class="inspect__header">
             <ui:VisualElement class="inspect__titles">
-                <ui:Label name="inspect-title" class="inspect__title t-bold" />
+                <ui:Label name="inspect-title" class="inspect__title t-black" />
                 <ui:Label name="inspect-subtitle" class="inspect__subtitle t-medium" />
             </ui:VisualElement>
             <ui:Button name="inspect-close" text="×" class="btn btn-close" />

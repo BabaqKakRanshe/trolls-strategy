@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bc48849ddcc8cd446a4203de3d6e2cbc
+guid: 2b3640c6b1a39624faa15c33efb8aa5e
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Rubik
+  - Nunito
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

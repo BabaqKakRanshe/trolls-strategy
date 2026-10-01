@@ -46,7 +46,6 @@ namespace TrollStrategy.Presentation.Battle
         private readonly List<BattleFighterView> _views = new();
         private readonly List<Beat> _beats = new();
         private readonly List<Beat> _due = new();
-        private string _selectedAlly;
         private BattleBoard _board;
         private BattleMissionDefinition _mission;
         private GameContentCatalog _catalog;
@@ -59,10 +58,19 @@ namespace TrollStrategy.Presentation.Battle
         private SpriteRenderer _hover;
         private Cell? _hoverCell;
         private float _hoverPop;
+        // a press on the board: a click when it lets go without moving, a drag when it carries a fighter
+        private bool _held;
+        private Cell? _press;
+        private Vector2 _pressAt;
+        private string _carried;
+        private bool _dragging;
         private float _clock;
         private int _numberSide;
 
+        /// <summary>A press and release on a cell without dragging a fighter away.</summary>
         public event Action<Cell> CellClicked;
+        /// <summary>A fighter of the player's was dragged and let go over a cell, or off the board (null).</summary>
+        public event Action<string, Cell?> FighterDropped;
         /// <summary>A blow killed a fighter; the scene freezes the replay for a beat.</summary>
         public event Action KillLanded;
         public Bounds WorldBounds => _bounds;
@@ -72,8 +80,8 @@ namespace TrollStrategy.Presentation.Battle
         public Vector3 BoardCenter { get; private set; }
         /// <summary>Board extent over hex corners: x across columns, y along rows (world Z).</summary>
         public Vector2 BoardSize { get; private set; }
-        /// <summary>Highlight the cell under the pointer (preparation with a fighter selected).</summary>
-        public bool PlacementHover { get; set; }
+        /// <summary>Preparation: the cell under the pointer lights up and the player's fighters can be dragged.</summary>
+        public bool Deploying { get; set; }
         /// <summary>Swings, projectiles or deaths from the report are still on their way.</summary>
         public bool HasPendingBeats => _beats.Count > 0;
         public int AlivePlayers => CountAlive(false);
@@ -144,10 +152,9 @@ namespace TrollStrategy.Presentation.Battle
             }
         }
 
-        /// <summary>Marks the roster's selected fighter on the board.</summary>
+        /// <summary>Marks the selected fighter on the board.</summary>
         public void ShowSelection(string unitId)
         {
-            _selectedAlly = unitId;
             foreach (var pair in _allies)
                 if (pair.Value != null) pair.Value.SetSelected(pair.Key == unitId);
         }
@@ -163,7 +170,8 @@ namespace TrollStrategy.Presentation.Battle
 
         public void BeginReplay(BattleReport report)
         {
-            PlacementHover = false;
+            Deploying = false;
+            CancelPress();
             _beats.Clear();
             _fighters.Clear();
             _health.Clear();
@@ -313,7 +321,8 @@ namespace TrollStrategy.Presentation.Battle
                                      view == fighter);
             _effects.GroundPing(fighter.Ground, fighter.IsEnemy ? new Color(1f, .4f, .3f, 1f) : new Color(.5f, .75f, 1f, 1f), 1.4f, .6f);
             _effects.DeathCloud(fighter.Ground, .1f);
-            GameAudio.Play(Sfx.Death, 1f, fighter.Kind == UnitKind.Troll ? .8f : .95f);
+            // a troll falls a fourth lower: still in key
+            GameAudio.Play(Sfx.Death, 1f, fighter.Kind == UnitKind.Troll ? GameAudio.Semitones(-5) : 1f);
             CameraShake.Kick(_camera, .55f);
             KillLanded?.Invoke();
         }
@@ -499,29 +508,89 @@ namespace TrollStrategy.Presentation.Battle
             return material;
         }
 
+        /// <summary>
+        /// One pointer on the board, the mouse's left button or a single finger. A press that lets go without
+        /// carrying anything is a click on the cell it started on. A press on one of the player's fighters that
+        /// moves past the drag threshold carries it: it floats under the pointer and is dropped where it lets go,
+        /// over the HUD or off the board meaning back to the reserve.
+        /// </summary>
         private void Update()
         {
             if (_camera == null) return;
-            Vector2 pointer;
-            if (MapPointer.UsesTouch)
+            bool touch = MapPointer.UsesTouch;
+            if (touch && MapPointer.Fingers > 1)
             {
-                if (!MapPointer.Tapped(out pointer)) return;
+                // a second finger is no drag and no click
+                CancelPress();
+                _held = true;
+                return;
             }
-            else
+            var pointer = MapPointer.Position;
+            bool held = touch ? MapPointer.Fingers == 1 : Mouse.current != null && Mouse.current.leftButton.isPressed;
+            bool pressed = held && !_held;
+            _held = held;
+            if (pressed)
             {
-                if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
                 // only battle UI blocks the board: the hidden colony camera's 2D raycaster still hits colony units
-                if (UIInputUtils.IsPointerOverInteractiveUI()) return;
-                pointer = Mouse.current.position.ReadValue();
+                bool overUi = touch ? MapPointer.StartedOverUi : UIInputUtils.IsPointerOverInteractiveUI();
+                _press = !overUi && TryPointedCell(pointer, out var cell) ? cell : null;
+                _pressAt = pointer;
+                _carried = _press is Cell start && Deploying ? AllyOn(start) : null;
+                _dragging = false;
+                return;
             }
-            if (TryPointedCell(pointer, out var cell)) CellClicked?.Invoke(cell);
+            if (_press == null) return;
+            if (held)
+            {
+                float threshold = touch ? MapPointer.TouchDragThresholdPixels : UIInputUtils.DragThresholdPixels;
+                if (!_dragging && _carried != null && Vector2.Distance(pointer, _pressAt) >= threshold) _dragging = true;
+                if (_dragging && _allies.TryGetValue(_carried, out var view) && view != null && TryGround(pointer, out var ground))
+                    view.Carry(ground);
+                return;
+            }
+
+            var from = _press.Value;
+            string unitId = _carried;
+            bool dragged = _dragging;
+            CancelPress();
+            if (!dragged)
+            {
+                CellClicked?.Invoke(from);
+                return;
+            }
+            Cell? target = null;
+            if (!UIInputUtils.IsOverDocument(pointer) && TryPointedCell(pointer, out var over)) target = over;
+            FighterDropped?.Invoke(unitId, target);
         }
 
-        private bool TryPointedCell(out Cell cell)
+        /// <summary>Forgets the press; a carried fighter hops back down to its cell.</summary>
+        private void CancelPress()
         {
-            cell = default;
-            return Mouse.current != null && TryPointedCell(Mouse.current.position.ReadValue(), out cell);
+            if (_carried != null && _allies.TryGetValue(_carried, out var view) && view != null) view.PutDown();
+            _press = null;
+            _carried = null;
+            _dragging = false;
         }
+
+        private string AllyOn(Cell cell)
+        {
+            foreach (var pair in _allies)
+                if (pair.Value != null && pair.Value.Cell == cell) return pair.Key;
+            return null;
+        }
+
+        /// <summary>Where the pointer meets the board's ground plane.</summary>
+        private bool TryGround(Vector2 screen, out Vector3 point)
+        {
+            point = default;
+            var ray = _camera.ScreenPointToRay(screen);
+            if (!new Plane(Vector3.up, _origin).Raycast(ray, out float distance)) return false;
+            point = ray.GetPoint(distance);
+            return true;
+        }
+
+        /// <summary>The cell under a screen point (Input System coordinates), fighters included.</summary>
+        public bool TryCellAt(Vector2 screen, out Cell cell) => TryPointedCell(screen, out cell);
 
         private bool TryPointedCell(Vector2 screen, out Cell cell)
         {
@@ -544,8 +613,10 @@ namespace TrollStrategy.Presentation.Battle
         {
             _hoverPop = Mathf.MoveTowards(_hoverPop, 0f, dt / .2f);
             Cell? pointed = null;
-            if (PlacementHover && !UIInputUtils.IsPointerOverInteractiveUI() && TryPointedCell(out var cell) &&
-                _board.Contains(cell))
+            // the mouse shows its cell whenever it is off the HUD; a finger only while it carries a fighter
+            var pointer = MapPointer.Position;
+            bool show = Deploying && !UIInputUtils.IsOverDocument(pointer) && (_dragging || !MapPointer.UsesTouch);
+            if (show && TryPointedCell(pointer, out var cell) && _board.Contains(cell))
                 pointed = cell;
             if (pointed == null)
             {
@@ -556,10 +627,9 @@ namespace TrollStrategy.Presentation.Battle
             if (_hoverCell != pointed) _hoverPop = Mathf.Max(_hoverPop, .6f);
             _hoverCell = pointed;
             var target = pointed.Value;
-            // another fighter's cell: a click picks that fighter up (gold); own cell or a free one: place (white)
-            bool other = false;
-            foreach (var pair in _allies)
-                if (pair.Value != null && pair.Value.Cell == target && pair.Key != _selectedAlly) other = true;
+            // a fighter's cell: a click selects it, a drop swaps with it (gold); a free one: place or move (white)
+            string standing = AllyOn(target);
+            bool other = standing != null && standing != _carried;
             _hover.enabled = true;
             _hover.color = other ? HoverSwap : !_board.CanPlace(target) ? HoverInvalid : HoverValid;
             _hover.transform.position = CellWorldPosition(target) + Vector3.up * .06f;

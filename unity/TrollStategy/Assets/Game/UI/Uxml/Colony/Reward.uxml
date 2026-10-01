@@ -3,22 +3,30 @@
     <ui:Style src="../../Styles/ColonyHud.uss" />
     <ui:Style src="../../Styles/Progression.uss" />
     <ui:VisualElement name="reward-overlay" class="overlay overlay--deep">
-        <ui:VisualElement name="reward-dialog" class="panel reward">
-            <ui:Label name="reward-eyebrow" class="reward__eyebrow t-caption" />
-            <ui:Label name="reward-quest" class="reward__quest t-bold" />
+        <!-- no card: text with its halo straight on the veil, the reward on a white disc in the light -->
+        <ui:VisualElement name="reward-dialog" class="reward halo">
             <ui:VisualElement name="reward-stage" class="reward__stage">
+                <ui:VisualElement name="reward-glow" class="reward__glow" picking-mode="Ignore" />
                 <ui:VisualElement name="reward-rays" class="reward__rays" picking-mode="Ignore" />
-                <ui:VisualElement name="reward-window" class="reward__window" picking-mode="Ignore">
-                    <ui:VisualElement name="reward-prize" class="reward__prize" picking-mode="Ignore" />
+                <ui:VisualElement name="reward-disc" class="reward__disc" picking-mode="Ignore">
+                    <ui:VisualElement name="reward-window" class="reward__window" picking-mode="Ignore">
+                        <ui:VisualElement name="reward-prize" class="reward__prize" picking-mode="Ignore" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="reward-sparks" class="reward__sparks" picking-mode="Ignore" />
+                <!-- the quest's heading above the disc, after the light in the tree so the rays pass under it -->
+                <ui:VisualElement class="reward__head" picking-mode="Ignore">
+                    <ui:Label name="reward-eyebrow" class="reward__eyebrow t-medium" />
+                    <ui:Label name="reward-quest" class="reward__quest t-bold" />
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Label name="reward-kind" class="reward__kind t-caption" />
-            <ui:Label name="reward-name" class="reward__name t-bold" />
+            <ui:Label name="reward-kind" class="reward__kind t-bold" />
+            <ui:Label name="reward-name" class="reward__name t-black" />
+            <ui:VisualElement name="reward-facts" class="reward__facts" picking-mode="Ignore" />
             <ui:Label name="reward-description" class="reward__description" />
-            <ui:VisualElement name="reward-extras" class="reward__extras" />
+            <ui:Label name="reward-where" class="reward__where t-medium" />
+            <ui:VisualElement name="reward-extras" class="reward__extras" picking-mode="Ignore" />
             <ui:Button name="reward-claim" class="btn btn--gold reward__claim">
-                <ui:Label text="ЗАБРАТЬ" class="btn__caption" picking-mode="Ignore" />
+                <ui:Label text="Забрать" class="btn__caption" picking-mode="Ignore" />
             </ui:Button>
         </ui:VisualElement>
     </ui:VisualElement>

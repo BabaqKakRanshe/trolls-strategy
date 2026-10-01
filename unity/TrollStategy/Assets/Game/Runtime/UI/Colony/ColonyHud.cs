@@ -120,6 +120,9 @@ namespace TrollStrategy.UI
             // UI Builder live reload replaces a part's tree; rebuild on the new ones
             if ((_view == null || IsStale()) && !TryBuild()) return;
             _view.Tick(Time.unscaledDeltaTime);
+            // the quest card folds and opens like its button; a HUD-only view state, not a colony command
+            if (_visible && Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame)
+                _view.Quest.ToggleCollapsed();
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
             if (_visible && Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)
                 _view.ToggleCheat();

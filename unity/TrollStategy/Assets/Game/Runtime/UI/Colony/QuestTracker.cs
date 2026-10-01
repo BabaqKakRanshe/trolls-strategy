@@ -10,7 +10,8 @@ namespace TrollStrategy.UI
     /// <summary>
     /// The current quest at the top left: tutorial step or level, what to do and how, each goal with its
     /// count, and what it gives. A met goal ticks with a sound; a finished quest offers its reward. Hidden in a
-    /// sandbox game. The body folds away so the card can stay small while the player works.
+    /// sandbox game. The card folds (its button or Q) to the heading, the title and the goals' count, so it stays small
+    /// while the player works; the reward button stays on a folded card, and a new quest opens it again.
     /// </summary>
     public sealed class QuestTracker
     {
@@ -34,11 +35,13 @@ namespace TrollStrategy.UI
         private readonly VisualElement _panel;
         private readonly VisualElement _body;
         private readonly Label _chapter;
+        private readonly Label _progress;
         private readonly Label _title;
         private readonly Label _description;
         private readonly VisualElement _goals;
         private readonly VisualElement _rewards;
         private readonly Button _toggle;
+        private readonly Label _toggleCaption;
         private readonly Button _claim;
         private readonly List<GoalRow> _goalRows = new();
         private readonly List<RewardChip> _rewardChips = new();
@@ -49,17 +52,21 @@ namespace TrollStrategy.UI
         /// <summary>The player asked for the finished quest's reward.</summary>
         public event Action ClaimRequested;
 
-        public QuestTracker(VisualElement root, ColonyHudContext context)
+        public QuestTracker(VisualElement root, ColonyHudContext context, HudTooltip tooltip = null)
         {
             _context = context;
             _panel = Ui.Require<VisualElement>(root, "quest");
             _body = Ui.Require<VisualElement>(root, "quest-body");
             _chapter = Ui.Require<Label>(root, "quest-chapter");
+            _progress = Ui.Require<Label>(root, "quest-progress");
             _title = Ui.Require<Label>(root, "quest-title");
             _description = Ui.Require<Label>(root, "quest-description");
             _goals = Ui.Require<VisualElement>(root, "quest-goals");
             _rewards = Ui.Require<VisualElement>(root, "quest-reward-items");
-            _toggle = UiFeel.Bind(Ui.Require<Button>(root, "quest-toggle"), () => SetCollapsed(!_collapsed), Sfx.UiBack);
+            _toggle = UiFeel.Bind(Ui.Require<Button>(root, "quest-toggle"), ToggleCollapsed, Sfx.UiBack);
+            _toggleCaption = Ui.Require<Label>(root, "quest-toggle-caption");
+            tooltip?.Attach(_toggle, () => _collapsed ? "Развернуть задание" : "Свернуть задание",
+                () => _collapsed ? "Показать, что делать и что дадут." : "Оставить только название и счёт целей.", "Q");
             _claim = UiFeel.Bind(Ui.Require<Button>(root, "quest-claim"), () => ClaimRequested?.Invoke());
             Ui.Show(_claim, false);
             Ui.Show(_panel, false);
@@ -67,8 +74,12 @@ namespace TrollStrategy.UI
 
         public bool IsShown => Ui.IsShown(_panel);
         public bool IsCollapsed => _collapsed;
+        /// <summary>What the fold button says it will do: "Свернуть", or "Развернуть" on a folded card.</summary>
+        public string ToggleCaption => _toggleCaption.text;
         public string Chapter => _chapter.text;
         public string Title => _title.text;
+        /// <summary>How far the goals are, as the folded card shows it: "0/1" for one goal, "1 из 3" for several.</summary>
+        public string Progress => _progress.text;
         public Button ClaimButton => _claim;
 
         public IReadOnlyList<string> GoalLines
@@ -100,13 +111,14 @@ namespace TrollStrategy.UI
 
             // one numbering everywhere: the catalog and the battle button name the same levels
             Ui.SetText(_chapter, quest.IsTutorial
-                ? $"ОБУЧЕНИЕ · УРОВЕНЬ {quest.TutorialStep} ИЗ {quest.TutorialSteps}"
-                : $"ЗАДАНИЕ · УРОВЕНЬ {quest.Level}");
+                ? $"Обучение, уровень {quest.TutorialStep} из {quest.TutorialSteps}"
+                : $"Задание, уровень {quest.Level}");
             Ui.SetText(_title, quest.Title);
             Ui.SetText(_description, quest.Description);
             Ui.Show(_description, !string.IsNullOrEmpty(quest.Description));
             RenderGoals(quest, fresh);
             RenderRewards(quest);
+            Ui.SetText(_progress, ProgressText(quest));
 
             bool complete = quest.IsComplete;
             _panel.EnableInClassList("is-complete", complete);
@@ -126,11 +138,25 @@ namespace TrollStrategy.UI
             }
         }
 
+        /// <summary>Folds the card to its heading, title and the goals' count, or opens it again (Q).</summary>
+        public void ToggleCollapsed() => SetCollapsed(!_collapsed);
+
         public void SetCollapsed(bool collapsed)
         {
             _collapsed = collapsed;
             Ui.Show(_body, !collapsed);
-            Ui.SetText(_toggle, collapsed ? "+" : "−");
+            _panel.EnableInClassList("is-collapsed", collapsed);
+            Ui.SetText(_toggleCaption, collapsed ? "Развернуть" : "Свернуть");
+        }
+
+        private static string ProgressText(QuestSnapshot quest)
+        {
+            var goals = quest.Goals;
+            if (goals.Count == 1) return goals[0].ProgressText;
+            int done = 0;
+            foreach (var goal in goals)
+                if (goal.Done) done++;
+            return $"{done} из {goals.Count}";
         }
 
         private void RenderGoals(QuestSnapshot quest, bool fresh)

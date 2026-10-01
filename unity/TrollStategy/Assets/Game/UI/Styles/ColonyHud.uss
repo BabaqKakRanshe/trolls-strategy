@@ -1,12 +1,14 @@
 /*
- * Colony HUD layout: top bar, left inspect card, right catalog, bottom status and context bar.
- * Each part is a nested UIDocument; the frame, bands and columns are documents without UXML whose root
- * elements take the classes below from UiDocumentClasses.
+ * Colony HUD layout. Across the top: the colony's numbers on the left, the round tools down the right edge.
+ * The left column holds the quest as plain text and the inspected thing on mist; the catalog is a tray of
+ * round tokens along the bottom, its tabs at the left end and the latest word from the colony at the right.
+ * The order prompt floats at the top in the middle. Each part is a nested UIDocument; the frame, bands and columns are documents without
+ * UXML whose root elements take the classes below from UiDocumentClasses.
  */
 
 .hud-root {
     flex-grow: 1;
-    padding: 14px 16px;
+    padding: 18px 24px 16px 24px;
 }
 
 /* A band of the frame that keeps its content's height. */
@@ -14,86 +16,99 @@
     flex-shrink: 0;
 }
 
-/* Top bar */
+/* Top: numbers and tools */
 
 .top-bar {
     flex-direction: row;
-    align-items: stretch;
+    align-items: flex-start;
     flex-shrink: 0;
-}
-
-.brand {
-    justify-content: center;
-    margin-right: 10px;
-    padding-left: 18px;
-    padding-right: 18px;
-}
-
-.brand__title {
-    font-size: 22px;
-    letter-spacing: 2px;
-}
-
-.brand__subtitle {
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    color: var(--gold);
+    min-height: 56px;
 }
 
 .resources {
     flex-direction: row;
-    padding: 7px 1px 7px 7px;
-}
-
-.stat--gold {
-    border-color: var(--gold-deep);
-}
-
-.stat--gold .stat__value {
-    color: var(--gold);
-}
-
-.top-actions {
-    flex-direction: row;
     align-items: center;
 }
 
-.top-actions > .btn {
-    margin-left: 10px;
-    min-height: 54px;
-    padding-left: 20px;
-    padding-right: 20px;
+/* One number with its picture; the name is in the hint. */
+.resource {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 34px;
 }
 
-.battle-button {
-    min-width: 150px;
+.resource__icon {
+    width: 56px;
+    height: 56px;
+    margin-right: 4px;
+    -unity-background-scale-mode: scale-to-fit;
 }
 
-/* Middle band: left card, free map, right catalog */
+.resource__value {
+    font-size: 34px;
+}
 
-/*
- * Columns stretch to the band's height, and so do the showcase and catalog documents in the right
- * column, so the catalog's max-height has something to resolve against.
- */
+.resource__note {
+    margin-left: 6px;
+    font-size: 17px;
+    color: var(--ink-soft);
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
+}
+
+/* The tools down the right edge: caption on the left, round button on the right. */
+.tools {
+    position: absolute;
+    right: -12px;
+    top: -12px;
+    align-items: flex-end;
+}
+
+.tool {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: -10px;
+}
+
+.tool__caption {
+    margin-right: 2px;
+    font-size: 18px;
+}
+
+/* disc.png: the 70 px circle sits in the middle of this box */
+.tool__button {
+    width: 94px;
+    height: 94px;
+}
+
+.tool__button > .glyph {
+    width: 32px;
+    height: 32px;
+}
+
+/* Middle band: left column, free map, right column */
+
 .middle {
     flex-grow: 1;
     flex-direction: row;
     align-items: stretch;
     justify-content: space-between;
-    margin-top: 12px;
-    margin-bottom: 12px;
+    margin-top: 10px;
+    margin-bottom: 8px;
 }
 
 .left-column {
-    width: 430px;
+    width: 460px;
     flex-shrink: 0;
     align-items: stretch;
+    margin-left: -12px;
 }
 
+/* The model preview sits low on the right, clear of the tools. */
 .right-column {
-    flex-direction: row;
-    align-items: stretch;
     flex-shrink: 0;
+    justify-content: flex-end;
+    align-items: flex-end;
 }
 
 /* Inspect card */
@@ -109,23 +124,21 @@
 }
 
 .inspect__title {
-    font-size: 26px;
+    font-size: 27px;
     white-space: normal;
 }
 
 .inspect__subtitle {
     margin-top: 2px;
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    color: var(--gold);
+    font-size: 15px;
+    color: var(--ink-soft);
 }
 
 .slots-header {
     margin-top: 12px;
     margin-bottom: 6px;
-    font-size: 12px;
-    letter-spacing: 1px;
-    color: var(--gold);
+    font-size: 15px;
+    color: var(--ink-soft);
 }
 
 .slots {
@@ -134,207 +147,246 @@
 }
 
 .slot {
-    width: 36px;
-    height: 36px;
-    margin-right: 4px;
-    margin-bottom: 4px;
-    border-radius: 6px;
+    width: 40px;
+    height: 40px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 10px;
     border-width: 1px;
-    border-color: var(--edge);
-    background-color: var(--surface-sunken);
+    border-color: var(--paper-line);
+    background-color: rgba(255, 255, 255, 0.55);
 }
 
 .slot.is-filled {
-    background-color: var(--surface-raised);
+    background-color: var(--paper);
 }
 
 .slot__icon {
     position: absolute;
-    left: 4px;
-    top: 4px;
-    right: 4px;
-    bottom: 4px;
+    left: 3px;
+    top: 3px;
+    right: 3px;
+    bottom: 3px;
 }
 
 .slot__count {
     position: absolute;
-    right: 2px;
+    right: 3px;
     bottom: -1px;
-    font-size: 12px;
-    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+    font-size: 13px;
+    -unity-font-definition: url("../Fonts/Nunito-Black.ttf");
     -unity-text-outline-width: 1px;
-    -unity-text-outline-color: rgb(0, 0, 0);
+    -unity-text-outline-color: var(--paper);
 }
 
 .slot.is-full .slot__count {
-    color: var(--gold);
+    color: var(--coin-deep);
 }
 
 .actions {
     flex-direction: row;
     margin-top: 14px;
-    margin-right: -6px;
+    margin-right: -8px;
 }
 
 .action {
     flex-grow: 1;
     flex-basis: 0;
-    min-height: 60px;
-    margin-right: 6px;
-    padding-left: 6px;
-    padding-right: 6px;
+    min-height: 58px;
+    margin-right: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
     white-space: normal;
 }
 
-/* Catalog drawer */
+/*
+ * Catalog: a tray of round tokens across the bottom. The band runs the full width: the tabs stand at its
+ * left end, the tokens in the middle of the screen, and the status line takes the right end, so the tray
+ * keeps clear of both ends.
+ */
+
+.bottom {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-end;
+    min-height: 64px;
+    flex-shrink: 0;
+}
 
 .catalog {
-    width: 450px;
-    max-height: 100%;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    padding-left: 300px;
+    padding-right: 300px;
     transition-property: translate, opacity;
     transition-duration: 0.25s, 0.25s;
     transition-timing-function: ease-out-cubic, ease-out-cubic;
 }
 
 .catalog.is-closed {
-    translate: 500px 0;
+    translate: 0 300px;
     opacity: 0;
 }
 
-.catalog__header {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 8px;
+/* The tabs, at the band's left end. */
+.catalog__side {
+    position: absolute;
+    left: 130px;
+    bottom: 40px;
+    align-items: flex-start;
 }
 
-.catalog__title {
-    flex-grow: 1;
+.catalog__side > .tab {
+    margin-top: 8px;
     font-size: 20px;
-    letter-spacing: 2px;
 }
 
-.tabs {
-    flex-direction: row;
-    margin-bottom: 10px;
-    margin-right: -8px;
-}
-
-.tab {
-    flex-grow: 1;
-    flex-basis: 0;
-    margin-right: 8px;
-}
-
-.tab.is-active {
-    background-color: var(--wood-deep);
-    border-color: var(--gold);
+.catalog__close {
+    margin-top: 12px;
+    margin-left: -6px;
 }
 
 .catalog__page {
+    flex-direction: row;
+    align-items: flex-end;
     flex-shrink: 1;
+    max-width: 100%;
 }
 
-.stepper {
+/* discs line up along the top; a name that takes two lines hangs lower */
+.tray {
     flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    flex-shrink: 1;
+    max-width: 100%;
+}
+
+/* How many creatures one press hires: hangs to the left of the creature tokens, which keep the middle. */
+.stepper {
+    position: absolute;
+    right: 100%;
+    bottom: 48px;
+    margin-right: 40px;
     align-items: center;
-    margin-bottom: 10px;
 }
 
 .stepper__label {
-    flex-grow: 1;
-    color: var(--ink-muted);
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+}
+
+.stepper__row {
+    flex-direction: row;
+    align-items: center;
 }
 
 .stepper__value {
-    width: 52px;
-    font-size: 22px;
+    width: 50px;
+    font-size: 30px;
     -unity-text-align: middle-center;
 }
 
-/* rows keep their height; the list scrolls instead of squeezing them */
-.card {
-    flex-direction: row;
-    flex-shrink: 0;
+/* A thing to build or hire: a round picture with its name and price under it; details in the hint. */
+.token {
+    width: 139px;
     align-items: center;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 10px;
-    border-width: 1px;
-    border-color: var(--edge);
-    background-color: var(--surface-raised);
+    margin: 0 13px 2px 13px;
 }
 
-.card.is-suggested {
-    border-color: var(--gold);
-    border-width: 2px;
-}
-
-.card__art {
-    width: 72px;
-    height: 72px;
-    flex-shrink: 0;
-    margin-right: 12px;
-    border-radius: 8px;
-    background-color: var(--surface-sunken);
+/* disc.png: the 120 px circle sits in the middle of this box, so the box reaches past the token */
+.token__disc {
+    width: 160px;
+    height: 160px;
+    margin: -20px -11px -15px -11px;
     align-items: center;
     justify-content: center;
 }
 
-.card__art--small {
-    width: 48px;
-    height: 48px;
-    margin-right: 10px;
+.token__art {
+    width: 95px;
+    height: 95px;
+    margin-top: -5px;
 }
 
-.card__image {
-    position: absolute;
-    left: 4px;
-    top: 4px;
-    right: 4px;
-    bottom: 4px;
+.token__monogram {
+    font-size: 42px;
+    color: var(--ink-soft);
 }
 
-.card__monogram {
-    font-size: 28px;
-    color: var(--ink-muted);
-    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+/* a creature's portrait is small pixel art: shown larger */
+.token--unit .token__art {
+    width: 105px;
+    height: 105px;
 }
 
-.card__body {
-    flex-grow: 1;
-    flex-shrink: 1;
-}
-
-.card__title {
-    font-size: 18px;
-    -unity-font-definition: url("../Fonts/Rubik-Medium.ttf");
-}
-
-.card__text {
-    font-size: 13px;
-    color: var(--ink-muted);
+.token__name {
+    font-size: 17px;
+    -unity-text-align: upper-center;
     white-space: normal;
 }
 
-.card__buy {
-    min-width: 118px;
-    margin-left: 10px;
+.token__price {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    min-height: 26px;
 }
 
-.card__look {
-    min-width: 58px;
-    margin-left: 8px;
-    padding-left: 8px;
-    padding-right: 8px;
-    font-size: 14px;
+.token__coin {
+    width: 24px;
+    height: 24px;
+    margin-right: 2px;
+}
+
+.token__price-value {
+    font-size: 18px;
+    color: var(--coin-deep);
+}
+
+.token.is-short .token__price-value {
+    color: var(--bad);
+}
+
+.token__lock {
+    font-size: 16px;
+    color: var(--ink-soft);
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
+}
+
+.token.is-locked {
+    opacity: 0.55;
+}
+
+/* the model preview, on the disc's shoulder while the pointer is over the token */
+.token__look {
+    position: absolute;
+    right: -6px;
+    top: -10px;
+    width: 56px;
+    height: 56px;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.token:hover .token__look {
+    display: flex;
+}
+
+.token__look > .glyph {
+    width: 24px;
+    height: 24px;
 }
 
 /* Model preview beside the catalog */
 
 .showcase {
     width: 380px;
-    height: 380px;
-    margin-right: 12px;
+    height: 420px;
 }
 
 .showcase__header {
@@ -344,36 +396,32 @@
 
 .showcase__title {
     flex-grow: 1;
-    font-size: 20px;
+    font-size: 22px;
 }
 
 .showcase__image {
     flex-grow: 1;
     margin-top: 8px;
     margin-bottom: 8px;
-    border-radius: 8px;
-    background-color: var(--surface-sunken);
+    border-radius: 16px;
+    background-color: var(--paper-soft);
 }
 
 .showcase__caption {
-    font-size: 13px;
+    font-size: 15px;
+    color: var(--ink-soft);
     -unity-text-align: middle-center;
     white-space: normal;
 }
 
-/* Bottom band */
-
-.bottom {
-    flex-direction: row;
-    align-items: flex-end;
-    min-height: 64px;
-    flex-shrink: 0;
-}
+/* The latest word from the colony, at the right end of the bottom band, clear of the version corner. */
 
 .status {
-    max-width: 460px;
-    min-height: 48px;
-    justify-content: center;
+    position: absolute;
+    right: -12px;
+    bottom: 14px;
+    max-width: 320px;
+    align-items: flex-end;
     transition-property: opacity;
     transition-duration: 0.8s;
 }
@@ -383,52 +431,61 @@
 }
 
 .status__text {
-    font-size: 16px;
+    font-size: 17px;
     white-space: normal;
+    -unity-text-align: upper-right;
 }
 
+/*
+ * The order prompt: a white sheet at the top in the middle, what the map expects and the way out. Its layer
+ * centres it, so it measures against the whole width; past its width the buttons go onto a line of their
+ * own, and it stays clear of the quest column and the tools.
+ */
+
 .context {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    translate: -50% 0;
-    max-width: 1080px;
+    align-self: center;
+    margin-top: 96px;
+    max-width: 1000px;
     align-items: center;
-    padding: 10px 12px 10px 18px;
 }
 
 .context__targets {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .context__row {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 }
 
 .context__text {
     flex-shrink: 1;
-    margin-right: 14px;
-    max-width: 420px;
+    margin-right: 16px;
+    margin-bottom: 4px;
+    max-width: 440px;
 }
 
 .context__title {
-    font-size: 18px;
-    -unity-font-definition: url("../Fonts/Rubik-Bold.ttf");
+    font-size: 19px;
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
 }
 
 .context__prompt {
-    font-size: 14px;
-    color: var(--ink-muted);
+    font-size: 15px;
+    color: var(--ink-soft);
     white-space: normal;
 }
 
 .context__actions {
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 }
 
 .context__actions > .btn {
@@ -436,10 +493,10 @@
 }
 
 .chip {
-    min-height: 36px;
-    margin: 0 4px 4px 4px;
-    padding: 4px 14px;
-    font-size: 14px;
+    min-height: 38px;
+    margin: 0 4px 6px 4px;
+    padding: 0 16px;
+    font-size: 15px;
 }
 
 /* Right-click command fan */
@@ -454,33 +511,32 @@
 .fan__button {
     position: absolute;
     translate: -50% -50%;
-    width: 118px;
-    height: 54px;
-    min-height: 54px;
-    border-radius: 27px;
-    border-color: var(--gold);
+    width: 132px;
+    height: 50px;
+    min-height: 50px;
+    border-radius: 25px;
+    border-color: rgba(47, 91, 174, 0.4);
 }
 
 /* What a haul order carries: a dialog in the middle of the screen, a card per good */
 
 .cargo-dialog {
-    width: 640px;
+    width: 660px;
     max-width: 94%;
-    padding: 18px 22px 16px 22px;
     align-items: stretch;
 }
 
 .cargo-dialog__title {
-    font-size: 24px;
+    font-size: 25px;
     -unity-text-align: middle-center;
     white-space: normal;
 }
 
 .cargo-dialog__text {
     margin-top: 4px;
-    margin-bottom: 12px;
-    font-size: 15px;
-    color: var(--ink-muted);
+    margin-bottom: 14px;
+    font-size: 16px;
+    color: var(--ink-soft);
     white-space: normal;
     -unity-text-align: middle-center;
 }
@@ -493,28 +549,29 @@
 
 .cargo-card {
     flex-direction: column;
-    width: 136px;
-    min-height: 132px;
+    width: 138px;
+    min-height: 136px;
     margin: 5px;
     padding: 10px 8px 8px 8px;
+    border-radius: 20px;
 }
 
 .cargo-card__art {
     flex-direction: row;
-    height: 56px;
+    height: 58px;
     align-items: center;
     justify-content: center;
     margin-bottom: 6px;
 }
 
 .cargo-card__icon {
-    width: 56px;
-    height: 56px;
+    width: 58px;
+    height: 58px;
 }
 
 .cargo-card__stack-icon {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     margin-left: -8px;
     margin-right: -8px;
 }
@@ -525,21 +582,21 @@
 }
 
 .cargo-card__name {
-    font-size: 15px;
+    font-size: 16px;
     white-space: normal;
 }
 
 .cargo-card__sub {
     margin-top: 2px;
-    font-size: 12px;
-    color: var(--ink-muted);
+    font-size: 13px;
+    color: var(--ink-soft);
     -unity-text-align: middle-center;
 }
 
 .cargo-dialog__note {
     margin-top: 10px;
-    font-size: 14px;
-    color: var(--ink-muted);
+    font-size: 15px;
+    color: var(--ink-soft);
     white-space: normal;
     -unity-text-align: middle-center;
 }
@@ -547,39 +604,19 @@
 .cargo-dialog__actions {
     flex-direction: row;
     justify-content: center;
-    margin-top: 14px;
+    margin-top: 16px;
 }
 
 .cargo-dialog__actions .btn {
-    min-width: 170px;
+    min-width: 180px;
     margin-left: 6px;
     margin-right: 6px;
-}
-
-/* Hint card over the element under the pointer; left/top from code mark the element's top centre */
-
-.tooltip {
-    position: absolute;
-    translate: -50% -100%;
-    max-width: 320px;
-    padding: 8px 12px;
-}
-
-.tooltip__title {
-    font-size: 16px;
-}
-
-.tooltip__body {
-    margin-top: 4px;
-    font-size: 13px;
-    color: var(--ink-muted);
-    white-space: normal;
 }
 
 /* Workers and haulers of the inspected building */
 
 .staff-scroll {
-    max-height: 260px;
+    max-height: 250px;
     margin-top: 10px;
     flex-shrink: 1;
 }
@@ -594,34 +631,67 @@
     margin-bottom: 4px;
 }
 
+/* A group's arrow, icons and caption: one button that opens and folds its rows. */
+.staff__toggle {
+    flex-grow: 1;
+    flex-shrink: 1;
+    justify-content: flex-start;
+    min-height: 32px;
+    margin-right: 6px;
+    padding: 0 8px 0 4px;
+    border-radius: 16px;
+}
+
+.staff__chevron {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+}
+
+.staff.is-collapsed .staff__chevron {
+    rotate: 180deg;
+}
+
+.staff__icons {
+    flex-direction: row;
+    flex-shrink: 0;
+    margin-right: 6px;
+}
+
+.staff__icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 2px;
+}
+
 .staff__caption {
     flex-grow: 1;
-    color: var(--gold);
+    -unity-text-align: middle-left;
 }
 
 .staff__all {
-    min-height: 30px;
-    padding: 2px 10px;
-    font-size: 13px;
+    min-height: 32px;
+    padding: 0 12px;
+    font-size: 14px;
 }
 
 .staff__empty {
     margin-top: 0;
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .staff-row {
     flex-direction: row;
     align-items: center;
-    margin-bottom: 3px;
-    padding: 3px 4px 3px 6px;
-    border-radius: 8px;
-    background-color: var(--surface-raised);
+    margin-bottom: 4px;
+    padding: 4px 4px 4px 8px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.7);
 }
 
 .staff-row__portrait {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     flex-shrink: 0;
     margin-right: 8px;
 }
@@ -632,12 +702,12 @@
 }
 
 .staff-row__name {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .staff-row__state {
-    font-size: 12px;
-    color: var(--ink-muted);
+    font-size: 13px;
+    color: var(--ink-soft);
     white-space: normal;
 }
 

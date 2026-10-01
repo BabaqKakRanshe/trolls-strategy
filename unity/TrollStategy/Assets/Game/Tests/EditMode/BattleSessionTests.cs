@@ -138,6 +138,50 @@ namespace TrollStrategy.Tests
             Assert.That(state.Equipment, Is.Empty);
         }
 
+        [Test]
+        public void SurvivorKeepsItsJobAndPlace()
+        {
+            var catalog = DuelCatalog(UnitKind.Goblin);
+            var state = GameState.CreateInitialState();
+            var place = new WorldPosition(4.5f, 2.5f);
+            state.Units.Add(new UnitState
+            {
+                Id = "unit-1", Kind = UnitKind.Troll, Position = place, Assignment = Assignment.Work("mine-1")
+            });
+
+            var result = BattleApplication.Start(state, new StartBattleCommand("mission-1",
+                new[] { new BattlePlacement("unit-1", new Cell(0, 0)) }), catalog);
+            Assert.That(result.Ok, Is.True, result.Error);
+            Assert.That(state.ActiveBattle.Report.Outcome, Is.EqualTo(BattleOutcome.PlayerVictory));
+            var unit = state.Units.Find(u => u.Id == "unit-1");
+            Assert.That(unit.Assignment.Kind, Is.EqualTo(AssignmentKind.Work), "Back to work, not to the idle crowd");
+            Assert.That(unit.Assignment.BuildingId, Is.EqualTo("mine-1"));
+            Assert.That(unit.Position, Is.EqualTo(place));
+        }
+
+        [Test]
+        public void FallenHaulerReturnsItsCargo()
+        {
+            var catalog = DuelCatalog(UnitKind.Troll);
+            var state = GameState.CreateInitialState();
+            var source = new BuildingState { Id = "mine-1", Kind = BuildingKind.Mine, Cell = new Cell(0, 0) };
+            state.Buildings.Add(source);
+            var haul = Assignment.Haul("mine-1", "warehouse-1");
+            haul.CarriedResource = ResourceKind.IronOre;
+            haul.Carried = 3;
+            state.Units.Add(new UnitState
+            {
+                Id = "unit-1", Kind = UnitKind.Goblin, Position = new WorldPosition(1f, 1f), Assignment = haul
+            });
+
+            var result = BattleApplication.Start(state, new StartBattleCommand("mission-1",
+                new[] { new BattlePlacement("unit-1", new Cell(0, 0)) }), catalog);
+            Assert.That(result.Ok, Is.True, result.Error);
+            Assert.That(state.ActiveBattle.Report.Outcome, Is.EqualTo(BattleOutcome.EnemyVictory));
+            Assert.That(state.Units, Is.Empty);
+            Assert.That(source.GetStock(ResourceKind.IronOre), Is.EqualTo(3));
+        }
+
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
         [Test]
         public void DebugBattleAccessWorksAtZeroTimeWithoutChangingCampaignClock()
@@ -183,6 +227,27 @@ namespace TrollStrategy.Tests
             Assert.That(BattleApplication.ValidateAvailability(state, mission, true).Ok, Is.True);
         }
 #endif
+
+        // one fighter of each side on a 3x3 board: the player at (0,0), the enemy at (2,0)
+        private GameContentCatalog DuelCatalog(UnitKind enemy)
+        {
+            var economy = Create<EconomyConfig>();
+            economy.Init(14, 14, 1f, 1000, 20, .25f, .1f, .5f);
+            var goblin = Create<UnitDefinition>();
+            goblin.Init(UnitKind.Goblin, "Гоблин", 40, 3, 5f, 100);
+            goblin.SetCombatStats(20, 2, 1, 2000, 3);
+            var troll = Create<UnitDefinition>();
+            troll.Init(UnitKind.Troll, "Тролль", 170, 9, 2f, 150);
+            troll.SetCombatStats(55, 7, 3, 2600, 1);
+            var mission = Create<BattleMissionDefinition>();
+            mission.SetDesign("mission-1", "Дуэль", 3, 3, 1,
+                new[] { new Cell(0, 0) }, new Cell[0],
+                new[] { new BattleEnemyStart { Kind = enemy, Cell = new Cell(2, 0) } });
+            mission.SetTimingAndRewards(0f, 120f, 250, 75);
+            var catalog = Create<GameContentCatalog>();
+            catalog.Init(economy, new[] { goblin, troll }, new BuildingDefinition[0], new[] { mission });
+            return catalog;
+        }
 
         private T Create<T>() where T : ScriptableObject
         {

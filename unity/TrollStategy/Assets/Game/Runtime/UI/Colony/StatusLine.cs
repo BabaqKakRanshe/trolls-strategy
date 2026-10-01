@@ -12,7 +12,7 @@ namespace TrollStrategy.UI
     {
         private const float VisibleSeconds = 6f;
         private const float FirstVisibleSeconds = 14f;
-        private static readonly Color RefusalColor = new(1f, .5f, .42f, 1f);
+        private static readonly Color RefusalColor = new(.72f, .21f, .14f, 1f);
 
         private readonly VisualElement _panel;
         private readonly Label _text;

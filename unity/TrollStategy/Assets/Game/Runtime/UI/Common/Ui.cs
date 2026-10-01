@@ -29,7 +29,7 @@ namespace TrollStrategy.UI
         }
 
         /// <summary>
-        /// A button whose caption is a child label, with an optional hotkey badge in its corner. A text
+        /// A button whose caption is a child label, with its key as a small keycap after the caption. A text
         /// element that also holds children stops measuring its own text, so the caption must be a child.
         /// </summary>
         public static Button CaptionButton(string text, string hotkey, string classes)
@@ -85,6 +85,14 @@ namespace TrollStrategy.UI
                 box.Add(Text(letter, "card__monogram"));
             }
             return box;
+        }
+
+        /// <summary>A sprite shown as the element's background; the element hides while there is none.</summary>
+        public static void SetPicture(VisualElement element, Sprite sprite)
+        {
+            if (element == null) return;
+            element.style.backgroundImage = sprite != null ? new StyleBackground(sprite) : StyleKeyword.Null;
+            Show(element, sprite != null);
         }
 
         public static void Show(VisualElement element, bool visible)

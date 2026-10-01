@@ -36,6 +36,7 @@ namespace TrollStrategy.Editor.Setup
         private const string UnitBasePath = "Assets/Game/Prefabs/UnitBase.prefab";
         private const string FallbackSourcePath = "Assets/TextMesh Pro/Fonts/LiberationSans.ttf";
         private const string UxmlFolder = "Assets/Game/UI/Uxml/";
+        private const string ColonyScenePath = "Assets/Game/Scenes/MainColonyScene.unity";
 
         /// <summary>One GameObject with a UIDocument; children nest into its root in sorting order.</summary>
         private sealed class Node
@@ -81,15 +82,17 @@ namespace TrollStrategy.Editor.Setup
                             Part("Colony", "Quest", 0, "_quest"),
                             Part("Colony", "Inspect", 1, "_inspect")),
                         Box("RightColumn", 1, new[] { "right-column" },
-                            Part("Colony", "Showcase", 0, "_showcase"),
-                            Part("Colony", "Catalog", 1, "_catalog"))),
+                            Part("Colony", "Showcase", 0, "_showcase"))),
+                    // the catalog tray in the middle; the status line lies over the band's left end
                     Box("Bottom", 2, new[] { "bottom", "hud-band" },
-                        Part("Colony", "Status", 0, "_status"),
                         new Node
                         {
-                            Name = "ContextBar", Uxml = "Colony/ContextBar.uxml", Order = 1, Field = "_contextBar",
+                            Name = "Status", Uxml = "Colony/Status.uxml", Order = 0, Field = "_status",
                             Absolute = true, Classes = new[] { "layer" }
-                        })),
+                        },
+                        Part("Colony", "Catalog", 1, "_catalog"))),
+                // the order prompt floats at the top in the middle of the screen
+                Layer("Colony", "ContextBar", 5, "_contextBar"),
                 Layer("Colony", "CommandFan", 10, "_commandFan"),
                 Layer("Colony", "HaulCargo", 20, "_haulCargo"),
                 Layer("Colony", "Reward", 30, "_reward"),
@@ -112,21 +115,35 @@ namespace TrollStrategy.Editor.Setup
             {
                 Box("Frame", 0, new[] { "battle-frame" },
                     Part("Battle", "Header", 0, "_header", "hud-band"),
-                    // deployment panels, then the replay bar, in the same place at the bottom
+                    // while deploying: the squad on the left, the hint in the middle, the start on the right;
+                    // the replay bar takes their place for the fight
                     Box("Bottom", 1, new[] { "hud-band" },
                         new Node
                         {
                             Name = "Deployment", Order = 0, Field = "_deploymentBand", Classes = new[] { "battle-deployment" },
                             Children = new[]
                             {
-                                Part("Battle", "Roster", 0, "_roster"),
-                                Part("Battle", "Selected", 1, "_selected", "battle-grow"),
+                                Part("Battle", "Squad", 0, "_squad"),
+                                Part("Battle", "Hint", 1, "_hint", "battle-grow"),
                                 Part("Battle", "Actions", 2, "_actions")
                             }
                         },
                         Part("Battle", "Replay", 1, "_replay"))),
-                Layer("Battle", "Banner", 10, "_banner")
+                Layer("Battle", "Banner", 10, "_banner"),
+                new Node { Name = "Tooltip", Order = 50, Field = "_tooltip", Absolute = true, Classes = new[] { "layer" } }
             }
+        };
+
+        // Field names are the SupportHud fields. It sorts above both HUDs: version, FPS and "send logs"
+        // stay reachable on every screen.
+        private static Node SupportHudTree() => new()
+        {
+            Name = "SupportHud",
+            Uxml = "SupportHud.uxml",
+            Order = 20,
+            Absolute = true,
+            Classes = new[] { "layer" },
+            Children = new[] { Layer("Support", "TechInfo", 0, "_techInfo") }
         };
 
         [MenuItem("TrollStrategy/Setup UI")]
@@ -139,6 +156,13 @@ namespace TrollStrategy.Editor.Setup
             Install(boot);
             EditorSceneManager.MarkSceneDirty(boot.gameObject.scene);
             EditorSceneManager.SaveScene(boot.gameObject.scene);
+        }
+
+        /// <summary>Batch entry (-executeMethod): opens the colony scene, then does what the menu does.</summary>
+        public static void SetupColonyScene()
+        {
+            EditorSceneManager.OpenScene(ColonyScenePath);
+            SetupOpenScene();
         }
 
         /// <summary>Rebuilds the UI prefab and installs it in the bootstrap's scene; the caller saves the scene.</summary>
@@ -163,12 +187,16 @@ namespace TrollStrategy.Editor.Setup
                 ?? throw new InvalidOperationException("The UI prefab has no ColonyHud");
             var battleHud = instance.GetComponentInChildren<BattleHud>(true)
                 ?? throw new InvalidOperationException("The UI prefab has no BattleHud");
+            var supportHud = instance.GetComponentInChildren<SupportHud>(true)
+                ?? throw new InvalidOperationException("The UI prefab has no SupportHud");
 
             var serialized = new SerializedObject(boot);
             (serialized.FindProperty("_hud") ?? throw new InvalidOperationException("GameBootstrap has no _hud field"))
                 .objectReferenceValue = hud;
             (serialized.FindProperty("_battleHud") ?? throw new InvalidOperationException("GameBootstrap has no _battleHud field"))
                 .objectReferenceValue = battleHud;
+            (serialized.FindProperty("_support") ?? throw new InvalidOperationException("GameBootstrap has no _support field"))
+                .objectReferenceValue = supportHud;
             (serialized.FindProperty("_worldPanel") ?? throw new InvalidOperationException("GameBootstrap has no _worldPanel field"))
                 .objectReferenceValue = worldPanel;
             serialized.ApplyModifiedProperties();
@@ -186,9 +214,12 @@ namespace TrollStrategy.Editor.Setup
                 screen.panelSettings = settings;
                 screen.sortingOrder = 0;
                 root.AddComponent<UiDocumentClasses>().SetClasses("ui-screen");
+                // Unity can attach nested documents out of their sorting order after a scene load
+                root.AddComponent<UiDocumentOrder>();
 
                 AddScreen<ColonyHud>(ColonyHudTree(), root.transform);
                 AddScreen<BattleHud>(BattleHudTree(), root.transform);
+                AddScreen<SupportHud>(SupportHudTree(), root.transform);
 
                 var folder = System.IO.Path.GetDirectoryName(PrefabPath)?.Replace('\\', '/');
                 if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder("Assets/Game/UI", "Prefabs");

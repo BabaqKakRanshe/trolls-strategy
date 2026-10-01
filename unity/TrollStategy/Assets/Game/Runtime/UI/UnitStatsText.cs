@@ -1,25 +1,17 @@
-using System.Globalization;
-using TrollStrategy.Content;
-using TrollStrategy.Domain;
+using System;
 
 namespace TrollStrategy.UI
 {
     public static class UnitStatsText
     {
-        public static string Compact(UnitDefinition definition)
+        /// <summary>
+        /// Goods a creature takes per trip, as the player sees it: "1", or "1–2" when part of a unit builds up
+        /// between trips and every so often it takes one more.
+        /// </summary>
+        public static string Load(float capacity)
         {
-            if (definition == null) return "";
-            return $"Сила {definition.Strength} · скорость {Number(definition.Speed)}\n" +
-                   $"Выносливость {definition.Stamina}% · груз {Number(ColonySimulation.CarryCapacity(definition.Stamina))}";
+            int whole = (int)Math.Floor(capacity + .001f);
+            return capacity - whole < .01f ? whole.ToString() : $"{whole}–{whole + 1}";
         }
-
-        public static string Detailed(UnitDefinition definition)
-        {
-            if (definition == null) return "";
-            return $"Сила: {definition.Strength} | Скорость: {Number(definition.Speed)}\n" +
-                   $"Выносливость: {definition.Stamina}% (груз {Number(ColonySimulation.CarryCapacity(definition.Stamina))} за ходку)";
-        }
-
-        public static string Number(float value) => value.ToString("0.##", CultureInfo.InvariantCulture);
     }
 }

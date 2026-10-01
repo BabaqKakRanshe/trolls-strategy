@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TrollStrategy.Application;
+using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Battle;
 using TrollStrategy.Presentation.Visuals;
@@ -22,11 +23,12 @@ namespace TrollStrategy.UI
         [Header("Part documents nested under this one")]
         [SerializeField] private UIDocument _header;
         [SerializeField] private UIDocument _deploymentBand;
-        [SerializeField] private UIDocument _roster;
-        [SerializeField] private UIDocument _selected;
+        [SerializeField] private UIDocument _squad;
+        [SerializeField] private UIDocument _hint;
         [SerializeField] private UIDocument _actions;
         [SerializeField] private UIDocument _replay;
         [SerializeField] private UIDocument _banner;
+        [SerializeField] private UIDocument _tooltip;
 
         private readonly List<(VisualElement Root, VisualElement Content)> _builtFrom = new();
         private UIDocument _document;
@@ -38,6 +40,7 @@ namespace TrollStrategy.UI
         public event Action PauseToggled;
         public event Action<float> SpeedChosen;
         public event Action CloseRequested;
+        public event Action<UnitKind> KindDropped;
 
         public BattleHudView View => _view;
         public bool IsOpen => _open;
@@ -52,11 +55,12 @@ namespace TrollStrategy.UI
                 Screen = Of(GetComponent<UIDocument>()),
                 Header = Of(_header),
                 Deployment = Of(_deploymentBand),
-                Roster = Of(_roster),
-                Selected = Of(_selected),
+                Squad = Of(_squad),
+                Hint = Of(_hint),
                 Actions = Of(_actions),
                 Replay = Of(_replay),
-                Banner = Of(_banner)
+                Banner = Of(_banner),
+                Tooltip = Of(_tooltip)
             };
         }
 
@@ -74,8 +78,8 @@ namespace TrollStrategy.UI
 
         public void BeginReplay() => _view?.BeginReplay();
 
-        public void ShowReplay(bool paused, float speed, float seconds, int alivePlayers, int aliveEnemies) =>
-            _view?.ShowReplay(paused, speed, seconds, alivePlayers, aliveEnemies);
+        public void ShowReplay(bool paused, float speed, int alivePlayers, int aliveEnemies) =>
+            _view?.ShowReplay(paused, speed, alivePlayers, aliveEnemies);
 
         public void ShowResult(BattleOutcome outcome, int survived, int fallen, int lostItems) =>
             _view?.ShowResult(outcome, survived, fallen, lostItems);
@@ -122,6 +126,7 @@ namespace TrollStrategy.UI
             _view.PauseToggled += () => PauseToggled?.Invoke();
             _view.SpeedChosen += speed => SpeedChosen?.Invoke(speed);
             _view.CloseRequested += () => CloseRequested?.Invoke();
+            _view.KindDropped += kind => KindDropped?.Invoke(kind);
             _builtFrom.Clear();
             foreach (var root in roots.Required) _builtFrom.Add((root, root.childCount > 0 ? root[0] : null));
             return true;

@@ -3,45 +3,59 @@
     <ui:Style src="../../Styles/ColonyHud.uss" />
     <ui:Style src="../../Styles/Progression.uss" />
     <ui:VisualElement name="top-bar" class="top-bar" picking-mode="Ignore">
-        <ui:VisualElement name="brand" class="panel brand">
-            <ui:Label text="ПОСЕЛЕНИЕ" class="brand__title t-bold" />
-            <ui:Label text="ЛЕСНАЯ ДОЛИНА" class="brand__subtitle t-medium" />
-        </ui:VisualElement>
-        <ui:VisualElement name="resources" class="panel resources">
-            <ui:VisualElement class="stat stat--gold">
-                <ui:Label text="ЗОЛОТО" class="t-caption" />
-                <ui:Label name="gold-value" text="0" class="stat__value" />
+        <!-- the colony's numbers: a picture and a number each, the name in the hint -->
+        <ui:VisualElement name="resources" class="resources halo" picking-mode="Ignore">
+            <ui:VisualElement name="gold" class="resource">
+                <ui:VisualElement name="gold-icon" class="resource__icon" picking-mode="Ignore" />
+                <ui:Label name="gold-value" text="0" class="resource__value t-black" picking-mode="Ignore" />
             </ui:VisualElement>
-            <ui:VisualElement class="stat">
-                <ui:Label text="РУДА" class="t-caption" />
-                <ui:Label name="ore-value" text="0" class="stat__value" />
+            <ui:VisualElement name="ore" class="resource">
+                <ui:VisualElement name="ore-icon" class="resource__icon" picking-mode="Ignore" />
+                <ui:Label name="ore-value" text="0" class="resource__value t-black" picking-mode="Ignore" />
             </ui:VisualElement>
-            <ui:VisualElement class="stat">
-                <ui:Label text="НАСЕЛЕНИЕ" class="t-caption" />
-                <ui:Label name="population-value" text="0" class="stat__value" />
-                <ui:Label name="population-idle" text="" class="stat__note" />
+            <ui:VisualElement name="population" class="resource">
+                <ui:VisualElement name="population-icon" class="resource__icon" picking-mode="Ignore" />
+                <ui:Label name="population-value" text="0" class="resource__value t-black" picking-mode="Ignore" />
+                <ui:Label name="population-idle" text="" class="resource__note" picking-mode="Ignore" />
             </ui:VisualElement>
-            <ui:VisualElement class="stat">
-                <ui:Label text="ПРОДАНО" class="t-caption" />
-                <ui:Label name="sold-value" text="0" class="stat__value" />
+            <ui:VisualElement name="sold" class="resource">
+                <ui:VisualElement name="sold-icon" class="resource__icon" picking-mode="Ignore" />
+                <ui:Label name="sold-value" text="0" class="resource__value t-black" picking-mode="Ignore" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="spacer" picking-mode="Ignore" />
-        <ui:VisualElement name="top-actions" class="top-actions" picking-mode="Ignore">
-            <ui:Button name="idle-button" class="btn">
-                <ui:Label text="Свободный" class="btn__caption" picking-mode="Ignore" />
-                <ui:Label text="1" class="hotkey" picking-mode="Ignore" />
-            </ui:Button>
-            <ui:Button name="land-button" class="btn">
-                <ui:Label text="Земля" class="btn__caption" picking-mode="Ignore" />
-                <ui:Label text="L" class="hotkey" picking-mode="Ignore" />
-            </ui:Button>
-            <ui:Button name="grid-button" class="btn">
-                <ui:Label text="Сетка" class="btn__caption" picking-mode="Ignore" />
-                <ui:Label text="G" class="hotkey" picking-mode="Ignore" />
-            </ui:Button>
-            <ui:Button name="battle-button" text="В БОЙ" class="btn btn--gold battle-button" />
-            <ui:Button name="catalog-button" text="Каталог" class="btn" />
+        <!-- the tools down the right edge, the catalog first; their keys are in the hints -->
+        <ui:VisualElement name="tools" class="tools" picking-mode="Ignore">
+            <ui:VisualElement class="tool" picking-mode="Ignore">
+                <ui:Label text="Каталог" class="tool__caption halo t-medium" picking-mode="Ignore" />
+                <ui:Button name="catalog-button" class="btn btn-disc tool__button">
+                    <ui:VisualElement class="glyph glyph--catalog" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+            <ui:VisualElement class="tool" picking-mode="Ignore">
+                <ui:Label name="battle-caption" text="В бой" class="tool__caption halo t-medium" picking-mode="Ignore" />
+                <ui:Button name="battle-button" class="btn btn-disc tool__button">
+                    <ui:VisualElement class="glyph glyph--battle" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+            <ui:VisualElement class="tool" picking-mode="Ignore">
+                <ui:Label text="Земля" class="tool__caption halo t-medium" picking-mode="Ignore" />
+                <ui:Button name="land-button" class="btn btn-disc tool__button">
+                    <ui:VisualElement class="glyph glyph--land" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+            <ui:VisualElement class="tool" picking-mode="Ignore">
+                <ui:Label text="Сетка" class="tool__caption halo t-medium" picking-mode="Ignore" />
+                <ui:Button name="grid-button" class="btn btn-disc tool__button">
+                    <ui:VisualElement class="glyph glyph--grid" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+            <ui:VisualElement class="tool" picking-mode="Ignore">
+                <ui:Label text="Свободный" class="tool__caption halo t-medium" picking-mode="Ignore" />
+                <ui:Button name="idle-button" class="btn btn-disc tool__button">
+                    <ui:VisualElement class="glyph glyph--idle" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

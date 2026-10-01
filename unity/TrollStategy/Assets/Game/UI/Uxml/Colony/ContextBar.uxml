@@ -2,7 +2,7 @@
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/ColonyHud.uss" />
     <ui:Style src="../../Styles/Progression.uss" />
-    <ui:VisualElement name="context" class="panel context">
+    <ui:VisualElement name="context" class="sheet context">
         <ui:VisualElement name="context-targets" class="context__targets" />
         <ui:VisualElement class="context__row">
             <ui:VisualElement class="context__text">

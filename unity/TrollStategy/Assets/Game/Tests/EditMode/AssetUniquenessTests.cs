@@ -34,6 +34,12 @@ namespace TrollStrategy.Tests
             Assert.That(catalogs[0].Buildings, Is.EquivalentTo(buildings));
             Assert.That(units, Has.Length.EqualTo(2));
             Assert.That(units.Select(definition => definition.Kind).Distinct().Count(), Is.EqualTo(2));
+            foreach (var unit in units)
+            {
+                Assert.That(unit.Names, Has.Count.GreaterThanOrEqualTo(12), unit.name);
+                Assert.That(unit.Names.Concat(unit.Epithets), Is.Unique.And.All.Not.Empty, unit.name);
+            }
+            Assert.That(units.SelectMany(unit => unit.Names), Is.Unique, "one name belongs to one species");
 
             Assert.That(FindPrefabPaths("BuildingBase"), Is.EqualTo(new[] { BuildingBasePath }));
             Assert.That(FindPrefabPaths("UnitBase"), Is.EqualTo(new[] { UnitBasePath }));

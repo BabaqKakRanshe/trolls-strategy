@@ -2,10 +2,10 @@
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/ColonyHud.uss" />
     <ui:Style src="../../Styles/Progression.uss" />
-    <ui:VisualElement name="haul-cargo-overlay" class="overlay overlay--soft">
-        <ui:VisualElement name="haul-cargo-dialog" class="panel panel--solid cargo-dialog">
-            <ui:Label name="haul-cargo-title" class="cargo-dialog__title t-bold" />
-            <ui:Label text="Отметьте один или несколько товаров или оставьте «Всё». Куда носить — укажете на карте." class="cargo-dialog__text" />
+    <ui:VisualElement name="haul-cargo-overlay" class="overlay">
+        <ui:VisualElement name="haul-cargo-dialog" class="sheet cargo-dialog">
+            <ui:Label name="haul-cargo-title" class="cargo-dialog__title t-black" />
+            <ui:Label text="Отметьте один или несколько товаров или оставьте «Всё». Куда носить, укажете на карте." class="cargo-dialog__text" />
             <ui:VisualElement name="haul-cargo-choices" class="cargo-dialog__choices" picking-mode="Ignore" />
             <ui:Label name="haul-cargo-note" class="cargo-dialog__note" />
             <ui:VisualElement name="haul-cargo-actions" class="cargo-dialog__actions" picking-mode="Ignore" />

@@ -1,19 +1,14 @@
 /*
- * Progression layout: the quest card above the inspect card, closed catalog cards and the reward reveal.
+ * Progression layout: the quest at the top left and the reward reveals.
  * Colours come from Theme.uss variables; type comes from its t-* classes.
  */
 
-/* Quest card */
+/* Quest: plain text on the world above the inspect card, lined up with the numbers over it */
 
 .quest {
     flex-shrink: 0;
     margin-bottom: 10px;
-    padding: 10px 12px 12px 14px;
-    border-color: var(--gold-deep);
-}
-
-.quest.is-complete {
-    border-color: var(--gold);
+    padding: 12px 0 0 12px;
 }
 
 .quest__header {
@@ -22,32 +17,60 @@
 }
 
 .quest__chapter {
-    flex-grow: 1;
-    color: var(--gold);
+    flex-shrink: 1;
+    font-size: 17px;
 }
 
+.quest.is-complete .quest__chapter {
+    color: var(--good);
+}
+
+/* Folds the card to its heading and title, and back: the action in words right after the chapter line. */
 .quest__toggle {
-    width: 30px;
-    height: 30px;
-    min-height: 30px;
-    font-size: 20px;
+    margin-left: 6px;
+    font-size: 16px;
+}
+
+.quest__toggle > .glyph {
+    width: 15px;
+    height: 15px;
+    margin-right: 4px;
+}
+
+.quest.is-collapsed .quest__toggle > .glyph {
+    rotate: 180deg;
+}
+
+/* How far the goals are; only the folded card shows it, the open one lists every goal. */
+.quest__progress {
+    display: none;
+    margin-left: 8px;
+    font-size: 19px;
+    color: var(--accent);
+}
+
+.quest.is-collapsed .quest__progress {
+    display: flex;
+}
+
+.quest.is-complete .quest__progress {
+    color: var(--good);
 }
 
 .quest__title {
-    margin-top: 2px;
-    font-size: 21px;
+    margin-top: 4px;
+    font-size: 34px;
     white-space: normal;
 }
 
 .quest__description {
-    margin-top: 6px;
-    font-size: 14px;
-    color: var(--ink-muted);
+    margin-top: 8px;
+    font-size: 19px;
     white-space: normal;
 }
 
 .quest__goals {
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
 .quest-goal {
@@ -58,41 +81,42 @@
 }
 
 .quest-goal__check {
-    width: 16px;
-    height: 16px;
+    width: 22px;
+    height: 22px;
     flex-shrink: 0;
-    margin-right: 9px;
-    border-radius: 4px;
+    margin-right: 10px;
+    border-radius: 11px;
     border-width: 2px;
-    border-color: var(--edge);
-    background-color: var(--surface-sunken);
+    border-color: var(--ink-soft);
+    background-color: rgba(255, 255, 255, 0.85);
 }
 
 .quest-goal.is-done .quest-goal__check {
-    border-color: var(--grass-light);
-    background-color: var(--grass);
+    border-color: var(--good);
+    background-color: var(--good-fill);
 }
 
+/* the count follows its goal's words rather than standing at the far edge */
 .quest-goal__text {
-    flex-grow: 1;
     flex-shrink: 1;
-    font-size: 15px;
+    font-size: 19px;
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
     white-space: normal;
 }
 
 .quest-goal.is-done .quest-goal__text {
-    color: var(--ink-muted);
+    color: var(--ink-soft);
 }
 
 .quest-goal__count {
     flex-shrink: 0;
     margin-left: 8px;
-    font-size: 14px;
-    color: var(--gold);
+    font-size: 19px;
+    color: var(--accent);
 }
 
 .quest-goal.is-done .quest-goal__count {
-    color: var(--grass-light);
+    color: var(--good);
 }
 
 .quest__reward {
@@ -100,9 +124,6 @@
     align-items: center;
     flex-wrap: wrap;
     margin-top: 10px;
-    padding-top: 8px;
-    border-top-width: 1px;
-    border-color: var(--edge);
 }
 
 .quest__reward-caption {
@@ -118,110 +139,104 @@
 .quest-reward-chip {
     flex-direction: row;
     align-items: center;
-    margin: 2px 6px 2px 0;
-    padding: 2px 9px 2px 4px;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: var(--edge);
-    background-color: var(--surface-raised);
+    margin: 2px 12px 2px 0;
 }
 
 .quest-reward-chip__art {
-    width: 26px;
-    height: 26px;
-    margin-right: 6px;
+    width: 36px;
+    height: 36px;
+    margin-right: 4px;
 }
 
 .quest-reward-chip__text {
-    font-size: 14px;
-    color: var(--gold-light);
+    font-size: 17px;
 }
 
 .quest__claim {
-    margin-top: 10px;
-    min-height: 50px;
+    margin-top: 12px;
+    min-height: 52px;
+    font-size: 18px;
 }
 
-/* Closed catalog cards */
-
-.card.is-locked {
-    opacity: 0.6;
-}
-
-.card__lock {
-    margin-top: 1px;
-    margin-bottom: 2px;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: var(--gold);
-}
-
-.hud-pulse .card.is-suggested {
-    border-color: var(--gold-glow);
-}
-
-/* Reward reveal */
+/*
+ * Quest reward: a disc in the light, no card (RewardOverlay). Text with its halo straight on the deep veil;
+ * the reward on a white disc with a breathing glow and slow pale rays behind it.
+ */
 
 .reward {
-    width: 520px;
+    max-width: 1000px;
     align-items: center;
-    padding: 18px 26px 22px 26px;
-    border-color: var(--gold-deep);
 }
 
 .reward__eyebrow {
-    color: var(--gold);
-    letter-spacing: 3px;
+    font-size: 19px;
+    color: var(--ink-soft);
+    -unity-text-align: middle-center;
 }
 
 .reward__quest {
-    margin-top: 2px;
-    font-size: 22px;
+    margin-top: 4px;
+    font-size: 36px;
     -unity-text-align: middle-center;
     white-space: normal;
 }
 
-/* 320 square: the round frame in the middle, the glow and the motes centred on it (RewardOverlay) */
+/*
+ * 380 square: disc.png's 284 px circle fills it with its shadow; the glow and the rays are centred on it. The
+ * quest's heading hangs above it, inside it in the tree, so the rays draw under the words; the top margin
+ * keeps the heading's room.
+ */
 .reward__stage {
-    width: 320px;
-    height: 320px;
-    margin-top: 4px;
+    width: 380px;
+    height: 380px;
+    margin-top: 104px;
+    margin-bottom: 10px;
     align-items: center;
     justify-content: center;
 }
 
+.reward__glow {
+    position: absolute;
+    left: -194px;
+    top: -194px;
+    width: 768px;
+    height: 768px;
+    background-image: url("../Sprites/glow.png");
+}
+
 .reward__rays {
     position: absolute;
-    left: -20px;
-    top: -20px;
-    width: 360px;
-    height: 360px;
+    left: -266px;
+    top: -266px;
+    width: 912px;
+    height: 912px;
+    background-image: url("../Sprites/rays.png");
 }
 
-.reward__ray {
+.reward__head {
     position: absolute;
-    left: 171px;
-    top: 0;
-    width: 18px;
-    height: 360px;
-    border-radius: 9px;
-    background-color: var(--gold-ray);
+    left: -310px;
+    right: -310px;
+    bottom: 100%;
+    margin-bottom: 22px;
+    align-items: center;
 }
 
+.reward__disc {
+    width: 380px;
+    height: 380px;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../Sprites/disc.png");
+}
+
+/* the disc's face: the turning model or the picture, clipped round */
 .reward__window {
-    width: 224px;
-    height: 224px;
+    width: 284px;
+    height: 284px;
     overflow: hidden;
-    border-radius: 112px;
-    border-width: 4px;
-    border-color: var(--edge);
-    background-color: var(--surface-sunken);
-    transition-property: border-color;
-    transition-duration: 0.3s;
-}
-
-.reward__window.is-revealed {
-    border-color: var(--gold);
+    border-radius: 142px;
+    background-color: var(--paper-soft);
 }
 
 .reward__prize {
@@ -236,117 +251,133 @@
 }
 
 .reward__prize-image {
-    width: 168px;
-    height: 168px;
+    width: 216px;
+    height: 216px;
 }
 
 .reward__monogram {
-    font-size: 72px;
-    color: var(--gold);
-}
-
-.reward__sparks {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-}
-
-.reward__spark {
-    position: absolute;
-    left: 146px;
-    top: 146px;
-    width: 28px;
-    height: 28px;
-    --unity-image-tint-color: var(--gold-light);
-}
-
-.reward__spark--pale {
-    --unity-image-tint-color: var(--gold-glow);
+    font-size: 96px;
+    color: var(--coin-deep);
 }
 
 .reward__kind {
-    margin-top: 8px;
-    color: var(--gold);
-    letter-spacing: 3px;
+    font-size: 18px;
+    color: var(--accent);
 }
 
 .reward__name {
-    font-size: 34px;
+    font-size: 72px;
     -unity-text-align: middle-center;
 }
 
+/* a building's size, workers and recipes: a glyph or a resource picture beside each number */
+.reward__facts {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 980px;
+    margin-top: 8px;
+}
+
+.reward__fact {
+    flex-direction: row;
+    align-items: center;
+    margin: 4px 15px;
+}
+
+.reward__fact > .glyph {
+    width: 26px;
+    height: 26px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.reward__fact-icon {
+    width: 38px;
+    height: 38px;
+    margin-left: 4px;
+    margin-right: 2px;
+}
+
+.reward__fact-text {
+    font-size: 20px;
+}
+
+.reward__fact-note {
+    margin-left: 6px;
+}
+
+.reward__fact-arrow {
+    margin: 0 8px;
+    font-size: 20px;
+    color: var(--ink-soft);
+}
+
 .reward__description {
-    max-width: 460px;
-    margin-top: 4px;
-    font-size: 15px;
-    color: var(--ink-muted);
+    max-width: 760px;
+    margin-top: 8px;
+    font-size: 19px;
+    color: var(--ink-soft);
     -unity-text-align: middle-center;
     white-space: normal;
+}
+
+.reward__where {
+    margin-top: 10px;
+    font-size: 19px;
+    color: var(--ink-soft);
+    -unity-text-align: middle-center;
 }
 
 .reward__extras {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 .reward__extra {
-    margin: 2px 4px;
-    padding: 3px 10px;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: var(--gold-deep);
-    background-color: var(--surface-raised);
-    font-size: 14px;
-    color: var(--gold-light);
+    margin: 2px 10px;
+    font-size: 20px;
+    color: var(--coin-deep);
 }
 
 .reward__claim {
-    min-width: 260px;
-    min-height: 56px;
-    margin-top: 14px;
-    font-size: 20px;
+    min-width: 312px;
+    min-height: 62px;
+    margin-top: 20px;
+    border-radius: 31px;
+    font-size: 22px;
 }
 
-/* Battle prize: a slot machine with one reel per digit (BattleRewardOverlay) */
+/*
+ * Battle prize: three white discs, no machine (BattleRewardOverlay). The battle's banner, one reel per digit
+ * inside a disc, sparks as each lands; on claim the coins fly from the amount to the treasury.
+ */
 
 .jackpot {
-    width: 540px;
     align-items: center;
-    padding: 18px 26px 22px 26px;
-    border-color: var(--gold);
 }
 
-.jackpot__eyebrow {
-    font-size: 30px;
-    letter-spacing: 4px;
-    color: var(--gold-light);
+.jackpot__banner {
+    font-size: 94px;
+    color: var(--coin);
+    -unity-text-outline-width: 4px;
+    -unity-text-outline-color: var(--ink);
+    -unity-text-align: middle-center;
 }
 
 .jackpot__title {
-    margin-top: 2px;
-    font-size: 16px;
-    color: var(--ink-muted);
+    margin-top: 4px;
+    font-size: 22px;
+    color: var(--ink-soft);
 }
 
-/* 460 × 176: the lights run round this box (BattleRewardOverlay) */
 .jackpot__machine {
-    width: 460px;
-    height: 176px;
-    margin-top: 12px;
+    margin-top: 14px;
     align-items: center;
     justify-content: center;
-    border-radius: 22px;
-    border-width: 4px;
-    border-color: var(--gold-deep);
-    background-color: var(--wood-deep);
-}
-
-.jackpot__machine.is-won {
-    border-color: var(--gold-light);
 }
 
 .jackpot__reels {
@@ -355,25 +386,27 @@
 }
 
 .jackpot__coin {
-    width: 58px;
-    height: 58px;
-    margin-right: 10px;
+    width: 120px;
+    height: 120px;
+    margin-right: 8px;
 }
 
-/* one digit shows at a time: the window is one .jackpot__digit tall */
+/* disc.png's 180 px circle in this 240 box; the margins pull the shadows in so the circles stand 26 px apart */
 .jackpot__reel {
-    width: 78px;
-    height: 112px;
-    margin: 0 4px;
-    overflow: hidden;
-    border-radius: 12px;
-    border-width: 4px;
-    border-color: var(--edge-dark);
-    background-color: var(--ink);
+    width: 240px;
+    height: 240px;
+    margin: -12px -17px;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../Sprites/disc.png");
 }
 
-.jackpot__reel.is-stopped {
-    border-color: var(--gold);
+/* one digit shows at a time: the window is one .jackpot__digit tall (BattleRewardOverlay.DigitHeight) */
+.jackpot__window {
+    width: 180px;
+    height: 180px;
+    overflow: hidden;
+    border-radius: 90px;
 }
 
 .jackpot__strip {
@@ -384,38 +417,55 @@
 }
 
 .jackpot__digit {
-    height: 104px;
-    font-size: 72px;
+    height: 180px;
+    font-size: 112px;
+    color: var(--ink);
     -unity-text-align: middle-center;
-    color: var(--ink-dark);
 }
 
-.jackpot__lights {
+/* the sparks start at the disc's centre and are moved out by code */
+.jackpot__burst {
     position: absolute;
-    left: -4px;
-    top: -4px;
-    right: -4px;
-    bottom: -4px;
+    left: 120px;
+    top: 120px;
+    width: 0;
+    height: 0;
 }
 
-.jackpot__light {
+.jackpot__spark {
     position: absolute;
-    width: 12px;
-    height: 12px;
-    border-radius: 6px;
-    border-width: 1px;
-    border-color: var(--edge-dark);
-    background-color: var(--gold-deep);
-    transition-property: background-color;
-    transition-duration: 0.06s;
+    left: -7px;
+    top: -7px;
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    background-color: var(--coin);
 }
 
-.jackpot__light.is-lit {
-    border-color: var(--gold);
-    background-color: var(--gold-glow);
+.jackpot__range {
+    margin-top: 16px;
+    font-size: 19px;
+    color: var(--ink-soft);
 }
 
-.jackpot__sparks {
+.jackpot__amount {
+    min-height: 64px;
+    margin-top: 4px;
+    font-size: 55px;
+    color: var(--coin-deep);
+    -unity-text-align: middle-center;
+}
+
+.jackpot__claim {
+    min-width: 312px;
+    min-height: 62px;
+    margin-top: 14px;
+    border-radius: 31px;
+    font-size: 22px;
+}
+
+/* the coins' flight to the treasury: left/top from code mark each coin's centre */
+.jackpot__flight {
     position: absolute;
     left: 0;
     top: 0;
@@ -423,35 +473,10 @@
     bottom: 0;
 }
 
-.jackpot__spark {
+.jackpot__flying {
     position: absolute;
-    left: 212px;
-    top: 70px;
-    width: 28px;
-    height: 28px;
-    --unity-image-tint-color: var(--gold-light);
-}
-
-.jackpot__spark--pale {
-    --unity-image-tint-color: var(--gold-glow);
-}
-
-.jackpot__range {
-    margin-top: 10px;
-    font-size: 14px;
-    color: var(--ink-muted);
-}
-
-.jackpot__amount {
-    min-height: 48px;
-    font-size: 40px;
-    color: var(--gold-light);
-    -unity-text-align: middle-center;
-}
-
-.jackpot__claim {
-    min-width: 280px;
-    min-height: 56px;
-    margin-top: 8px;
-    font-size: 20px;
+    width: 60px;
+    height: 60px;
+    margin-left: -30px;
+    margin-top: -30px;
 }

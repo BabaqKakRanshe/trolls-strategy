@@ -17,6 +17,12 @@ namespace TrollStrategy.Presentation.Units
         public const float GroundLift = .05f;
         // the carried goods' middle over the head, along the billboard: half the 0.75 m icon and a little air, m
         private const float CargoGap = .45f;
+        // the selection ring on the lawn: across as a share of the body's width, never under this radius, m,
+        // and squashed from front to back like the shadow under it
+        private const float RingWidthShare = .85f;
+        private const float RingMinRadius = .3f;
+        private const float RingAspect = .75f;
+        private const int RingPoints = 24;
         // a frame without art: the body the battle's fighters assume
         private static readonly Rect DefaultBody = Rect.MinMaxRect(-.15f, -.1f, .15f, .2f);
 
@@ -49,6 +55,7 @@ namespace TrollStrategy.Presentation.Units
         private int _currentFrame;
         private float _movementSpeed;
         private LineRenderer _selectionRing;
+        private float _ringRadius = -1f;
         private SpriteRenderer _shadow;
         private bool _isSelected;
         private bool _worksInside;
@@ -149,7 +156,6 @@ namespace TrollStrategy.Presentation.Units
             if (camera != null)
             {
                 if (_spriteRenderer != null) _spriteRenderer.transform.rotation = camera.transform.rotation;
-                if (_selectionCircle != null) _selectionCircle.transform.rotation = camera.transform.rotation;
                 if (_cargoIcon != null) _cargoIcon.transform.rotation = camera.transform.rotation;
                 if (_cargoLabel != null) _cargoLabel.Face(camera);
             }
@@ -177,6 +183,28 @@ namespace TrollStrategy.Presentation.Units
                 _shadow.transform.localScale = new Vector3(width, width * .55f, 1f);
             }
             if (_cargoIcon != null) _cargoIcon.transform.localPosition = feet + up * (body.height * scale + CargoGap);
+            LaySelection(feet, Mathf.Max(RingMinRadius, body.width * scale * RingWidthShare));
+        }
+
+        // The selection lies flat around the feet, just over the shadow; the body is drawn over it and hides its
+        // far side, so a selected creature stays in plain view.
+        private void LaySelection(Vector3 feet, float radius)
+        {
+            var ground = feet + Vector3.back * .003f;
+            if (_selectionCircle != null)
+            {
+                _selectionCircle.transform.SetLocalPositionAndRotation(ground, Quaternion.identity);
+                _selectionCircle.transform.localScale = new Vector3(radius * 2f, radius * 2f * RingAspect, 1f);
+            }
+            if (_selectionRing == null) return;
+            _selectionRing.transform.SetLocalPositionAndRotation(ground, Quaternion.identity);
+            if (Mathf.Approximately(radius, _ringRadius)) return;
+            _ringRadius = radius;
+            for (int i = 0; i < RingPoints; i++)
+            {
+                float angle = i * Mathf.PI * 2f / RingPoints;
+                _selectionRing.SetPosition(i, new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius * RingAspect, 0f));
+            }
         }
 
         /// <summary>A blob shadow flat on the lawn, drawn under every creature (as under the battle's fighters).</summary>
@@ -248,8 +276,6 @@ namespace TrollStrategy.Presentation.Units
             {
                 var circleGo = new GameObject("SelectionCircle");
                 circleGo.transform.SetParent(transform, false);
-                circleGo.transform.localPosition = new Vector3(0f, -0.16f, -0.20f);
-                circleGo.transform.localScale = new Vector3(1.1f, 0.65f, 1f);
 
                 _selectionCircle = circleGo.AddComponent<SpriteRenderer>();
                 _selectionCircle.sprite = GetSelectionSprite();
@@ -261,15 +287,15 @@ namespace TrollStrategy.Presentation.Units
             {
                 var ringGo = new GameObject("SelectionRing");
                 ringGo.transform.SetParent(transform, false);
-                ringGo.transform.localPosition = new Vector3(0f, -0.16f, -0.21f);
 
                 _selectionRing = ringGo.AddComponent<LineRenderer>();
                 _selectionRing.useWorldSpace = false;
                 _selectionRing.loop = true;
-                _selectionRing.positionCount = 24;
+                _selectionRing.positionCount = RingPoints;
                 _selectionRing.startWidth = 0.055f;
                 _selectionRing.endWidth = 0.055f;
-                _selectionRing.sortingOrder = 22;
+                // over the shadow (18), under every creature's body (20)
+                _selectionRing.sortingOrder = 19;
 
                 Shader shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
                 if (shader == null) shader = Shader.Find("Sprites/Default");
@@ -280,13 +306,7 @@ namespace TrollStrategy.Presentation.Units
                 _selectionRing.startColor = goldColor;
                 _selectionRing.endColor = goldColor;
 
-                float rx = 0.45f;
-                float ry = 0.26f;
-                for (int i = 0; i < 24; i++)
-                {
-                    float angle = i * Mathf.PI * 2f / 24f;
-                    _selectionRing.SetPosition(i, new Vector3(Mathf.Cos(angle) * rx, Mathf.Sin(angle) * ry, 0f));
-                }
+                _ringRadius = -1f;
             }
 
             if (_collider == null)

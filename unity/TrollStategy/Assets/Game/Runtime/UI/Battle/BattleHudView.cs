@@ -1,15 +1,17 @@
 using System;
-using System.Linq;
 using TrollStrategy.Application;
+using TrollStrategy.Content;
 using TrollStrategy.Domain;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// The battle HUD over the root elements of its part documents: deployment panels, then the replay
-    /// bar and the verdict. Follows a <see cref="BattleDeployment"/> and asks the battle for the start,
-    /// pause, speed and the way home; it needs no scene, so EditMode tests build it the same way.
+    /// The battle HUD over the root elements of its part documents: the header, the squad with the selected
+    /// fighter's gear, the hint and the actions while deploying, then the replay bar and the verdict. Follows
+    /// a <see cref="BattleDeployment"/> and asks the battle for the start, pause, speed and the way home; it
+    /// needs no scene, so EditMode tests build it the same way.
     /// </summary>
     public sealed class BattleHudView
     {
@@ -20,12 +22,15 @@ namespace TrollStrategy.UI
         {
             Root = roots.Screen;
             _deploymentBand = roots.Deployment;
-            Header = new BattleHeader(roots.Header, () => CloseRequested?.Invoke());
-            Roster = new RosterPanel(roots.Roster);
-            Gear = new GearPanel(roots.Selected);
-            Actions = new DeploymentActions(roots.Actions, () => StartRequested?.Invoke());
+            Tooltip = new HudTooltip(roots.Tooltip);
+            Header = new BattleHeader(roots.Header, () => CloseRequested?.Invoke(),
+                () => IsDeploying ? "Бой не начнётся, бойцы вернутся к работе." : null, Tooltip);
+            Squad = new SquadPanel(roots.Squad, Tooltip);
+            Squad.KindDropped += kind => KindDropped?.Invoke(kind);
+            Gear = new GearPanel(roots.Squad, Tooltip);
+            Actions = new DeploymentActions(roots.Actions, roots.Hint, () => StartRequested?.Invoke(), Tooltip);
             Replay = new ReplayBar(roots.Replay, () => PauseToggled?.Invoke(), speed => SpeedChosen?.Invoke(speed),
-                () => CloseRequested?.Invoke());
+                () => CloseRequested?.Invoke(), Tooltip);
             Banner = new BattleBanner(roots.Banner);
         }
 
@@ -33,10 +38,13 @@ namespace TrollStrategy.UI
         public event Action PauseToggled;
         public event Action<float> SpeedChosen;
         public event Action CloseRequested;
+        /// <summary>A kind was dragged out of the reserve and let go; the battle finds the cell under the pointer.</summary>
+        public event Action<UnitKind> KindDropped;
 
         public VisualElement Root { get; }
+        public HudTooltip Tooltip { get; }
         public BattleHeader Header { get; }
-        public RosterPanel Roster { get; }
+        public SquadPanel Squad { get; }
         public GearPanel Gear { get; }
         public DeploymentActions Actions { get; }
         public ReplayBar Replay { get; }
@@ -48,13 +56,8 @@ namespace TrollStrategy.UI
             Detach();
             _deployment = deployment ?? throw new ArgumentNullException(nameof(deployment));
             _deployment.Changed += Refresh;
-            var mission = deployment.Mission;
-            Header.Show($"{mission.DisplayName.ToUpperInvariant()} · РАССТАНОВКА",
-                $"Цель: победи всех врагов · {EnemySummary(deployment)} · Награда за победу — сюрприз: " +
-                $"{GameSession.GoldRange(mission.FirstWinGold, mission.FirstWinGoldMax)} золота за первую, " +
-                $"{GameSession.GoldRange(mission.RepeatWinGold, mission.RepeatWinGoldMax)} за повторную",
-                "1  ВЫБЕРИ БОЙЦА     →     2  НАЖМИ СИНЮЮ КЛЕТКУ     →     3  ВЫДАЙ СНАРЯЖЕНИЕ И НАЧНИ БОЙ");
-            Roster.Build(deployment);
+            Header.Show(deployment);
+            Squad.Build(deployment);
             Gear.Build(deployment);
             Actions.Attach(deployment);
             Ui.Show(_deploymentBand, true);
@@ -65,7 +68,7 @@ namespace TrollStrategy.UI
         /// <summary>The deployment changed: every panel that shows it.</summary>
         public void Refresh()
         {
-            Roster.Refresh();
+            Squad.Refresh();
             Gear.Refresh();
             Actions.Refresh();
         }
@@ -76,29 +79,20 @@ namespace TrollStrategy.UI
         {
             Detach();
             Ui.Show(_deploymentBand, false);
-            Replay.Begin();
-            Header.Show($"{_deployment?.Mission.DisplayName.ToUpperInvariant()}  ·  БОЙ",
-                "Цель: победи всех врагов · синий круг — твой боец · красный — противник · над бойцами — здоровье",
-                "БОЙ ИДЁТ АВТОМАТИЧЕСКИ · ПРОБЕЛ — ПАУЗА / ПРОДОЛЖИТЬ · СКОРОСТЬ ВНИЗУ СПРАВА");
-            Banner.Show("В БОЙ!", null, 1.1f);
+            Replay.Begin(OurPortrait(), EnemyPortrait(), _deployment != null ? RewardArt.Coin(_deployment.Session.Catalog) : null);
+            Banner.Show("В бой!", null, 1.1f);
         }
 
-        public void ShowReplay(bool paused, float speed, float seconds, int alivePlayers, int aliveEnemies) =>
-            Replay.Show(paused, speed, seconds, alivePlayers, aliveEnemies);
+        public void ShowReplay(bool paused, float speed, int alivePlayers, int aliveEnemies) =>
+            Replay.Show(paused, speed, alivePlayers, aliveEnemies);
 
         public void ShowResult(BattleOutcome outcome, int survived, int fallen, int lostItems)
         {
             bool victory = outcome == BattleOutcome.PlayerVictory;
             bool defeat = outcome == BattleOutcome.EnemyVictory;
-            string verdict = victory ? "ПОБЕДА" : defeat ? "ПОРАЖЕНИЕ" : "НИЧЬЯ";
+            string verdict = victory ? "Победа" : defeat ? "Поражение" : "Ничья";
             // the amount is a surprise revealed back in the colony
-            string reward = victory ? "награда ждёт в поселении" : "без награды";
-            Replay.ShowResult($"{verdict} · {reward}\nВыжило: {survived} · погибло: {fallen} · потеряно вещей: {lostItems}");
-            Header.Show($"{_deployment?.Mission.DisplayName.ToUpperInvariant()}  ·  {verdict}",
-                victory
-                    ? "Бой завершён · потери применены · награда ждёт в поселении · выжившие вернутся в колонию"
-                    : "Бой завершён · потери применены · выжившие бойцы вернутся в колонию",
-                "Нажми «Вернуться в колонию», чтобы продолжить строительство и добычу.");
+            Replay.ShowResult(verdict, survived, fallen, lostItems, victory);
             Banner.Show(verdict, victory ? "is-victory" : defeat ? "is-defeat" : "is-draw", 2f);
         }
 
@@ -116,9 +110,20 @@ namespace TrollStrategy.UI
             if (_deployment != null) _deployment.Changed -= Refresh;
         }
 
-        private static string EnemySummary(BattleDeployment deployment) => "Враги: " + string.Join(", ",
-            deployment.Mission.Enemies
-                .GroupBy(enemy => enemy.Kind)
-                .Select(group => $"{deployment.Session.Catalog.GetUnit(group.Key).DisplayName} ×{group.Count()}"));
+        // the squad's face: the first fighter on the board, or the colony's first while none stands there
+        private Sprite OurPortrait()
+        {
+            if (_deployment == null) return null;
+            string unitId = _deployment.Placements.Count > 0 ? _deployment.Placements[0].UnitId
+                : _deployment.Roster.Count > 0 ? _deployment.Roster[0].Id : null;
+            return unitId != null ? RewardArt.Tight(_deployment.DefinitionOf(unitId).PortraitSprite) : null;
+        }
+
+        private Sprite EnemyPortrait()
+        {
+            if (_deployment == null || _deployment.Mission.Enemies.Count == 0) return null;
+            var unit = _deployment.Session.Catalog.GetUnit(_deployment.Mission.Enemies[0].Kind);
+            return unit != null ? RewardArt.Tight(unit.PortraitSprite) : null;
+        }
     }
 }

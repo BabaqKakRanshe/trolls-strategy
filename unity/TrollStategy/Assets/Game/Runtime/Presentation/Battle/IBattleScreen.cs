@@ -1,5 +1,6 @@
 using System;
 using TrollStrategy.Application;
+using TrollStrategy.Content;
 using TrollStrategy.Domain;
 
 namespace TrollStrategy.Presentation.Battle
@@ -14,6 +15,8 @@ namespace TrollStrategy.Presentation.Battle
         event Action PauseToggled;
         event Action<float> SpeedChosen;
         event Action CloseRequested;
+        /// <summary>A kind was dragged out of the reserve and let go; the pointer shows where.</summary>
+        event Action<UnitKind> KindDropped;
 
         /// <summary>Shows the deployment for this battle; the screen follows the deployment's changes.</summary>
         void Open(BattleDeployment deployment);
@@ -22,7 +25,7 @@ namespace TrollStrategy.Presentation.Battle
         void Refuse();
 
         void BeginReplay();
-        void ShowReplay(bool paused, float speed, float seconds, int alivePlayers, int aliveEnemies);
+        void ShowReplay(bool paused, float speed, int alivePlayers, int aliveEnemies);
         void ShowResult(BattleOutcome outcome, int survived, int fallen, int lostItems);
         void Close();
     }

@@ -10,7 +10,7 @@ namespace TrollStrategy.UI
     /// </summary>
     public sealed class ColonyHudView
     {
-        private static readonly Color RefusalColor = new(1f, .5f, .42f, 1f);
+        private static readonly Color RefusalColor = new(.72f, .21f, .14f, 1f);
         // Suggested buttons and cards breathe between two border tones at this pace.
         private const float PulseSeconds = .55f;
         private const string PulseClass = "hud-pulse";
@@ -25,21 +25,23 @@ namespace TrollStrategy.UI
         {
             _context = context;
             Root = roots.Screen;
+            // the hint card's document sorts above every other part of the HUD; the parts that name things
+            // by picture only (counters, tools, catalog tokens) put their words in it
+            Tooltip = new HudTooltip(roots.Tooltip);
             Showcase = new ShowcasePanel(roots.Showcase, context.Showcase);
-            Catalog = new CatalogPanel(roots.Catalog, context, Showcase);
-            TopBar = new TopBar(roots.TopBar, context, Catalog.Toggle);
+            Catalog = new CatalogPanel(roots.Catalog, context, Showcase, Tooltip);
+            TopBar = new TopBar(roots.TopBar, context, Catalog.Toggle, Tooltip);
             Catalog.OpenChanged += TopBar.SetCatalogOpen;
             TopBar.SetCatalogOpen(Catalog.IsOpen);
-            Quest = new QuestTracker(roots.Quest, context);
+            Quest = new QuestTracker(roots.Quest, context, Tooltip);
             Inspect = new InspectPanel(roots.Inspect, context);
-            // the hint card's document sorts above every other part of the HUD
-            Tooltip = new HudTooltip(roots.Tooltip);
             ContextBar = new ContextBar(roots.Context, context);
             HaulCargo = new HaulCargoDialog(roots.HaulCargo, context, Tooltip);
             Status = new StatusLine(roots.Status);
             Fan = new CommandFan(roots.Fan, context);
             Reward = new RewardOverlay(roots.Reward, context, Showcase);
-            BattleReward = new BattleRewardOverlay(roots.BattleReward, context);
+            // the battle's gold flies into the treasury's counter
+            BattleReward = new BattleRewardOverlay(roots.BattleReward, context, TopBar);
             Quest.ClaimRequested += OpenReward;
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
             if (roots.Cheat != null) Cheat = new CheatPanel(roots.Cheat, context);

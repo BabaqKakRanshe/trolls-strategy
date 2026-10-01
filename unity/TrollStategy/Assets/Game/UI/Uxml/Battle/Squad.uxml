@@ -1,0 +1,36 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/BattleHud.uss" />
+    <!-- bottom left, under the player's blue cells -->
+    <ui:VisualElement name="battle-squad" class="battle-squad" picking-mode="Ignore">
+        <!-- the selected fighter: its numbers with the gear on, the gear to give it, back to the reserve -->
+        <ui:VisualElement name="battle-gear" class="battle-gear" picking-mode="Ignore">
+            <ui:VisualElement class="battle-stats halo" picking-mode="Ignore">
+                <ui:VisualElement name="battle-health" class="battle-stat">
+                    <ui:VisualElement class="glyph glyph--health battle-stat__glyph" picking-mode="Ignore" />
+                    <ui:Label name="battle-health-value" class="battle-stat__value t-black" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="battle-damage" class="battle-stat">
+                    <ui:VisualElement class="glyph glyph--damage battle-stat__glyph" picking-mode="Ignore" />
+                    <ui:Label name="battle-damage-value" class="battle-stat__value t-black" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="battle-armor" class="battle-stat">
+                    <ui:VisualElement class="glyph glyph--armor battle-stat__glyph" picking-mode="Ignore" />
+                    <ui:Label name="battle-armor-value" class="battle-stat__value t-black" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- the inventory, one round button per item, built by GearPanel -->
+            <ui:VisualElement name="battle-items" class="battle-items" picking-mode="Ignore" />
+            <ui:Button name="battle-remove" text="×" class="btn btn-disc battle-remove" />
+        </ui:VisualElement>
+        <!-- who to put on the board: one round button per kind with how many are left, built by SquadPanel;
+             then how many stand on the board of how many the mission takes -->
+        <ui:VisualElement class="battle-reserve" picking-mode="Ignore">
+            <ui:VisualElement name="battle-kinds" class="battle-reserve" picking-mode="Ignore" />
+            <ui:VisualElement name="battle-squad-size" class="battle-fact battle-squad-size halo">
+                <ui:VisualElement class="glyph glyph--idle battle-fact__glyph" picking-mode="Ignore" />
+                <ui:Label name="battle-squad-value" class="battle-fact__value t-black" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

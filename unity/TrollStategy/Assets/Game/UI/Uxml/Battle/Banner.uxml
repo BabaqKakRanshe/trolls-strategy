@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/BattleHud.uss" />
-    <ui:VisualElement name="battle-banner" class="panel panel--solid battle-banner" picking-mode="Ignore">
-        <ui:Label name="battle-banner-text" class="battle-banner__text t-bold" picking-mode="Ignore" />
+    <ui:VisualElement name="battle-banner" class="battle-banner" picking-mode="Ignore">
+        <ui:Label name="battle-banner-text" class="battle-banner__text" picking-mode="Ignore" />
     </ui:VisualElement>
 </ui:UXML>

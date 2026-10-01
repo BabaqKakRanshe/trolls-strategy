@@ -15,8 +15,8 @@ namespace TrollStrategy.UI
         private const float MinPunchInterval = .35f;
         private const long FrameMs = 16;
 
-        private static readonly Color Gain = new(.55f, 1f, .55f, 1f);
-        private static readonly Color Loss = new(1f, .45f, .4f, 1f);
+        private static readonly Color Gain = new(.2f, .58f, .1f, 1f);
+        private static readonly Color Loss = new(.76f, .2f, .12f, 1f);
 
         private readonly Label _label;
         private readonly bool _punch;
@@ -27,6 +27,10 @@ namespace TrollStrategy.UI
         private int _target;
         private float _start;
         private float _lastPunch = -10f;
+        private float _countTime = CountTime;
+        private float _nextDelay = -1f;
+        private float _nextCountTime;
+        private bool _punchPending;
 
         public CounterLabel(Label label, bool punch)
         {
@@ -35,6 +39,16 @@ namespace TrollStrategy.UI
         }
 
         public int Value => _target;
+
+        /// <summary>
+        /// The next change starts counting after <paramref name="delay"/> seconds and takes <paramref name="duration"/>
+        /// (for gold that flies in first). A zero duration drops a wait that was asked for and not used.
+        /// </summary>
+        public void DelayNext(float delay, float duration)
+        {
+            _nextDelay = duration > 0f ? Mathf.Max(0f, delay) : -1f;
+            _nextCountTime = duration;
+        }
 
         public void Set(int value)
         {
@@ -52,20 +66,31 @@ namespace TrollStrategy.UI
 
             _from = _shown;
             _target = value;
-            _start = Time.unscaledTime;
-            if (_punch && Time.unscaledTime - _lastPunch >= MinPunchInterval)
-            {
-                _lastPunch = Time.unscaledTime;
-                UiMotion.Punch(_label, value > _from ? .16f : .12f, .3f);
-                UiMotion.Flash(_label, value > _from ? Gain : Loss, .45f);
-            }
+            bool delayed = _nextDelay >= 0f;
+            _start = Time.unscaledTime + (delayed ? _nextDelay : 0f);
+            _countTime = delayed ? _nextCountTime : CountTime;
+            _nextDelay = -1f;
+            // the punch comes with the count, so a delayed one waits for it
+            _punchPending = _punch;
             _tick ??= _label.schedule.Execute(Step).Every(FrameMs);
             _tick.Resume();
+            Step();
         }
 
         private void Step()
         {
-            float t = (Time.unscaledTime - _start) / CountTime;
+            if (Time.unscaledTime < _start) return;
+            if (_punchPending)
+            {
+                _punchPending = false;
+                if (Time.unscaledTime - _lastPunch >= MinPunchInterval)
+                {
+                    _lastPunch = Time.unscaledTime;
+                    UiMotion.Punch(_label, _target > _from ? .16f : .12f, .3f);
+                    UiMotion.Flash(_label, _target > _from ? Gain : Loss, .45f);
+                }
+            }
+            float t = (Time.unscaledTime - _start) / _countTime;
             int shown = t >= 1f ? _target : Mathf.RoundToInt(Mathf.Lerp(_from, _target, Ease.OutCubic(t)));
             if (shown != _shown)
             {

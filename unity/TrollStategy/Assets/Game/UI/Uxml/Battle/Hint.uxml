@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/BattleHud.uss" />
+    <!-- one short line under the board: what to do next, or why the last click was refused -->
+    <ui:VisualElement name="battle-hint-band" class="battle-hint" picking-mode="Ignore">
+        <ui:Label name="battle-hint" class="battle-hint__text float--tight t-bold" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -145,7 +145,7 @@ namespace TrollStrategy.UI
             var catalog = _context.Catalog;
             var definition = catalog.GetBuilding(building.Kind);
             Ui.SetText(_title, building.Name);
-            Ui.SetText(_subtitle, $"УРОВЕНЬ {building.Level}   ·   {building.Width}×{building.Height}");
+            Ui.SetText(_subtitle, $"Уровень {building.Level}, {building.Width}×{building.Height}");
 
             BeginRows();
             if (building.RecipeText.Length > 0)
@@ -190,8 +190,9 @@ namespace TrollStrategy.UI
                     if (unit == null || _actionCount >= ActionCount) continue;
                     var kind = unit.Kind;
                     bool open = snapshot.Progress.IsUnitUnlocked(kind);
-                    AddAction("Нанять: " + unit.DisplayName.ToLowerInvariant(), open ? Ui.Gold(unit.Price) : "закрыто",
-                        "btn--primary", open && snapshot.Gold >= unit.Price, () => interaction.RecruitUnit(kind));
+                    int price = _context.Session.HirePrice(kind);
+                    AddAction("Нанять: " + unit.DisplayName.ToLowerInvariant(), open ? Ui.Gold(price) : "закрыто",
+                        "btn--primary", open && snapshot.Gold >= price, () => interaction.RecruitUnit(kind));
                 }
             }
             else
@@ -211,15 +212,16 @@ namespace TrollStrategy.UI
             var catalog = _context.Catalog;
             var definition = catalog.GetUnit(unit.UnitKind);
             string species = definition != null ? definition.DisplayName : unit.UnitKind.ToString();
-            Ui.SetText(_title, $"{species} №{unit.Number}");
-            Ui.SetText(_subtitle, (unit.Status ?? string.Empty).ToUpperInvariant());
+            Ui.SetText(_title, unit.Name);
+            Ui.SetText(_subtitle, string.IsNullOrEmpty(unit.Status)
+                ? species
+                : $"{species}, {char.ToLowerInvariant(unit.Status[0])}{unit.Status.Substring(1)}");
 
+            // what the creature is good for is in its words below; of its stats only the load says something alone
             BeginRows();
-            AddRow("Сила", unit.Strength.ToString());
-            AddRow("Скорость", UnitStatsText.Number(unit.Speed));
-            AddRow("Выносливость", $"{unit.Stamina}% · груз {UnitStatsText.Number(unit.CarryCapacity)} за ходку");
+            AddRow("Носит за ходку", UnitStatsText.Load(unit.CarryCapacity));
             if (definition != null && definition.CombatHealth > 0)
-                AddRow("В бою", $"здоровье {definition.CombatHealth} · урон {definition.CombatDamage} · броня {definition.CombatArmor}");
+                AddRow("В бою", $"здоровье {definition.CombatHealth}, урон {definition.CombatDamage}, броня {definition.CombatArmor}");
             var gear = new List<string>();
             foreach (var item in snapshot.Equipment)
                 if (item.OwnerUnitId == unit.Id) gear.Add(item.DisplayName);
@@ -230,13 +232,17 @@ namespace TrollStrategy.UI
             _staff.Hide();
 
             var selected = _context.Interaction.SelectedIds;
-            SetNote(selected.Count > 1 ? $"Команды ниже получат все выбранные: {selected.Count}." : null);
+            var note = new List<string>();
+            if (definition != null && !string.IsNullOrWhiteSpace(definition.Description)) note.Add(definition.Description.Trim());
+            if (selected.Count > 1) note.Add($"Команды ниже получат все выбранные: {selected.Count}.");
+            SetNote(note.Count > 0 ? string.Join("\n", note) : null);
             HideSlots();
 
             BeginActions();
             var interaction = _context.Interaction;
             int refund = SaleRefund(snapshot, selected);
-            AddAction("В бараки", "отдыхать", "", true, interaction.SendSelectedToBarracks, silent: true);
+            // a freed creature walks to the barracks; with none standing it would only stop where it is
+            AddAction("В бараки", "отдыхать", "", HasBarracks(snapshot), interaction.ReleaseSelected, silent: true);
             AddAction(selected.Count > 1 ? $"Продать ×{selected.Count}" : "Продать", "+" + Ui.Gold(refund),
                 "btn--danger", true, interaction.SellSelected, silent: true);
             EndActions();
@@ -255,6 +261,13 @@ namespace TrollStrategy.UI
             return refund;
         }
 
+        private static bool HasBarracks(GameSnapshot snapshot)
+        {
+            foreach (var building in snapshot.Buildings)
+                if (building.Kind == BuildingKind.Barracks) return true;
+            return false;
+        }
+
         private void ProductionRow(BuildingSnapshot building)
         {
             string text;
@@ -262,7 +275,7 @@ namespace TrollStrategy.UI
             switch (building.ProductionState)
             {
                 case ProductionState.Working:
-                    text = $"работает · {building.ProductionPerSecond:0.##} цикл./с";
+                    text = $"работает, цикл {1f / building.ProductionPerSecond:0.#} с";
                     tone = "t-good";
                     break;
                 case ProductionState.NoWorkers:
@@ -334,7 +347,7 @@ namespace TrollStrategy.UI
             int used = 0;
             for (int i = 0; i < count; i++)
                 if (!building.Slots[i].IsEmpty) used++;
-            Ui.SetText(_slotsHeader, $"ИНВЕНТАРЬ · слоты {used} / {count} · товары {building.TotalStock} / {building.Capacity}");
+            Ui.SetText(_slotsHeader, $"Инвентарь: слоты {used} из {count}, товары {building.TotalStock} из {building.Capacity}");
             Ui.Show(_slotsHeader, true);
             Ui.Show(_slots, true);
 

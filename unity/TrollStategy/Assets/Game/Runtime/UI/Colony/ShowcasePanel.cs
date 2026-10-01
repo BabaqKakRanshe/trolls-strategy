@@ -29,7 +29,7 @@ namespace TrollStrategy.UI
         public bool CanShow => _renderer != null;
         public bool IsShown => Ui.IsShown(_panel);
 
-        public void Show(BuildingDefinition building, string recipes)
+        public void Show(BuildingDefinition building, int price, string recipes)
         {
             var texture = _renderer?.Show(building) as RenderTexture;
             if (texture == null)
@@ -39,7 +39,7 @@ namespace TrollStrategy.UI
             }
             _image.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(texture));
             Ui.SetText(_title, building.DisplayName);
-            string caption = $"{building.Width}×{building.Height} · {Ui.Gold(building.Price)}";
+            string caption = $"{building.Width}×{building.Height}, {Ui.Gold(price)}";
             if (!string.IsNullOrEmpty(recipes)) caption += "\n" + recipes;
             Ui.SetText(_caption, caption);
             bool fresh = !IsShown;

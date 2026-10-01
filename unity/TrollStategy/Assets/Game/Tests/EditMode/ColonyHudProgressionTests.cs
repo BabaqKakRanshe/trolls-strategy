@@ -34,12 +34,38 @@ namespace TrollStrategy.Tests
         public void QuestCard_ShowsTheFirstTutorialStep()
         {
             Assert.That(_hud.Quest.IsShown, Is.True);
-            Assert.That(_hud.Quest.Chapter, Does.StartWith("ОБУЧЕНИЕ · УРОВЕНЬ 1 ИЗ"));
+            Assert.That(_hud.Quest.Chapter, Does.StartWith("Обучение, уровень 1 из"));
             Assert.That(_hud.Quest.Title, Is.EqualTo(_catalog.Progression.Quests[0].Title));
             Assert.That(_hud.Quest.GoalLines, Is.EqualTo(new[] { "Нанять: гоблин 0/1" }));
             Assert.That(UiFeel.IsAvailable(_hud.Quest.ClaimButton), Is.True);
             Assert.That(Ui.IsShown(_hud.Quest.ClaimButton), Is.False, "Nothing to take yet");
             Assert.That(_interaction.Message, Does.Contain(_catalog.Progression.Quests[0].Title));
+        }
+
+        [Test]
+        public void QuestCard_FoldsToItsTitleAndCount_KeepsTheReward_AndOpensForTheNextQuest()
+        {
+            var body = _hud.Root.Q("quest-body");
+            _hud.Quest.ToggleCollapsed();
+
+            Assert.That(_hud.Quest.IsCollapsed, Is.True);
+            Assert.That(Ui.IsShown(body), Is.False, "Folded, the card keeps only its heading and title");
+            Assert.That(_hud.Quest.ToggleCaption, Is.EqualTo("Развернуть"), "The button says what it will do");
+            Assert.That(_hud.Quest.Title, Is.EqualTo(_catalog.Progression.Quests[0].Title));
+            Assert.That(_hud.Quest.Progress, Is.EqualTo("0/1"));
+
+            BuyGoblin();
+            Refresh();
+            Assert.That(_hud.Quest.Progress, Is.EqualTo("1/1"), "A folded card still counts the goals");
+            Assert.That(Ui.IsShown(_hud.Quest.ClaimButton), Is.True, "The reward is taken from a folded card too");
+
+            _hud.Tick(5f);
+            UiFeel.Press(_hud.Reward.ClaimButton);
+            Refresh();
+            Assert.That(_hud.Quest.Title, Is.EqualTo(_catalog.Progression.Quests[1].Title));
+            Assert.That(_hud.Quest.IsCollapsed, Is.False, "A new quest opens so its steps are read");
+            Assert.That(Ui.IsShown(body), Is.True);
+            Assert.That(_hud.Quest.ToggleCaption, Is.EqualTo("Свернуть"));
         }
 
         [Test]
@@ -65,7 +91,7 @@ namespace TrollStrategy.Tests
         {
             int level = _session.CurrentSnapshot.Progress.MissionUnlockLevel("mission-1");
             Assert.That(level, Is.GreaterThan(1));
-            Assert.That(_hud.TopBar.BattleButton.text, Is.EqualTo($"БОЙ ПОСЛЕ УР. {level}"));
+            Assert.That(_hud.TopBar.BattleText, Is.EqualTo($"Бой с {level} уровня"));
             Assert.That(UiFeel.IsAvailable(_hud.TopBar.BattleButton), Is.False);
         }
 
@@ -86,7 +112,7 @@ namespace TrollStrategy.Tests
 
             Assert.That(_hud.Reward.IsReady, Is.True);
             Assert.That(_hud.Reward.RewardName, Is.EqualTo(_catalog.GetBuilding(BuildingKind.Mine).DisplayName));
-            Assert.That(_hud.Reward.RewardKind, Is.EqualTo("НОВАЯ ПОСТРОЙКА"));
+            Assert.That(_hud.Reward.RewardKind, Is.EqualTo("Новая постройка"));
 
             UiFeel.Press(_hud.Reward.ClaimButton);
             Refresh();
@@ -173,6 +199,27 @@ namespace TrollStrategy.Tests
             Assert.That(hud.Reward.IsOpen, Is.False);
             Assert.That(hud.Catalog.ShowsUnits, Is.False, "A sandbox starts on buildings, mine first");
             Assert.That(UiFeel.IsAvailable(hud.Catalog.HireButton(UnitKind.Troll)), Is.True);
+        }
+
+        [Test]
+        public void Reveal_ShowsANewBuildingAsFacts_AndWhereToFindIt()
+        {
+            BuyGoblin();
+            Refresh();
+            _hud.Tick(5f);
+
+            var mine = _catalog.GetBuilding(BuildingKind.Mine);
+            var recipe = mine.Recipes[0];
+            string Words(ResourceAmount amount) => $"{amount.Amount} {_catalog.GetResource(amount.Resource).DisplayName}";
+            var parts = recipe.Inputs.Select(Words).ToList();
+            if (recipe.Inputs.Length > 0) parts.Add("→");
+            parts.AddRange(recipe.Outputs.Select(Words));
+
+            Assert.That(_hud.Reward.Facts[0], Is.EqualTo($"{mine.Width}×{mine.Height}"));
+            Assert.That(_hud.Reward.Facts, Does.Contain($"до {mine.MaxWorkers} рабочих"));
+            Assert.That(_hud.Reward.Facts, Does.Contain(string.Join(" ", parts)), "The recipe as pictures and numbers");
+            Assert.That(_hud.Reward.Where,
+                Is.EqualTo($"Уже в каталоге, вкладка «Здания», {_session.BuildingPrice(BuildingKind.Mine)} золота"));
         }
 
         private void Refresh() => _hud.OnInteractionChanged(_session.CurrentSnapshot);

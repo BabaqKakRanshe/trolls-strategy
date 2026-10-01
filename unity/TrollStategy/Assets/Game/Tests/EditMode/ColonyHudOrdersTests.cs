@@ -141,9 +141,13 @@ namespace TrollStrategy.Tests
             var staff = _hud.Inspect.Staff;
             Assert.That(staff.IsShown, Is.True);
             Assert.That(staff.WorkerIds, Is.EquivalentTo(workers));
-            Assert.That(staff.WorkersCaption, Is.EqualTo("РАБОЧИЕ · 3 / 5"));
+            Assert.That(staff.WorkersCaption, Is.EqualTo("Рабочие: 3 из 5"));
             Assert.That(staff.HaulerIds, Is.EqualTo(new[] { hauler }));
+            Assert.That(staff.AreWorkersOpen, Is.False, "Workers start folded too");
 
+            UiFeel.Press(staff.WorkersToggle);
+            Refresh();
+            Assert.That(staff.AreWorkersOpen, Is.True);
             UiFeel.Press(staff.WorkerButtons[0]);
             Refresh();
             Assert.That(staff.WorkerIds.Count, Is.EqualTo(2));
@@ -156,9 +160,82 @@ namespace TrollStrategy.Tests
             Assert.That(Unit(hauler).Assignment.Kind, Is.EqualTo(AssignmentKind.Haul), "Haulers keep their route");
         }
 
+        [Test]
+        public void BuildingCard_GroupsHaulersByCargo_AndTakesOffOneGroupAtOnce()
+        {
+            var any = new[] { Buy(UnitKind.Goblin), Buy(UnitKind.Goblin) };
+            string crystal = Buy(UnitKind.Goblin);
+            var ore = new[] { Buy(UnitKind.Goblin), Buy(UnitKind.Goblin) };
+            Assert.That(_session.Dispatch(new AssignHaulCommand(any, _mine, "market-1")).Ok, Is.True);
+            Assert.That(_session.Dispatch(new AssignHaulCommand(new[] { crystal }, _mine, "market-1",
+                new[] { ResourceKind.VioletCrystal })).Ok, Is.True);
+            Assert.That(_session.Dispatch(new AssignHaulCommand(ore, _mine, "market-1",
+                new[] { ResourceKind.IronOre })).Ok, Is.True);
+            _interaction.SelectBuilding(_mine);
+            Refresh();
+
+            var staff = _hud.Inspect.Staff;
+            string oreName = _session.ResourceName(ResourceKind.IronOre);
+            string crystalName = _session.ResourceName(ResourceKind.VioletCrystal);
+            Assert.That(staff.HaulerGroupCount, Is.EqualTo(3), "One group per cargo");
+            Assert.That(staff.HaulerCaption(0), Is.EqualTo($"{oreName}: 2"));
+            Assert.That(staff.HaulerGroupIds(0), Is.EqualTo(ore));
+            Assert.That(staff.HaulerCaption(1), Is.EqualTo($"{crystalName}: 1"));
+            Assert.That(staff.HaulerGroupIds(1), Is.EqualTo(new[] { crystal }));
+            Assert.That(staff.HaulerCaption(2), Is.EqualTo("Любой груз: 2"), "Any cargo comes last");
+            Assert.That(staff.HaulerGroupIds(2), Is.EqualTo(any));
+
+            UiFeel.Press(staff.ReleaseAllHaulers(0));
+            Refresh();
+            Assert.That(ore.All(id => Unit(id).Assignment.Kind == AssignmentKind.Idle), Is.True);
+            Assert.That(Unit(crystal).Assignment.Kind, Is.EqualTo(AssignmentKind.Haul), "Other cargo keeps its haulers");
+            Assert.That(staff.HaulerGroupCount, Is.EqualTo(2));
+            Assert.That(staff.HaulerCaption(0), Is.EqualTo($"{crystalName}: 1"));
+            Assert.That(staff.HaulerIds, Is.EqualTo(any.Prepend(crystal)));
+        }
+
+        [Test]
+        public void HaulerGroups_StartFolded_AndStayOpenUntilTheCardCloses()
+        {
+            var ore = new[] { Buy(UnitKind.Goblin), Buy(UnitKind.Goblin) };
+            string crystal = Buy(UnitKind.Goblin);
+            Assert.That(_session.Dispatch(new AssignHaulCommand(ore, _mine, "market-1",
+                new[] { ResourceKind.IronOre })).Ok, Is.True);
+            Assert.That(_session.Dispatch(new AssignHaulCommand(new[] { crystal }, _mine, "market-1",
+                new[] { ResourceKind.VioletCrystal })).Ok, Is.True);
+            _interaction.SelectBuilding(_mine);
+            Refresh();
+
+            var staff = _hud.Inspect.Staff;
+            Assert.That(staff.HaulerGroupCount, Is.EqualTo(2));
+            Assert.That(staff.IsHaulerGroupOpen(0) || staff.IsHaulerGroupOpen(1), Is.False, "Groups start folded");
+            Assert.That(Ui.IsShown(staff.ReleaseAllHaulers(0)), Is.True, "A folded group can still be taken off");
+
+            UiFeel.Press(staff.HaulerGroupToggle(1));
+            Assert.That(staff.IsHaulerGroupOpen(1), Is.True, "Opens on the click, before the next snapshot");
+            Refresh();
+            Assert.That(staff.IsHaulerGroupOpen(1), Is.True);
+            Assert.That(staff.IsHaulerGroupOpen(0), Is.False);
+
+            UiFeel.Press(staff.ReleaseAllHaulers(0));
+            Refresh();
+            Assert.That(staff.HaulerGroupCount, Is.EqualTo(1));
+            Assert.That(staff.HaulerGroupIds(0), Is.EqualTo(new[] { crystal }));
+            Assert.That(staff.IsHaulerGroupOpen(0), Is.True, "The open group stays open as the one above goes");
+
+            UiFeel.Press(staff.HaulerGroupToggle(0));
+            Assert.That(staff.IsHaulerGroupOpen(0), Is.False, "Folds again");
+            UiFeel.Press(staff.HaulerGroupToggle(0));
+            _interaction.CloseInspect();
+            Refresh();
+            _interaction.SelectBuilding(_mine);
+            Refresh();
+            Assert.That(staff.IsHaulerGroupOpen(0), Is.False, "A card opened again starts folded");
+        }
+
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
         [Test]
-        public void WonBattle_SpinsTheSlotMachineOnTheRolledPrize_ThenPaysIt()
+        public void WonBattle_SpinsTheReelsOnTheRolledPrize_ThenPaysIt()
         {
             var squad = new[] { Buy(UnitKind.Troll), Buy(UnitKind.Troll), Buy(UnitKind.Goblin), Buy(UnitKind.Goblin) };
             _session.EnableDebugBattleAccess();

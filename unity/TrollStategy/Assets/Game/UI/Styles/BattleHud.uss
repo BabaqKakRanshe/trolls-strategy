@@ -1,8 +1,10 @@
 /*
- * Battle HUD layout: the mission header on top; at the bottom the three deployment panels, then the
- * replay bar in their place; the banner over the arena. Each part is a nested UIDocument; the frame,
- * the bottom band and the deployment band are documents without UXML whose root elements take the
- * classes below from UiDocumentClasses. Colours come from Theme.uss.
+ * Battle HUD layout: the way back and the mission's name with its facts on top; at the bottom the reserve
+ * to pick from under the player's blue cells, one line of hint in the middle and the start towards the enemy; for the
+ * fight the replay bar takes their place, and the banner calls the start and the verdict over the arena.
+ * Numbers are a picture and a number, buttons are round, names and details are in the hints. Each part is
+ * a nested UIDocument; the frame, the bottom band and the deployment band are documents without UXML whose
+ * root elements take the classes below from UiDocumentClasses. Colours come from Theme.uss.
  */
 
 /* Hidden until a battle opens it, in the editor too. */
@@ -17,7 +19,57 @@
 .battle-frame {
     flex-grow: 1;
     justify-content: space-between;
-    padding: 14px 16px;
+    padding: 16px 24px 14px 24px;
+}
+
+/* disc.png: the 58 px circle sits in the middle of this box */
+.battle-disc {
+    width: 78px;
+    height: 78px;
+    font-size: 20px;
+}
+
+/* A picture and a number; the name is in the hint. */
+.battle-facts {
+    flex-direction: row;
+    align-items: center;
+}
+
+.battle-fact {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 22px;
+}
+
+.battle-fact__icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 5px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* a creature's portrait on the ring of its side, as on the board */
+.battle-fact__icon--side {
+    border-width: 2px;
+    border-radius: 20px;
+}
+
+.battle-fact__glyph {
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+}
+
+.battle-fact__value {
+    font-size: 26px;
+}
+
+.battle-fact__note {
+    font-size: 18px;
+}
+
+.battle-fact--fallen .battle-fact__icon {
+    opacity: 0.45;
 }
 
 /* Header */
@@ -25,161 +77,173 @@
 .battle-header {
     flex-direction: row;
     align-items: center;
-    padding: 12px 18px;
+    margin-left: -20px;
+    margin-top: -8px;
+}
+
+/* the chevron turned to point back */
+.battle-header__back-glyph {
+    rotate: -90deg;
 }
 
 .battle-header__text {
-    flex-grow: 1;
-    flex-shrink: 1;
+    margin-left: 4px;
 }
 
 .battle-header__title {
-    font-size: 28px;
-    letter-spacing: 1px;
+    font-size: 30px;
 }
 
-.battle-header__goal {
-    font-size: 16px;
-    white-space: normal;
-    margin-top: 2px;
-}
-
-.battle-header__guide {
-    font-size: 15px;
-    letter-spacing: 0.5px;
-    color: var(--water);
-    margin-top: 4px;
-}
-
-.battle-header__back {
-    min-width: 180px;
-    min-height: 54px;
-    margin-left: 16px;
-}
-
-/* Deployment: roster, selected fighter, actions */
+/* Deployment: squad on the left, hint in the middle, start on the right */
 
 .battle-deployment {
     flex-direction: row;
-    align-items: stretch;
-    height: 290px;
+    align-items: flex-end;
     flex-shrink: 0;
 }
 
-/* The selected fighter's document takes the width the roster and actions leave. */
+/* The hint's document takes the width the squad and the actions leave. */
 .battle-grow {
     flex-grow: 1;
     flex-shrink: 1;
 }
 
-.battle-panel {
-    flex-grow: 1;
+.battle-squad {
+    align-items: flex-start;
+    margin-left: -18px;
+    margin-bottom: -12px;
 }
 
-.battle-roster {
-    width: 600px;
-    margin-right: 12px;
+/* the selected fighter's row, over the squad */
+.battle-gear {
+    flex-direction: row;
+    align-items: center;
 }
 
-.battle-selected {
-    margin-right: 12px;
+.battle-stats {
+    flex-direction: row;
+    align-items: center;
+    margin-left: 18px;
+    margin-right: 6px;
+}
+
+.battle-stat {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 14px;
+}
+
+.battle-stat__glyph {
+    width: 26px;
+    height: 26px;
+    margin-right: 3px;
+}
+
+.battle-stat__value {
+    font-size: 24px;
+}
+
+.battle-items {
+    flex-direction: row;
+    align-items: center;
+}
+
+/* disc.png: the 50 px circle sits in the middle of this box */
+.battle-item {
+    width: 68px;
+    height: 68px;
+    margin-right: -6px;
+}
+
+.battle-item__art {
+    width: 34px;
+    height: 34px;
+}
+
+.battle-item__art .card__image {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* worn by another fighter: a press hands it over */
+.battle-item.is-taken {
+    opacity: 0.6;
+}
+
+.battle-remove {
+    width: 68px;
+    height: 68px;
+    font-size: 26px;
+}
+
+/* the reserve: a portrait button per kind and how many are left, then the squad on the board */
+.battle-reserve {
+    flex-direction: row;
+    align-items: center;
+}
+
+.battle-kind {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px;
+}
+
+/* disc.png: the 78 px circle sits in the middle of this box */
+.battle-kind__button {
+    width: 104px;
+    height: 104px;
+    margin-right: -6px;
+}
+
+.battle-kind__portrait {
+    width: 58px;
+    height: 58px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* the portrait that follows the pointer while a kind is dragged out of the reserve */
+.battle-kind__ghost {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    opacity: 0.85;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.battle-squad-size {
+    margin-left: 14px;
+}
+
+.battle-hint {
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 24px;
+}
+
+.battle-hint__text {
+    align-self: center;
+    margin: 0;
+    font-size: 19px;
 }
 
 .battle-actions {
-    width: 520px;
-}
-
-.battle-panel__header {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    margin-right: -10px;
+    margin-bottom: 4px;
 }
 
-.battle-panel__title {
-    font-size: 20px;
-    margin-bottom: 8px;
-}
-
-.battle-panel__action {
-    min-height: 36px;
-    margin-bottom: 8px;
-}
-
-.battle-list {
-    flex-grow: 1;
-    flex-shrink: 1;
-}
-
-.battle-list .unity-scroll-view__content-container {
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-
-.battle-card {
-    width: 272px;
+/* the one big button: start, or home after the verdict */
+.battle-go {
+    min-width: 240px;
     min-height: 64px;
-    margin: 0 8px 8px 0;
-    align-items: flex-start;
-}
-
-.battle-card .btn__title,
-.battle-card .btn__hint {
-    -unity-text-align: middle-left;
-}
-
-.battle-card.is-placed {
-    border-color: var(--grass);
-}
-
-.battle-card--gear {
-    width: 316px;
-    padding-left: 64px;
-}
-
-.battle-card__icon {
-    position: absolute;
-    left: 8px;
-    top: 8px;
-    width: 48px;
-    height: 48px;
-    border-radius: 8px;
-    background-color: var(--surface-sunken);
-    align-items: center;
-    justify-content: center;
-}
-
-.battle-card__icon .card__image {
-    position: absolute;
-    left: 2px;
-    top: 2px;
-    right: 2px;
-    bottom: 2px;
-}
-
-.battle-selected__details {
-    font-size: 16px;
-    white-space: normal;
-    margin-bottom: 8px;
-}
-
-.battle-selected__caption {
-    margin-bottom: 6px;
-}
-
-.battle-actions__hint {
-    font-size: 16px;
-    white-space: normal;
-    color: var(--ink-muted);
-}
-
-.battle-actions__auto {
-    margin-top: 8px;
-}
-
-.battle-actions__start {
-    min-height: 64px;
-    margin-top: 10px;
-    font-size: 20px;
+    border-radius: 32px;
+    font-size: 22px;
+    margin-left: 8px;
+    margin-right: 10px;
 }
 
 /* Replay */
@@ -187,58 +251,45 @@
 .battle-replay {
     flex-direction: row;
     align-items: center;
-    min-height: 96px;
-    padding: 10px 18px;
+    min-height: 80px;
+    margin-bottom: 4px;
 }
 
-.battle-replay__status {
-    font-size: 20px;
-    white-space: normal;
+.battle-verdict {
+    font-size: 30px;
+    margin-right: 26px;
 }
 
-.battle-replay > .btn {
-    min-height: 56px;
-    margin-left: 10px;
-}
-
-.battle-replay__pause {
-    min-width: 170px;
-}
-
-.battle-replay__speed {
-    min-width: 76px;
-}
-
-.battle-replay__return {
-    min-width: 360px;
-}
-
-/* Banner */
+/* Banner: a big word over the arena, no plate */
 
 .battle-banner {
     position: absolute;
     top: 150px;
     left: 50%;
     translate: -50% 0;
-    width: 640px;
-    height: 104px;
+    width: 900px;
+    height: 120px;
     align-items: center;
     justify-content: center;
 }
 
 .battle-banner__text {
-    font-size: 56px;
+    font-size: 84px;
+    -unity-font-definition: url("../Fonts/Nunito-Black.ttf");
     -unity-text-align: middle-center;
+    color: var(--paper);
+    -unity-text-outline-width: 4px;
+    -unity-text-outline-color: var(--ink);
 }
 
 .battle-banner.is-victory .battle-banner__text {
-    color: var(--gold-light);
+    color: var(--coin);
 }
 
 .battle-banner.is-defeat .battle-banner__text {
-    color: var(--clay-light);
+    color: #F2826A;
 }
 
 .battle-banner.is-draw .battle-banner__text {
-    color: var(--ink-muted);
+    color: var(--paper-soft);
 }

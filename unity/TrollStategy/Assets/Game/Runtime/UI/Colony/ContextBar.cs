@@ -24,7 +24,6 @@ namespace TrollStrategy.UI
         private readonly Button _work;
         private readonly Button _haul;
         private readonly Button _release;
-        private readonly Button _barracks;
         private readonly Button _sell;
         private readonly Button _auto;
         private readonly Button _cargo;
@@ -49,14 +48,13 @@ namespace TrollStrategy.UI
             _work = Command(actions, "Работа", "E", "btn--primary", interaction.BeginWorkTarget);
             _haul = Command(actions, "Перенос", "H", "btn--primary", interaction.BeginHaulTarget);
             _release = Command(actions, "Свободны", "R", null, interaction.ReleaseSelected, silent: true);
-            _barracks = Command(actions, "В бараки", null, null, interaction.SendSelectedToBarracks, silent: true);
             _sell = Command(actions, "Продать", null, "btn--danger", interaction.SellSelected, silent: true);
             _auto = Command(actions, "Поставить сам", null, "btn--primary", interaction.PlaceBuildingAutomatically);
             _cargo = Command(actions, "Изменить груз", null, null, interaction.ChangeHaulCargo);
             // the land mode's answer to a picked block: buy it or clear it; ColonyFeedback sounds the result
             _land = Command(actions, "Купить", null, "btn--gold", () => interaction.ConfirmLand(), silent: true);
             _cancel = Command(actions, "Отмена", "Esc", null, interaction.CancelOrClear, click: Sfx.UiBack);
-            _clear = Command(actions, "×", "Esc", "btn-close", interaction.CancelOrClear, click: Sfx.UiBack);
+            _clear = Command(actions, "×", null, "btn-close", interaction.CancelOrClear, click: Sfx.UiBack);
             Ui.Show(_bar, false);
         }
 
@@ -130,14 +128,14 @@ namespace TrollStrategy.UI
             {
                 case InteractionModeType.PlacingBuilding:
                     var building = catalog.GetBuilding(mode.BuildingKind);
-                    title = $"{building.DisplayName} · {Ui.Gold(building.Price)}";
+                    title = $"{building.DisplayName} за {Ui.Gold(_context.Session.BuildingPrice(mode.BuildingKind))}";
                     break;
                 case InteractionModeType.MovingBuilding:
                     title = "Перенос постройки";
                     break;
                 case InteractionModeType.PlacingUnits:
                     var unit = catalog.GetUnit(mode.UnitKind);
-                    title = $"{unit.DisplayName} ×{mode.Amount} · {Ui.Gold(unit.Price * mode.Amount)}";
+                    title = $"{unit.DisplayName} ×{mode.Amount} за {Ui.Gold(_context.Session.HirePrice(mode.UnitKind, mode.Amount))}";
                     break;
                 case InteractionModeType.ChoosingWorkTarget:
                     title = "Куда на работу";
@@ -149,7 +147,7 @@ namespace TrollStrategy.UI
                     title = "Куда носить";
                     break;
                 case InteractionModeType.ManagingLand:
-                    title = snapshot.Land != null ? $"Земля · участок {Ui.Gold(snapshot.Land.NextPrice)}" : "Земля";
+                    title = snapshot.Land != null ? $"Земля: участок за {Ui.Gold(snapshot.Land.NextPrice)}" : "Земля";
                     break;
                 default:
                     title = string.Empty;
@@ -197,8 +195,8 @@ namespace TrollStrategy.UI
             {
                 int seconds = (int)Math.Ceiling(land.ClearSeconds);
                 Ui.SetCaption(_land, land.ClearGold > 0
-                    ? $"Расчистить · {seconds} с · {Ui.Gold(land.ClearGold)}"
-                    : $"Расчистить · {seconds} с");
+                    ? $"Расчистить за {seconds} с и {Ui.Gold(land.ClearGold)}"
+                    : $"Расчистить за {seconds} с");
                 UiFeel.SetAvailable(_land, snapshot.Gold >= land.ClearGold);
             }
         }
@@ -245,7 +243,6 @@ namespace TrollStrategy.UI
             Ui.Show(_work, selection);
             Ui.Show(_haul, selection);
             Ui.Show(_release, selection);
-            Ui.Show(_barracks, selection);
             Ui.Show(_sell, selection);
             Ui.Show(_clear, selection);
             Ui.Show(_auto, auto);
@@ -268,7 +265,7 @@ namespace TrollStrategy.UI
             var parts = new List<string>(2);
             if (goblins > 0) parts.Add($"гоблины: {goblins}");
             if (trolls > 0) parts.Add($"тролли: {trolls}");
-            return parts.Count > 0 ? string.Join(" · ", parts) + " · ПКМ по карте — веер команд" : string.Empty;
+            return parts.Count > 0 ? string.Join(", ", parts) + ". Правый клик по карте открывает команды." : string.Empty;
         }
 
         private static bool Contains(IReadOnlyCollection<string> ids, string id)

@@ -20,6 +20,8 @@ namespace TrollStrategy.Presentation.Battle
         /// <summary>Battle-only size: a 9 px troll stands about 0.96 m, a 6 px goblin about 0.64 m.</summary>
         public const float PixelSize = .17f / 1.6f;
         private const float GroundLift = .05f;
+        // how high a fighter the player drags floats over the ground
+        private const float CarryLift = .3f;
         private const float BarHeight = .13f / 1.6f;
         private const float IdleFrame = .2f;
         private const float WalkFrame = .1f;
@@ -82,6 +84,7 @@ namespace TrollStrategy.Presentation.Battle
         private float _deadTime;
         private float _spawnTime = 10f;
         private float _removeTime = -1f;
+        private Vector3? _carried;
 
         public string Id { get; private set; }
         public UnitKind Kind { get; private set; }
@@ -188,8 +191,29 @@ namespace TrollStrategy.Presentation.Battle
             RefreshBar();
         }
 
-        /// <summary>Selected in the roster: the ring glows gold and breathes.</summary>
+        /// <summary>Selected for its gear: the ring glows gold and breathes.</summary>
         public void SetSelected(bool selected) => _selected = selected;
+
+        /// <summary>
+        /// The player drags it across the board: it floats over <paramref name="at"/> and lets clicks through
+        /// to the cells under it, so the drop lands on the cell the pointer shows.
+        /// </summary>
+        public void Carry(Vector3 at)
+        {
+            _carried = at;
+            if (_collider != null) _collider.enabled = false;
+        }
+
+        /// <summary>Let go: hops back down to its cell, unless a move sends it to another one.</summary>
+        public void PutDown()
+        {
+            if (_carried == null) return;
+            _carried = null;
+            if (_collider != null && !IsDead && _removeTime < 0f) _collider.enabled = true;
+            _moveFrom = transform.position;
+            _moveTime = 0f;
+            _moveDuration = .18f;
+        }
 
         /// <summary>Holds the current pose for a beat (the attacker's side of a hit-stop).</summary>
         public void Hold(float seconds) => _freeze = Mathf.Max(_freeze, seconds);
@@ -298,7 +322,8 @@ namespace TrollStrategy.Presentation.Battle
         {
             // position: tween between cells with a hop, plus lunge and knockback
             var position = _ground;
-            if (_moveDuration > 0f)
+            if (_carried is Vector3 carried) position = carried + Vector3.up * CarryLift;
+            else if (_moveDuration > 0f)
             {
                 float t = Mathf.Clamp01(_moveTime / _moveDuration);
                 position = Vector3.Lerp(_moveFrom, _ground, Ease.OutCubic(t)) + Vector3.up * (Ease.Hump(t) * .16f);

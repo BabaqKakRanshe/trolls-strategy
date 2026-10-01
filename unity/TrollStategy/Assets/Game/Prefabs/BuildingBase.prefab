@@ -212,6 +212,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Presentation.WorldUi.WorldPanel
   _classes: []
+  _sortingOrder: 25
+  _keepReadable: 1
 --- !u!1 &7620434809670194101
 GameObject:
   m_ObjectHideFlags: 0

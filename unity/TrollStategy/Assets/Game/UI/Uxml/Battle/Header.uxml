@@ -1,12 +1,21 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/BattleHud.uss" />
-    <ui:VisualElement name="battle-header" class="panel battle-header">
-        <ui:VisualElement class="battle-header__text" picking-mode="Ignore">
-            <ui:Label name="battle-title" class="battle-header__title t-bold" />
-            <ui:Label name="battle-goal" class="battle-header__goal" />
-            <ui:Label name="battle-guide" class="battle-header__guide t-medium" />
+    <!-- the way back, then the mission's name over what it holds: a picture and a number each, the rest in the hints -->
+    <ui:VisualElement name="battle-header" class="battle-header" picking-mode="Ignore">
+        <ui:Button name="battle-back" class="btn btn-disc battle-disc">
+            <ui:VisualElement class="glyph glyph--chevron battle-header__back-glyph" picking-mode="Ignore" />
+        </ui:Button>
+        <ui:VisualElement class="battle-header__text halo" picking-mode="Ignore">
+            <ui:Label name="battle-title" class="battle-header__title t-black" picking-mode="Ignore" />
+            <ui:VisualElement class="battle-facts" picking-mode="Ignore">
+                <!-- one enemy per kind, built by BattleHeader -->
+                <ui:VisualElement name="battle-enemies" class="battle-facts" picking-mode="Ignore" />
+                <ui:VisualElement name="battle-reward" class="battle-fact">
+                    <ui:VisualElement name="battle-reward-icon" class="battle-fact__icon" picking-mode="Ignore" />
+                    <ui:Label name="battle-reward-value" class="battle-fact__value t-black" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
         </ui:VisualElement>
-        <ui:Button name="battle-back" text="В КОЛОНИЮ" class="btn battle-header__back" />
     </ui:VisualElement>
 </ui:UXML>

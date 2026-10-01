@@ -1,11 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/BattleHud.uss" />
-    <ui:VisualElement name="battle-actions" class="panel battle-panel battle-actions">
-        <ui:Label name="battle-squad" class="battle-panel__title t-bold" />
-        <ui:Label name="battle-hint" class="battle-actions__hint" />
-        <ui:VisualElement class="spacer" picking-mode="Ignore" />
-        <ui:Button name="battle-auto" text="Авторасстановка" class="btn battle-actions__auto" />
-        <ui:Button name="battle-start" text="НАЧАТЬ БОЙ" class="btn btn--primary battle-actions__start" />
+    <!-- bottom right, towards the enemy -->
+    <ui:VisualElement name="battle-actions" class="battle-actions" picking-mode="Ignore">
+        <ui:Button name="battle-auto" class="btn btn-disc battle-disc">
+            <ui:VisualElement class="glyph glyph--auto" picking-mode="Ignore" />
+        </ui:Button>
+        <ui:Button name="battle-start" text="В бой" class="btn btn--primary battle-go" />
     </ui:VisualElement>
 </ui:UXML>

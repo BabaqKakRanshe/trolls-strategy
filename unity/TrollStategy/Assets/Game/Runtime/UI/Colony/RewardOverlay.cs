@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Presentation.Audio;
@@ -9,28 +10,32 @@ using UnityEngine.UIElements;
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// The reward reveal for a finished quest. The card opens on the reward's dark silhouette in a round frame;
-    /// it brightens and rises while a soft glow fades in behind it and a chime marks the moment. A building
-    /// then turns as its 3D model, a creature or gold shows as its picture, with its name, what it gives and a
-    /// button to take it. Taking it sends the claim; the session applies the rewards. Everything is a function
-    /// of the time since opening, advanced by <see cref="Tick"/> on unscaled time, so EditMode tests play it
-    /// without a panel. A click on the picture skips to the end.
+    /// The reward reveal for a finished quest: a disc in the light, with no card around it. The island goes
+    /// under a deep veil and the quest's name rises at the top. A large white disc pops up in the middle with
+    /// the reward's dark silhouette, which brightens while a soft glow breathes and pale rays turn behind it;
+    /// a chime marks the moment. A building turns as its 3D model, a creature or gold shows as its picture.
+    /// Below it, as text on the veil: the kind of reward, its name, its facts (a building's size, workers and
+    /// recipes as pictures and numbers) and where to find it, then a button to take it. Taking it sends the
+    /// claim; the session applies the rewards. Everything is a function of the time since opening, advanced
+    /// by <see cref="Tick"/> on unscaled time, so EditMode tests play it without a panel. A click on the disc
+    /// skips to the end.
     /// </summary>
     public sealed class RewardOverlay
     {
         // Timeline, in seconds since the reveal opened.
-        private const float OpenSeconds = .3f;
+        private const float HeadAt = .1f;
         private const float RevealAt = .2f;
         private const float RevealSeconds = .6f;
         private const float ChimeAt = .55f;
         private const float DetailsAt = .7f;
+        private const float DetailStep = .08f;
+        private const float RiseSeconds = .3f;
         private const float ReadyAt = 1.05f;
         private const float CloseSeconds = .22f;
-
-        // Must match Progression.uss: .reward__stage and .reward__spark.
-        private const int SparkCount = 10;
-        private const int RayCount = 8;
-        // How tightly the turning model fills the frame (see BuildingShowcase.Show).
+        // The rays turn this many degrees a second; the glow swells by this share and back.
+        private const float RaySpeed = 9f;
+        private const float GlowBreath = .06f;
+        // How tightly the turning model fills the disc (see BuildingShowcase.Show).
         private const float ModelFraming = 1.12f;
         private static readonly Color Silhouette = new(.08f, .09f, .11f, 1f);
 
@@ -39,18 +44,22 @@ namespace TrollStrategy.UI
         private readonly BuildingShowcase _renderer;
         private readonly VisualElement _overlay;
         private readonly VisualElement _dialog;
-        private readonly VisualElement _window;
+        private readonly VisualElement _disc;
         private readonly VisualElement _prize;
+        private readonly VisualElement _glow;
         private readonly VisualElement _rays;
+        private readonly VisualElement _facts;
         private readonly VisualElement _extras;
         private readonly Label _eyebrow;
         private readonly Label _quest;
         private readonly Label _kind;
         private readonly Label _name;
         private readonly Label _description;
+        private readonly Label _where;
         private readonly Button _claim;
+        private readonly VisualElement[] _head;
         private readonly VisualElement[] _details;
-        private readonly System.Collections.Generic.List<Image> _sparks = new();
+        private readonly List<string> _factTexts = new();
 
         private QuestSnapshot _shown;
         private RewardSnapshot _headline;
@@ -69,21 +78,23 @@ namespace TrollStrategy.UI
             _overlay = Ui.Require<VisualElement>(root, "reward-overlay");
             _dialog = Ui.Require<VisualElement>(root, "reward-dialog");
             var stage = Ui.Require<VisualElement>(root, "reward-stage");
-            _window = Ui.Require<VisualElement>(root, "reward-window");
+            _disc = Ui.Require<VisualElement>(root, "reward-disc");
             _prize = Ui.Require<VisualElement>(root, "reward-prize");
+            _glow = Ui.Require<VisualElement>(root, "reward-glow");
             _rays = Ui.Require<VisualElement>(root, "reward-rays");
+            _facts = Ui.Require<VisualElement>(root, "reward-facts");
             _extras = Ui.Require<VisualElement>(root, "reward-extras");
             _eyebrow = Ui.Require<Label>(root, "reward-eyebrow");
             _quest = Ui.Require<Label>(root, "reward-quest");
             _kind = Ui.Require<Label>(root, "reward-kind");
             _name = Ui.Require<Label>(root, "reward-name");
             _description = Ui.Require<Label>(root, "reward-description");
+            _where = Ui.Require<Label>(root, "reward-where");
             _claim = UiFeel.Bind(Ui.Require<Button>(root, "reward-claim"), Claim, silentClick: true);
-            _details = new VisualElement[] { _kind, _name, _description, _extras };
+            _head = new VisualElement[] { _eyebrow, _quest };
+            _details = new VisualElement[] { _kind, _name, _facts, _description, _where, _extras };
 
             stage.RegisterCallback<PointerDownEvent>(_ => Skip());
-            BuildRays();
-            BuildSparks(Ui.Require<VisualElement>(root, "reward-sparks"));
             Ui.Show(_overlay, false);
         }
 
@@ -93,6 +104,10 @@ namespace TrollStrategy.UI
         public string QuestId => _shown?.Id;
         public string RewardName => _name.text;
         public string RewardKind => _kind.text;
+        /// <summary>A building's facts under its name: size, workers, then each recipe, as words.</summary>
+        public IReadOnlyList<string> Facts => _factTexts;
+        /// <summary>Where the reward is found now, with its price.</summary>
+        public string Where => _where.text;
         public Button ClaimButton => _claim;
 
         public void Open(QuestSnapshot quest)
@@ -107,19 +122,19 @@ namespace TrollStrategy.UI
             _shownGold = -1;
 
             Ui.SetText(_eyebrow, quest.IsTutorial
-                ? $"ОБУЧЕНИЕ · УРОВЕНЬ {quest.Level} ПРОЙДЕН"
-                : $"УРОВЕНЬ {quest.Level} ПРОЙДЕН");
+                ? $"Обучение: уровень {quest.Level} пройден"
+                : $"Уровень {quest.Level} пройден");
             Ui.SetText(_quest, quest.Title);
             Ui.SetText(_kind, _headline?.Caption ?? string.Empty);
             Ui.SetText(_name, _headline?.Title ?? string.Empty);
-            Ui.SetText(_description, Describe(_headline));
+            Describe(_headline);
             BuildExtras(quest);
             ShowPrize();
             SetClaimShown(false);
             Ui.Show(_overlay, true);
             _overlay.BringToFront();
             Render(0f);
-            GameAudio.Play(Sfx.Select, .6f, .9f);
+            GameAudio.Play(Sfx.Select, .6f, GameAudio.Step(-1));
         }
 
         /// <summary>Shows everything at once.</summary>
@@ -182,33 +197,27 @@ namespace TrollStrategy.UI
         private void Render(float t)
         {
             _overlay.style.opacity = Mathf.Clamp01(t / .2f);
-            float open = Mathf.Clamp01(t / OpenSeconds);
-            _dialog.style.scale = new Scale(Vector3.one * Mathf.Max(.001f, Ease.OutBack(open, 1.2f)));
+            _dialog.style.scale = StyleKeyword.Null;
+            foreach (var element in _head) Rise(element, t - HeadAt);
 
-            // the reward steps out of its silhouette and rises a little
-            float reveal = Mathf.Clamp01((t - RevealAt) / RevealSeconds);
-            // a picture steps out of its silhouette; the model's picture has an opaque backdrop, so it fades in
-            if (_prizeIsModel) _prize.style.opacity = Ease.OutCubic(reveal);
-            else if (_prizeImage != null) _prizeImage.tintColor = Color.Lerp(Silhouette, Color.white, Ease.OutCubic(reveal));
-            float rise = Ease.OutBack(reveal, 1.2f);
+            // the disc pops up; the picture steps out of its silhouette (the model's has an opaque backdrop, so it fades in)
+            float pop = Mathf.Clamp01((t - RevealAt) / RevealSeconds);
+            _disc.style.opacity = Mathf.Clamp01(pop / .25f);
+            _disc.style.scale = new Scale(Vector3.one * Mathf.Max(.001f, Mathf.LerpUnclamped(.45f, 1f, Ease.OutBack(pop, 1.8f))));
+            float reveal = Ease.OutCubic(pop);
+            if (_prizeIsModel) _prize.style.opacity = reveal;
+            else if (_prizeImage != null) _prizeImage.tintColor = Color.Lerp(Silhouette, Color.white, reveal);
             float drift = t > ReadyAt ? Mathf.Sin((t - ReadyAt) * 1.6f) * 3f : 0f;
-            _prize.style.scale = new Scale(Vector3.one * Mathf.Lerp(.86f, 1f, rise));
-            _prize.style.translate = new Translate(0f, Mathf.Lerp(10f, 0f, rise) + drift);
-            _window.EnableInClassList("is-revealed", reveal >= 1f);
+            _disc.style.translate = new Translate(0f, drift);
 
-            // a soft glow behind the frame, barely turning
-            float glow = Mathf.Clamp01((t - RevealAt) / .5f);
-            _rays.style.opacity = glow;
-            _rays.style.rotate = new Rotate(t * 6f);
+            // the light behind it: a glow that breathes, pale rays that barely turn
+            float glow = Mathf.Clamp01((t - .25f) / .6f);
+            _glow.style.opacity = glow;
+            _glow.style.scale = new Scale(Vector3.one * (1f + GlowBreath * glow * Mathf.Sin(t * 2f)));
+            _rays.style.opacity = Mathf.Clamp01((t - .35f) / .8f);
+            _rays.style.rotate = new Rotate(t * RaySpeed);
 
-            RenderSparks(t - ChimeAt);
-
-            float details = Mathf.Clamp01((t - DetailsAt) / .3f);
-            foreach (var element in _details)
-            {
-                element.style.opacity = details;
-                element.style.translate = new Translate(0f, (1f - Ease.OutCubic(details)) * 10f);
-            }
+            for (int i = 0; i < _details.Length; i++) Rise(_details[i], t - DetailsAt - i * DetailStep);
             if (_headline != null && _headline.Kind == QuestRewardKind.Gold)
             {
                 // gold counts up as it is revealed; the text changes only with the number
@@ -228,7 +237,15 @@ namespace TrollStrategy.UI
             }
         }
 
-        // The button keeps its place while hidden, so the dialog does not jump when it appears.
+        // A line of text comes up from a little below as it fades in.
+        private static void Rise(VisualElement element, float since)
+        {
+            float k = Mathf.Clamp01(since / RiseSeconds);
+            element.style.opacity = k;
+            element.style.translate = new Translate(0f, (1f - Ease.OutCubic(k)) * 14f);
+        }
+
+        // The button keeps its place while hidden, so the column does not jump when it appears.
         private void SetClaimShown(bool shown)
         {
             _claimShown = shown;
@@ -239,26 +256,8 @@ namespace TrollStrategy.UI
         {
             float k = Mathf.Clamp01(_closing / CloseSeconds);
             _overlay.style.opacity = 1f - k;
-            _dialog.style.scale = new Scale(Vector3.one * Mathf.Lerp(1f, .9f, Ease.InCubic(k)));
+            _dialog.style.scale = new Scale(Vector3.one * Mathf.Lerp(1f, .96f, Ease.InCubic(k)));
             if (k >= 1f) Hide();
-        }
-
-        // A few motes drift out from the frame as the reward appears.
-        private void RenderSparks(float s)
-        {
-            bool live = s >= 0f && s < 1.2f;
-            for (int i = 0; i < _sparks.Count; i++)
-            {
-                var spark = _sparks[i];
-                Ui.Show(spark, live);
-                if (!live) continue;
-                float k = s / 1.2f;
-                float angle = (i * 360f / SparkCount + 18f) * Mathf.Deg2Rad;
-                float distance = (118f + i * 29 % 40) * Ease.OutCubic(k);
-                spark.style.translate = new Translate(Mathf.Cos(angle) * distance, Mathf.Sin(angle) * distance);
-                spark.style.opacity = 1f - k * k;
-                spark.style.scale = new Scale(Vector3.one * Mathf.Lerp(.9f, .3f, k));
-            }
         }
 
         private void ShowPrize()
@@ -293,6 +292,112 @@ namespace TrollStrategy.UI
             _prize.Add(monogram);
         }
 
+        // What the reward is and where to find it. A building speaks in facts from its content; the session's
+        // description stays for what has no facts (a creature, a battle, gold, a building that only stores).
+        private void Describe(RewardSnapshot reward)
+        {
+            _facts.Clear();
+            _factTexts.Clear();
+            string description = reward?.Description ?? string.Empty;
+            string where = string.Empty;
+            var session = _context.Session;
+            switch (reward?.Kind)
+            {
+                case QuestRewardKind.UnlockBuilding:
+                    var building = Building(reward.Reward.Building);
+                    if (building == null) break;
+                    where = $"Уже в каталоге, вкладка «Здания», {session.BuildingPrice(building.Kind)} золота";
+                    if (building.Recipes.Count == 0)
+                    {
+                        description = session.DescribeBuilding(building);
+                        break;
+                    }
+                    description = string.Empty;
+                    AddFact("glyph--grid", $"{building.Width}×{building.Height}");
+                    if (building.MaxWorkers > 0) AddFact("glyph--idle", $"до {building.MaxWorkers} рабочих");
+                    foreach (var recipe in building.Recipes) AddRecipe(recipe);
+                    break;
+                case QuestRewardKind.UnlockUnit:
+                    var unit = Unit(reward.Reward.Unit);
+                    if (unit == null) break;
+                    where = $"Уже в каталоге, вкладка «Существа», {session.HirePrice(unit.Kind)} золота";
+                    if (!string.IsNullOrWhiteSpace(unit.Description)) description = unit.Description.Trim();
+                    break;
+            }
+            Ui.SetText(_description, description);
+            Ui.Show(_description, !string.IsNullOrEmpty(description));
+            Ui.SetText(_where, where);
+            Ui.Show(_where, !string.IsNullOrEmpty(where));
+            Ui.Show(_facts, _facts.childCount > 0);
+        }
+
+        private void AddFact(string glyph, string text)
+        {
+            var fact = Fact();
+            var icon = Ui.Box("glyph " + glyph);
+            icon.pickingMode = PickingMode.Ignore;
+            fact.Add(icon);
+            fact.Add(FactText(text));
+            _factTexts.Add(text);
+        }
+
+        // A recipe as pictures and numbers: what goes in, an arrow, what comes out; a bonus as its own fact.
+        private void AddRecipe(ProductionRecipe recipe)
+        {
+            var fact = Fact();
+            var words = new List<string>();
+            foreach (var input in recipe.Inputs) words.Add(Amount(fact, input, string.Empty));
+            if (recipe.Inputs.Length > 0)
+            {
+                fact.Add(Ui.Text("→", "reward__fact-arrow t-bold"));
+                words.Add("→");
+            }
+            foreach (var output in recipe.Outputs) words.Add(Amount(fact, output, string.Empty));
+            _factTexts.Add(string.Join(" ", words));
+            if (!recipe.HasBonus) return;
+
+            var bonus = Fact();
+            string text = Amount(bonus, recipe.BonusOutput, "+");
+            string every = $"раз в {recipe.BonusEveryCycles} циклов";
+            var note = FactText(every);
+            note.AddToClassList("reward__fact-note");
+            bonus.Add(note);
+            _factTexts.Add(text + " " + every);
+        }
+
+        private string Amount(VisualElement fact, ResourceAmount amount, string sign)
+        {
+            var resource = _context.Catalog.TryGetResource(amount.Resource);
+            string name = resource?.DisplayName ?? amount.Resource.ToString();
+            if (resource?.Icon != null)
+            {
+                var icon = new Image { sprite = resource.Icon, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                icon.AddToClassList("reward__fact-icon");
+                fact.Add(icon);
+                fact.Add(FactText(sign + amount.Amount));
+            }
+            else
+            {
+                fact.Add(FactText($"{sign}{amount.Amount} {name}"));
+            }
+            return $"{sign}{amount.Amount} {name}";
+        }
+
+        private VisualElement Fact()
+        {
+            var fact = Ui.Box("reward__fact");
+            fact.pickingMode = PickingMode.Ignore;
+            _facts.Add(fact);
+            return fact;
+        }
+
+        private static Label FactText(string text)
+        {
+            var label = Ui.Text(text, "reward__fact-text t-medium");
+            label.pickingMode = PickingMode.Ignore;
+            return label;
+        }
+
         private void BuildExtras(QuestSnapshot quest)
         {
             _extras.Clear();
@@ -300,50 +405,22 @@ namespace TrollStrategy.UI
             {
                 if (reward == _headline) continue;
                 string text = reward.Kind == QuestRewardKind.Gold ? "+" + reward.Title : "Открыто: " + reward.Title;
-                _extras.Add(Ui.Text(text, "reward__extra t-medium"));
+                _extras.Add(Ui.Text(text, "reward__extra t-bold"));
             }
             Ui.Show(_extras, _extras.childCount > 0);
-        }
-
-        private void BuildRays()
-        {
-            for (int i = 0; i < RayCount; i++)
-            {
-                var ray = Ui.Box("reward__ray");
-                ray.style.rotate = new Rotate(i * 180f / RayCount);
-                _rays.Add(ray);
-            }
-        }
-
-        private void BuildSparks(VisualElement parent)
-        {
-            for (int i = 0; i < SparkCount; i++)
-            {
-                var spark = new Image { sprite = FeelSprites.Spark, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
-                spark.AddToClassList("reward__spark");
-                if (i % 2 == 1) spark.AddToClassList("reward__spark--pale");
-                Ui.Show(spark, false);
-                parent.Add(spark);
-                _sparks.Add(spark);
-            }
-        }
-
-        private string Describe(RewardSnapshot reward)
-        {
-            if (reward == null) return string.Empty;
-            if (reward.Kind != QuestRewardKind.UnlockUnit) return reward.Description;
-            foreach (var unit in _context.Catalog.Units)
-                if (unit != null && unit.Kind == reward.Reward.Unit)
-                    return string.IsNullOrEmpty(reward.Description)
-                        ? UnitStatsText.Compact(unit)
-                        : reward.Description + "\n" + UnitStatsText.Compact(unit);
-            return reward.Description;
         }
 
         private BuildingDefinition Building(BuildingKind kind)
         {
             foreach (var building in _context.Catalog.Buildings)
                 if (building != null && building.Kind == kind) return building;
+            return null;
+        }
+
+        private UnitDefinition Unit(UnitKind kind)
+        {
+            foreach (var unit in _context.Catalog.Units)
+                if (unit != null && unit.Kind == kind) return unit;
             return null;
         }
     }
