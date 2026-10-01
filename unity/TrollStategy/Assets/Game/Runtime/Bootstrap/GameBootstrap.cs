@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Presentation;
+using TrollStrategy.Presentation.Audio;
 using TrollStrategy.Presentation.Battle;
 using TrollStrategy.Presentation.Buildings;
 using TrollStrategy.Presentation.Feel;
@@ -41,6 +42,8 @@ namespace TrollStrategy.Bootstrap
         [Header("UI")]
         [SerializeField] private ColonyHud _hud;
         [SerializeField] private BattleHud _battleHud;
+        [Tooltip("Version, FPS and \"send logs\" over every screen; reports carry the colony's state.")]
+        [SerializeField] private SupportHud _support;
         [Tooltip("World-space panel settings for labels, numbers and bars over things in the world.")]
         [SerializeField] private PanelSettings _worldPanel;
 
@@ -92,6 +95,7 @@ namespace TrollStrategy.Bootstrap
             if (_land == null) _land = FindAnyObjectByType<LandPresenter>();
             if (_hud == null) _hud = FindAnyObjectByType<ColonyHud>();
             if (_battleHud == null) _battleHud = FindAnyObjectByType<BattleHud>();
+            if (_support == null) _support = FindAnyObjectByType<SupportHud>();
 
             if (_worldView == null)
             {
@@ -121,6 +125,7 @@ namespace TrollStrategy.Bootstrap
             for (int i = 0; i < placements.Count; i++)
                 sceneViews.Add(_session.StartingBuildingIds[i], placements[i].View);
             _interaction = new InteractionController(_session);
+            if (_support != null) _support.Init(() => SessionDigest.Describe(_session));
 
             if (_buildingManager != null)
                 _buildingManager.Init(_session, _interaction, _worldView, _catalog, sceneViews);
@@ -166,6 +171,8 @@ namespace TrollStrategy.Bootstrap
             feedback.transform.SetParent(transform, false);
             feedback.Init(_session, _interaction, _worldView, _buildingManager,
                 _hud != null ? _hud.PlayRefusalCue : null);
+            // the theme opens the game, then colony music and the meadow bed
+            Soundscape.Enter(SoundScene.Colony);
         }
 
         private void Update()

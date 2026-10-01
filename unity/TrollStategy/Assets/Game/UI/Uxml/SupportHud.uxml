@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- The support corner's own document holds no elements: its part is the nested document under the
+         SupportHud GameObject, above the colony and battle HUDs. These sheets reach it. -->
+    <ui:Style src="../Styles/Theme.uss" />
+    <ui:Style src="../Styles/Support.uss" />
+</ui:UXML>

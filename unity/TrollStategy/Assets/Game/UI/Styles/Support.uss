@@ -1,0 +1,68 @@
+/*
+ * Support corner: version and FPS in the bottom right of every screen, the tech panel above them.
+ * The strip is haloed text in the frame's padding, so it does not cover the HUD. Colours come from Theme.uss.
+ */
+
+.tech-info {
+    position: absolute;
+    right: 8px;
+    bottom: 2px;
+    align-items: flex-end;
+}
+
+.tech-strip {
+    min-height: 0;
+    padding: 0 6px;
+    border-width: 0;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 12px;
+    color: var(--ink-soft);
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
+    text-shadow: 0 0 4px var(--halo);
+    opacity: 0.8;
+}
+
+.tech-strip:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+    border-width: 0;
+    scale: 1 1;
+    opacity: 1;
+}
+
+/* Space before each part after the version. */
+.tech-strip__part {
+    margin-left: 6px;
+}
+
+.tech-details {
+    width: 500px;
+    margin-bottom: -26px;
+}
+
+.tech-details__title {
+    font-size: 20px;
+}
+
+.tech-rows {
+    margin-bottom: 10px;
+}
+
+.tech-details .kv__key {
+    width: 30%;
+    font-size: 14px;
+}
+
+.tech-details .kv__value {
+    font-size: 14px;
+}
+
+/* Touch screens: no keyboard, so no key hints, and a strip big enough for a finger. */
+.tech-info--touch .tech-key {
+    display: none;
+}
+
+.tech-info--touch .tech-strip {
+    padding: 10px 16px;
+    font-size: 20px;
+}

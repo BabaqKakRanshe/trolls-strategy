@@ -6,7 +6,9 @@
         "UnityEngine.UI",
         "Unity.2D.Tilemap.Extras",
         "Unity.RenderPipelines.Universal.Runtime",
-        "Unity.RenderPipelines.Core.Runtime"
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.Services.Core",
+        "Unity.Services.UserReporting"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

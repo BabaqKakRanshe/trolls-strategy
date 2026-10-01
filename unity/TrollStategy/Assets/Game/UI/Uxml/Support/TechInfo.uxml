@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/Support.uss" />
+    <ui:VisualElement name="tech-info" class="tech-info" picking-mode="Ignore">
+        <ui:VisualElement name="tech-details" class="sheet tech-details">
+            <ui:VisualElement class="dialog__header">
+                <ui:Label text="Техинфо" class="dialog__title dialog__title--fit tech-details__title t-black" />
+                <ui:Label text="F8" class="hotkey tech-key" />
+                <ui:VisualElement class="spacer" />
+                <ui:Button name="tech-close" text="×" class="btn btn-close" />
+            </ui:VisualElement>
+            <ui:VisualElement name="tech-rows" class="tech-rows" />
+            <ui:Button name="tech-send" text="Отправить логи" class="btn btn--primary" />
+            <ui:Label name="tech-status" class="note" />
+        </ui:VisualElement>
+        <ui:Button name="tech-strip" class="btn tech-strip">
+            <ui:Label name="tech-version" picking-mode="Ignore" />
+            <ui:Label name="tech-fps" class="tech-strip__part t-bold" picking-mode="Ignore" />
+            <ui:Label text="F8" class="tech-strip__part tech-key" picking-mode="Ignore" />
+        </ui:Button>
+    </ui:VisualElement>
+</ui:UXML>
