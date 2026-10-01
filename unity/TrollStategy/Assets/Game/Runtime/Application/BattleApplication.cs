@@ -105,11 +105,6 @@ namespace TrollStrategy.Application
                 fighters.Add(FighterInput($"enemy-{i:D3}", mission.Enemies[i].Kind, false,
                     mission.Enemies[i].Cell, catalog, state.Equipment));
 
-            // Release through the existing colony rule so carried ore returns to its source.
-            var unitIds = new List<string>(selectedIds);
-            var release = ColonySimulation.ApplyCommand(state, new ReleaseUnitsCommand(unitIds), catalog);
-            if (!release.Ok) return release;
-
             BattleReport report;
             try { report = BattleSimulation.Run(board, fighters, 1); }
             catch (ArgumentException) { return CommandResult.Fail("Бой не удалось рассчитать"); }
@@ -118,6 +113,14 @@ namespace TrollStrategy.Application
             var fallen = new List<string>();
             foreach (var unit in selectedUnits)
                 if (!survivors.Contains(unit.Id)) fallen.Add(unit.Id);
+
+            // The colony stands still while a battle runs, so survivors keep their job and place. The fallen
+            // leave through the colony rule, so ore they carried returns to its source.
+            if (fallen.Count > 0)
+            {
+                var release = ColonySimulation.ApplyCommand(state, new ReleaseUnitsCommand(fallen), catalog);
+                if (!release.Ok) return release;
+            }
             state.Equipment.RemoveAll(item => item.OwnerUnitId != null && fallen.Contains(item.OwnerUnitId));
             state.Units.RemoveAll(u => fallen.Contains(u.Id));
 

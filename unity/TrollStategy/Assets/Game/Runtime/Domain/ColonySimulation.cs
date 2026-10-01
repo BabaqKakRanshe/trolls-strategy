@@ -30,7 +30,6 @@ namespace TrollStrategy.Domain
                 AssignHaulCommand c => AssignHaul(state, c.UnitIds, c.SourceId, c.DestinationId, c.Cargo, catalog),
                 ReleaseUnitsCommand c => ReleaseUnits(state, c.UnitIds, catalog),
                 SellUnitsCommand c => SellUnits(state, c.UnitIds, catalog),
-                SendToBarracksCommand c => SendToBarracks(state, c.UnitIds, catalog),
                 ClaimQuestRewardCommand => Progression.Claim(state, catalog),
                 BuyLandCommand c => LandRules.Buy(state, c.BlockX, c.BlockY, catalog),
                 ClearLandCommand c => LandRules.Clear(state, c.BlockX, c.BlockY, catalog),
@@ -50,6 +49,8 @@ namespace TrollStrategy.Domain
                     TickWorkerArrival(state, unit, deltaSeconds, catalog);
                 else if (unit.Assignment.Kind == AssignmentKind.Haul)
                     TickHauler(state, unit, deltaSeconds, catalog);
+                else if (unit.Assignment.Kind == AssignmentKind.Idle && unit.Assignment.BuildingId != null)
+                    TickGathering(state, unit, deltaSeconds, catalog);
             }
         }
 
@@ -117,12 +118,44 @@ namespace TrollStrategy.Domain
             if (existingUnitsInCell + amount > economy.MaxUnitsPerCell)
                 return CommandResult.Fail($"В одной клетке помещается не больше {economy.MaxUnitsPerCell} существ");
 
-            int totalPrice = unitDef.Price * amount;
-            if (state.Gold < totalPrice)
+            if (state.Gold < HirePrice(state, kind, amount, catalog))
                 return CommandResult.Fail("Недостаточно золота");
 
             return CommandResult.Success();
         }
+
+        /// <summary>
+        /// Gold for the next building of this kind: its catalog price, times the copy growth once for every
+        /// building of the kind already standing.
+        /// </summary>
+        public static int BuildingPrice(BuildingDefinition definition, int owned, EconomyConfig economy) =>
+            RoundGold(definition.Price * Math.Pow(economy.BuildingCopyPriceGrowth, Math.Max(0, owned)));
+
+        public static int BuildingPrice(GameState state, BuildingKind kind, GameContentCatalog catalog)
+        {
+            int owned = 0;
+            foreach (var building in state.Buildings)
+                if (building.Kind == kind) owned++;
+            return BuildingPrice(catalog.GetBuilding(kind), owned, catalog.Economy);
+        }
+
+        /// <summary>
+        /// Gold for hiring <paramref name="amount"/> creatures of a kind: each costs its catalog price plus the
+        /// per-creature percentage for everyone already in the colony, the ones hired before it in the group included.
+        /// </summary>
+        public static int HirePrice(UnitDefinition definition, int population, int amount, EconomyConfig economy)
+        {
+            double percent = economy.HirePricePercentPerCreature / 100.0;
+            int total = 0;
+            for (int i = 0; i < amount; i++)
+                total += RoundGold(definition.Price * (1.0 + percent * (population + i)));
+            return total;
+        }
+
+        public static int HirePrice(GameState state, UnitKind kind, int amount, GameContentCatalog catalog) =>
+            HirePrice(catalog.GetUnit(kind), state.Units.Count, amount, catalog.Economy);
+
+        private static int RoundGold(double gold) => (int)Math.Round(gold, MidpointRounding.AwayFromZero);
 
         public static int CountUnitsInCell(GameState state, Cell cell, EconomyConfig economy)
         {
@@ -264,9 +297,10 @@ namespace TrollStrategy.Domain
             var validation = ValidateBuildingPlacement(state, kind, cell, catalog);
             if (!validation.Ok) return validation;
 
-            if (state.Gold < definition.Price) return CommandResult.Fail("Недостаточно золота");
+            int price = BuildingPrice(state, kind, catalog);
+            if (state.Gold < price) return CommandResult.Fail("Недостаточно золота");
 
-            state.Gold -= definition.Price;
+            state.Gold -= price;
             string prefix = kind.ToString().ToLowerInvariant();
             string newId;
             do { newId = $"{prefix}-{state.NextBuildingId++}"; }
@@ -278,7 +312,7 @@ namespace TrollStrategy.Domain
                 Kind = kind,
                 Cell = cell,
                 Level = 1,
-                InvestedGold = definition.Price,
+                InvestedGold = price,
                 ProductionProgress = 0f
             });
 
@@ -290,27 +324,63 @@ namespace TrollStrategy.Domain
             var validation = ValidateUnitPurchase(state, kind, amount, cell, catalog);
             if (!validation.Ok) return validation;
 
-            var unitDef = catalog.GetUnit(kind);
-            int totalPrice = unitDef.Price * amount;
-            state.Gold -= totalPrice;
+            state.Gold -= HirePrice(state, kind, amount, catalog);
 
             var economy = catalog.Economy;
             int existingInCell = CountUnitsInCell(state, cell, economy);
 
+            var definition = catalog.GetUnit(kind);
             for (int i = 0; i < amount; i++)
             {
-                string uId = $"unit-{state.NextUnitId++}";
+                int serial = state.NextUnitId++;
+                string uId = $"unit-{serial}";
                 var pos = CrowdPosition(cell, existingInCell + i, economy);
                 state.Units.Add(new UnitState
                 {
                     Id = uId,
                     Kind = kind,
+                    Name = PickUnitName(state, definition, serial),
                     Position = pos,
                     Assignment = Assignment.Idle()
                 });
             }
 
             return CommandResult.Success();
+        }
+
+        /// <summary>
+        /// A new creature's name: the first of its kind's names nobody in the colony wears, starting where the
+        /// hire's serial points so a group does not read down the list; when every name is worn, a name with an
+        /// epithet. The same colony always names the same hire the same way.
+        /// </summary>
+        public static string PickUnitName(GameState state, UnitDefinition definition, int serial)
+        {
+            var names = definition.Names;
+            if (names.Count == 0) return definition.DisplayName;
+
+            var worn = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var unit in state.Units)
+                if (unit.Name != null) worn.Add(unit.Name);
+
+            uint mix = unchecked((uint)serial * 0x9E3779B9u);
+            mix ^= mix >> 16;
+            mix = unchecked(mix * 0x85EBCA6Bu);
+            mix ^= mix >> 13;
+            int start = (int)(mix % (uint)names.Count);
+
+            for (int i = 0; i < names.Count; i++)
+            {
+                string name = names[(start + i) % names.Count];
+                if (!worn.Contains(name)) return name;
+            }
+            var epithets = definition.Epithets;
+            for (int e = 0; e < epithets.Count; e++)
+            for (int i = 0; i < names.Count; i++)
+            {
+                string name = $"{names[(start + i) % names.Count]} {epithets[(start + e) % epithets.Count]}";
+                if (!worn.Contains(name)) return name;
+            }
+            return names[start];
         }
 
         private static CommandResult AssignWork(
@@ -406,11 +476,45 @@ namespace TrollStrategy.Domain
                 var u = selectedUnits[i];
 
                 ReturnCarriedCargo(state, u);
-                u.Assignment = Assignment.Idle();
-                u.PlaceAt(IdlePosition(GetUnitNumber(u.Id), catalog.Economy));
+                Free(state, u, catalog);
             }
 
             return CommandResult.Success();
+        }
+
+        /// <summary>
+        /// Takes a creature off its job: it walks to a place in the group at the nearest barracks door. Without
+        /// barracks a worker steps out and waits at its workplace door; anyone else stays where it stands.
+        /// </summary>
+        private static void Free(GameState state, UnitState unit, GameContentCatalog catalog)
+        {
+            var a = unit.Assignment;
+            var place = NearestBarracks(state, unit.Position, catalog);
+            if (place == null && a.Kind == AssignmentKind.Work)
+                place = state.Buildings.Find(b => b.Id == a.BuildingId);
+            // already waiting there: it keeps its place
+            if (place != null && a.Kind == AssignmentKind.Idle && a.BuildingId == place.Id && a.CrowdSlot >= 0) return;
+
+            unit.Assignment = Assignment.Idle(place?.Id);
+            unit.ClearRoute();
+            if (place != null && !TryClaimCrowdSlot(state, unit, place, catalog))
+                unit.Assignment = Assignment.Idle();
+        }
+
+        private static BuildingState NearestBarracks(GameState state, WorldPosition from, GameContentCatalog catalog)
+        {
+            BuildingState nearest = null;
+            float best = float.MaxValue;
+            foreach (var building in state.Buildings)
+            {
+                if (building.Kind != BuildingKind.Barracks) continue;
+                var door = ColonyNavigation.DoorwayOf(building, catalog).Approach;
+                float dx = door.X - from.X, dy = door.Y - from.Y;
+                if (dx * dx + dy * dy >= best) continue;
+                best = dx * dx + dy * dy;
+                nearest = building;
+            }
+            return nearest;
         }
 
         private static CommandResult SellUnits(GameState state, IReadOnlyList<string> unitIds, GameContentCatalog catalog)
@@ -436,28 +540,6 @@ namespace TrollStrategy.Domain
                 if (item.OwnerUnitId != null && toRemove.Contains(item.OwnerUnitId))
                     item.OwnerUnitId = null;
             state.Gold += totalRefund;
-            return CommandResult.Success();
-        }
-
-        private static CommandResult SendToBarracks(GameState state, IReadOnlyList<string> unitIds, GameContentCatalog catalog)
-        {
-            var resolveResult = ResolveUnits(state, unitIds, out var selectedUnits);
-            if (!resolveResult.Ok) return resolveResult;
-
-            var barracks = state.Buildings.Find(b => b.Kind == BuildingKind.Barracks);
-            var center = LandRules.StartCenter(catalog.Economy);
-            var targetPos = barracks != null 
-                ? BuildingEntrancePosition(barracks, catalog) 
-                : new WorldPosition((center.X - 4.5f) * catalog.Economy.CellSize, (center.Y - 4.5f) * catalog.Economy.CellSize);
-
-            for (int i = 0; i < selectedUnits.Count; i++)
-            {
-                var u = selectedUnits[i];
-                ReturnCarriedCargo(state, u);
-                u.Assignment = Assignment.Idle();
-                u.PlaceAt(targetPos);
-            }
-
             return CommandResult.Success();
         }
 
@@ -571,6 +653,30 @@ namespace TrollStrategy.Domain
             {
                 unit.Assignment = Assignment.Work(building.Id);
             }
+        }
+
+        // A free creature walks to its place in the group at its gathering door and waits there. A building put
+        // up on that place sends it to another one at the same door.
+        private static void TickGathering(GameState state, UnitState unit, float deltaSeconds, GameContentCatalog catalog)
+        {
+            var place = state.Buildings.Find(b => b.Id == unit.Assignment.BuildingId);
+            if (place == null || unit.Assignment.CrowdSlot < 0)
+            {
+                unit.Assignment = Assignment.Idle();
+                return;
+            }
+            var spot = ColonyNavigation.CrowdSlotPosition(place, unit.Assignment.CrowdSlot, catalog);
+            if (!ColonyNavigation.IsWalkablePoint(state, spot, catalog))
+            {
+                if (!TryClaimCrowdSlot(state, unit, place, catalog))
+                {
+                    unit.Assignment = Assignment.Idle();
+                    return;
+                }
+                spot = ColonyNavigation.CrowdSlotPosition(place, unit.Assignment.CrowdSlot, catalog);
+            }
+            if (unit.Position.Equals(spot)) return;
+            Travel(state, unit, spot, null, UnitMovementSpeed(catalog.GetUnit(unit.Kind), catalog), deltaSeconds, catalog);
         }
 
         private static void TickHauler(GameState state, UnitState unit, float deltaSeconds, GameContentCatalog catalog)
@@ -807,7 +913,8 @@ namespace TrollStrategy.Domain
         }
 
         private static string CrowdBuildingId(Assignment assignment) =>
-            assignment.Kind != AssignmentKind.Haul ? null
+            assignment.Kind == AssignmentKind.Idle ? assignment.BuildingId
+            : assignment.Kind != AssignmentKind.Haul ? null
             : assignment.Phase == HaulPhase.QueuedAtSource ? assignment.SourceId
             : assignment.Phase == HaulPhase.ToDestination || assignment.Phase == HaulPhase.Unloading ? assignment.DestinationId
             : null;
@@ -957,15 +1064,16 @@ namespace TrollStrategy.Domain
                 if (a.Kind == AssignmentKind.Haul && a.Carried > 0 && (a.SourceId == buildingId || a.DestinationId == buildingId))
                     return CommandResult.Fail("Сначала завершите перевозку груза");
             }
+            state.Buildings.Remove(building);
+            state.LayoutVersion++;
+            // its workers and haulers, and the free creatures waiting at its door, are free to go to the barracks
             foreach (var unit in state.Units)
             {
                 var a = unit.Assignment;
-                if (((a.Kind == AssignmentKind.Work || a.Kind == AssignmentKind.ToWork) && a.BuildingId == buildingId) ||
+                if ((a.Kind != AssignmentKind.Haul && a.BuildingId == buildingId) ||
                     (a.Kind == AssignmentKind.Haul && (a.SourceId == buildingId || a.DestinationId == buildingId)))
-                    unit.Assignment = Assignment.Idle();
+                    Free(state, unit, catalog);
             }
-            state.Buildings.Remove(building);
-            state.LayoutVersion++;
             state.Gold += building.InvestedGold / 2;
             return CommandResult.Success();
         }
@@ -1016,16 +1124,6 @@ namespace TrollStrategy.Domain
                    point.Y >= minY - epsilon && point.Y <= maxY + epsilon;
         }
 
-        // Released creatures gather just south of the middle of the start land (of the grid without land).
-        public static WorldPosition IdlePosition(int unitNumber, EconomyConfig economy)
-        {
-            int slot = unitNumber - 1;
-            int crowd = slot / economy.MaxUnitsPerCell;
-            var center = LandRules.StartCenter(economy);
-            var cell = new Cell(center.X + (crowd % 3), center.Y - 2 + (crowd / 3));
-            return CrowdPosition(cell, slot % economy.MaxUnitsPerCell, economy);
-        }
-
         public static WorldPosition CrowdPosition(Cell cell, int slot, EconomyConfig economy)
         {
             double goldenAngle = Math.PI * (3 - Math.Sqrt(5));
@@ -1048,6 +1146,14 @@ namespace TrollStrategy.Domain
             if (building == null) return 0f;
             var recipes = catalog.GetBuilding(building.Kind).Recipes;
             return recipes.Count > 0 ? WorkPerSecond(state, buildingId, catalog) / recipes[0].Work : 0f;
+        }
+
+        // Share of the current cycle's work already done, 0..1; a stalled building has none.
+        public static float CycleProgress(BuildingState building, GameContentCatalog catalog)
+        {
+            var definition = catalog.GetBuilding(building.Kind);
+            var recipe = definition.Recipes.Count > 0 ? NextRecipe(building, definition, catalog) : null;
+            return recipe != null ? Math.Min(1f, building.ProductionProgress / recipe.Work) : 0f;
         }
 
         // 100% stamina carries one unit per trip; the fractional remainder is banked for the next trip.

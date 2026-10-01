@@ -17,20 +17,21 @@ MonoBehaviour:
   _cellSize: 1
   _maxUnitsPerCell: 20
   _stepTimeSeconds: 0.25
-  _loadSeconds: 0.25
-  _unloadSeconds: 0
-  _loadersPerDoor: 3
+  _loadSeconds: 0.08
+  _unloadSeconds: 0.1
+  _loadersPerDoor: 5
   _startingGold: 1000
   _workPerStrengthSecond: 0.1
+  _buildingCopyPriceGrowth: 1.12
+  _hirePricePercentPerCreature: 3
   _landEnabled: 1
   _landBlockSize: 5
   _startLand:
-    serializedVersion: 2
     x: 3
     y: 3
     width: 3
     height: 3
-  _landPriceBase: 200
-  _landPriceStep: 100
+  _landPriceBase: 250
+  _landPriceStep: 150
   _landClearSeconds: 10
   _landClearGold: 0

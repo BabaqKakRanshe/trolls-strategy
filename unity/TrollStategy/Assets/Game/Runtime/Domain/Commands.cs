@@ -135,12 +135,6 @@ namespace TrollStrategy.Domain
         public SellUnitsCommand(IReadOnlyList<string> unitIds) => UnitIds = unitIds;
     }
 
-    public class SendToBarracksCommand : IGameCommand
-    {
-        public IReadOnlyList<string> UnitIds { get; }
-        public SendToBarracksCommand(IReadOnlyList<string> unitIds) => UnitIds = unitIds;
-    }
-
     /// <summary>Buys a block of land next to the colony's own; it comes wild (LandRules).</summary>
     public sealed class BuyLandCommand : IGameCommand
     {

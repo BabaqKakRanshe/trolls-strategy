@@ -66,7 +66,7 @@ namespace TrollStrategy.Tests
             Assert.That(quest.IsComplete, Is.True);
             Assert.That(quest.Goals[0].ProgressText, Is.EqualTo("1/1"));
             Assert.That(quest.Headline.Title, Is.EqualTo("Шахта"));
-            Assert.That(quest.Headline.Description, Does.StartWith("Теперь её можно строить: Каталог → «Здания», 200 золота."),
+            Assert.That(quest.Headline.Description, Does.StartWith("Теперь её можно строить: каталог внизу, вкладка «Здания», 200 золота."),
                 "An unlock says it is the right to build, where and for how much");
             int gold = session.CurrentSnapshot.Gold;
 

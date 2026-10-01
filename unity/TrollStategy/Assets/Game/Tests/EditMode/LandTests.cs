@@ -302,9 +302,6 @@ namespace TrollStrategy.Tests
 
             var spawn = session.FindSpawnCell();
             Assert.That(session.CanBuyUnits(UnitKind.Goblin, 1, spawn).Ok, Is.True, $"Spawn cell {spawn}");
-            var idle = ColonySimulation.IdlePosition(1, _economy);
-            Assert.That(ColonyNavigation.IsWalkablePoint(GameStateOf(session), idle, _catalog), Is.True,
-                "Released creatures gather on the start land");
         }
 
         [Test]
@@ -407,16 +404,6 @@ namespace TrollStrategy.Tests
 
         private CommandResult Apply(GameState state, IGameCommand command) =>
             ColonySimulation.ApplyCommand(state, command, _catalog);
-
-        // the session's state as its rules see it: a clone rebuilt from the snapshot is not needed, the land and
-        // buildings are enough for walking checks
-        private GameState GameStateOf(GameSession session)
-        {
-            var state = NewState();
-            foreach (var building in session.CurrentSnapshot.Buildings)
-                ColonySimulation.PlaceStartingBuilding(state, building.Kind, building.Cell, _catalog, out _);
-            return state;
-        }
 
         private T Create<T>() where T : ScriptableObject
         {

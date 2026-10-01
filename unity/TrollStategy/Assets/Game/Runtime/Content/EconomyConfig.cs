@@ -30,6 +30,12 @@ namespace TrollStrategy.Content
         [FormerlySerializedAs("_orePerStrengthSecond")]
         [SerializeField] private float _workPerStrengthSecond = 0.1f;
 
+        [Header("Рост цен")]
+        [Tooltip("Во сколько раз дороже каждая следующая постройка того же вида, считая стоящие. 1 — цена не растёт.")]
+        [SerializeField, Min(1f)] private float _buildingCopyPriceGrowth = 1f;
+        [Tooltip("На сколько процентов от цены в каталоге дорожает найм за каждое существо в поселении. 0 — цена не растёт.")]
+        [SerializeField, Min(0f)] private float _hirePricePercentPerCreature;
+
         [Header("Земля")]
         [Tooltip("Земля покупается блоками и расчищается. Выключено: строить и ходить можно по всему полю.")]
         [SerializeField] private bool _landEnabled;
@@ -57,6 +63,8 @@ namespace TrollStrategy.Content
         public int LoadersPerDoor => Mathf.Max(1, _loadersPerDoor);
         public int StartingGold => _startingGold;
         public float WorkPerStrengthSecond => _workPerStrengthSecond;
+        public float BuildingCopyPriceGrowth => Mathf.Max(1f, _buildingCopyPriceGrowth);
+        public float HirePricePercentPerCreature => Mathf.Max(0f, _hirePricePercentPerCreature);
         public bool LandEnabled => _landEnabled;
         public int LandBlockSize => Mathf.Max(1, _landBlockSize);
         public RectInt StartLand => _startLand;
@@ -85,6 +93,12 @@ namespace TrollStrategy.Content
             _loadSeconds = Mathf.Max(0f, loadSeconds);
             _unloadSeconds = Mathf.Max(0f, unloadSeconds);
             _loadersPerDoor = Mathf.Max(1, loadersPerDoor);
+        }
+
+        public void SetPriceGrowth(float buildingCopyGrowth, float hirePercentPerCreature)
+        {
+            _buildingCopyPriceGrowth = Mathf.Max(1f, buildingCopyGrowth);
+            _hirePricePercentPerCreature = Mathf.Max(0f, hirePercentPerCreature);
         }
 
         public void SetLand(bool enabled, int blockSize, RectInt startLand, int priceBase, int priceStep,

@@ -22,9 +22,9 @@ MonoBehaviour:
   _crowdSpacing: 0.2
   _capacity: 100
   _maxWorkers: 5
-  _upgradeCosts: 96000000fa0000005e010000i
+  _upgradeCosts: 580200008403000014050000i
   _capacityPerLevel: 50
-  _workersPerLevel: 2
+  _workersPerLevel: 3
   _saleBonusPerLevel: 0
   _recipes:
   - _inputs: []

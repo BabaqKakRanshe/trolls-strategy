@@ -26,6 +26,7 @@ namespace TrollStrategy.Domain
     public class Assignment
     {
         public AssignmentKind Kind { get; set; }
+        // The workplace of a worker; for a free creature the building it gathers at (the barracks), or null.
         public string BuildingId { get; set; }
         public string SourceId { get; set; }
         public string DestinationId { get; set; }
@@ -35,8 +36,8 @@ namespace TrollStrategy.Domain
         public int CarryCreditPercent { get; set; }
         public float PhaseElapsedSeconds { get; set; }
         public int QueueTicket { get; set; }
-        // Place held in the group in front of the door the hauler waits at (queued at its source,
-        // or delivering to its destination); -1 when it is not waiting.
+        // Place held in the group in front of the door the unit waits at (a hauler queued at its source or
+        // delivering to its destination, a free creature at its gathering building); -1 when it is not waiting.
         public int CrowdSlot { get; set; } = -1;
         // Goods a hauler may take from its source; empty means whatever the route can carry.
         public List<ResourceKind> Cargo { get; set; } = new();
@@ -44,7 +45,8 @@ namespace TrollStrategy.Domain
         public bool CarriesAnything => Cargo == null || Cargo.Count == 0;
         public bool MayCarry(ResourceKind resource) => CarriesAnything || Cargo.Contains(resource);
 
-        public static Assignment Idle() => new() { Kind = AssignmentKind.Idle };
+        /// <summary>Free; with <paramref name="gatherAt"/> it walks to that building's door and waits there.</summary>
+        public static Assignment Idle(string gatherAt = null) => new() { Kind = AssignmentKind.Idle, BuildingId = gatherAt };
 
         public static Assignment ToWork(string buildingId) => new()
         {
@@ -143,6 +145,8 @@ namespace TrollStrategy.Domain
     {
         public string Id { get; set; }
         public UnitKind Kind { get; set; }
+        // The creature's own name, given at hire and unique in the colony while names last.
+        public string Name { get; set; }
         public WorldPosition Position { get; set; }
         public Assignment Assignment { get; set; }
 
@@ -169,6 +173,7 @@ namespace TrollStrategy.Domain
         {
             Id = Id,
             Kind = Kind,
+            Name = Name,
             Position = Position,
             Assignment = Assignment?.Clone() ?? Assignment.Idle(),
             Route = new List<WorldPosition>(Route),

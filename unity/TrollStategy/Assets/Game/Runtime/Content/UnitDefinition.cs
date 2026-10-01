@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TrollStrategy.Content
@@ -9,6 +10,10 @@ namespace TrollStrategy.Content
         [SerializeField] private UnitKind _kind;
         [SerializeField] private string _displayName = "Unit";
         [SerializeField, TextArea] private string _description = "";
+        [Tooltip("Имена, которые получают нанятые существа этого вида.")]
+        [SerializeField] private List<string> _names = new();
+        [Tooltip("Прозвища: добавляются к имени, когда все имена уже заняты.")]
+        [SerializeField] private List<string> _epithets = new();
 
         [Header("Характеристики")]
         [Tooltip("Цена найма в золоте.")]
@@ -45,6 +50,8 @@ namespace TrollStrategy.Content
         public int AttackIntervalMs => _attackIntervalMs;
         public int AttackRange => _attackRange;
         public string Description => _description;
+        public IReadOnlyList<string> Names => _names;
+        public IReadOnlyList<string> Epithets => _epithets;
         public Sprite PortraitSprite => _portraitSprite;
         public GameObject Prefab => _prefab;
 
@@ -59,6 +66,12 @@ namespace TrollStrategy.Content
             _stamina = Mathf.Max(1, stamina);
             _description = description;
             _portraitSprite = portrait;
+        }
+
+        public void SetNames(IEnumerable<string> names, IEnumerable<string> epithets = null)
+        {
+            _names = new List<string>(names);
+            _epithets = epithets != null ? new List<string>(epithets) : new List<string>();
         }
 
         public void SetCombatStats(int health, int damage, int armor, int attackIntervalMs, int attackRange)

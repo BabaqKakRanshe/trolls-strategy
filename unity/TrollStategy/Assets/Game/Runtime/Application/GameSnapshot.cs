@@ -31,6 +31,7 @@ namespace TrollStrategy.Application
         public int WorkerCount { get; }
         public int MaxWorkers { get; }
         public float ProductionPerSecond { get; }
+        /// <summary>Share of the current production cycle done, 0..1.</summary>
         public float ProductionProgress { get; }
         public int Level { get; }
         public int RefundGold { get; }
@@ -85,8 +86,8 @@ namespace TrollStrategy.Application
         private readonly Assignment _assignment;
 
         public string Id { get; }
-        public int Number { get; }
         public UnitKind UnitKind { get; }
+        /// <summary>The creature's own name; its species is its definition's DisplayName.</summary>
         public string Name { get; }
         public int Strength { get; }
         public float Speed { get; }
@@ -97,12 +98,11 @@ namespace TrollStrategy.Application
         public string Status { get; }
         public float MovementSpeed { get; }
 
-        public UnitSnapshot(string id, int number, UnitKind unitKind, string name, int strength, float speed,
+        public UnitSnapshot(string id, UnitKind unitKind, string name, int strength, float speed,
             int stamina, WorldPosition position, Assignment assignment, string status,
             float movementSpeed = 0f)
         {
             Id = id;
-            Number = number;
             UnitKind = unitKind;
             Name = name;
             Strength = strength;

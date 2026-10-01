@@ -281,6 +281,12 @@ namespace TrollStrategy.Application
             return ColonySimulation.ValidateUnitPurchase(_state, kind, amount, cell, _catalog);
         }
 
+        /// <summary>Gold the next building of this kind costs now; it grows with every one already standing.</summary>
+        public int BuildingPrice(BuildingKind kind) => ColonySimulation.BuildingPrice(_state, kind, _catalog);
+
+        /// <summary>Gold for hiring a group now; every creature in the colony makes the next one dearer.</summary>
+        public int HirePrice(UnitKind kind, int amount = 1) => ColonySimulation.HirePrice(_state, kind, amount, _catalog);
+
         public CommandResult CanBuyLand(int blockX, int blockY) => LandRules.ValidateBuy(_state, blockX, blockY, _catalog);
 
         public CommandResult CanClearLand(int blockX, int blockY) =>
@@ -324,7 +330,7 @@ namespace TrollStrategy.Application
                     workers,
                     def.WorkerCapacity(b.Level),
                     ColonySimulation.ProductionPerSecond(_state, b.Id, _catalog),
-                    b.ProductionProgress,
+                    ColonySimulation.CycleProgress(b, _catalog),
                     b.Level,
                     b.InvestedGold / 2,
                     def.UpgradeCost(b.Level),
@@ -353,15 +359,14 @@ namespace TrollStrategy.Application
 
                 unitSnapshots.Add(new UnitSnapshot(
                     u.Id,
-                    GetIdNumber(u.Id),
                     u.Kind,
-                    def.DisplayName,
+                    u.Name ?? def.DisplayName,
                     def.Strength,
                     def.Speed,
                     def.Stamina,
                     u.Position,
                     u.Assignment,
-                    FormatAssignmentStatus(u.Assignment, buildingSnapshots),
+                    FormatAssignmentStatus(u.Assignment, u.Position, buildingSnapshots),
                     ColonySimulation.UnitMovementSpeed(def, _catalog)));
             }
 
@@ -516,19 +521,19 @@ namespace TrollStrategy.Application
                 {
                     // the reward is the right to build, so say where and for how much
                     var building = TryBuilding(reward.Building);
-                    return new RewardSnapshot(reward, building?.DisplayName ?? reward.Building.ToString(), "НОВАЯ ПОСТРОЙКА",
+                    return new RewardSnapshot(reward, building?.DisplayName ?? reward.Building.ToString(), "Новая постройка",
                         building == null
                             ? string.Empty
-                            : $"Теперь её можно строить: Каталог → «Здания», {building.Price} золота.\n" +
+                            : $"Теперь её можно строить: каталог внизу, вкладка «Здания», {BuildingPrice(building.Kind)} золота.\n" +
                               DescribeBuilding(building));
                 }
                 case QuestRewardKind.UnlockUnit:
                 {
                     var unit = TryUnit(reward.Unit);
-                    return new RewardSnapshot(reward, unit?.DisplayName ?? reward.Unit.ToString(), "НОВОЕ СУЩЕСТВО",
+                    return new RewardSnapshot(reward, unit?.DisplayName ?? reward.Unit.ToString(), "Новое существо",
                         unit == null
                             ? string.Empty
-                            : $"Теперь его можно нанимать: Каталог → «Существа», {unit.Price} золота.\n" + unit.Description);
+                            : $"Теперь его можно нанимать: каталог внизу, вкладка «Существа», {HirePrice(unit.Kind)} золота.\n" + unit.Description);
                 }
                 case QuestRewardKind.UnlockMission:
                 {
@@ -536,13 +541,13 @@ namespace TrollStrategy.Application
                     foreach (var candidate in _catalog.Missions)
                         if (candidate != null && candidate.MissionId == reward.MissionId) mission = candidate;
                     string description = mission == null
-                        ? "Кнопка «В БОЙ» наверху открыта."
-                        : $"Кнопка «В БОЙ» наверху открыта. В бой идут до {mission.MaxPlayerUnits} бойцов, " +
+                        ? "Кнопка «В бой» справа открыта."
+                        : $"Кнопка «В бой» справа открыта. В бой идут до {mission.MaxPlayerUnits} бойцов, " +
                           $"первая победа принесёт {GoldRange(mission.FirstWinGold, mission.FirstWinGoldMax)} золота.";
-                    return new RewardSnapshot(reward, mission?.DisplayName ?? reward.MissionId, "НОВЫЙ БОЙ", description);
+                    return new RewardSnapshot(reward, mission?.DisplayName ?? reward.MissionId, "Новый бой", description);
                 }
                 default:
-                    return new RewardSnapshot(reward, $"{reward.Gold} золота", "ЗОЛОТО", "Пополнит казну поселения.");
+                    return new RewardSnapshot(reward, $"{reward.Gold} золота", "Золото", "Пополнит казну поселения.");
             }
         }
 
@@ -553,17 +558,17 @@ namespace TrollStrategy.Application
         public string DescribeBuilding(BuildingDefinition building)
         {
             string text = $"{building.Width}×{building.Height}";
-            if (building.MaxWorkers > 0) text += $" · до {building.MaxWorkers} рабочих";
+            if (building.MaxWorkers > 0) text += $", до {building.MaxWorkers} рабочих";
             switch (building.StorageRole)
             {
                 case StorageRole.Stockpile:
-                    text += " · хранит сырьё";
+                    text += ", хранит сырьё";
                     break;
                 case StorageRole.Market:
-                    text += " · продаёт товары";
+                    text += ", продаёт товары";
                     break;
                 case StorageRole.Armory:
-                    text += " · снаряжение отряда";
+                    text += ", снаряжение отряда";
                     break;
             }
             string recipes = DescribeRecipes(building);
@@ -640,9 +645,18 @@ namespace TrollStrategy.Application
             return 1;
         }
 
-        private string FormatAssignmentStatus(Assignment assignment, List<BuildingSnapshot> buildings)
+        private string FormatAssignmentStatus(Assignment assignment, WorldPosition position, List<BuildingSnapshot> buildings)
         {
-            if (assignment.Kind == AssignmentKind.Idle) return "Свободен";
+            if (assignment.Kind == AssignmentKind.Idle)
+            {
+                var place = assignment.BuildingId != null && assignment.CrowdSlot >= 0
+                    ? _state.Buildings.Find(b => b.Id == assignment.BuildingId)
+                    : null;
+                if (place == null || place.Kind != BuildingKind.Barracks) return "Свободен";
+                return position.Equals(ColonyNavigation.CrowdSlotPosition(place, assignment.CrowdSlot, _catalog))
+                    ? "Отдыхает в бараках"
+                    : "Идёт в бараки";
+            }
             if (assignment.Kind == AssignmentKind.ToWork)
             {
                 var target = buildings.Find(b => b.Id == assignment.BuildingId);

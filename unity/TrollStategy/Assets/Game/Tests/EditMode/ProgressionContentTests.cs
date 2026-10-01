@@ -156,24 +156,30 @@ namespace TrollStrategy.Tests
             foreach (int _ in Enumerable.Range(0, 2))
                 Dispatch(session, new AssignHaulCommand(new[] { Buy(session, UnitKind.Goblin) }, mine, "market-1"));
             AdvanceUntilComplete(session, 900f);
-            Claim(session, "tutorial-squad");
+            Claim(session, "tutorial-barracks");
+            Assert.That(session.IsBuildingUnlocked(BuildingKind.Barracks), Is.True);
 
-            while (Count(session, UnitKind.Goblin) < 6) Buy(session, UnitKind.Goblin);
-            while (Count(session, UnitKind.Troll) < 2) Buy(session, UnitKind.Troll);
             Assert.That(session.CanEnterMission(FirstMission).Error, Is.EqualTo("Бой откроется по заданию"));
+            var barracksCell = session.FindFirstBuildingCell(BuildingKind.Barracks);
+            Assert.That(barracksCell.HasValue, Is.True);
+            Dispatch(session, new BuildBuildingCommand(BuildingKind.Barracks, barracksCell.Value));
             Claim(session, "tutorial-battle");
             Assert.That(AdvanceUntil(session, () => session.CanEnterMission(FirstMission).Ok, 300f), Is.True,
                 session.CanEnterMission(FirstMission).Error);
 
+            // no step asks for a squad any more: the battle is fought by whoever the tutorial has hired
             var trolls = session.CurrentSnapshot.Units.Where(u => u.UnitKind == UnitKind.Troll).Select(u => u.Id).ToList();
             var goblins = session.CurrentSnapshot.Units.Where(u => u.UnitKind == UnitKind.Goblin).Select(u => u.Id).ToList();
+            Assert.That(trolls.Count, Is.EqualTo(1));
+            Assert.That(goblins.Count, Is.GreaterThanOrEqualTo(3));
             Dispatch(session, new StartBattleCommand(FirstMission, new[]
             {
-                new BattlePlacement(trolls[0], new Cell(1, 1)), new BattlePlacement(trolls[1], new Cell(1, 3)),
-                new BattlePlacement(goblins[0], new Cell(0, 1)), new BattlePlacement(goblins[1], new Cell(0, 3))
+                new BattlePlacement(trolls[0], new Cell(1, 2)),
+                new BattlePlacement(goblins[0], new Cell(0, 1)), new BattlePlacement(goblins[1], new Cell(0, 2)),
+                new BattlePlacement(goblins[2], new Cell(0, 3))
             }));
             Assert.That(session.ActiveBattle.Report.Outcome, Is.EqualTo(BattleOutcome.PlayerVictory),
-                "The squad the tutorial asks for must win the first battle");
+                "The colony the tutorial builds must win the first battle");
             Assert.That(session.CurrentSnapshot.Progress.Quest.IsComplete, Is.True);
             Dispatch(session, new AcknowledgeBattleCommand());
             Claim(session, "field-build");
@@ -250,9 +256,6 @@ namespace TrollStrategy.Tests
             Dispatch(session, new BuyUnitsCommand(kind, 1, session.FindSpawnCell()));
             return session.CurrentSnapshot.Units.Last().Id;
         }
-
-        private static int Count(GameSession session, UnitKind kind) =>
-            session.CurrentSnapshot.Units.Count(u => u.UnitKind == kind);
 
         private static void AdvanceUntilComplete(GameSession session, float maxSeconds)
         {

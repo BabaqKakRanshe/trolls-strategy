@@ -34,9 +34,12 @@ namespace TrollStrategy.Tests
             var forge = Create<BuildingDefinition>();
             forge.Init(BuildingKind.Forge, "Кузница", 180, 2, 2, 0, 0, null);
             forge.SetConstructible(true);
+            var barracks = Create<BuildingDefinition>();
+            barracks.Init(BuildingKind.Barracks, "Бараки", 300, 3, 3, 0, 0, null);
+            barracks.SetConstructible(true);
 
             _catalog = Create<GameContentCatalog>();
-            _catalog.Init(economy, new[] { goblin }, new[] { mine, warehouse, market, forge },
+            _catalog.Init(economy, new[] { goblin }, new[] { mine, warehouse, market, forge, barracks },
                 resources: new[] { new ResourceDefinition(ResourceKind.IronOre, "Руда", 3) });
         }
 
@@ -223,6 +226,125 @@ namespace TrollStrategy.Tests
             Place(state, BuildingKind.Forge, new Cell(5, 4));
             WalkUntil(state, worker, () => worker.Assignment.Kind == AssignmentKind.Work);
         }
+
+        [Test]
+        public void FreedWorkers_WalkToTheBarracksAndWaitInFrontOfItsDoor()
+        {
+            var state = TestColony.NewState(_catalog);
+            var mine = Place(state, BuildingKind.Mine, new Cell(4, 4));
+            var barracks = Place(state, BuildingKind.Barracks, new Cell(1, 9));
+            var entrance = ColonySimulation.BuildingEntrancePosition(mine, _catalog);
+            var workers = new List<UnitState>();
+            for (int i = 0; i < 3; i++) workers.Add(AddUnit(state, entrance, Assignment.Work(mine.Id)));
+            var ids = workers.ConvertAll(w => w.Id);
+
+            Assert.That(ColonySimulation.ApplyCommand(state, new ReleaseUnitsCommand(ids), _catalog).Ok, Is.True);
+            foreach (var worker in workers)
+            {
+                Assert.That(worker.Assignment.Kind, Is.EqualTo(AssignmentKind.Idle));
+                Assert.That(worker.Assignment.BuildingId, Is.EqualTo(barracks.Id), "a freed worker heads for the barracks");
+            }
+            WalkUntil(state, workers[0], () => workers.TrueForAll(w => w.Position.Equals(Spot(barracks, w))));
+
+            for (int i = 0; i < workers.Count; i++)
+            {
+                foreach (var building in state.Buildings)
+                    Assert.That(ColonySimulation.IsPointWithinBuilding(building, workers[i].Position, _catalog), Is.False,
+                        $"{workers[i].Id} waits inside {building.Id}");
+                for (int j = i + 1; j < workers.Count; j++)
+                    Assert.That(Distance(workers[i].Position, workers[j].Position),
+                        Is.GreaterThanOrEqualTo(MinGap(barracks)), $"{workers[i].Id} and {workers[j].Id} share a place");
+            }
+
+            // waiting creatures stay put, and freeing them again keeps their places
+            var places = workers.ConvertAll(w => w.Position);
+            Assert.That(ColonySimulation.ApplyCommand(state, new ReleaseUnitsCommand(ids), _catalog).Ok, Is.True);
+            for (int tick = 0; tick < 100; tick++) ColonySimulation.TickColony(state, StepSeconds, _catalog);
+            Assert.That(workers.ConvertAll(w => w.Position), Is.EqualTo(places));
+        }
+
+        [Test]
+        public void FreedWorker_WithoutBarracks_WaitsAtItsWorkplaceDoor_WhileAHaulerStopsWhereItIs()
+        {
+            var state = TestColony.NewState(_catalog);
+            var mine = Place(state, BuildingKind.Mine, new Cell(4, 4));
+            var warehouse = state.Buildings.Find(b => b.Kind == BuildingKind.Warehouse);
+            var worker = AddUnit(state, ColonySimulation.BuildingEntrancePosition(mine, _catalog), Assignment.Work(mine.Id));
+            var where = new WorldPosition(8.5f, 12.5f);
+            var hauler = AddUnit(state, where, Assignment.Haul(mine.Id, warehouse.Id));
+
+            Assert.That(ColonySimulation.ApplyCommand(state,
+                new ReleaseUnitsCommand(new[] { worker.Id, hauler.Id }), _catalog).Ok, Is.True);
+            Assert.That(worker.Assignment.BuildingId, Is.EqualTo(mine.Id));
+            Assert.That(hauler.Assignment.BuildingId, Is.Null);
+            WalkUntil(state, worker, () => worker.Position.Equals(Spot(mine, worker)));
+
+            Assert.That(ColonySimulation.IsPointWithinBuilding(mine, worker.Position, _catalog), Is.False,
+                "the worker steps out of the mine");
+            Assert.That(hauler.Position, Is.EqualTo(where));
+        }
+
+        [Test]
+        public void WaitingCreature_MovesOnWhenABuildingCoversItsPlace()
+        {
+            var state = TestColony.NewState(_catalog);
+            var barracks = Place(state, BuildingKind.Barracks, new Cell(1, 9));
+            var unit = AddUnit(state, new WorldPosition(7.5f, 1.5f), Assignment.Idle());
+            Assert.That(ColonySimulation.ApplyCommand(state, new ReleaseUnitsCommand(new[] { unit.Id }), _catalog).Ok,
+                Is.True);
+            WalkUntil(state, unit, () => unit.Position.Equals(Spot(barracks, unit)));
+            int slot = unit.Assignment.CrowdSlot;
+
+            // put up right over the place, past the placement rules, so the place is no longer open ground
+            var forge = new BuildingState
+            {
+                Id = "forge-9", Kind = BuildingKind.Forge, Level = 1,
+                Cell = new Cell((int)Math.Floor(unit.Position.X), (int)Math.Floor(unit.Position.Y))
+            };
+            state.Buildings.Add(forge);
+            state.LayoutVersion++;
+
+            WalkUntil(state, unit, () => unit.Assignment.CrowdSlot != slot && unit.Position.Equals(Spot(barracks, unit)));
+            Assert.That(ColonySimulation.IsPointWithinBuilding(forge, unit.Position, _catalog), Is.False);
+            Assert.That(unit.Assignment.BuildingId, Is.EqualTo(barracks.Id));
+        }
+
+        [Test]
+        public void Demolition_FreesWorkersToTheBarracks_AndTheBarracksGoneLeavesThemWhereTheyAre()
+        {
+            var state = TestColony.NewState(_catalog);
+            var mine = Place(state, BuildingKind.Mine, new Cell(4, 4));
+            var barracks = Place(state, BuildingKind.Barracks, new Cell(1, 9));
+            var worker = AddUnit(state, ColonySimulation.BuildingEntrancePosition(mine, _catalog), Assignment.Work(mine.Id));
+
+            Assert.That(ColonySimulation.ApplyCommand(state, new DemolishBuildingCommand(mine.Id), _catalog).Ok, Is.True);
+            Assert.That(worker.Assignment.Kind, Is.EqualTo(AssignmentKind.Idle));
+            Assert.That(worker.Assignment.BuildingId, Is.EqualTo(barracks.Id));
+
+            Assert.That(ColonySimulation.ApplyCommand(state, new DemolishBuildingCommand(barracks.Id), _catalog).Ok, Is.True);
+            Assert.That(worker.Assignment.Kind, Is.EqualTo(AssignmentKind.Idle));
+            Assert.That(worker.Assignment.BuildingId, Is.Null);
+            Assert.That(worker.Assignment.CrowdSlot, Is.EqualTo(-1));
+        }
+
+        [Test]
+        public void FreedCreature_SaysItIsGoingToTheBarracksAndThenResting()
+        {
+            var session = TestColony.NewSession(_catalog);
+            Assert.That(session.Dispatch(new BuildBuildingCommand(BuildingKind.Barracks, new Cell(1, 9))).Ok, Is.True);
+            Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 1, new Cell(7, 1))).Ok, Is.True);
+            string id = session.CurrentSnapshot.Units[0].Id;
+            Assert.That(session.CurrentSnapshot.Units[0].Status, Is.EqualTo("Свободен"));
+
+            Assert.That(session.Dispatch(new ReleaseUnitsCommand(new[] { id })).Ok, Is.True);
+            Assert.That(session.CurrentSnapshot.Units[0].Status, Is.EqualTo("Идёт в бараки"));
+            for (int i = 0; i < 400 && session.CurrentSnapshot.Units[0].Status != "Отдыхает в бараках"; i++)
+                session.Advance(0.25f);
+            Assert.That(session.CurrentSnapshot.Units[0].Status, Is.EqualTo("Отдыхает в бараках"));
+        }
+
+        private WorldPosition Spot(BuildingState building, UnitState unit) =>
+            ColonyNavigation.CrowdSlotPosition(building, unit.Assignment.CrowdSlot, _catalog);
 
         // Ticks until done, asserting a unit steps into a footprint only right after passing that building's approach point.
         private void WalkUntil(GameState state, UnitState unit, Func<bool> done)

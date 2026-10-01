@@ -49,6 +49,9 @@ namespace TrollStrategy.Tests
             smeltery.Init(BuildingKind.Smeltery, "Плавильня", 220, 3, 3, 10, 4, null);
             smeltery.SetConstructible(true);
             smeltery.SetRecipes(new ProductionRecipe(2f, Amounts(ResourceKind.IronOre, 2), Amounts(ResourceKind.IronIngot, 1)));
+            var field = Create<BuildingDefinition>();
+            field.Init(BuildingKind.Field, "Поле", 80, 3, 3, 100, 5, null);
+            field.SetRecipes(new ProductionRecipe(10f, null, Amounts(ResourceKind.Wheat, 10)));
             var armory = Create<BuildingDefinition>();
             armory.Init(BuildingKind.Armory, "Склад экипировки", 160, 2, 2, 0, 0, null);
             armory.SetConstructible(true);
@@ -58,12 +61,13 @@ namespace TrollStrategy.Tests
             sword.Init("iron-sword", "Железный меч", EquipmentSlot.Weapon, 2, 0, 0);
 
             _catalog = Create<GameContentCatalog>();
-            _catalog.Init(economy, new[] { goblin, troll }, new[] { mine, warehouse, market, barracks, forge, smeltery, armory },
+            _catalog.Init(economy, new[] { goblin, troll }, new[] { mine, warehouse, market, barracks, forge, smeltery, field, armory },
                 equipment: new[] { sword },
                 resources: new[]
                 {
                     new ResourceDefinition(ResourceKind.IronOre, "Руда", 3),
                     new ResourceDefinition(ResourceKind.IronIngot, "Слиток", 9),
+                    new ResourceDefinition(ResourceKind.Wheat, "Пшеница", 2),
                     new ResourceDefinition(ResourceKind.VioletCrystal, "Кристалл", 30),
                     new ResourceDefinition(ResourceKind.IronSword, "Меч", 26, null, "iron-sword")
                 });
@@ -292,6 +296,100 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void HiredCreatures_GetNamesNotNumbers_AndAnEpithetWhenNamesRunOut()
+        {
+            _catalog.GetUnit(UnitKind.Goblin).SetNames(new[] { "Грыз", "Шныр" }, new[] { "Рыжий" });
+            var state = TestColony.NewState(_catalog);
+            state.Gold = 10000;
+
+            Assert.That(ColonySimulation.ApplyCommand(state, new BuyUnitsCommand(UnitKind.Goblin, 3, new Cell(7, 7)), _catalog).Ok,
+                Is.True);
+
+            var names = state.Units.Select(unit => unit.Name).ToList();
+            Assert.That(names, Is.Unique);
+            Assert.That(names.Take(2), Is.EquivalentTo(new[] { "Грыз", "Шныр" }));
+            Assert.That(names[2], Does.EndWith(" Рыжий"));
+            Assert.That(names.Any(name => name.Any(char.IsDigit)), Is.False);
+
+            var again = TestColony.NewState(_catalog);
+            again.Gold = 10000;
+            ColonySimulation.ApplyCommand(again, new BuyUnitsCommand(UnitKind.Goblin, 3, new Cell(7, 7)), _catalog);
+            Assert.That(again.Units.Select(unit => unit.Name), Is.EqualTo(names), "the same hires get the same names");
+        }
+
+        [Test]
+        public void BuildingPrice_GrowsWithEveryStandingBuildingOfTheKind()
+        {
+            _catalog.Economy.SetPriceGrowth(1.12f, 0f);
+            var session = TestColony.NewSession(_catalog);
+            Assert.That(session.BuildingPrice(BuildingKind.Mine), Is.EqualTo(200));
+
+            Assert.That(session.Dispatch(new BuildMineCommand(new Cell(1, 1))).Ok, Is.True);
+            Assert.That(session.BuildingPrice(BuildingKind.Mine), Is.EqualTo(224), "200 × 1.12");
+            Assert.That(session.BuildingPrice(BuildingKind.Forge), Is.EqualTo(180), "Other kinds keep their price");
+
+            Assert.That(session.Dispatch(new BuildMineCommand(new Cell(5, 1))).Ok, Is.True);
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 200 - 224));
+            Assert.That(session.BuildingPrice(BuildingKind.Mine), Is.EqualTo(251), "200 × 1.12², rounded");
+            var second = session.CurrentSnapshot.Buildings.Single(b => b.Id == "mine-2");
+            Assert.That(second.RefundGold, Is.EqualTo(112), "Demolishing returns half of what was paid");
+
+            Assert.That(session.Dispatch(new DemolishBuildingCommand("mine-2")).Ok, Is.True);
+            Assert.That(session.BuildingPrice(BuildingKind.Mine), Is.EqualTo(224), "Only standing buildings count");
+        }
+
+        [Test]
+        public void BuildingPrice_RefusesWhenTheGrownPriceIsShort()
+        {
+            _catalog.Economy.SetPriceGrowth(1.12f, 0f);
+            var state = TestColony.NewState(_catalog);
+            Assert.That(ColonySimulation.ApplyCommand(state, new BuildMineCommand(new Cell(1, 1)), _catalog).Ok, Is.True);
+            state.Gold = 223;
+
+            var refused = ColonySimulation.ApplyCommand(state, new BuildMineCommand(new Cell(5, 1)), _catalog);
+
+            Assert.That(refused.Ok, Is.False);
+            Assert.That(refused.Error, Is.EqualTo("Недостаточно золота"));
+            Assert.That(state.Gold, Is.EqualTo(223));
+        }
+
+        [Test]
+        public void HirePrice_GrowsWithPopulation_AndAGroupPaysEveryStep()
+        {
+            _catalog.Economy.SetPriceGrowth(1f, 3f);
+            var session = TestColony.NewSession(_catalog);
+            Assert.That(session.HirePrice(UnitKind.Goblin), Is.EqualTo(40));
+            Assert.That(session.HirePrice(UnitKind.Goblin, 3), Is.EqualTo(40 + 41 + 42), "40, 41.2 and 42.4, rounded");
+
+            Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 3, new Cell(7, 7))).Ok, Is.True);
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 123));
+            Assert.That(session.HirePrice(UnitKind.Troll), Is.EqualTo(185), "170 × 1.09, rounded");
+
+            Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Troll, 1, new Cell(8, 7))).Ok, Is.True);
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 123 - 185));
+            Assert.That(session.HirePrice(UnitKind.Goblin), Is.EqualTo(45), "40 × 1.12 with four in the colony");
+
+            Assert.That(session.Dispatch(new SellUnitsCommand(new[] { "unit-4" })).Ok, Is.True);
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 123 - 185 + 85), "A sale returns half the catalog price");
+            Assert.That(session.HirePrice(UnitKind.Goblin), Is.EqualTo(44), "One fewer in the colony, a cheaper hire");
+        }
+
+        [Test]
+        public void HirePrice_RefusesAGroupWhoseLastSteps_TheTreasuryCannotCover()
+        {
+            _catalog.Economy.SetPriceGrowth(1f, 3f);
+            var state = TestColony.NewState(_catalog);
+            state.Gold = 122;
+
+            var refused = ColonySimulation.ValidateUnitPurchase(state, UnitKind.Goblin, 3, new Cell(7, 7), _catalog);
+
+            Assert.That(refused.Ok, Is.False, "Three goblins cost 123, not 3 × 40");
+            Assert.That(refused.Error, Is.EqualTo("Недостаточно золота"));
+            state.Gold = 123;
+            Assert.That(ColonySimulation.ValidateUnitPurchase(state, UnitKind.Goblin, 3, new Cell(7, 7), _catalog).Ok, Is.True);
+        }
+
+        [Test]
         public void RejectedCommand_DoesNotChangeStateOrRevision()
         {
             var session = TestColony.NewSession(_catalog);
@@ -475,13 +573,12 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void UnitStats_ShowStaminaAndDerivedCarryCapacity()
+        public void CarryCapacity_FollowsStamina()
         {
-            string stats = UnitStatsText.Compact(_catalog.GetUnit(UnitKind.Troll));
+            var troll = _catalog.GetUnit(UnitKind.Troll);
 
-            Assert.That(stats, Does.Contain("Сила 9"));
-            Assert.That(stats, Does.Contain("Выносливость 150%"));
-            Assert.That(stats, Does.Contain("груз 1.5"));
+            Assert.That(troll.Stamina, Is.EqualTo(150));
+            Assert.That(ColonySimulation.CarryCapacity(troll.Stamina), Is.EqualTo(1.5f).Within(0.0001f));
         }
 
         [Test]
@@ -648,6 +745,51 @@ namespace TrollStrategy.Tests
             Assert.That(smeltery.GetStock(ResourceKind.IronOre), Is.EqualTo(4));
             Assert.That(smeltery.GetStock(ResourceKind.IronIngot), Is.EqualTo(10));
             Assert.That(ColonySimulation.DescribeProduction(state, smeltery, _catalog), Is.EqualTo(ProductionState.OutputFull));
+        }
+
+        [Test]
+        public void Field_HarvestsTenWheatAtOnceAfterTenWork()
+        {
+            var state = TestColony.NewState(_catalog);
+            var field = new BuildingState { Id = "field-1", Kind = BuildingKind.Field, Cell = new Cell(1, 1) };
+            state.Buildings.Add(field);
+            state.Units.Add(new UnitState { Id = "unit-1", Kind = UnitKind.Goblin, Assignment = Assignment.Work("field-1") });
+
+            // A goblin adds 0.3 work/s: the 10-work harvest needs a little over 33 s.
+            ColonySimulation.TickColony(state, 33f, _catalog);
+            Assert.That(field.GetStock(ResourceKind.Wheat), Is.Zero, "Nothing comes in before the harvest");
+            Assert.That(ColonySimulation.CycleProgress(field, _catalog), Is.EqualTo(0.99f).Within(0.001f));
+
+            ColonySimulation.TickColony(state, 0.5f, _catalog);
+            Assert.That(field.GetStock(ResourceKind.Wheat), Is.EqualTo(10));
+            Assert.That(ColonySimulation.CycleProgress(field, _catalog), Is.EqualTo(0.005f).Within(0.001f),
+                "Work past the harvest starts the next one");
+        }
+
+        [Test]
+        public void FieldSnapshot_ProgressIsTheShareOfOneHarvest()
+        {
+            var session = new GameSession(_catalog, TestColony.LayoutFor(_catalog,
+                TestColony.Layout[0], TestColony.Layout[1], new StartingBuilding(BuildingKind.Field, new Cell(3, 3))));
+            Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Troll, 1, new Cell(7, 7))).Ok, Is.True);
+            Assert.That(session.Dispatch(new AssignWorkCommand(new[] { "unit-1" }, "field-1")).Ok, Is.True);
+
+            float highest = 0f;
+            int wheat = 0;
+            var harvests = new List<int>();
+            for (int i = 0; i < 160; i++)
+            {
+                var field = session.Advance(0.25f).Buildings.Single(b => b.Id == "field-1");
+                highest = Mathf.Max(highest, field.ProductionProgress);
+                int stock = field.Stock.Where(s => s.Resource == ResourceKind.Wheat).Sum(s => s.Amount);
+                if (stock != wheat) harvests.Add(stock - wheat);
+                wheat = stock;
+            }
+
+            // A troll adds 0.9 work/s, so 40 s bring a few harvests after the walk.
+            Assert.That(harvests, Is.Not.Empty);
+            Assert.That(harvests, Is.All.EqualTo(10), "Wheat comes ten at a time");
+            Assert.That(highest, Is.GreaterThan(0.9f).And.LessThan(1f), "The bar fills once per harvest");
         }
 
         [Test]
