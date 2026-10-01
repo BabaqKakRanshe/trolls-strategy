@@ -1,8 +1,11 @@
 using System;
 using NUnit.Framework;
 using TrollStrategy.Presentation.Battle;
+using TrollStrategy.Presentation.Island;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using Object = UnityEngine.Object;
 
 namespace TrollStrategy.Tests
@@ -45,6 +48,37 @@ namespace TrollStrategy.Tests
                 Assert.That(sway.Target != null && sway.Target.name.EndsWith("_Cloth", StringComparison.Ordinal),
                     "only banner cloths sway");
             Assert.That(ambience.Spinners, Has.Some.Matches<BattleArenaAmbience.Spinner>(s => s.Gust > 0f));
+        }
+
+        [Test]
+        public void MeadowArena_HangsInTheColonySkyWithItsOwnVolume()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(MeadowPrefab);
+            Assert.That(prefab, Is.Not.Null, MeadowPrefab);
+            var set = prefab.GetComponent<BattleArenaSet>();
+            Assert.That(set.HasLook, Is.True, "the meadow layout carries the island look (fog, post, haze)");
+            var volume = prefab.GetComponent<Volume>();
+            Assert.That(volume, Is.Not.Null);
+            Assert.That(set.Volume, Is.SameAs(volume));
+            Assert.That(volume.isGlobal, Is.True);
+            Assert.That(prefab.layer, Is.Zero, "ColonyVolume's layer, the one in the battle camera's volume mask");
+            var profile = volume.sharedProfile;
+            Assert.That(AssetDatabase.GetAssetPath(profile),
+                Is.EqualTo("Assets/Game/Prefabs/Arenas/Arena_Meadow_Volume.asset"));
+            foreach (var type in new[] { typeof(Tonemapping), typeof(ColorAdjustments), typeof(WhiteBalance),
+                         typeof(LiftGammaGain), typeof(Bloom), typeof(DepthOfField), typeof(Vignette) })
+                Assert.That(profile.Has(type), Is.True, type.Name);
+            Assert.That(profile.TryGet(out IslandHaze haze), Is.True);
+            Assert.That(haze.IsActive(), Is.True);
+            Assert.That(haze.fogStart.value, Is.LessThanOrEqualTo(0f), "the haze starts below the board");
+            Assert.That(haze.fogFull.value, Is.LessThan(haze.fogStart.value));
+
+            var sky = prefab.transform.Find("Sky");
+            Assert.That(sky, Is.Not.Null, "Arena_Meadow_Sky in the Sky group");
+            var clouds = sky.GetComponentsInChildren<Renderer>(true);
+            Assert.That(clouds, Is.Not.Empty);
+            foreach (var cloud in clouds)
+                Assert.That(cloud.shadowCastingMode, Is.EqualTo(ShadowCastingMode.Off), cloud.name);
         }
 
         [Test]

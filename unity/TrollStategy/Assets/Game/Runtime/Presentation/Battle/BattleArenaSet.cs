@@ -1,6 +1,7 @@
 using System;
 using TrollStrategy.Domain;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace TrollStrategy.Presentation.Battle
 {
@@ -54,6 +55,22 @@ namespace TrollStrategy.Presentation.Battle
                  "distance is raised to the camera distance plus this.")]
         [SerializeField, Min(0f)] private float _shadowReach = 30f;
 
+        [Header("Island look")]
+        [Tooltip("The arena hangs in the colony's sky: flat ambient, fog and the volume below. Off: trilight ambient, " +
+                 "no fog, no arena volume.")]
+        [SerializeField] private bool _hasLook;
+        [SerializeField] private Color _ambient = new(.55f, .62f, .76f, 1f);
+        [SerializeField, Range(0f, 1f)] private float _shadowStrength = .8f;
+        [SerializeField] private Color _fogColor = new(.64f, .78f, .94f, 1f);
+        [Tooltip("Linear fog start and end as multiples of the camera's distance to the board.")]
+        [SerializeField, Min(0f)] private float _fogStartPerDistance = .85f;
+        [SerializeField, Min(0f)] private float _fogEndPerDistance = 3f;
+        [Tooltip("Depth of field: sharp up to this multiple of the camera distance, fully blurred from the next.")]
+        [SerializeField, Min(0f)] private float _dofStartPerDistance = 1.4f;
+        [SerializeField, Min(0f)] private float _dofEndPerDistance = 2f;
+        [Tooltip("Global volume on this root with the arena's grading, depth of field and IslandHaze.")]
+        [SerializeField] private Volume _volume;
+
         public float Pitch => _pitch;
         public float FieldOfView => _fieldOfView;
         public float Distance => _distance;
@@ -67,6 +84,15 @@ namespace TrollStrategy.Presentation.Battle
         public Color AmbientEquator => _ambientEquator;
         public Color AmbientGround => _ambientGround;
         public float ShadowReach => _shadowReach;
+        public bool HasLook => _hasLook;
+        public Color Ambient => _ambient;
+        public float ShadowStrength => _shadowStrength;
+        public Color FogColor => _fogColor;
+        public float FogStartPerDistance => _fogStartPerDistance;
+        public float FogEndPerDistance => _fogEndPerDistance;
+        public float DofStartPerDistance => _dofStartPerDistance;
+        public float DofEndPerDistance => _dofEndPerDistance;
+        public Volume Volume => _volume;
 
         /// <summary>Tile for a cell: deployment zones have their own, other cells get a stable variant.</summary>
         public GameObject TileFor(Cell cell, bool playerZone, bool enemyZone)
@@ -147,6 +173,22 @@ namespace TrollStrategy.Presentation.Battle
             _ambientSky = ambientSky;
             _ambientEquator = ambientEquator;
             _ambientGround = ambientGround;
+        }
+
+        /// <summary>The colony's island look (the kit's game_look): flat ambient, sun shadow strength, linear fog and
+        /// depth of field scaled by the camera distance, and the arena's global volume.</summary>
+        public void ConfigureLook(Volume volume, Color ambient, float shadowStrength, Color fogColor,
+            float fogStartPerDistance, float fogEndPerDistance, float dofStartPerDistance, float dofEndPerDistance)
+        {
+            _hasLook = true;
+            _volume = volume;
+            _ambient = ambient;
+            _shadowStrength = shadowStrength;
+            _fogColor = fogColor;
+            _fogStartPerDistance = fogStartPerDistance;
+            _fogEndPerDistance = fogEndPerDistance;
+            _dofStartPerDistance = dofStartPerDistance;
+            _dofEndPerDistance = dofEndPerDistance;
         }
 
         private static GameObject Pick(GameObject[] pool, Cell cell, int salt)

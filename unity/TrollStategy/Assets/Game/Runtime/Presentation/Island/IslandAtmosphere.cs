@@ -10,7 +10,8 @@ namespace TrollStrategy.Presentation.Island
     /// (Layout/isle_layout.json: fog.startPerDistance, post.dofStartPerDistance and so on).
     /// <para>Lives on the scene's global post-processing volume (ColonyVolume). The volume only works while the colony
     /// camera is enabled: the battle camera copies the colony camera's volume mask, and the island's grading, fog
-    /// distances and blur must not reach the arena.</para>
+    /// distances and blur must not reach the arena. An arena with the island look has its own volume; the battle
+    /// camera calls <see cref="Apply(float, VolumeProfile, float, float, float, float)"/> for it.</para>
     /// </summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(100)]      // after IslandCameraRig has placed the camera for the frame

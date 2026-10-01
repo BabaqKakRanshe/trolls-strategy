@@ -8,16 +8,22 @@
 import importlib
 
 MODULES = ["tiles", "props", "landmarks", "fx"]
+# какая композиция арены собирается: "isle" (луг парящим островом, вид колонии — арена игры с 01.10) или
+# "meadow" (прежний луг над озером, build_arena.py --layout meadow). Обе — Arena_Meadow: поле, расстановка и
+# камера одни, меняется окружение поля. Выгрузка любой из них заменяет Arena_Meadow в Unity.
+LAYOUT = "isle"
 
 
-def load(reload=False):
-    subs = ["board", "terrain"] + MODULES + ["meadow"]
+def load(reload=False, layout=None):
+    layout = layout or LAYOUT
+    subs = ["board", "terrain"] + MODULES + ["meadow"] + ([layout] if layout != "meadow" else [])
     mods = {}
     for n in subs:
         m = importlib.import_module(__name__ + "." + n)
         if reload:
             m = importlib.reload(m)
         mods[n] = m
+    mods["meadow"] = mods[layout]
     return mods
 
 

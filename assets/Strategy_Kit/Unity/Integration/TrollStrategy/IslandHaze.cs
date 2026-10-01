@@ -13,7 +13,7 @@ namespace TrollStrategy.Presentation.Island
     /// <item>edge haze: the frame turns milky towards its corners, most at the bottom, a light vignette.</item>
     /// </list>
     /// Off unless a volume turns it on. The colony volume does, and it is disabled with the colony camera
-    /// (<see cref="IslandAtmosphere"/>), so the battle arena never gets it.
+    /// (<see cref="IslandAtmosphere"/>); an arena with the island look brings its own volume and profile.
     /// </summary>
     [Serializable, VolumeComponentMenu("TrollStrategy/Island Haze")]
     public sealed class IslandHaze : VolumeComponent, IPostProcessComponent

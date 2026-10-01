@@ -764,6 +764,9 @@ def build_sky(V, BA, TR, M, meshes, C, mat, ts):
             while got < layer["n"] and tries < layer["n"] * 80:
                 tries += 1
                 x, y = cx + rng.uniform(-R, R), cy + rng.uniform(-R, R)
+                box = layer.get("box")                  # (x0, x1, y0, y1): только там, где облако видно
+                if box and not (box[0] <= x <= box[1] and box[2] <= y <= box[3]):
+                    continue
                 d = island_dist(x, y)
                 if d < r0 or d > r1 or rng.random() > 1.0 - 0.55 * (d - r0) / (r1 - r0):
                     continue

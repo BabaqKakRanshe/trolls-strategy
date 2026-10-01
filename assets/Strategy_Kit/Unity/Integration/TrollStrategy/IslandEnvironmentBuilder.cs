@@ -114,61 +114,9 @@ namespace TrollStrategy.Editor.Setup
         }
 
         [Serializable]
-        private sealed class IsleSun
-        {
-            public float[] forward;
-            public float[] color;
-            public float intensity;
-            public float shadowStrength;
-        }
-
-        [Serializable]
         private sealed class IsleAmbient
         {
             public float[] color;
-        }
-
-        [Serializable]
-        private sealed class IsleFog
-        {
-            public float[] color;
-            public float startPerDistance;
-            public float endPerDistance;
-        }
-
-        [Serializable]
-        private sealed class IslePost
-        {
-            public float exposure;
-            public float saturation;
-            public float contrast;
-            public float temperature;
-            public float bloomThreshold;
-            public float bloomIntensity;
-            public float bloomScatter;
-            public float dofStartPerDistance;
-            public float dofEndPerDistance;
-            public float dofMaxRadius;
-            public float vignette;
-            public float vignetteSmoothness;
-            public float[] lift;
-            public float[] gamma;
-            public float[] gain;
-        }
-
-        // IslandHaze: height fog under the lawn and a light edge haze; missing from the layout means no haze
-        [Serializable]
-        private sealed class IsleHaze
-        {
-            public float[] color;
-            public float startDepth;
-            public float fullDepth;
-            public float opacity;
-            public float[] edgeColor;
-            public float edgeIntensity;
-            public float edgeStart;
-            public float edgeFull;
-            public float edgeTop;
         }
 
         [Serializable]
@@ -366,14 +314,20 @@ namespace TrollStrategy.Editor.Setup
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = Rgb(layout.ambient?.color, new Color(.68f, .74f, .84f));
             RenderSettings.ambientIntensity = 1f;
-            var fogData = layout.fog ?? new IsleFog { startPerDistance = .85f, endPerDistance = 3f };
+            var fogData = layout.fog ?? new IsleFog
+            {
+                startPerDistance = IslandLook.FogStartPerDistance,
+                endPerDistance = IslandLook.FogEndPerDistance
+            };
             var background = Rgb(layout.background, new Color(.71f, .82f, .93f));
             RenderSettings.fog = true;
             RenderSettings.fogMode = FogMode.Linear;
             RenderSettings.fogColor = Rgb(fogData.color, background);
 
             var post = layout.post ?? new IslePost();
-            var profile = EnsureVolumeProfile(layout, post, view.transform.position.y, RenderSettings.fogColor);
+            EnsureFolder(PrefabFolder);
+            var profile = IslandLook.EnsureVolumeProfile(PrefabFolder + "/" + layout.name + "_Volume.asset", post,
+                layout.haze, view.transform.position.y, RenderSettings.fogColor);
             DioramaSurfaceSetup.ConfigureIslandHaze();
             var volumeObject = GameObject.Find(VolumeName);
             if (volumeObject == null) volumeObject = new GameObject(VolumeName);
@@ -386,9 +340,11 @@ namespace TrollStrategy.Editor.Setup
             volume.sharedProfile = profile;
             var atmosphere = volumeObject.GetComponent<IslandAtmosphere>();
             if (atmosphere == null) atmosphere = volumeObject.AddComponent<IslandAtmosphere>();
-            atmosphere.Configure(camera, volume, view.transform, Positive(fogData.startPerDistance, .85f),
-                Positive(fogData.endPerDistance, 3f), Positive(post.dofStartPerDistance, 1.4f),
-                Positive(post.dofEndPerDistance, 2f));
+            atmosphere.Configure(camera, volume, view.transform,
+                Positive(fogData.startPerDistance, IslandLook.FogStartPerDistance),
+                Positive(fogData.endPerDistance, IslandLook.FogEndPerDistance),
+                Positive(post.dofStartPerDistance, IslandLook.DofStartPerDistance),
+                Positive(post.dofEndPerDistance, IslandLook.DofEndPerDistance));
             EditorUtility.SetDirty(volume);
             EditorUtility.SetDirty(atmosphere);
 
@@ -479,71 +435,6 @@ namespace TrollStrategy.Editor.Setup
                 PrefabUtility.RecordPrefabInstancePropertyModifications(transform);
                 PrefabUtility.RecordPrefabInstancePropertyModifications(transform.gameObject);
             }
-        }
-
-        /// <param name="lawnHeight">World height of the island root (the lawn): the haze depths count down from
-        /// it.</param>
-        /// <param name="fogColor">The linear fog's colour, the haze's colour when the layout gives none.</param>
-        private static VolumeProfile EnsureVolumeProfile(IsleLayout layout, IslePost post, float lawnHeight,
-            Color fogColor)
-        {
-            EnsureFolder(PrefabFolder);
-            var path = PrefabFolder + "/" + layout.name + "_Volume.asset";
-            var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(path);
-            if (profile == null)
-            {
-                profile = ScriptableObject.CreateInstance<VolumeProfile>();
-                AssetDatabase.CreateAsset(profile, path);
-            }
-            // the kit renders with AgX; URP has Neutral and ACES, Neutral keeps the palette's hues
-            Get<Tonemapping>(profile).mode.Override(TonemappingMode.Neutral);
-            var color = Get<ColorAdjustments>(profile);
-            color.postExposure.Override(post.exposure);
-            color.saturation.Override(post.saturation);
-            color.contrast.Override(post.contrast);
-            Get<WhiteBalance>(profile).temperature.Override(post.temperature);
-            var lgg = Get<LiftGammaGain>(profile);
-            lgg.lift.Override(Vec4(post.lift, new Vector4(1f, 1f, 1f, 0f)));
-            lgg.gamma.Override(Vec4(post.gamma, new Vector4(1f, 1f, 1f, 0f)));
-            lgg.gain.Override(Vec4(post.gain, new Vector4(1f, 1f, 1f, 0f)));
-            var bloom = Get<Bloom>(profile);
-            bloom.threshold.Override(Positive(post.bloomThreshold, .9f));
-            bloom.intensity.Override(post.bloomIntensity);
-            bloom.scatter.Override(Positive(post.bloomScatter, .6f));
-            var dof = Get<DepthOfField>(profile);
-            dof.mode.Override(DepthOfFieldMode.Gaussian);
-            dof.gaussianStart.Override(46f);            // IslandAtmosphere scales both with the camera distance
-            dof.gaussianEnd.Override(66f);
-            dof.gaussianMaxRadius.Override(Mathf.Clamp(Positive(post.dofMaxRadius, 1f), .5f, 1.5f));
-            dof.highQualitySampling.Override(true);
-            var vignette = Get<Vignette>(profile);
-            vignette.intensity.Override(post.vignette);
-            vignette.smoothness.Override(Positive(post.vignetteSmoothness, .45f));
-            var hazeData = layout.haze;
-            var haze = Get<IslandHaze>(profile);
-            haze.fogColor.Override(Rgb(hazeData?.color, fogColor));
-            float startDepth = hazeData != null ? Mathf.Max(0f, hazeData.startDepth) : 0f;
-            haze.fogStart.Override(lawnHeight - startDepth);
-            haze.fogFull.Override(lawnHeight - Mathf.Max(startDepth + .1f, hazeData?.fullDepth ?? 0f));
-            haze.fogOpacity.Override(Mathf.Clamp01(hazeData?.opacity ?? 0f));
-            haze.edgeColor.Override(Rgb(hazeData?.edgeColor, Color.white));
-            haze.edgeIntensity.Override(Mathf.Clamp01(hazeData?.edgeIntensity ?? 0f));
-            float edgeStart = Mathf.Max(0f, hazeData?.edgeStart ?? .45f);
-            haze.edgeRange.Override(new Vector2(edgeStart, Mathf.Max(edgeStart + .05f, hazeData?.edgeFull ?? 1.05f)));
-            haze.edgeTop.Override(Mathf.Clamp01(hazeData?.edgeTop ?? 1f));
-            EditorUtility.SetDirty(profile);
-            AssetDatabase.SaveAssetIfDirty(profile);
-            return profile;
-        }
-
-        private static T Get<T>(VolumeProfile profile) where T : VolumeComponent
-        {
-            if (profile.TryGet(out T component)) return component;
-            component = profile.Add<T>(false);
-            component.name = typeof(T).Name;
-            component.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy;   // as the profile editor does
-            AssetDatabase.AddObjectToAsset(component, profile);
-            return component;
         }
 
         // ------------------------------------------------------------------------------------------ prefab
@@ -857,9 +748,6 @@ namespace TrollStrategy.Editor.Setup
 
         private static Vector3 Vector(float[] v, Vector3 fallback) =>
             v != null && v.Length >= 3 ? new Vector3(v[0], v[1], v[2]) : fallback;
-
-        private static Vector4 Vec4(float[] v, Vector4 fallback) =>
-            v != null && v.Length >= 4 ? new Vector4(v[0], v[1], v[2], v[3]) : fallback;
 
         private static Quaternion Rotation(float[] q) =>
             q != null && q.Length >= 4 ? new Quaternion(q[0], q[1], q[2], q[3]) : Quaternion.identity;

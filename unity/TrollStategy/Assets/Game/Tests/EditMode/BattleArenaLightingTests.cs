@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using TrollStrategy.Presentation.Battle;
+using TrollStrategy.Presentation.Island;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -56,6 +57,54 @@ namespace TrollStrategy.Tests
             Assert.That(RenderSettings.sun, Is.SameAs(sunBefore));
             Assert.That(colonySun.enabled, Is.True);
             if (pipeline != null) Assert.That(pipeline.shadowDistance, Is.EqualTo(shadowDistance));
+        }
+
+        [Test]
+        public void ArenaWithTheIslandLookTakesTheColonySkyAndGivesTheColonyItsFogBack()
+        {
+            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            // the colony's fog distances stay as they are while its camera stands still: the battle must return them
+            RenderSettings.ambientMode = AmbientMode.Flat;
+            RenderSettings.ambientLight = Color.gray;
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.Exponential;
+            RenderSettings.fogColor = Color.red;
+            RenderSettings.fogStartDistance = 5f;
+            RenderSettings.fogEndDistance = 50f;
+            var battleSun = new GameObject("BattleSun").AddComponent<Light>();
+            battleSun.type = LightType.Directional;
+            var arena = new GameObject("Arena").AddComponent<BattleArenaSet>();
+            var ambient = new Color(.55f, .62f, .76f);
+            var fogColor = new Color(.64f, .78f, .94f);
+            arena.ConfigureLook(null, ambient, .92f, fogColor, .85f, 3f, 1.4f, 2f);
+            var lighting = new BattleArenaLighting();
+            try
+            {
+                lighting.Apply(arena, battleSun);
+                IslandAtmosphere.Apply(27f, null, arena.FogStartPerDistance, arena.FogEndPerDistance,
+                    arena.DofStartPerDistance, arena.DofEndPerDistance);
+
+                Assert.That(RenderSettings.ambientMode, Is.EqualTo(AmbientMode.Flat));
+                Assert.That(Vector4.Distance(RenderSettings.ambientLight, ambient), Is.LessThan(1e-4f));
+                Assert.That(RenderSettings.fog, Is.True);
+                Assert.That(RenderSettings.fogMode, Is.EqualTo(FogMode.Linear));
+                Assert.That(Vector4.Distance(RenderSettings.fogColor, fogColor), Is.LessThan(1e-4f));
+                Assert.That(RenderSettings.fogStartDistance, Is.EqualTo(22.95f).Within(1e-3f));
+                Assert.That(RenderSettings.fogEndDistance, Is.EqualTo(81f).Within(1e-3f));
+                Assert.That(battleSun.shadowStrength, Is.EqualTo(.92f).Within(1e-4f));
+            }
+            finally
+            {
+                lighting.Restore();
+            }
+
+            Assert.That(RenderSettings.ambientMode, Is.EqualTo(AmbientMode.Flat));
+            Assert.That(Vector4.Distance(RenderSettings.ambientLight, Color.gray), Is.LessThan(1e-4f));
+            Assert.That(RenderSettings.fog, Is.True);
+            Assert.That(RenderSettings.fogMode, Is.EqualTo(FogMode.Exponential));
+            Assert.That(Vector4.Distance(RenderSettings.fogColor, Color.red), Is.LessThan(1e-4f));
+            Assert.That(RenderSettings.fogStartDistance, Is.EqualTo(5f));
+            Assert.That(RenderSettings.fogEndDistance, Is.EqualTo(50f));
         }
     }
 }

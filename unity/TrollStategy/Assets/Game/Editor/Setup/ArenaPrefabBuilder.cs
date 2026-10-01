@@ -7,6 +7,7 @@ using TrollStrategy.Content;
 using TrollStrategy.Presentation.Battle;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace TrollStrategy.Editor.Setup
 {
@@ -14,7 +15,7 @@ namespace TrollStrategy.Editor.Setup
     /// Assembles battle arena prefabs from the Vitaria kit export: the models in Assets/Vitaria/Models/Arena
     /// placed by Assets/Vitaria/Layout/arena_*_layout.json (both written by the kit's build_arena.py).
     /// The prefab root carries <see cref="BattleArenaSet"/> (cell tiles, obstacles, effect meshes by role, camera
-    /// framing, lighting) and <see cref="BattleArenaAmbience"/> (gusting windmill sails, swaying banner cloths,
+    /// framing, lighting, the island look with its global volume) and <see cref="BattleArenaAmbience"/> (gusting windmill sails, swaying banner cloths,
     /// flowing water, flames, smoke/ember/mist sockets); battle missions of the same board size without an
     /// environment get it assigned. Rebuilt when the layout changes (its hash is kept in
     /// the prefab's .meta), checked on load, after layout imports and when Play Mode ends.
@@ -27,7 +28,8 @@ namespace TrollStrategy.Editor.Setup
         private const string ArenaModelsRoot = ModelsRoot + "/Arena";
         private const string MaterialsRoot = "Assets/Vitaria/Materials";
         private const string PrefabFolder = "Assets/Game/Prefabs/Arenas";
-        private const string BuilderVersion = "4";       // bump to rebuild arenas after changing this script
+        private const string BuilderVersion = "5";       // bump to rebuild arenas after changing this script
+        private const string SkyGroup = "Sky";
 
 #pragma warning disable 0649   // filled by JsonUtility
         [Serializable]
@@ -93,16 +95,9 @@ namespace TrollStrategy.Editor.Setup
         }
 
         [Serializable]
-        private sealed class LayoutSun
-        {
-            public float[] forward;
-            public float[] color;
-            public float intensity;
-        }
-
-        [Serializable]
         private sealed class LayoutAmbient
         {
+            public float[] color;       // the island look's flat ambient
             public float[] sky;
             public float[] equator;
             public float[] ground;
@@ -116,9 +111,12 @@ namespace TrollStrategy.Editor.Setup
             public LayoutItem[] objects;
             public LayoutFraming framing;
             public LayoutTiles tiles;
-            public LayoutSun sun;
+            public IsleSun sun;
             public LayoutAmbient ambient;
             public float[] background;
+            public IsleFog fog;         // fog, post and haze: the colony's island look (IslandLook); without fog
+            public IslePost post;       // the arena keeps the battle's own light
+            public IsleHaze haze;
             public LayoutFx fx;
             public LayoutSocket[] sockets;
         }
@@ -240,6 +238,10 @@ namespace TrollStrategy.Editor.Setup
                     instance.transform.localRotation = Rotation(item.r);
                     instance.transform.localScale = Vector(item.s, Vector3.one);
                     placed++;
+                    // clouds and the far islets, as the colony's sky: their shadows would only cost casters
+                    if (string.Equals(item.group, SkyGroup, StringComparison.Ordinal))
+                        foreach (var renderer in instance.GetComponentsInChildren<Renderer>(true))
+                            renderer.shadowCastingMode = ShadowCastingMode.Off;
 
                     // sails turn about their hub axis, Blender's -Y = the model's local +Z in Unity; the export
                     // flips handedness, so a positive Blender spin about -Y is a positive Unity turn about -Z
@@ -273,12 +275,13 @@ namespace TrollStrategy.Editor.Setup
                     framing.boardWidthShare > 0f ? framing.boardWidthShare : .69f,
                     Rgb(layout.background, new Color(.33f, .45f, .6f, 1f)));
                 // the battle scene is not the active one: the arena brings the light its art was made under
-                var sun = layout.sun ?? new LayoutSun();
+                var sun = layout.sun ?? new IsleSun();
                 var ambient = layout.ambient ?? new LayoutAmbient();
                 set.ConfigureLighting(Vector(sun.forward, set.SunDirection), Rgb(sun.color, set.SunColor),
                     sun.intensity > 0f ? sun.intensity : set.SunIntensity,
                     Rgb(ambient.sky, set.AmbientSky), Rgb(ambient.equator, set.AmbientEquator),
                     Rgb(ambient.ground, set.AmbientGround));
+                ConfigureLook(root, set, layout);
                 var fx = layout.fx ?? new LayoutFx();
                 set.ConfigureEffects(Models(models, fx.dust, missing), Models(models, fx.smoke, missing),
                     Models(models, fx.debrisStone, missing), Models(models, fx.debrisEarth, missing),
@@ -315,6 +318,41 @@ namespace TrollStrategy.Editor.Setup
             {
                 UnityEngine.Object.DestroyImmediate(root);
             }
+        }
+
+        /// <summary>
+        /// The colony's island look when the layout has one (fog, post and haze, written by the kit's game_look like
+        /// the island's): flat ambient, the sun's shadow strength, fog scaled by the battle camera, and a global
+        /// volume on the root with the arena's own profile (Arena_*_Volume.asset). The prefab lives only in the
+        /// battle scene, so the look acts only there; ColonyVolume is off while the colony camera is.
+        /// A layout without fog leaves the battle lit as before.
+        /// </summary>
+        private static void ConfigureLook(GameObject root, BattleArenaSet set, Layout layout)
+        {
+            if (layout.fog == null) return;
+            var sun = layout.sun ?? new IsleSun();
+            var ambient = layout.ambient ?? new LayoutAmbient();
+            var post = layout.post ?? new IslePost();
+            var fogColor = IslandLook.Rgb(layout.fog.color, set.Background);
+            EnsureFolder(PrefabFolder);
+            // BattleBoardView stands the arena root on the board, at y = 0: the haze depths count down from 0
+            var profile = IslandLook.EnsureVolumeProfile(PrefabFolder + "/" + layout.name + "_Volume.asset", post,
+                layout.haze, 0f, fogColor);
+            DioramaSurfaceSetup.ConfigureIslandHaze();      // the haze pass on the renderer both cameras use
+            DioramaSurfaceSetup.ConfigureWorldUi();
+            // ColonyVolume's layer (Default): the battle camera copies the colony camera's volume mask
+            root.layer = 0;
+            var volume = root.AddComponent<Volume>();
+            volume.isGlobal = true;
+            volume.priority = 1f;       // over ColonyVolume in the frame before it switches itself off
+            volume.weight = 1f;
+            volume.sharedProfile = profile;
+            set.ConfigureLook(volume, IslandLook.Rgb(ambient.color, set.AmbientSky),
+                sun.shadowStrength > 0f ? Mathf.Clamp01(sun.shadowStrength) : .8f, fogColor,
+                IslandLook.Positive(layout.fog.startPerDistance, IslandLook.FogStartPerDistance),
+                IslandLook.Positive(layout.fog.endPerDistance, IslandLook.FogEndPerDistance),
+                IslandLook.Positive(post.dofStartPerDistance, IslandLook.DofStartPerDistance),
+                IslandLook.Positive(post.dofEndPerDistance, IslandLook.DofEndPerDistance));
         }
 
         /// <summary>

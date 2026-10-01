@@ -189,7 +189,7 @@ namespace TrollStrategy.Presentation.Island
                 if (bar == null) continue;
                 bar.Panel.gameObject.SetActive(true);
                 bar.Fill.style.width = Length.Percent(Mathf.Clamp01(block.ClearProgress) * 100f);
-                bar.Label.text = $"Расчистка · {Mathf.CeilToInt(block.ClearSecondsLeft)} с";
+                bar.Label.text = $"Расчистка, {Mathf.CeilToInt(block.ClearSecondsLeft)} с";
             }
             foreach (var pair in _bars)
                 if (!clearing.Contains(pair.Key) && pair.Value.Panel.gameObject.activeSelf)

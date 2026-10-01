@@ -780,7 +780,22 @@ def build_island_strata(a, terraces, deep, fade, step=0.4):
     def bottom_of(P):
         return deep["bottom"] + deep.get("jag", 0.0) * noise.noise(Vector((P.x * 0.21, P.y * 0.21, sd)))
 
-    strata_bands(a, outline, normals, True, zt2, deep, fade, bottom_of)
+    flags = [in_view(P.x, P.y, 3.0) for P in outline]
+    if all(flags):
+        strata_bands(a, outline, normals, True, zt2, deep, fade, bottom_of)
+        return outline, n_loops
+    # остров шире рамки видимости (арена): пласты только там, где кромку видно; концы лент — за рамкой
+    start = flags.index(False)
+    run = []
+    for k in range(1, m + 1):
+        i = (start + k) % m
+        if flags[i]:
+            run.append(i)
+        if (not flags[i] or k == m) and len(run) > 1:
+            strata_bands(a, [outline[j] for j in run], [normals[j] for j in run], False, [zt2[j] for j in run],
+                         deep, fade, bottom_of)
+        if not flags[i]:
+            run = []
     return outline, n_loops
 
 

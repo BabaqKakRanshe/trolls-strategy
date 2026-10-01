@@ -1,12 +1,13 @@
 using System.Linq;
 using TrollStrategy.Presentation.Island;
+using TrollStrategy.Presentation.WorldUi;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 namespace TrollStrategy.Editor.Setup
 {
-    // Renderer features of the colony renderer: screen-space contact shadows and the island haze. The procedural
+    // Renderer features of the colony renderer: screen-space contact shadows, the island haze and world labels. The procedural
     // ground textures that used to be made here (Meadow, PathGrain, WoodGrain, StoneGrain on the Primitive_*
     // materials) went away with PrimitiveEnvironment: the colony ground is now the Vitaria kit's Colony_Meadow
     // (ColonyEnvironmentBuilder).
@@ -67,6 +68,31 @@ namespace TrollStrategy.Editor.Setup
             }
             feature.SetActive(true);
             feature.Create();
+            renderer.SetDirty();
+            EditorUtility.SetDirty(feature);
+            EditorUtility.SetDirty(renderer);
+        }
+
+        /// <summary>World labels after post-processing (<see cref="WorldUiFeature"/>): the renderer's opaque and
+        /// transparent passes leave <see cref="WorldPanel.Layer"/> out, the feature draws it over the finished frame.</summary>
+        public static void ConfigureWorldUi() =>
+            ConfigureWorldUi(AssetDatabase.LoadAssetAtPath<UniversalRendererData>(RendererPath));
+
+        public static void ConfigureWorldUi(UniversalRendererData renderer)
+        {
+            if (renderer == null) return;
+            var feature = renderer.rendererFeatures.OfType<WorldUiFeature>().FirstOrDefault();
+            if (feature == null)
+            {
+                feature = ScriptableObject.CreateInstance<WorldUiFeature>();
+                feature.name = "World Labels";
+                AssetDatabase.AddObjectToAsset(feature, renderer);
+                renderer.rendererFeatures.Add(feature);
+            }
+            feature.SetActive(true);
+            feature.Create();
+            renderer.opaqueLayerMask &= ~(1 << WorldPanel.Layer);
+            renderer.transparentLayerMask &= ~(1 << WorldPanel.Layer);
             renderer.SetDirty();
             EditorUtility.SetDirty(feature);
             EditorUtility.SetDirty(renderer);

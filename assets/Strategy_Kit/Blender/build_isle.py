@@ -30,6 +30,29 @@ GAME_AMBIENT = [0.55, 0.62, 0.76]              # sRGB, RenderSettings.ambientLig
 GAME_SKY = [0.64, 0.78, 0.94]
 
 
+def game_look(sun_fwd):
+    """Вид острова в игре (Unity): солнце, амбиент, фон, туман, пост и дымка — блоки isle_layout.json.
+    Бой на острове (build_arena, vitaria_arena/isle.py) берёт их отсюда же: колония и бой выглядят одинаково.
+    sun_fwd — направление солнца в осях Unity."""
+    return {
+        "sun": {"forward": sun_fwd, "color": list(SUN_COLOR), "intensity": 1.8, "shadowStrength": 0.92},
+        # плоский амбиент Unity темнее и холоднее мира Blender: с ним тени не заливаются и уходят в синеву
+        "ambient": {"color": GAME_AMBIENT},
+        "background": GAME_SKY,
+        "fog": {"color": GAME_SKY, "startPerDistance": 0.85, "endPerDistance": 3.0},
+        "post": {"exposure": -0.1, "saturation": 4.0, "contrast": 8.0, "temperature": 0.0,
+                 "bloomThreshold": 0.9, "bloomIntensity": 0.35,
+                 "bloomScatter": 0.6, "dofStartPerDistance": 1.4, "dofEndPerDistance": 2.0, "dofMaxRadius": 1.0,
+                 "vignette": 0.0, "vignetteSmoothness": 0.45, "lift": [1.0, 1.0, 1.005, 0.0],
+                 "gamma": [1.0, 1.0, 1.0, 0.0], "gain": [1.05, 1.02, 0.97, 0.0]},
+        # дымка (IslandHaze в игре): ниже газона всё тонет по высоте в цвете неба — столбы, облака пустых ячеек,
+        # корни спутников; края кадра светлеют вместо тёмной виньетки. Глубины — метры вниз от газона
+        "haze": {"color": GAME_SKY, "startDepth": 2.0, "fullDepth": 16.0, "opacity": 1.0,
+                 "edgeColor": [0.96, 0.98, 1.0], "edgeIntensity": 0.55, "edgeStart": 0.35, "edgeFull": 1.1,
+                 "edgeTop": 0.25},
+    }
+
+
 def parse_args():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
     o = {"blend": None, "render": False, "stages": "start,mid,max", "res": 100, "samples": 40, "prev": None,
@@ -725,21 +748,7 @@ def export_isle(scn, G, V, BA, BC, mat, root):
         "objects": items,
         "stages": stages,
         "camera": {"fov": 45.0, "pitch": 45.0, "offsetX": 1.5, "distancePerSide": 1.16},
-        "sun": {"forward": sun_fwd, "color": list(SUN_COLOR), "intensity": 1.8, "shadowStrength": 0.92},
-        # плоский амбиент Unity темнее и холоднее мира Blender: с ним тени не заливаются и уходят в синеву
-        "ambient": {"color": GAME_AMBIENT},
-        "background": GAME_SKY,
-        "fog": {"color": GAME_SKY, "startPerDistance": 0.85, "endPerDistance": 3.0},
-        "post": {"exposure": -0.1, "saturation": 4.0, "contrast": 8.0, "temperature": 0.0,
-                 "bloomThreshold": 0.9, "bloomIntensity": 0.35,
-                 "bloomScatter": 0.6, "dofStartPerDistance": 1.4, "dofEndPerDistance": 2.0, "dofMaxRadius": 1.0,
-                 "vignette": 0.0, "vignetteSmoothness": 0.45, "lift": [1.0, 1.0, 1.005, 0.0],
-                 "gamma": [1.0, 1.0, 1.0, 0.0], "gain": [1.05, 1.02, 0.97, 0.0]},
-        # дымка (IslandHaze в игре): ниже газона всё тонет по высоте в цвете неба — столбы, облака пустых ячеек,
-        # корни спутников; края кадра светлеют вместо тёмной виньетки. Глубины — метры вниз от газона
-        "haze": {"color": GAME_SKY, "startDepth": 2.0, "fullDepth": 16.0, "opacity": 1.0,
-                 "edgeColor": [0.96, 0.98, 1.0], "edgeIntensity": 0.55, "edgeStart": 0.35, "edgeFull": 1.1,
-                 "edgeTop": 0.25},
+        **game_look(sun_fwd),           # sun, ambient, background, fog, post, haze
         "tris": tris,
     }
     lay = os.path.join(unity, "Layout", "isle_layout.json")

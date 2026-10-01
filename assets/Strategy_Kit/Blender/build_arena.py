@@ -59,11 +59,11 @@ FX_ROLES = {             # меши эффектов по ролям — рас�
 def parse_args():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
     o = {"blend": None, "fresh": False, "render": False, "save": SAVE, "export": EXPORT, "ref": None,
-         "res": 100, "samples": 48, "shots": "mock,hero", "root": None, "prev": None}
+         "res": 100, "samples": 48, "shots": "mock,hero", "root": None, "prev": None, "layout": None, "tag": ""}
     i = 0
     while i < len(argv):
         a = argv[i]
-        if a in ("--blend", "--ref", "--root", "--prev", "--shots") and i + 1 < len(argv):
+        if a in ("--blend", "--ref", "--root", "--prev", "--shots", "--layout", "--tag") and i + 1 < len(argv):
             o[a[2:]] = argv[i + 1]
             i += 1
         elif a in ("--res", "--samples") and i + 1 < len(argv):
@@ -330,7 +330,7 @@ def reset_scene():
     scn = bpy.data.scenes.new(SCENE)
     scn.unit_settings.system = "METRIC"
     colls = {}
-    for g in GROUPS + ["Preview", "Rig"]:
+    for g in GROUPS + ["Preview", "Rig", "Sky"]:
         c = bpy.data.collections.new("AM_" + g)
         scn.collection.children.link(c)
         colls[g] = c
@@ -357,6 +357,55 @@ def view_region(cam, z, aspect=2.4, margin=3.0):
         poly.append(Vector((q.x, q.y, 0)))
     c = sum(poly, Vector()) / 4
     return [c + (q - c) * (1 + margin / max(1e-3, (q - c).length)) for q in poly]
+
+
+def battle_views(M, B, aspects=(4 / 3, 1.5, 1.6, 16 / 9, 2.0, 21 / 9)):
+    """Кадры камеры боя на экранах от 4:3 до 21:9: (позиция, поворот, tg половины FOV по вертикали, аспект).
+    Как BattleSceneController.FrameCamera: на узком экране камера отъезжает, чтобы поле заняло BOARD_SHARE
+    ширины кадра."""
+    cam = M.CAMERA
+    tv = math.tan(math.radians(cam["fov"]) / 2)
+    p = math.radians(cam["pitch"])
+    T = Vector(cam["target"])
+    xs = [B.cell_center(cx, cy)[0] for cx, cy in B.cells()]
+    board_w = max(xs) - min(xs) + 2.0                    # 2 м между гранями гекса
+    out = []
+    for a in aspects:
+        d = max(cam["distance"], board_w / (2 * BOARD_SHARE * tv * a))
+        P = T + d * Vector((0, -math.cos(p), math.sin(p)))
+        out.append((P, (T - P).to_track_quat("-Z", "Y").to_matrix(), tv, a))
+    return out
+
+
+_LOCAL_BOX = {}
+
+
+def in_battle_view(o, views, margin=1.08):
+    """Попадает ли рамка объекта хоть в один кадр боя (с запасом margin по краям)."""
+    me = o.data
+    if me.name not in _LOCAL_BOX:
+        vs = [v.co for v in me.vertices] or [Vector()]
+        lo = Vector([min(v[i] for v in vs) for i in range(3)])
+        hi = Vector([max(v[i] for v in vs) for i in range(3)])
+        _LOCAL_BOX[me.name] = [Vector((x, y, z)) for x in (lo.x, hi.x) for y in (lo.y, hi.y) for z in (lo.z, hi.z)]
+    mw = Matrix.LocRotScale(o.location, o.rotation_euler.to_quaternion(), o.scale)
+    corners = [mw @ c for c in _LOCAL_BOX[me.name]]
+    for P, R, tv, a in views:
+        Rt = R.transposed()
+        xs, ys = [], []
+        for w in corners:
+            v = Rt @ (w - P)
+            if v.z > -0.3:                                # у камеры или за ней: считаем видимым
+                return True
+            xs.append(v.x / (-v.z * tv * a))
+            ys.append(v.y / (-v.z * tv))
+        if min(xs) <= margin and max(xs) >= -margin and min(ys) <= margin and max(ys) >= -margin:
+            return True
+    return False
+
+
+def tri_count(me):
+    return sum(len(p.vertices) - 2 for p in me.polygons)
 
 
 def place(meshes, coll, asset, x, y, z, rz=0.0, s=1.0, tilt=(0.0, 0.0), name=None):
@@ -418,11 +467,17 @@ def build_scene(V, VA, meshes, mat, wmat):
     ts = M.terraces()
     for name, occ in M.OCCLUDERS.items():
         ts[name].occluders = [ts[o].outline for o in occ]
+    for name, fl in getattr(M, "FLOORS", {}).items():          # парящий остров: короткие столбы над соседками
+        ts[name].floors = [(ts[f].outline, ts[f].z - ts[f].hills) for f in fl]
     ground, cliffs = V.Asset("Arena_Meadow_Ground"), V.Asset("Arena_Meadow_Cliffs")
     for t in ts.values():
         t.build_top(ground)
         t.build_lip(ground)
-        t.build_cliff(cliffs)
+        t.build_cliff(cliffs, boulders=getattr(M, "BOULDERS", True))
+    deep = getattr(M, "DEEP", None)
+    if deep and deep.get("union"):                 # парящий остров: наружный обрыв одной лентой пластов
+        outline, n_loops = TR.build_island_strata(cliffs, list(ts.values()), deep, M.FADE)
+        print("island strata: %d outline points, %d contours" % (len(outline), n_loops))
     roads = V.Asset("Arena_Meadow_Roads")
     road_pts = []
     for tname, ctrl, half in M.ROADS:
@@ -430,9 +485,23 @@ def build_scene(V, VA, meshes, mat, wmat):
     water, river = V.Asset("Arena_Meadow_Water"), V.Asset("Arena_Meadow_River")
     falls, foam = V.Asset("Arena_Meadow_Falls"), V.Asset("Arena_Meadow_Foam")
     W = M.WATER
-    TR.water_plane(water, W["x0"], W["x1"], W["y0"], W["y1"], flow=W["flow"], tile=W["tile"])
+    if W:                                           # у парящего острова озера нет
+        TR.water_plane(water, W["x0"], W["x1"], W["y0"], W["y1"], flow=W["flow"], tile=W["tile"])
     TR.river_ribbon(river, M.RIVER, M.RIVER_HALF + 0.35, z=TR.RIVER_Z, tile=4.0, seed=3)
-    for k, (pt, nr, width, src, reach) in enumerate(M.FALLS):
+    for k, fd in enumerate(M.FALLS):
+        if isinstance(fd, dict):
+            # водопад острова: в облака (z_bot), без пены; z_top — вода сверху, иначе трава источника
+            pt, nr, width, z_bot = fd["pt"], fd["normal"], fd["width"], fd["z_bot"]
+            z_top = fd.get("z_top")
+            if z_top is None:
+                z_top = ts[fd["src"]].height(pt[0] - nr[0] * 0.6, pt[1] - nr[1] * 0.6)
+            end = TR.waterfall(falls, pt, nr, width, z_top, z_bot - 0.05, seed=k, reach=fd["reach"],
+                               stream=fd.get("stream", 2.2), segs=fd.get("segs", 12))
+            if fd.get("foam", True):
+                TR.foam_patch(foam, (end.x, end.y), width * 0.75, seed=k * 3 + 1, n=10, z=z_bot)
+                SOCKETS.append(("mist", (end.x, end.y, z_bot + 0.15), round(width, 2)))
+            continue
+        pt, nr, width, src, reach = fd
         if src == "river":
             z_top, stream = TR.RIVER_Z, 0.5
         else:
@@ -442,6 +511,9 @@ def build_scene(V, VA, meshes, mat, wmat):
         SOCKETS.append(("mist", (end.x, end.y, TR.WATER_Z + 0.15), round(width, 2)))
     for name, a in (("Arena_Meadow_Ground", ground), ("Arena_Meadow_Cliffs", cliffs), ("Arena_Meadow_Roads", roads),
                     ("Arena_Meadow_Foam", foam)):
+        if not a.bm.faces:                          # пены у острова нет: пустой меш в игру не уходит
+            a.bm.free()
+            continue
         me = bpy.data.meshes.get(name) or bpy.data.meshes.new(name)
         a.bm.to_mesh(me)
         a.bm.free()
@@ -453,6 +525,9 @@ def build_scene(V, VA, meshes, mat, wmat):
         C["Terrain"].objects.link(o)
     for name, a, style in (("Arena_Meadow_Water", water, "lake"), ("Arena_Meadow_River", river, "lake"),
                            ("Arena_Meadow_Falls", falls, "falls")):
+        if not a.bm.faces:                          # озера у острова нет
+            a.bm.free()
+            continue
         me = bpy.data.meshes.get(name) or bpy.data.meshes.new(name)
         a.bm.to_mesh(me)
         a.bm.free()
@@ -629,6 +704,37 @@ def build_scene(V, VA, meshes, mat, wmat):
     print("merged %d scatter objects: %s" % (len(gone), ", ".join(
         "%s %d" % kv for kv in sorted(MERGE_STATS.items(), key=lambda kv: -kv[1]))))
 
+    # ---------------------------------------------------------------- небо острова: облака, дальние островки
+    if getattr(M, "CLOUDS", None) or getattr(M, "DISTANT", None):
+        import build_colony as BC
+        BC.build_sky(V, sys.modules[__name__], TR, M, meshes, C, mat, ts)
+        sky = V.Asset("Arena_Meadow_Sky")
+        parts = [o for o in C["Sky"].objects if o.type == "MESH"]
+        # облака и деревья островков, которых камера боя не видит ни на одном экране, в игру не идут
+        views = battle_views(M, B)
+        hidden = [o for o in parts if not in_battle_view(o, views)]
+        tris = {o.name: tri_count(o.data) for o in parts}
+        print("sky: %d of %d pieces never in the battle frame (%d of %d tris)" % (
+            len(hidden), len(parts), sum(tris[o.name] for o in hidden), sum(tris.values())))
+        for o in hidden:
+            bpy.data.objects.remove(o, do_unlink=True)
+        parts = [o for o in C["Sky"].objects if o.type == "MESH"]
+        for o in parts:
+            sky.add_mesh(o.data, Matrix.LocRotScale(o.location, o.rotation_euler.to_quaternion(), o.scale))
+            if o.data.name.startswith("Arena_Meadow_"):
+                meshes.pop(o.data.name, None)          # дальние островки — внутри неба, отдельно не выгружаются
+        for o in parts:
+            bpy.data.objects.remove(o, do_unlink=True)
+        me = bpy.data.meshes.get("Arena_Meadow_Sky") or bpy.data.meshes.new("Arena_Meadow_Sky")
+        sky.bm.to_mesh(me)
+        sky.bm.free()
+        me.materials.clear()
+        me.materials.append(mat)
+        me.validate()
+        meshes["Arena_Meadow_Sky"] = me
+        C["Sky"].objects.link(bpy.data.objects.new("Arena_Meadow_Sky", me))
+        print("sky: %d pieces merged" % len(parts))
+
     # ---------------------------------------------------------------- превью поля (в игру не идёт)
     zones = {"player": "Hex_Tile_Blue", "enemy": "Hex_Tile_Red"}
     for (cx, cy) in B.cells():
@@ -661,7 +767,8 @@ def build_scene(V, VA, meshes, mat, wmat):
     so = bpy.data.objects.new("AM_Sun", sd)
     so.rotation_euler = Vector(M.SUN["direction"]).normalized().to_track_quat("-Z", "Y").to_euler()
     C["Rig"].objects.link(so)
-    world = bpy.data.worlds.get("AM_World") or bpy.data.worlds.new("AM_World")
+    wname = "AM_World_Isle" if getattr(M, "LOOKDEV", None) else "AM_World"     # look-dev меняет узлы мира
+    world = bpy.data.worlds.get(wname) or bpy.data.worlds.new(wname)
     world.use_nodes = True
     bg = next(n for n in world.node_tree.nodes if n.type == "BACKGROUND")
     # небо как трёхцветный ambient Unity (Setup Lighting): тени светлые, как на макете
@@ -687,7 +794,7 @@ def build_scene(V, VA, meshes, mat, wmat):
 # =========================================================================================
 # превью
 # =========================================================================================
-def render_shots(scn, cam, prev_dir, shots, res, samples):
+def render_shots(scn, cam, prev_dir, shots, res, samples, look=None, tag=""):
     os.makedirs(prev_dir, exist_ok=True)
     sizes = {"mock": (1672, 941), "hero": (1920, 1080), "wide": (2520, 1080), "ipad": (1600, 1200),
              "top": (1600, 1400)}
@@ -712,7 +819,10 @@ def render_shots(scn, cam, prev_dir, shots, res, samples):
         scn.render.resolution_x, scn.render.resolution_y = w, h
         scn.render.resolution_percentage = res
         scn.cycles.samples = samples
-        path = os.path.join(prev_dir, "arena_meadow_%s.png" % sh)
+        if look and sh in look.get("shots", {}):    # туман, резкость, свечение, грейдинг кадра (как у колонии)
+            import build_colony as BC
+            BC.lookdev_shot(scn, look, sh, h * res / 100.0)
+        path = os.path.join(prev_dir, "arena_meadow_%s%s.png" % (sh, tag))
         scn.render.filepath = path
         if bpy.context.window is not None:              # в GUI рендерим активную сцену окна
             bpy.context.window.scene = scn
@@ -833,7 +943,8 @@ def export_all(VA, meshes, scn, cam, sun, unity, root):
     # раскладка: всё из коллекций GROUPS, координаты Unity относительно середины поля
     items = []
     total = 0
-    for g in GROUPS:
+    sky = bpy.data.collections.get("AM_Sky")
+    for g in GROUPS + (["Sky"] if sky is not None and len(sky.objects) else []):
         for o in bpy.data.collections["AM_" + g].objects:
             if o.type != "MESH":
                 continue
@@ -879,6 +990,22 @@ def export_all(VA, meshes, scn, cam, sun, unity, root):
         "sockets": [{"kind": k, "p": to_unity_vec(p), "size": sz} for k, p, sz in SOCKETS],
         "tris": total,
     }
+    game_look = getattr(M, "GAME_LOOK", None)
+    if game_look:
+        # вид острова колонии в игре (build_isle.game_look, блоки isle_layout.json в том же формате): солнце,
+        # ровный амбиент (color; sky = equator = ground — для прежнего трилайта), фон = небо, туман и резкость —
+        # доли расстояния камеры до фокуса, пост, дымка IslandHaze. Глубины дымки — вниз от уровня поля
+        look = game_look(to_unity_vec(sun_fwd))
+        amb = look["ambient"]["color"]
+        layout["sun"] = look["sun"]
+        layout["ambient"] = {"color": amb, "sky": amb, "equator": amb, "ground": amb}
+        layout["background"] = look["background"]
+        ordered = {}
+        for k, v in layout.items():
+            ordered[k] = v
+            if k == "background":
+                ordered.update(fog=look["fog"], post=look["post"], haze=look["haze"])
+        layout = ordered
     lay_dir = os.path.join(unity, "Layout")
     os.makedirs(lay_dir, exist_ok=True)
     with open(os.path.join(lay_dir, "arena_meadow_layout.json"), "w", encoding="utf-8") as f:
@@ -893,7 +1020,8 @@ def export_all(VA, meshes, scn, cam, sun, unity, root):
         except Exception:
             rows = []
     names = {x["asset"] for x in info}
-    rows = [r for r in rows if r.get("asset") not in names and r.get("category") not in ("Arena", "Backdrop", "Meadow")]
+    # Backdrop есть и у колонии (build_colony): чужие строки фона не трогаем, свои заменяются по имени
+    rows = [r for r in rows if r.get("asset") not in names and r.get("category") not in ("Arena", "Meadow")]
     rows += info
     with open(list_path, "w", encoding="utf-8") as f:
         json.dump(rows, f, indent=1)
@@ -914,6 +1042,8 @@ def main():
     V = importlib.reload(V)
     import vitaria_arena as VA
     VA = importlib.reload(VA)
+    if o["layout"]:
+        VA.LAYOUT = o["layout"]
     VA.load(reload=True)
     root = os.path.normpath(o["root"] or os.path.join(here, ".."))
     unity = os.path.join(root, "Unity", "Assets", "Vitaria")
@@ -929,15 +1059,27 @@ def main():
     meshes = build_assets(V, VA, ref_dir, mat, kit_root, o["fresh"])
     if not o["fresh"]:
         showcase(kit_root)
+    M = mods["meadow"]
+    if getattr(M, "CLOUDS", None) or getattr(M, "DISTANT", None):
+        import vitaria_colony as VC                  # облака острова — ассеты колонии
+        for cat, n, title, fn in VC.asset_entries(reload=True):
+            if n.startswith("Env_CloudPuff"):
+                meshes[n] = build_mesh(V, n, fn, mat)
     scn, cam, sun = build_scene(V, VA, meshes, mat, wmat)
-    if o["render"]:
-        prev = o["prev"] or os.path.join(root, "Previews")
-        render_shots(scn, cam, prev, o["shots"], o["res"], o["samples"])
+    # сохранение и выгрузка — до look-dev: он меняет общие материалы (оттенок воды, пятна травы: между текстурой
+    # и BSDF встают узлы, и FBX теряет ссылку на текстуру). Look-dev — только для превью
     if o["save"] and bpy.data.filepath:
         bpy.ops.wm.save_mainfile()
         print("saved", bpy.data.filepath)
     if o["export"]:
         export_all(VA, meshes, scn, cam, sun, unity, root)
+    look = getattr(M, "LOOKDEV", None)
+    if look and o["render"]:
+        import build_colony as BC
+        BC.lookdev_scene(scn, look, sun)
+    if o["render"]:
+        prev = o["prev"] or os.path.join(root, "Previews")
+        render_shots(scn, cam, prev, o["shots"], o["res"], o["samples"], look=look, tag=o["tag"])
     print("done")
 
 

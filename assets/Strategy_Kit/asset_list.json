@@ -490,496 +490,6 @@
   ]
  },
  {
-  "asset": "Hex_Tile_A",
-  "category": "Arena",
-  "tris": 72,
-  "size_unity": [
-   1.965,
-   0.105,
-   2.269
-  ]
- },
- {
-  "asset": "Hex_Tile_B",
-  "category": "Arena",
-  "tris": 192,
-  "size_unity": [
-   1.965,
-   0.148,
-   2.269
-  ]
- },
- {
-  "asset": "Hex_Tile_C",
-  "category": "Arena",
-  "tris": 162,
-  "size_unity": [
-   1.965,
-   0.152,
-   2.269
-  ]
- },
- {
-  "asset": "Hex_Tile_Blue",
-  "category": "Arena",
-  "tris": 96,
-  "size_unity": [
-   1.965,
-   0.105,
-   2.269
-  ]
- },
- {
-  "asset": "Hex_Tile_Red",
-  "category": "Arena",
-  "tris": 96,
-  "size_unity": [
-   1.965,
-   0.105,
-   2.269
-  ]
- },
- {
-  "asset": "Obst_Boulders",
-  "category": "Arena",
-  "tris": 242,
-  "size_unity": [
-   1.489,
-   0.875,
-   1.538
-  ]
- },
- {
-  "asset": "Obst_Stump",
-  "category": "Arena",
-  "tris": 372,
-  "size_unity": [
-   1.666,
-   0.823,
-   1.65
-  ]
- },
- {
-  "asset": "Obst_Bush",
-  "category": "Arena",
-  "tris": 360,
-  "size_unity": [
-   1.566,
-   0.926,
-   1.59
-  ]
- },
- {
-  "asset": "Prop_Brazier",
-  "category": "Arena",
-  "tris": 824,
-  "size_unity": [
-   0.892,
-   1.27,
-   0.9
-  ]
- },
- {
-  "asset": "Prop_Banner_Blue",
-  "category": "Arena",
-  "tris": 211,
-  "size_unity": [
-   1.189,
-   3.32,
-   0.522
-  ]
- },
- {
-  "asset": "Prop_Banner_Blue_Cloth",
-  "category": "Arena",
-  "tris": 764,
-  "size_unity": [
-   0.9,
-   1.81,
-   0.119
-  ]
- },
- {
-  "asset": "Prop_Banner_Red",
-  "category": "Arena",
-  "tris": 217,
-  "size_unity": [
-   1.189,
-   3.32,
-   0.511
-  ]
- },
- {
-  "asset": "Prop_Banner_Red_Cloth",
-  "category": "Arena",
-  "tris": 316,
-  "size_unity": [
-   0.9,
-   1.81,
-   0.135
-  ]
- },
- {
-  "asset": "Prop_WeaponRack",
-  "category": "Arena",
-  "tris": 1316,
-  "size_unity": [
-   1.549,
-   2.082,
-   0.73
-  ]
- },
- {
-  "asset": "Prop_Tent",
-  "category": "Arena",
-  "tris": 724,
-  "size_unity": [
-   4.06,
-   2.05,
-   2.59
-  ]
- },
- {
-  "asset": "Prop_Campfire",
-  "category": "Arena",
-  "tris": 701,
-  "size_unity": [
-   1.441,
-   0.819,
-   1.41
-  ]
- },
- {
-  "asset": "FX_Flame_Small",
-  "category": "Arena",
-  "tris": 52,
-  "size_unity": [
-   0.315,
-   0.531,
-   0.318
-  ]
- },
- {
-  "asset": "FX_Flame_Large",
-  "category": "Arena",
-  "tris": 52,
-  "size_unity": [
-   0.452,
-   0.763,
-   0.46
-  ]
- },
- {
-  "asset": "Bld_Windmill",
-  "category": "Arena",
-  "tris": 3342,
-  "size_unity": [
-   3.2,
-   7.69,
-   3.42
-  ]
- },
- {
-  "asset": "Bld_Windmill_Sails",
-  "category": "Arena",
-  "tris": 1848,
-  "size_unity": [
-   4.841,
-   4.841,
-   0.34
-  ]
- },
- {
-  "asset": "Env_Bridge",
-  "category": "Arena",
-  "tris": 2984,
-  "size_unity": [
-   7.6,
-   4.22,
-   3.74
-  ]
- },
- {
-  "asset": "FX_Dust_Puff_A",
-  "category": "Arena",
-  "tris": 60,
-  "size_unity": [
-   0.584,
-   0.365,
-   0.349
-  ]
- },
- {
-  "asset": "FX_Dust_Puff_B",
-  "category": "Arena",
-  "tris": 80,
-  "size_unity": [
-   0.607,
-   0.336,
-   0.511
-  ]
- },
- {
-  "asset": "FX_Dust_Puff_C",
-  "category": "Arena",
-  "tris": 40,
-  "size_unity": [
-   0.447,
-   0.342,
-   0.401
-  ]
- },
- {
-  "asset": "FX_Smoke_Puff_A",
-  "category": "Arena",
-  "tris": 60,
-  "size_unity": [
-   0.554,
-   0.456,
-   0.386
-  ]
- },
- {
-  "asset": "FX_Smoke_Puff_B",
-  "category": "Arena",
-  "tris": 80,
-  "size_unity": [
-   0.475,
-   0.358,
-   0.54
-  ]
- },
- {
-  "asset": "FX_Debris_Stone_A",
-  "category": "Arena",
-  "tris": 20,
-  "size_unity": [
-   0.114,
-   0.088,
-   0.106
-  ]
- },
- {
-  "asset": "FX_Debris_Stone_B",
-  "category": "Arena",
-  "tris": 20,
-  "size_unity": [
-   0.149,
-   0.113,
-   0.182
-  ]
- },
- {
-  "asset": "FX_Debris_Stone_C",
-  "category": "Arena",
-  "tris": 20,
-  "size_unity": [
-   0.162,
-   0.127,
-   0.17
-  ]
- },
- {
-  "asset": "FX_Debris_Earth_A",
-  "category": "Arena",
-  "tris": 20,
-  "size_unity": [
-   0.113,
-   0.109,
-   0.132
-  ]
- },
- {
-  "asset": "FX_Debris_Earth_B",
-  "category": "Arena",
-  "tris": 20,
-  "size_unity": [
-   0.162,
-   0.174,
-   0.132
-  ]
- },
- {
-  "asset": "FX_Debris_Wood_A",
-  "category": "Arena",
-  "tris": 12,
-  "size_unity": [
-   0.049,
-   0.24,
-   0.049
-  ]
- },
- {
-  "asset": "FX_Debris_Wood_B",
-  "category": "Arena",
-  "tris": 50,
-  "size_unity": [
-   0.05,
-   0.25,
-   0.035
-  ]
- },
- {
-  "asset": "FX_Rock_Throw",
-  "category": "Arena",
-  "tris": 20,
-  "size_unity": [
-   0.307,
-   0.282,
-   0.293
-  ]
- },
- {
-  "asset": "FX_Spark_Shard",
-  "category": "Arena",
-  "tris": 12,
-  "size_unity": [
-   0.049,
-   0.18,
-   0.049
-  ]
- },
- {
-  "asset": "Bld_Castle",
-  "category": "Backdrop",
-  "tris": 5068,
-  "size_unity": [
-   6.851,
-   7.6,
-   4.68
-  ]
- },
- {
-  "asset": "Bld_Tower_Round",
-  "category": "Backdrop",
-  "tris": 3562,
-  "size_unity": [
-   2.774,
-   6.42,
-   2.837
-  ]
- },
- {
-  "asset": "Bld_Cottage",
-  "category": "Backdrop",
-  "tris": 2260,
-  "size_unity": [
-   3.17,
-   3.085,
-   2.78
-  ]
- },
- {
-  "asset": "Bld_House_Stone",
-  "category": "Backdrop",
-  "tris": 3006,
-  "size_unity": [
-   3.279,
-   3.725,
-   2.96
-  ]
- },
- {
-  "asset": "Bld_House_Timber",
-  "category": "Backdrop",
-  "tris": 3712,
-  "size_unity": [
-   3.429,
-   4.105,
-   3.06
-  ]
- },
- {
-  "asset": "Bld_WatchTower",
-  "category": "Backdrop",
-  "tris": 3274,
-  "size_unity": [
-   2.256,
-   6.253,
-   2.717
-  ]
- },
- {
-  "asset": "Arena_Meadow_Ground",
-  "category": "Meadow",
-  "tris": 8342,
-  "size_unity": [
-   76.915,
-   5.855,
-   53.225
-  ]
- },
- {
-  "asset": "Arena_Meadow_Cliffs",
-  "category": "Meadow",
-  "tris": 9546,
-  "size_unity": [
-   77.718,
-   6.838,
-   50.772
-  ]
- },
- {
-  "asset": "Arena_Meadow_Roads",
-  "category": "Meadow",
-  "tris": 1968,
-  "size_unity": [
-   30.557,
-   0.166,
-   18.669
-  ]
- },
- {
-  "asset": "Arena_Meadow_Foam",
-  "category": "Meadow",
-  "tris": 800,
-  "size_unity": [
-   40.794,
-   0.359,
-   17.804
-  ]
- },
- {
-  "asset": "Arena_Meadow_Water",
-  "category": "Meadow",
-  "tris": 72,
-  "size_unity": [
-   92.0,
-   0.0,
-   66.0
-  ]
- },
- {
-  "asset": "Arena_Meadow_River",
-  "category": "Meadow",
-  "tris": 624,
-  "size_unity": [
-   12.907,
-   0.0,
-   38.849
-  ]
- },
- {
-  "asset": "Arena_Meadow_Falls",
-  "category": "Meadow",
-  "tris": 480,
-  "size_unity": [
-   41.046,
-   6.79,
-   17.912
-  ]
- },
- {
-  "asset": "Arena_Meadow_Scatter",
-  "category": "Meadow",
-  "tris": 38407,
-  "size_unity": [
-   74.326,
-   10.428,
-   46.107
-  ]
- },
- {
   "asset": "Bld_Keep",
   "category": "Backdrop",
   "tris": 4188,
@@ -1397,6 +907,486 @@
    5.365,
    4.416,
    4.36
+  ]
+ },
+ {
+  "asset": "Hex_Tile_A",
+  "category": "Arena",
+  "tris": 72,
+  "size_unity": [
+   1.965,
+   0.105,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_B",
+  "category": "Arena",
+  "tris": 192,
+  "size_unity": [
+   1.965,
+   0.148,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_C",
+  "category": "Arena",
+  "tris": 162,
+  "size_unity": [
+   1.965,
+   0.152,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Blue",
+  "category": "Arena",
+  "tris": 96,
+  "size_unity": [
+   1.965,
+   0.105,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Red",
+  "category": "Arena",
+  "tris": 96,
+  "size_unity": [
+   1.965,
+   0.105,
+   2.269
+  ]
+ },
+ {
+  "asset": "Obst_Boulders",
+  "category": "Arena",
+  "tris": 242,
+  "size_unity": [
+   1.489,
+   0.875,
+   1.538
+  ]
+ },
+ {
+  "asset": "Obst_Stump",
+  "category": "Arena",
+  "tris": 372,
+  "size_unity": [
+   1.666,
+   0.823,
+   1.65
+  ]
+ },
+ {
+  "asset": "Obst_Bush",
+  "category": "Arena",
+  "tris": 360,
+  "size_unity": [
+   1.566,
+   0.926,
+   1.59
+  ]
+ },
+ {
+  "asset": "Prop_Brazier",
+  "category": "Arena",
+  "tris": 824,
+  "size_unity": [
+   0.892,
+   1.27,
+   0.9
+  ]
+ },
+ {
+  "asset": "Prop_Banner_Blue",
+  "category": "Arena",
+  "tris": 211,
+  "size_unity": [
+   1.189,
+   3.32,
+   0.522
+  ]
+ },
+ {
+  "asset": "Prop_Banner_Blue_Cloth",
+  "category": "Arena",
+  "tris": 764,
+  "size_unity": [
+   0.9,
+   1.81,
+   0.119
+  ]
+ },
+ {
+  "asset": "Prop_Banner_Red",
+  "category": "Arena",
+  "tris": 217,
+  "size_unity": [
+   1.189,
+   3.32,
+   0.511
+  ]
+ },
+ {
+  "asset": "Prop_Banner_Red_Cloth",
+  "category": "Arena",
+  "tris": 316,
+  "size_unity": [
+   0.9,
+   1.81,
+   0.135
+  ]
+ },
+ {
+  "asset": "Prop_WeaponRack",
+  "category": "Arena",
+  "tris": 1316,
+  "size_unity": [
+   1.549,
+   2.082,
+   0.73
+  ]
+ },
+ {
+  "asset": "Prop_Tent",
+  "category": "Arena",
+  "tris": 724,
+  "size_unity": [
+   4.06,
+   2.05,
+   2.59
+  ]
+ },
+ {
+  "asset": "Prop_Campfire",
+  "category": "Arena",
+  "tris": 701,
+  "size_unity": [
+   1.441,
+   0.819,
+   1.41
+  ]
+ },
+ {
+  "asset": "FX_Flame_Small",
+  "category": "Arena",
+  "tris": 52,
+  "size_unity": [
+   0.315,
+   0.531,
+   0.318
+  ]
+ },
+ {
+  "asset": "FX_Flame_Large",
+  "category": "Arena",
+  "tris": 52,
+  "size_unity": [
+   0.452,
+   0.763,
+   0.46
+  ]
+ },
+ {
+  "asset": "Bld_Windmill",
+  "category": "Arena",
+  "tris": 3342,
+  "size_unity": [
+   3.2,
+   7.69,
+   3.42
+  ]
+ },
+ {
+  "asset": "Bld_Windmill_Sails",
+  "category": "Arena",
+  "tris": 1848,
+  "size_unity": [
+   4.841,
+   4.841,
+   0.34
+  ]
+ },
+ {
+  "asset": "Env_Bridge",
+  "category": "Arena",
+  "tris": 2984,
+  "size_unity": [
+   7.6,
+   4.22,
+   3.74
+  ]
+ },
+ {
+  "asset": "FX_Dust_Puff_A",
+  "category": "Arena",
+  "tris": 60,
+  "size_unity": [
+   0.584,
+   0.365,
+   0.349
+  ]
+ },
+ {
+  "asset": "FX_Dust_Puff_B",
+  "category": "Arena",
+  "tris": 80,
+  "size_unity": [
+   0.607,
+   0.336,
+   0.511
+  ]
+ },
+ {
+  "asset": "FX_Dust_Puff_C",
+  "category": "Arena",
+  "tris": 40,
+  "size_unity": [
+   0.447,
+   0.342,
+   0.401
+  ]
+ },
+ {
+  "asset": "FX_Smoke_Puff_A",
+  "category": "Arena",
+  "tris": 60,
+  "size_unity": [
+   0.554,
+   0.456,
+   0.386
+  ]
+ },
+ {
+  "asset": "FX_Smoke_Puff_B",
+  "category": "Arena",
+  "tris": 80,
+  "size_unity": [
+   0.475,
+   0.358,
+   0.54
+  ]
+ },
+ {
+  "asset": "FX_Debris_Stone_A",
+  "category": "Arena",
+  "tris": 20,
+  "size_unity": [
+   0.114,
+   0.088,
+   0.106
+  ]
+ },
+ {
+  "asset": "FX_Debris_Stone_B",
+  "category": "Arena",
+  "tris": 20,
+  "size_unity": [
+   0.149,
+   0.113,
+   0.182
+  ]
+ },
+ {
+  "asset": "FX_Debris_Stone_C",
+  "category": "Arena",
+  "tris": 20,
+  "size_unity": [
+   0.162,
+   0.127,
+   0.17
+  ]
+ },
+ {
+  "asset": "FX_Debris_Earth_A",
+  "category": "Arena",
+  "tris": 20,
+  "size_unity": [
+   0.113,
+   0.109,
+   0.132
+  ]
+ },
+ {
+  "asset": "FX_Debris_Earth_B",
+  "category": "Arena",
+  "tris": 20,
+  "size_unity": [
+   0.162,
+   0.174,
+   0.132
+  ]
+ },
+ {
+  "asset": "FX_Debris_Wood_A",
+  "category": "Arena",
+  "tris": 12,
+  "size_unity": [
+   0.049,
+   0.24,
+   0.049
+  ]
+ },
+ {
+  "asset": "FX_Debris_Wood_B",
+  "category": "Arena",
+  "tris": 50,
+  "size_unity": [
+   0.05,
+   0.25,
+   0.035
+  ]
+ },
+ {
+  "asset": "FX_Rock_Throw",
+  "category": "Arena",
+  "tris": 20,
+  "size_unity": [
+   0.307,
+   0.282,
+   0.293
+  ]
+ },
+ {
+  "asset": "FX_Spark_Shard",
+  "category": "Arena",
+  "tris": 12,
+  "size_unity": [
+   0.049,
+   0.18,
+   0.049
+  ]
+ },
+ {
+  "asset": "Bld_Castle",
+  "category": "Backdrop",
+  "tris": 5068,
+  "size_unity": [
+   6.851,
+   7.6,
+   4.68
+  ]
+ },
+ {
+  "asset": "Bld_Tower_Round",
+  "category": "Backdrop",
+  "tris": 3562,
+  "size_unity": [
+   2.774,
+   6.42,
+   2.837
+  ]
+ },
+ {
+  "asset": "Bld_Cottage",
+  "category": "Backdrop",
+  "tris": 2260,
+  "size_unity": [
+   3.17,
+   3.085,
+   2.78
+  ]
+ },
+ {
+  "asset": "Bld_House_Stone",
+  "category": "Backdrop",
+  "tris": 3006,
+  "size_unity": [
+   3.279,
+   3.725,
+   2.96
+  ]
+ },
+ {
+  "asset": "Bld_House_Timber",
+  "category": "Backdrop",
+  "tris": 3712,
+  "size_unity": [
+   3.429,
+   4.105,
+   3.06
+  ]
+ },
+ {
+  "asset": "Bld_WatchTower",
+  "category": "Backdrop",
+  "tris": 3274,
+  "size_unity": [
+   2.256,
+   6.253,
+   2.717
+  ]
+ },
+ {
+  "asset": "Arena_Meadow_Ground",
+  "category": "Meadow",
+  "tris": 7087,
+  "size_unity": [
+   76.915,
+   5.854,
+   42.673
+  ]
+ },
+ {
+  "asset": "Arena_Meadow_Cliffs",
+  "category": "Meadow",
+  "tris": 16108,
+  "size_unity": [
+   77.547,
+   28.041,
+   39.613
+  ]
+ },
+ {
+  "asset": "Arena_Meadow_Roads",
+  "category": "Meadow",
+  "tris": 1968,
+  "size_unity": [
+   30.557,
+   0.166,
+   18.669
+  ]
+ },
+ {
+  "asset": "Arena_Meadow_River",
+  "category": "Meadow",
+  "tris": 640,
+  "size_unity": [
+   12.907,
+   0.0,
+   38.325
+  ]
+ },
+ {
+  "asset": "Arena_Meadow_Falls",
+  "category": "Meadow",
+  "tris": 608,
+  "size_unity": [
+   41.45,
+   18.59,
+   18.803
+  ]
+ },
+ {
+  "asset": "Arena_Meadow_Scatter",
+  "category": "Meadow",
+  "tris": 32913,
+  "size_unity": [
+   73.596,
+   10.272,
+   36.995
+  ]
+ },
+ {
+  "asset": "Arena_Meadow_Sky",
+  "category": "Meadow",
+  "tris": 27865,
+  "size_unity": [
+   60.59,
+   19.546,
+   43.365
   ]
  }
 ]
