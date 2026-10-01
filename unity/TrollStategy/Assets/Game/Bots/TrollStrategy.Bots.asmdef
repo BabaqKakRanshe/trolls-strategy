@@ -1,0 +1,18 @@
+{
+    "name": "TrollStrategy.Bots",
+    "rootNamespace": "TrollStrategy.Bots",
+    "references": [
+        "TrollStrategy.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

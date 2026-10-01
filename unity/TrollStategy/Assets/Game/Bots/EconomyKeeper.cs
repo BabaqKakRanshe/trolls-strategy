@@ -1,0 +1,221 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TrollStrategy.Application;
+using TrollStrategy.Content;
+using TrollStrategy.Domain;
+
+namespace TrollStrategy.Bots
+{
+    /// <summary>
+    /// Keeps goods moving the way any attentive player would: everything made has somewhere to go, a workshop
+    /// short of inputs gets them brought, a building whose goods pile up gets another hauler. Growth, for the
+    /// profiles that grow, puts spare gold into more workers and more raw producers.
+    /// </summary>
+    internal sealed class EconomyKeeper
+    {
+        private const int MaxHiresPerLook = 3;
+        private const int MaxGrowthStaffPerLook = 2;
+        private const int StockpileBacklog = 30;
+
+        private readonly BotHands _hands;
+        private readonly BattlePlanner _battles;
+        private readonly BotProfile _profile;
+        private readonly Dictionary<string, int> _lastOutput = new(StringComparer.Ordinal);
+
+        public EconomyKeeper(BotHands hands, BattlePlanner battles, BotProfile profile)
+        {
+            _hands = hands;
+            _battles = battles;
+            _profile = profile;
+        }
+
+        /// <summary>Gold growth may spend: the treasury less the profile's share of what the quest saves for.</summary>
+        private int Spare(BotWait wait) =>
+            Math.Max(0, _hands.Gold - (int)Math.Ceiling(wait.GoldNeeded * _profile.ReserveShare));
+
+        public void Keep(BotWait wait)
+        {
+            // a producer with nowhere to send its goods stalls and earns nothing: these may use all gold
+            _hands.SpendLimit = int.MaxValue;
+            EmployIdle();
+            foreach (var id in _hands.Snapshot.Buildings.Select(b => b.Id).ToList())
+                OpenOutlet(_hands.Building(id));
+            foreach (var id in _hands.Snapshot.Buildings.Select(b => b.Id).ToList())
+                Feed(_hands.Building(id), scale: false);
+
+            _hands.SpendLimit = Spare(wait);
+            int hires = 0;
+            foreach (var id in _hands.Snapshot.Buildings.Select(b => b.Id).ToList())
+            {
+                if (hires >= MaxHiresPerLook) break;
+                var building = _hands.Building(id);
+                if (building != null && BackingUp(building) && AddHauler(building)) hires++;
+                else if (Feed(_hands.Building(id), scale: true)) hires++;
+            }
+            foreach (var building in _hands.Snapshot.Buildings)
+                _lastOutput[building.Id] = OutputStock(building);
+        }
+
+        public void Grow(BotWait wait)
+        {
+            _hands.SpendLimit = Spare(wait);
+            int staffed = 0;
+            foreach (var building in Producers().OrderByDescending(b => _hands.IsRaw(b.Kind)).ToList())
+            {
+                if (staffed >= MaxGrowthStaffPerLook) break;
+                var current = _hands.Building(building.Id);
+                if (current == null || current.WorkerCount == 0 || current.WorkerCount >= current.MaxWorkers) continue;
+                if (current.ProductionState != ProductionState.Working || !HasOutlet(current)) continue;
+                staffed += _hands.Staff(current, _hands.Hireable(_profile.WorkerKind), 1, null, "рост: рабочий");
+            }
+
+            var raws = Producers().Where(b => _hands.IsRaw(b.Kind)).ToList();
+            if (raws.Count == 0 || raws.Count >= _profile.MaxRawProducers) return;
+            if (raws.Any(b => b.WorkerCount < b.MaxWorkers || b.ProductionState != ProductionState.Working)) return;
+            var kind = _hands.Catalog.Buildings
+                .Where(d => d != null && d.Constructible && _hands.IsUnlocked(d.Kind) && _hands.IsRaw(d.Kind))
+                .OrderBy(d => _hands.Session.BuildingPrice(d.Kind))
+                .Select(d => (BuildingKind?)d.Kind).FirstOrDefault();
+            if (kind == null) return;
+            int setUp = _hands.Session.BuildingPrice(kind.Value) + _hands.Session.HirePrice(UnitKind.Goblin, 4);
+            if (_hands.SpendLimit < setUp * _profile.GrowthGoldFactor) return;
+            var built = _hands.Build(kind.Value, null, "рост: добыча");
+            var market = _hands.First(BuildingKind.Market);
+            if (built == null || market == null) return;
+            _hands.Staff(built, _hands.Hireable(_profile.WorkerKind), 2, null, "рост: рабочие");
+            _hands.Haul(_hands.Building(built.Id), market, 2, null, "рост: носильщики");
+        }
+
+        public void FightForGold(BotWait wait)
+        {
+            _hands.SpendLimit = Spare(wait);
+            _battles.TryFight(null, hire: true);
+        }
+
+        private IEnumerable<BuildingSnapshot> Producers() =>
+            _hands.Snapshot.Buildings.Where(b => b.IsWorkplace);
+
+        private bool HasOutlet(BuildingSnapshot building) => _hands.Routes().Any(r => r.Source == building.Id);
+
+        // Goods the building hands to haulers: a producer's outputs, a stockpile's whole stock.
+        private int OutputStock(BuildingSnapshot building)
+        {
+            var def = _hands.Def(building.Kind);
+            int total = 0;
+            foreach (var stack in building.Stock)
+                if (ColonySimulation.Provides(def, stack.Resource)) total += stack.Amount;
+            return total;
+        }
+
+        // Idle creatures take free places in producers that already work and have an outlet, raw ones first.
+        private void EmployIdle()
+        {
+            foreach (var kind in new[] { UnitKind.Troll, UnitKind.Goblin })
+            {
+                foreach (var building in Producers().OrderByDescending(b => _hands.IsRaw(b.Kind)).ToList())
+                {
+                    if (_hands.Idle(kind).Count == 0) break;
+                    var current = _hands.Building(building.Id);
+                    if (current == null || current.WorkerCount == 0 || !HasOutlet(current)) continue;
+                    int free = current.MaxWorkers - current.WorkerCount;
+                    var ids = _hands.Idle(kind).Take(free).Select(u => u.Id).ToList();
+                    if (ids.Count > 0) _hands.Dispatch(new AssignWorkCommand(ids, current.Id));
+                }
+            }
+        }
+
+        private void OpenOutlet(BuildingSnapshot building)
+        {
+            if (building == null || HasOutlet(building)) return;
+            var def = _hands.Def(building.Kind);
+            bool producing = def.IsWorkplace && (building.WorkerCount > 0 || OutputStock(building) > 0);
+            bool stocked = def.StorageRole == StorageRole.Stockpile && building.TotalStock > 0;
+            if (!producing && !stocked) return;
+            var outlet = Outlet(building);
+            if (outlet != null) _hands.Haul(building, outlet, 1, null, $"вывоз: {building.Name}");
+        }
+
+        // A working consumer of the building's goods that lacks them, else the market.
+        private BuildingSnapshot Outlet(BuildingSnapshot building)
+        {
+            var def = _hands.Def(building.Kind);
+            foreach (var consumer in Producers())
+            {
+                if (consumer.Id == building.Id || consumer.WorkerCount == 0 ||
+                    consumer.ProductionState != ProductionState.MissingInputs) continue;
+                var consumerDef = _hands.Def(consumer.Kind);
+                if (building.Stock.Any(s => ColonySimulation.Provides(def, s.Resource) &&
+                                            consumerDef.ConsumesInRecipe(s.Resource)) &&
+                    _hands.CanHaul(building, consumer))
+                    return consumer;
+            }
+            var market = _hands.First(BuildingKind.Market);
+            return _hands.CanHaul(building, market) ? market : null;
+        }
+
+        // A staffed workshop that cannot start a cycle gets each missing input from a building that holds or
+        // makes it: a new route when none brings it, with <paramref name="scale"/> one more hauler on a route
+        // whose source has goods waiting. Returns whether a hauler was added.
+        private bool Feed(BuildingSnapshot consumer, bool scale)
+        {
+            if (consumer == null || consumer.WorkerCount == 0 ||
+                consumer.ProductionState != ProductionState.MissingInputs) return false;
+            foreach (var recipe in _hands.Def(consumer.Kind).Recipes)
+            {
+                var missing = recipe.Inputs.Where(i => _hands.StockOf(consumer, i.Resource) < i.Amount)
+                    .Select(i => i.Resource).ToList();
+                var sources = missing.Select(r => Source(r, consumer)).ToList();
+                if (missing.Count == 0 || sources.Any(s => s == null)) continue;
+                bool added = false;
+                foreach (var source in sources)
+                {
+                    int haulers = _hands.Haulers(source.Id, consumer.Id);
+                    bool open = haulers == 0 && !scale;
+                    bool more = scale && haulers > 0 && OutputStock(source) > 0 &&
+                                haulers < _profile.MaxHaulersPerRoute;
+                    if (open || more)
+                        added |= _hands.Haul(source, consumer, 1, null,
+                            $"подвоз: {source.Name} → {consumer.Name}") > 0;
+                }
+                return added && scale;
+            }
+            return false;
+        }
+
+        // A building that already holds the resource for haulers, else one that makes it.
+        private BuildingSnapshot Source(ResourceKind resource, BuildingSnapshot consumer)
+        {
+            BuildingSnapshot maker = null;
+            foreach (var building in _hands.Snapshot.Buildings)
+            {
+                if (building.Id == consumer.Id || !ColonySimulation.Provides(_hands.Def(building.Kind), resource)) continue;
+                if (!_hands.CanHaul(building, consumer)) continue;
+                if (_hands.StockOf(building, resource) > 0) return building;
+                if (maker == null && _hands.Makes(building.Kind, resource) && building.WorkerCount > 0) maker = building;
+            }
+            return maker;
+        }
+
+        private bool BackingUp(BuildingSnapshot building)
+        {
+            if (!HasOutlet(building)) return false;
+            if (building.ProductionState == ProductionState.OutputFull) return true;
+            int output = OutputStock(building);
+            _lastOutput.TryGetValue(building.Id, out int last);
+            int threshold = _hands.Def(building.Kind).StorageRole == StorageRole.Stockpile
+                ? StockpileBacklog
+                : Math.Max(6, building.Capacity / 4);
+            return output >= threshold && output >= last;
+        }
+
+        private bool AddHauler(BuildingSnapshot building)
+        {
+            var route = _hands.Routes().Where(r => r.Source == building.Id)
+                .OrderBy(r => _hands.Haulers(r.Source, r.Destination)).FirstOrDefault();
+            if (route.Source == null || _hands.Haulers(route.Source, route.Destination) >= _profile.MaxHaulersPerRoute)
+                return false;
+            return _hands.Haul(building, _hands.Building(route.Destination), 1, null, $"вывоз: {building.Name}") > 0;
+        }
+    }
+}

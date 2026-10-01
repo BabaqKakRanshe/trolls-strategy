@@ -3,6 +3,7 @@
     "rootNamespace": "TrollStrategy.Tests",
     "references": [
         "TrollStrategy.Runtime",
+        "TrollStrategy.Bots",
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime"
     ],

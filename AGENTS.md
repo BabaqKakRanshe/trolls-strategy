@@ -13,6 +13,7 @@ These rules apply to every change in the Unity project at `unity/TrollStategy`.
 - `Runtime/Content` and its ScriptableObjects own gameplay values. Do not duplicate them in UI or simulation.
 - `Runtime/Presentation` renders game state; `Runtime/UI` reads snapshots and submits commands.
 - `Runtime/Bootstrap` composes the Unity scene and services. Keep gameplay rules out of it.
+- `Assets/Game/Bots` (Editor-only `TrollStrategy.Bots`) plays the campaign through `GameSession` snapshots and commands for balance checks; see `docs/campaign-bots.md`. Bots never read or write `GameState` and never get a rule of their own: what a player cannot do, a bot cannot do.
 
 ## State, simulation, and assets
 
