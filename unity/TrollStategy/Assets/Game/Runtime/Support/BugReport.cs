@@ -25,13 +25,16 @@ namespace TrollStrategy.Support
 
     /// <summary>
     /// What one press of "send logs" carries: a summary, fields to sort reports by, and the files — the tech
-    /// info, the game state, the tails of the current and previous logs and a screenshot.
+    /// info, the game state, the recent log from memory, the tails of the current and previous log files, the
+    /// browser's part in a web player and a screenshot.
     /// </summary>
     public sealed class BugReport
     {
         public const string InfoFile = "info.txt";
         public const string GameFile = "game.txt";
         public const string ScreenshotFile = "screenshot.jpg";
+        /// <summary>The game's recent log kept in memory, see <see cref="LogRecorder"/>.</summary>
+        public const string RecentLogFile = "log.txt";
         /// <summary>How much of the end of each log goes into a report.</summary>
         public const int LogTailBytes = 4 * 1024 * 1024;
 
@@ -79,11 +82,13 @@ namespace TrollStrategy.Support
         }
 
         /// <summary>
-        /// Gathers a report. <paramref name="gameState"/> and <paramref name="screenshotJpg"/> may be null; log
-        /// paths that do not exist are skipped.
+        /// Gathers a report. <paramref name="gameState"/>, <paramref name="screenshotJpg"/>,
+        /// <paramref name="recentLog"/> and <paramref name="browser"/> may be null; log paths that do not exist
+        /// are skipped.
         /// </summary>
         public static BugReport Create(BuildInfo build, IReadOnlyList<KeyValuePair<string, string>> techRows,
-            string gameState, IEnumerable<string> logPaths, byte[] screenshotJpg, DateTime createdLocal)
+            string gameState, IEnumerable<string> logPaths, byte[] screenshotJpg, DateTime createdLocal,
+            string recentLog = null, string browser = null)
         {
             if (build == null) throw new ArgumentNullException(nameof(build));
             techRows ??= Array.Empty<KeyValuePair<string, string>>();
@@ -94,6 +99,8 @@ namespace TrollStrategy.Support
             info.Append(SystemReport.Text(techRows));
             files.Add(Text(InfoFile, info.ToString()));
             if (!string.IsNullOrEmpty(gameState)) files.Add(Text(GameFile, gameState));
+            if (!string.IsNullOrEmpty(recentLog)) files.Add(Text(RecentLogFile, recentLog));
+            if (!string.IsNullOrEmpty(browser)) files.Add(Text(BrowserReport.File, browser));
             if (logPaths != null)
                 foreach (var path in logPaths)
                 {

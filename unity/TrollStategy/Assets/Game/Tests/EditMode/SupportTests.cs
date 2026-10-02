@@ -54,6 +54,18 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void BuildStamp_CarriesTheEdition_AndAStampWithoutOneIsTheAlpha()
+        {
+            var demo = new BuildInfo("1.0", 412, "a1b2c3d", false, null, false, BuildEdition.SteamDemo).Serialize();
+
+            var info = BuildInfo.Parse(demo, "9.9");
+
+            Assert.That(info.Edition, Is.EqualTo(BuildEdition.SteamDemo));
+            Assert.That(info.VersionNumber, Is.EqualTo("1.0.412"));
+            Assert.That(BuildInfo.Parse("version=1.0\nbuild=3\n", "1.0").Edition, Is.EqualTo(BuildEdition.Alpha));
+        }
+
+        [Test]
         public void FrameMeter_ReadsHalfSecondWindowsAndRemembersTheSlowestFrameForFiveSeconds()
         {
             var meter = new FrameRateMeter();
@@ -137,6 +149,77 @@ namespace TrollStrategy.Tests
             var sent = new BugReporter(new FakeUploader(true), _folder).SendAsync(SmallReport()).Result;
             Assert.That(sent.Result, Is.EqualTo(ReportResult.Sent));
             Assert.That(Directory.Exists(_folder), Is.False, "A sent report leaves no file behind");
+        }
+
+        [Test]
+        public void Report_CarriesTheRecentLogAndTheBrowserPart()
+        {
+            var report = BugReport.Create(new BuildInfo("1.0", 1, "abc", false, null, false), null, null, null, null,
+                new DateTime(2026, 10, 1, 12, 0, 0), "boot\nshader failed", "GPU: Adreno (TM) 505");
+
+            var entries = Unzip(report.Archive());
+            Assert.That(entries.Keys, Is.EquivalentTo(new[] { "info.txt", "log.txt", "browser.txt" }));
+            Assert.That(Encoding.UTF8.GetString(entries["log.txt"]), Does.Contain("shader failed"));
+            Assert.That(Encoding.UTF8.GetString(entries["browser.txt"]), Does.Contain("Adreno"));
+        }
+
+        [Test]
+        public void Reporter_HandsTheZipToTheDownloadInsteadOfTheDisk_WhenUploadFails()
+        {
+            string name = null;
+            byte[] data = null;
+            var reporter = new BugReporter(new FakeUploader(false), _folder, null, (n, d) =>
+            {
+                name = n;
+                data = d;
+                return true;
+            });
+
+            var outcome = reporter.SendAsync(SmallReport()).Result;
+
+            Assert.That(outcome.Result, Is.EqualTo(ReportResult.Saved));
+            Assert.That(name, Does.EndWith(".zip"));
+            Assert.That(Unzip(data).Keys, Does.Contain("info.txt"));
+            Assert.That(Directory.Exists(_folder), Is.False, "A browser cannot reach that folder, so nothing goes there");
+
+            var refused = new BugReporter(new FakeUploader(false), _folder, null, (_, _) => false)
+                .SendAsync(SmallReport()).Result;
+            Assert.That(refused.Result, Is.EqualTo(ReportResult.Failed));
+        }
+
+        [Test]
+        public void LogRecorder_KeepsTheLastLinesInOrder_CountsErrors_AndKeepsTheirStacks()
+        {
+            var recorder = new LogRecorder(3);
+            recorder.Add("one", "ignored stack", LogType.Log);
+            recorder.Add("two", null, LogType.Warning);
+            recorder.Add("three", "at Thing.Do()", LogType.Exception);
+            recorder.Add("four", null, LogType.Error);
+
+            string text = recorder.Text();
+            Assert.That(text, Does.Contain("раньше было ещё 1 строк"));
+            Assert.That(text, Does.Not.Contain("one"));
+            Assert.That(text.IndexOf("two", StringComparison.Ordinal),
+                Is.LessThan(text.IndexOf("four", StringComparison.Ordinal)));
+            Assert.That(text, Does.Contain("at Thing.Do()"), "An exception keeps its stack");
+            Assert.That(recorder.Errors, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void TechPanel_ShowsTheCheatsButtonOnlyWhenTheBuildHasCheats_AndClosesBeforeOpeningThem()
+        {
+            var panel = Panel(new FrameRateMeter(), _ => Task.FromResult(ReportOutcome.Sent()), out var root);
+            var cheats = root.Q<Button>("tech-cheats");
+            Assert.That(Ui.IsShown(cheats), Is.False, "Release players have no cheat menu, so no button");
+
+            int opened = 0;
+            panel.SetCheats(() => opened++);
+            panel.Show();
+            Assert.That(Ui.IsShown(cheats), Is.True);
+            UiFeel.Press(cheats);
+
+            Assert.That(opened, Is.EqualTo(1));
+            Assert.That(panel.IsOpen, Is.False, "The tech panel steps aside for the cheat menu");
         }
 
         [Test]

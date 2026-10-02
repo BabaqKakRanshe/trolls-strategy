@@ -9,7 +9,8 @@ namespace TrollStrategy.UI
 {
     /// <summary>
     /// The support corner: build version and FPS over every screen. A click on it, or F8, opens the tech
-    /// panel with the machine's details and "send logs".
+    /// panel with the machine's details, "send logs" and the switch for anonymous play statistics. While the
+    /// statistics go out and the player has not answered it, a line above the strip says so.
     /// </summary>
     public sealed class TechInfoPanel
     {
@@ -22,7 +23,11 @@ namespace TrollStrategy.UI
         private readonly VisualElement _details;
         private readonly VisualElement _rows;
         private readonly Button _send;
+        private readonly Button _cheats;
+        private Action _openCheats;
         private readonly Label _status;
+        private readonly Button _stats;
+        private readonly VisualElement _notice;
         private readonly List<(Label Key, Label Value)> _rowLabels = new();
         private float _sinceRefresh;
         private bool _sending;
@@ -36,10 +41,19 @@ namespace TrollStrategy.UI
             _details = Ui.Require<VisualElement>(root, "tech-details");
             _rows = Ui.Require<VisualElement>(root, "tech-rows");
             _send = Ui.Require<Button>(root, "tech-send");
+            _cheats = Ui.Require<Button>(root, "tech-cheats");
             _status = Ui.Require<Label>(root, "tech-status");
+            _stats = Ui.Require<Button>(root, "tech-stats");
+            _notice = Ui.Require<VisualElement>(root, "tech-notice");
             UiFeel.Bind(Ui.Require<Button>(root, "tech-strip"), Toggle);
             UiFeel.Bind(Ui.Require<Button>(root, "tech-close"), Hide, Sfx.UiBack);
             UiFeel.Bind(_send, Send);
+            UiFeel.Bind(_cheats, OpenCheats);
+            UiFeel.Bind(_stats, ToggleStats);
+            UiFeel.Bind(Ui.Require<Button>(root, "tech-notice-ok"), AcceptNotice);
+            UiFeel.Bind(Ui.Require<Button>(root, "tech-notice-off"), DeclineNotice, Sfx.UiBack);
+            UiFeel.Bind(Ui.Require<Button>(root, "tech-notice-more"), OpenPrivacy);
+            SetCheats(null);
             Ui.Show(_details, false);
             ShowStatus(null);
             Refresh();
@@ -48,6 +62,9 @@ namespace TrollStrategy.UI
         public bool IsOpen => Ui.IsShown(_details);
         public bool IsSending => _sending;
         public string Status => Ui.IsShown(_status) ? _status.text : null;
+        public bool NoticeShown => Ui.IsShown(_notice);
+
+        private Telemetry Stats => _context.Telemetry;
 
         public void Toggle()
         {
@@ -61,7 +78,27 @@ namespace TrollStrategy.UI
             Refresh();
         }
 
-        public void Hide() => Ui.Show(_details, false);
+        public void Hide()
+        {
+            Ui.Show(_details, false);
+            ShowStats();
+        }
+
+        /// <summary>
+        /// The way to the developer cheat menu for touch screens, which have no F1; null (release players)
+        /// hides the button.
+        /// </summary>
+        public void SetCheats(Action open)
+        {
+            _openCheats = open;
+            Ui.Show(_cheats, open != null);
+        }
+
+        private void OpenCheats()
+        {
+            Hide();
+            _openCheats?.Invoke();
+        }
 
         public void Tick(float deltaSeconds)
         {
@@ -72,7 +109,7 @@ namespace TrollStrategy.UI
         public static string Describe(ReportOutcome outcome) => outcome.Result switch
         {
             ReportResult.Sent => "Отчёт отправлен. Спасибо!",
-            ReportResult.Saved => "Отправить не удалось — отчёт сохранён в файл, папка открыта:\n" + outcome.Path,
+            ReportResult.Saved => "Отправить не удалось — отчёт сохранён в файл:\n" + outcome.Path,
             _ => "Не удалось собрать отчёт: " + outcome.Error
         };
 
@@ -86,6 +123,45 @@ namespace TrollStrategy.UI
             _fps.EnableInClassList("t-warn", reading && fps < GoodFps && fps >= PoorFps);
             _fps.EnableInClassList("t-bad", reading && fps < PoorFps);
             if (IsOpen) FillRows(_context.Rows());
+            ShowStats();
+        }
+
+        // the notice steps aside while the panel, which holds the same switch, is open
+        private void ShowStats()
+        {
+            bool available = Stats != null && Stats.Available;
+            Ui.Show(_stats, available);
+            if (available)
+            {
+                _stats.EnableInClassList("is-on", Stats.Collecting);
+                Ui.SetText(_stats, Stats.Collecting ? "Статистика: отправляется" : "Статистика: не отправляется");
+            }
+            Ui.Show(_notice, available && Stats.Collecting && !Stats.NoticeSeen && !IsOpen);
+        }
+
+        private void ToggleStats()
+        {
+            Stats.SetCollecting(!Stats.Collecting);
+            Stats.MarkNoticeSeen();
+            ShowStats();
+        }
+
+        private void AcceptNotice()
+        {
+            Stats.MarkNoticeSeen();
+            ShowStats();
+        }
+
+        private void DeclineNotice()
+        {
+            Stats.SetCollecting(false);
+            Stats.MarkNoticeSeen();
+            ShowStats();
+        }
+
+        private void OpenPrivacy()
+        {
+            if (!string.IsNullOrEmpty(Stats?.PrivacyUrl)) UnityEngine.Application.OpenURL(Stats.PrivacyUrl);
         }
 
         private void FillRows(IReadOnlyList<KeyValuePair<string, string>> rows)

@@ -6,8 +6,15 @@ using UnityEngine.CrashReportHandler;
 
 namespace TrollStrategy.Support
 {
+    /// <summary>Which public build this is: the itch.io alpha, or the demo on Steam.</summary>
+    public enum BuildEdition
+    {
+        Alpha,
+        SteamDemo
+    }
+
     /// <summary>
-    /// Which build is running: the product version, the commit it was built from and when. A player build
+    /// Which build is running: the product version, the commit it was built from and when, and its edition. A player build
     /// carries them in Resources/BuildInfo, written by the editor's build step; the editor has no stamp and
     /// says so rather than showing the last build's.
     /// </summary>
@@ -15,9 +22,13 @@ namespace TrollStrategy.Support
     {
         public const string ResourceName = "BuildInfo";
 
+        private const string AlphaKey = "alpha";
+        private const string SteamDemoKey = "steam-demo";
+
         private static BuildInfo s_current;
 
-        public BuildInfo(string version, int build, string commit, bool dirty, DateTime? builtUtc, bool isEditor)
+        public BuildInfo(string version, int build, string commit, bool dirty, DateTime? builtUtc, bool isEditor,
+            BuildEdition edition = BuildEdition.Alpha)
         {
             Version = string.IsNullOrEmpty(version) ? "0" : version;
             Build = Math.Max(0, build);
@@ -25,6 +36,7 @@ namespace TrollStrategy.Support
             Dirty = dirty;
             BuiltUtc = builtUtc;
             IsEditor = isEditor;
+            Edition = edition;
         }
 
         /// <summary>The product version from the player settings, such as "1.0".</summary>
@@ -37,9 +49,14 @@ namespace TrollStrategy.Support
         public bool Dirty { get; }
         public DateTime? BuiltUtc { get; }
         public bool IsEditor { get; }
+        /// <summary>The itch.io alpha unless the build was stamped as the Steam demo; the editor runs the alpha.</summary>
+        public BuildEdition Edition { get; }
+
+        /// <summary>"1.0.412", or "1.0" without a build number.</summary>
+        public string VersionNumber => Build > 0 ? $"{Version}.{Build}" : Version;
 
         /// <summary>"v1.0.412", or "v1.0" without a build number.</summary>
-        public string VersionLabel => Build > 0 ? $"v{Version}.{Build}" : $"v{Version}";
+        public string VersionLabel => $"v{VersionNumber}";
 
         /// <summary>"a1b2c3d", starred for uncommitted changes; "редактор" in the editor, "?" when unknown.</summary>
         public string CommitLabel => IsEditor ? "редактор" : Commit == null ? "?" : Dirty ? Commit + "*" : Commit;
@@ -56,6 +73,7 @@ namespace TrollStrategy.Support
             text.Append("build=").AppendLine(Build.ToString(CultureInfo.InvariantCulture));
             if (Commit != null) text.Append("commit=").AppendLine(Commit);
             text.Append("dirty=").AppendLine(Dirty ? "true" : "false");
+            text.Append("edition=").AppendLine(Edition == BuildEdition.SteamDemo ? SteamDemoKey : AlphaKey);
             if (BuiltUtc.HasValue)
                 text.Append("built=").AppendLine(BuiltUtc.Value.ToString("o", CultureInfo.InvariantCulture));
             return text.ToString();
@@ -68,6 +86,7 @@ namespace TrollStrategy.Support
             int build = 0;
             bool dirty = false;
             DateTime? built = null;
+            var edition = BuildEdition.Alpha;
             foreach (var line in (text ?? string.Empty).Split('\n'))
             {
                 int split = line.IndexOf('=');
@@ -80,13 +99,14 @@ namespace TrollStrategy.Support
                     case "build": int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out build); break;
                     case "commit": commit = value; break;
                     case "dirty": dirty = value == "true"; break;
+                    case "edition": edition = value == SteamDemoKey ? BuildEdition.SteamDemo : BuildEdition.Alpha; break;
                     case "built":
                         if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var at))
                             built = at.ToUniversalTime();
                         break;
                 }
             }
-            return new BuildInfo(version, build, commit, dirty, built, false);
+            return new BuildInfo(version, build, commit, dirty, built, false, edition);
         }
 
         private static BuildInfo Load()
@@ -105,6 +125,7 @@ namespace TrollStrategy.Support
         {
             var info = Current;
             CrashReportHandler.SetUserMetadata("build", info.Label);
+            CrashReportHandler.SetUserMetadata("edition", info.Edition.ToString());
             if (info.Commit != null) CrashReportHandler.SetUserMetadata("commit", info.Commit);
         }
     }

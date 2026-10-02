@@ -12,7 +12,7 @@ using Debug = UnityEngine.Debug;
 namespace TrollStrategy.Editor.Setup
 {
     /// <summary>
-    /// Stamps every player build with its version, commit and time: writes Resources/BuildInfo before the
+    /// Stamps every player build with its version, commit, time and edition: writes Resources/BuildInfo before the
     /// build and removes it after, so the editor never shows a stale stamp. The folder is git-ignored in case
     /// a failed build leaves it behind; the next build overwrites it.
     /// </summary>
@@ -23,6 +23,9 @@ namespace TrollStrategy.Editor.Setup
         private const string StampPath = ResourcesFolder + "/" + BuildInfo.ResourceName + ".txt";
 
         public int callbackOrder => 0;
+
+        /// <summary>The edition the next player build is stamped with; PlayerBuild sets it around the Steam demo.</summary>
+        public static BuildEdition Edition { get; set; } = BuildEdition.Alpha;
 
         public void OnPreprocessBuild(BuildReport report)
         {
@@ -44,7 +47,7 @@ namespace TrollStrategy.Editor.Setup
             int.TryParse(Git("rev-list --count HEAD"), NumberStyles.Integer, CultureInfo.InvariantCulture, out int build);
             string commit = Git("rev-parse --short HEAD");
             bool dirty = !string.IsNullOrEmpty(Git("status --porcelain"));
-            return new BuildInfo(UnityEngine.Application.version, build, commit, dirty, DateTime.UtcNow, false);
+            return new BuildInfo(UnityEngine.Application.version, build, commit, dirty, DateTime.UtcNow, false, Edition);
         }
 
         private static string Git(string arguments)

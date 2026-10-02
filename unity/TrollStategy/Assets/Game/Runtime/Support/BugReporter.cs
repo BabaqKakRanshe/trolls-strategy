@@ -16,7 +16,7 @@ namespace TrollStrategy.Support
     {
         /// <summary>The service took the report.</summary>
         Sent,
-        /// <summary>Upload failed; the report is a zip on disk.</summary>
+        /// <summary>Upload failed; the report is a zip on disk or in the browser's downloads.</summary>
         Saved,
         /// <summary>Neither worked.</summary>
         Failed
@@ -32,7 +32,7 @@ namespace TrollStrategy.Support
         }
 
         public ReportResult Result { get; }
-        /// <summary>Where the saved zip is, for <see cref="ReportResult.Saved"/>.</summary>
+        /// <summary>Where the saved zip is, for <see cref="ReportResult.Saved"/>: a path, or a note on the downloads.</summary>
         public string Path { get; }
         public string Error { get; }
 
@@ -43,20 +43,24 @@ namespace TrollStrategy.Support
 
     /// <summary>
     /// Sends a report, and when that fails (no network, no service) saves it as a zip and shows the folder,
-    /// so the tester can pass the file on by hand.
+    /// so the tester can pass the file on by hand. With a download (a browser, whose files are out of reach)
+    /// the zip goes to the browser's downloads instead.
     /// </summary>
     public sealed class BugReporter
     {
         private readonly IReportUploader _uploader;
         private readonly string _folder;
         private readonly Action<string> _reveal;
+        private readonly Func<string, byte[], bool> _download;
 
-        public BugReporter(IReportUploader uploader, string folder, Action<string> reveal = null)
+        public BugReporter(IReportUploader uploader, string folder, Action<string> reveal = null,
+            Func<string, byte[], bool> download = null)
         {
             if (string.IsNullOrEmpty(folder)) throw new ArgumentException("A folder for saved reports is required", nameof(folder));
             _uploader = uploader;
             _folder = folder;
             _reveal = reveal;
+            _download = download;
         }
 
         public static string DefaultFolder => System.IO.Path.Combine(UnityEngine.Application.persistentDataPath, "Reports");
@@ -78,6 +82,10 @@ namespace TrollStrategy.Support
 
             try
             {
+                if (_download != null)
+                    return _download(report.ArchiveName, report.Archive())
+                        ? ReportOutcome.Saved("загрузки браузера, " + report.ArchiveName)
+                        : ReportOutcome.Failed("браузер не сохранил файл");
                 Directory.CreateDirectory(_folder);
                 string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(_folder, report.ArchiveName));
                 File.WriteAllBytes(path, report.Archive());

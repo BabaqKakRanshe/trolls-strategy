@@ -2,6 +2,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using TrollStrategy.Support;
+using TrollStrategy.UI;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,7 +17,11 @@ namespace TrollStrategy.Editor.Setup
     {
         private const string WindowsFolder = "Builds/Windows";
         private const string WebFolder = "Builds/WebGL";
+        private const string SteamDemoFolder = "Builds/SteamDemo";
         private const string WebZip = "Builds/TrollStrategy-itch-webgl.zip";
+        private const string WebCheatsZip = "Builds/TrollStrategy-itch-webgl-cheats.zip";
+        /// <summary>Keeps the developer cheat menu (F1, or "Читы" in the tech panel) in a player.</summary>
+        private const string CheatsDefine = "UNITY_ENABLE_CHECKS";
 
         [MenuItem("TrollStrategy/Build Windows Player")]
         public static void BuildWindows()
@@ -24,34 +30,63 @@ namespace TrollStrategy.Editor.Setup
         }
 
         /// <summary>
+        /// The Windows player for the Steam demo: the same game stamped as the demo (BuildInfo.Edition), so the
+        /// intro and the about page call it a demo and offer the wishlist. Every other build is the itch.io alpha.
+        /// </summary>
+        [MenuItem("TrollStrategy/Build Windows Player (Steam Demo)")]
+        public static void BuildSteamDemo()
+        {
+            if (!GameLinks.HasSteamPage)
+                Debug.LogWarning("[PlayerBuild] GameLinks.SteamPage is empty: the demo will not offer the wishlist.");
+            BuildInfoStamp.Edition = BuildEdition.SteamDemo;
+            try
+            {
+                Build(SteamDemoFolder, Path.Combine(SteamDemoFolder, "TrollStrategy.exe"), BuildTarget.StandaloneWindows64);
+            }
+            finally
+            {
+                BuildInfoStamp.Edition = BuildEdition.Alpha;
+            }
+        }
+
+        /// <summary>
         /// Browser player for itch.io: index.html at the zip root, gzip with the decompression fallback
         /// because itch does not send Content-Encoding for Unity's .gz files. The active target is switched
         /// back to Windows afterwards.
         /// </summary>
         [MenuItem("TrollStrategy/Build WebGL Player (itch.io)")]
-        public static void BuildWebGL()
+        public static void BuildWebGL() => BuildWebGL(false);
+
+        /// <summary>The same browser player with the cheat menu, for testers; not for the public page.</summary>
+        [MenuItem("TrollStrategy/Build WebGL Player (itch.io, cheats)")]
+        public static void BuildWebGLWithCheats() => BuildWebGL(true);
+
+        private static void BuildWebGL(bool cheats)
         {
             // WebGL player settings only take while WebGL is the active target.
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.WebGL, BuildTarget.WebGL);
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
             PlayerSettings.WebGL.decompressionFallback = true;
             PlayerSettings.WebGL.dataCaching = true;
+            // report.js in this template collects the browser's half of bug reports, see BrowserReport
+            PlayerSettings.WebGL.template = "PROJECT:TrollStrategy";
 
             if (Directory.Exists(WebFolder))
                 Directory.Delete(WebFolder, true);
-            bool built = Build(WebFolder, WebFolder, BuildTarget.WebGL);
+            bool built = Build(WebFolder, WebFolder, BuildTarget.WebGL, cheats ? new[] { CheatsDefine } : null);
+            string zip = cheats ? WebCheatsZip : WebZip;
             if (built)
             {
-                if (File.Exists(WebZip))
-                    File.Delete(WebZip);
-                ZipFile.CreateFromDirectory(WebFolder, WebZip, System.IO.Compression.CompressionLevel.Optimal, false);
-                Debug.Log($"[PlayerBuild] itch.io zip: {Path.GetFullPath(WebZip)}");
+                if (File.Exists(zip))
+                    File.Delete(zip);
+                ZipFile.CreateFromDirectory(WebFolder, zip, System.IO.Compression.CompressionLevel.Optimal, false);
+                Debug.Log($"[PlayerBuild] itch.io zip: {Path.GetFullPath(zip)}");
             }
 
             EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
         }
 
-        private static bool Build(string folder, string location, BuildTarget target)
+        private static bool Build(string folder, string location, BuildTarget target, string[] defines = null)
         {
             var scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(scene => scene.path).ToArray();
             string output = Path.GetFullPath(location);
@@ -61,7 +96,8 @@ namespace TrollStrategy.Editor.Setup
                 scenes = scenes,
                 locationPathName = output,
                 target = target,
-                options = BuildOptions.None
+                options = BuildOptions.None,
+                extraScriptingDefines = defines
             });
 
             var summary = report.summary;

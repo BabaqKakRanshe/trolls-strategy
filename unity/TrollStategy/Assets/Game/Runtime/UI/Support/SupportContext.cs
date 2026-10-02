@@ -10,12 +10,13 @@ namespace TrollStrategy.UI
     {
         public SupportContext(BuildInfo build, FrameRateMeter frames,
             Func<IReadOnlyList<KeyValuePair<string, string>>> rows,
-            Func<Action<float>, Task<ReportOutcome>> sendReport)
+            Func<Action<float>, Task<ReportOutcome>> sendReport, Telemetry telemetry = null)
         {
             Build = build ?? throw new ArgumentNullException(nameof(build));
             Frames = frames ?? throw new ArgumentNullException(nameof(frames));
             Rows = rows ?? throw new ArgumentNullException(nameof(rows));
             SendReport = sendReport ?? throw new ArgumentNullException(nameof(sendReport));
+            Telemetry = telemetry;
         }
 
         public BuildInfo Build { get; }
@@ -24,5 +25,7 @@ namespace TrollStrategy.UI
         public Func<IReadOnlyList<KeyValuePair<string, string>>> Rows { get; }
         /// <summary>Gathers and sends a report; the action hears upload progress from 0 to 1.</summary>
         public Func<Action<float>, Task<ReportOutcome>> SendReport { get; }
+        /// <summary>The play statistics the player can turn off; null hides the switch.</summary>
+        public Telemetry Telemetry { get; }
     }
 }

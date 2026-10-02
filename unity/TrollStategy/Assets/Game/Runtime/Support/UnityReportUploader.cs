@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Unity.Services.Core;
 using Unity.Services.UserReporting;
 using UnityEngine;
 
@@ -8,8 +7,8 @@ namespace TrollStrategy.Support
 {
     /// <summary>
     /// Sends a report to Unity User Reporting; it shows in the project's Unity Dashboard under User Reports.
-    /// Services start on the first report. The service's client keeps every attachment ever added until it is
-    /// configured again, so each report starts from a fresh configuration.
+    /// Services start on the first report, unless analytics started them already. The service's client keeps
+    /// every attachment ever added until it is configured again, so each report starts from a fresh configuration.
     /// </summary>
     public sealed class UnityReportUploader : IReportUploader
     {
@@ -19,13 +18,12 @@ namespace TrollStrategy.Support
         public async Task<bool> UploadAsync(BugReport report, Action<float> progress)
         {
             if (report == null) throw new ArgumentNullException(nameof(report));
-            if (string.IsNullOrEmpty(UnityEngine.Application.cloudProjectId))
+            if (!CloudServices.Linked)
             {
                 Debug.LogWarning("[Support] The project is not linked to Unity Cloud; the report is saved instead.");
                 return false;
             }
-            if (UnityServices.State != ServicesInitializationState.Initialized)
-                await UnityServices.InitializeAsync();
+            await CloudServices.StartAsync();
 
             var service = UserReportingService.Instance;
             service.Configure();

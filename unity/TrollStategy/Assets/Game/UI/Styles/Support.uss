@@ -48,6 +48,38 @@
     margin-bottom: 10px;
 }
 
+/* The statistics switch sits between the rows and the report buttons. */
+.tech-stats {
+    margin-bottom: 8px;
+}
+
+/* What the game sends, said once above the strip until the player answers. */
+/* It stands above the catalog band's status line (three lines at most), which shares this corner. */
+.tech-notice {
+    width: 480px;
+    margin-bottom: 100px;
+}
+
+.tech-notice__text {
+    font-size: 16px;
+    color: var(--ink);
+}
+
+.tech-notice .btn-link {
+    flex-shrink: 0;
+}
+
+.tech-notice__actions {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.tech-notice__button {
+    min-height: 40px;
+    margin-left: 8px;
+}
+
 .tech-details .kv__key {
     width: 30%;
     font-size: 14px;
