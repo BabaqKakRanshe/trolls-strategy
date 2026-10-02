@@ -102,6 +102,42 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void Gear_DealsEverySlotBestFirst()
+        {
+            var definitions = new List<EquipmentDefinition>();
+            EquipmentSnapshot Item(string id, EquipmentSlot slot, int damage, int armor, string owner = null)
+            {
+                var definition = UnityEngine.ScriptableObject.CreateInstance<EquipmentDefinition>();
+                definition.Init(id, id, slot, damage, armor, 0);
+                definitions.Add(definition);
+                return new EquipmentSnapshot(id, definition, owner);
+            }
+            try
+            {
+                var items = new[]
+                {
+                    Item("sword", EquipmentSlot.Weapon, 2, 0), Item("axe", EquipmentSlot.Weapon, 4, 0),
+                    Item("armor", EquipmentSlot.Armor, 0, 2), Item("helmet", EquipmentSlot.Helmet, 0, 1),
+                    Item("old-helmet", EquipmentSlot.Helmet, 0, 0, owner: "b"),
+                    Item("worn-elsewhere", EquipmentSlot.Helmet, 0, 3, owner: "outsider")
+                };
+
+                var owners = BotGear.Deal(new[] { "a", "b" }, items).ToDictionary(d => d.ItemId, d => d.OwnerUnitId);
+
+                Assert.That(owners["axe"], Is.EqualTo("a"), "the best weapon to the first fighter");
+                Assert.That(owners["sword"], Is.EqualTo("b"));
+                Assert.That(owners["armor"], Is.EqualTo("a"));
+                Assert.That(owners["helmet"], Is.EqualTo("a"), "helmets are dealt like the other slots");
+                Assert.That(owners["old-helmet"], Is.EqualTo("b"), "what the squad wore is dealt again");
+                Assert.That(owners.ContainsKey("worn-elsewhere"), Is.False, "gear of creatures outside the squad stays on");
+            }
+            finally
+            {
+                foreach (var definition in definitions) UnityEngine.Object.DestroyImmediate(definition);
+            }
+        }
+
+        [Test]
         public void Report_ListsEveryClaimedQuest()
         {
             var run = Play(BotProfile.Typical, 3);

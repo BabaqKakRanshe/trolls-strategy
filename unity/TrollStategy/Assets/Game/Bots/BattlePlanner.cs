@@ -102,7 +102,8 @@ namespace TrollStrategy.Bots
             for (int i = 0; i < ordered.Count && i < cells.Count; i++)
                 placements.Add(new BattlePlacement(ordered[i].Id, cells[i]));
 
-            var command = new StartBattleCommand(mission.MissionId, placements, Gear(squad));
+            var command = new StartBattleCommand(mission.MissionId, placements,
+                BotGear.Deal(squad.Select(u => u.Id).ToList(), _hands.Snapshot.Equipment));
             if (!_hands.Dispatch(command)) return false;
 
             var battle = _hands.Session.ActiveBattle;
@@ -139,24 +140,6 @@ namespace TrollStrategy.Bots
         {
             var unit = _hands.Catalog.GetUnit(kind);
             return unit.CombatHealth * unit.CombatDamage;
-        }
-
-        // The best free item per slot to each fighter in squad order; items the squad wore before are re-dealt.
-        private List<BattleEquipmentAssignment> Gear(List<UnitSnapshot> squad)
-        {
-            var members = new HashSet<string>(squad.Select(u => u.Id));
-            var pool = _hands.Snapshot.Equipment
-                .Where(e => e.OwnerUnitId == null || members.Contains(e.OwnerUnitId))
-                .ToList();
-            var owner = pool.ToDictionary(e => e.Id, _ => (string)null);
-            foreach (var slot in new[] { EquipmentSlot.Weapon, EquipmentSlot.Armor })
-            {
-                var items = pool.Where(e => e.Slot == slot)
-                    .OrderByDescending(e => e.DamageBonus + e.ArmorBonus).ThenBy(e => e.Id).ToList();
-                for (int i = 0; i < items.Count && i < squad.Count; i++)
-                    owner[items[i].Id] = squad[i].Id;
-            }
-            return pool.Select(e => new BattleEquipmentAssignment(e.Id, owner[e.Id])).ToList();
         }
     }
 }
