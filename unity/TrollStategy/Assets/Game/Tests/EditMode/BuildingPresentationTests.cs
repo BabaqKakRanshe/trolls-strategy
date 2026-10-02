@@ -38,6 +38,9 @@ namespace TrollStrategy.Tests
             Assert.That(roots.Required, Has.All.Not.Null, "Every HUD part document is wired");
             var boot = Object.FindAnyObjectByType<TrollStrategy.Bootstrap.GameBootstrap>();
             Assert.That(new SerializedObject(boot).FindProperty("_hud").objectReferenceValue, Is.EqualTo(hud));
+            Assert.That(new SerializedObject(boot).FindProperty("_languages").objectReferenceValue,
+                Is.EqualTo(AssetDatabase.LoadAssetAtPath<TrollStrategy.Presentation.LanguageTable>("Assets/Game/UI/Localization/Languages.asset")),
+                "Without the language table the game never leaves Russian");
         }
 
         // Building prefabs placed in the scene are the starting colony; the session must accept that layout.
@@ -294,7 +297,7 @@ namespace TrollStrategy.Tests
         private const string PaletteMaterial = "Assets/Vitaria/Materials/Vitaria_Palette.mat";
         private const string FxMaterial = "Assets/Vitaria/Materials/Vitaria_FX.mat";
 
-        // The kit's building contract (BuildingKitDetailsMigration): one model scale, a trodden-earth pad over the
+        // The kit's building contract: one model scale, a trodden-earth pad over the
         // whole footprint, the entrance path on its front edge with the workers' anchor just inside it, gold corners.
         [TestCaseSource(nameof(AllKinds))]
         public void BuildingPrefab_FollowsTheKitContract(BuildingKind kind)
@@ -309,9 +312,9 @@ namespace TrollStrategy.Tests
                 var kit = model.Find($"Kit{kind}");
                 Assert.That(kit, Is.Not.Null);
                 Assert.That(kit.localPosition.magnitude, Is.LessThan(1e-4f), "Kit models sit at the footprint centre");
-                Assert.That(kit.localScale.x, Is.EqualTo(BuildingKitDetailsMigrationScale).Within(1e-5f));
-                Assert.That(kit.localScale.y, Is.EqualTo(BuildingKitDetailsMigrationScale).Within(1e-5f));
-                Assert.That(kit.localScale.z, Is.EqualTo(BuildingKitDetailsMigrationScale).Within(1e-5f));
+                Assert.That(kit.localScale.x, Is.EqualTo(KitModelScale).Within(1e-5f));
+                Assert.That(kit.localScale.y, Is.EqualTo(KitModelScale).Within(1e-5f));
+                Assert.That(kit.localScale.z, Is.EqualTo(KitModelScale).Within(1e-5f));
 
                 float halfW = def.Width * .5f, halfH = def.Height * .5f;
                 var pad = model.Find("Footprint");
@@ -365,7 +368,7 @@ namespace TrollStrategy.Tests
             }
         }
 
-        private const float BuildingKitDetailsMigrationScale = .5f;   // vitaria_buildings.KIT_SCALE
+        private const float KitModelScale = .5f;   // vitaria_buildings.KIT_SCALE
 
         [TestCaseSource(nameof(VitariaKinds))]
         public void VitariaBuildingPrefab_FitsFootprintWithEntrance(BuildingKind kind)

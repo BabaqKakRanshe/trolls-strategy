@@ -82,27 +82,34 @@ namespace TrollStrategy.Presentation.Island
 
         public bool Inside(int x, int y) => x >= 0 && y >= 0 && x < _blocksPerSide && y < _blocksPerSide;
 
-        /// <summary>Grid slots with no block view, or with a view of another slot: such land could never show.</summary>
-        public List<Vector2Int> MissingBlocks()
+        /// <summary>
+        /// Grid slots whose land cannot show where the game sells it: no block view, a view of another slot, or a block
+        /// moved off the island's origin (the kit bakes every block's land in island space, so each block root stays at
+        /// the origin, unturned and unscaled, and the land lies over its slot).
+        /// </summary>
+        public List<Vector2Int> BrokenBlocks()
         {
-            var missing = new List<Vector2Int>();
+            var broken = new List<Vector2Int>();
             for (int y = 0; y < _blocksPerSide; y++)
             for (int x = 0; x < _blocksPerSide; x++)
             {
                 var block = Block(x, y);
-                if (block == null || block.X != x || block.Y != y) missing.Add(new Vector2Int(x, y));
+                var root = block != null ? block.transform : null;
+                if (block == null || block.X != x || block.Y != y || root.localPosition != Vector3.zero ||
+                    root.localRotation != Quaternion.identity || root.localScale != Vector3.one)
+                    broken.Add(new Vector2Int(x, y));
             }
-            return missing;
+            return broken;
         }
 
         private void Awake()
         {
             if (!UnityEngine.Application.isPlaying) return;
-            var missing = MissingBlocks();
-            if (missing.Count > 0)
-                Debug.LogError($"[Isle] {name}: {missing.Count} of {Count} blocks have no view (first {missing[0]}); " +
-                               "bought land there will not show. Restore the blocks deleted from the island in the scene.",
-                    this);
+            var broken = BrokenBlocks();
+            if (broken.Count > 0)
+                Debug.LogError($"[Isle] {name}: {broken.Count} of {Count} blocks are missing or moved (first {broken[0]}); " +
+                               "bought land there will not show over its slot. The scene's island must be the prefab as " +
+                               "built: TrollStrategy > Isle > Reset Island In Scene To Prefab.", this);
         }
 
         public IslandBlockView Block(int x, int y) =>

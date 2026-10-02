@@ -60,14 +60,14 @@ Windows player — `Build Finished, Result: Success`. Пакетный запу�
 `vitaria_layout.json` + `asset_list.json` перезаписаны, превью пересняты Cycles.
 **Unity-проект не трогали:** `unity/TrollStategy/Assets/Vitaria` всё ещё содержит модели
 прежнего тёплого стиля. Чтобы стиль доехал до игры, нужно повторить импорт из README
-набора и выполнить **TrollStrategy → Refresh Diorama**; таблица ниже описывает состояние
+набора и выполнить **TrollStrategy → Dev → Refresh Diorama**; таблица ниже описывает состояние
 сцены до этого импорта.
 
 ## Набор Vitaria, 24.09.2026
 
 Текущая Unity-сцена использует FBX и палитру из пользовательского набора
 `assets/Strategy_Kit/Unity/Assets/Vitaria`, импортированные в
-`unity/TrollStategy/Assets/Vitaria`. **TrollStrategy → Refresh Diorama**
+`unity/TrollStategy/Assets/Vitaria`. **TrollStrategy → Dev → Refresh Diorama**
 обновляет материал набора, декор и сохранённую сцену. Префабы зданий она не трогает:
 они правятся только вручную. Персонажи и игровая логика остаются прежними.
 
@@ -126,7 +126,7 @@ Player build в этом проходе не запускался.
 ## Пересборка
 
 Открыть `Assets/Game/Scenes/MainColonyScene.unity`, выйти из Play Mode и сохранить сцену.
-Выполнить **TrollStrategy → Refresh Diorama**: команда пересобирает окружение,
+Выполнить **TrollStrategy → Dev → Refresh Diorama**: команда пересобирает окружение,
 настраивает камеру и свет, сохраняет assets и сцену.
 
 `PrimitiveEnvironment.cs` отвечает за окружение, `ThreeDSceneSetup.cs` — за настройки сцены и URP.
@@ -141,7 +141,7 @@ Player build в этом проходе не запускался.
 
 В варианте здания дочерний объект `Model` содержит меши, `EntranceAnchor`, `SelectionRim` и
 компонент `BuildingModel` со спрайтом продукта. В варианте существа `UnitView` хранит кадры
-idle/walk и масштаб спрайта (его же меняет **TrollStrategy → Tools → Creature Size Tool**).
+idle/walk и масштаб спрайта (его же меняет **TrollStrategy → Dev → Tools → Creature Size Tool**).
 Подпись, прогресс-бар и выделение общие и меняются в базовом префабе для всех сразу.
 Генераторы моделей удалены: префабы правятся вручную, редакторские команды их не перезаписывают.
 `GameBootstrap` при старте проверяет, что у каждого определения есть корректный префаб.

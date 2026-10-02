@@ -301,8 +301,8 @@ namespace TrollStrategy.Presentation.Buildings
                     _labelInfo = _label.AddLabel("world-label world-label--building-info");
                 }
                 string info = LabelInfo(snapshot);
-                _labelTitle.text = snapshot.Name;
-                _labelInfo.text = info;
+                _labelTitle.text = Localization.T(snapshot.Name);
+                _labelInfo.text = Localization.T(info);
                 _labelInfo.style.display = info.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             }
         }

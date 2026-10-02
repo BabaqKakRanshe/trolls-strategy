@@ -8,6 +8,7 @@ import math, random
 from mathutils import Vector
 from build_vitaria import p_box, p_cyl, p_prism
 from vitaria_buildings.common import Frame, brace, STONE_TOP
+from vitaria_buildings.levels import pennant, wall_lantern
 
 NAME = "Bld_Tannery"
 TITLE = "Кожевня"
@@ -245,3 +246,53 @@ def build(a):
     _leather_stack(a, Frame((-1.22, -1.30, 0), rz=7))
     _hide_roll(a, Frame((-0.02, -0.16, 0), rz=-6), L=0.66, r=0.12, col="hide")
     _hide_roll(a, Frame((0.10, -0.38, 0), rz=10), L=0.56, r=0.11, col="hide_dark")
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def _roof_hide(a, s, x, col, seed):
+    """Шкура, разложенная сушиться на скате кровли: плоский контур на 3 см над поясом ската."""
+    p = PITCH
+    up = Vector((0, math.cos(p), math.sin(p)))
+    nrm = Vector((0, -math.sin(p), math.cos(p)))
+    c = Vector((x, YF, ZF)) + up * s + nrm * 0.25
+    rng = random.Random(seed)
+    pts = _hide_outline(0.40, 0.42, rng)
+    fr = Frame(tuple(c), rot=(math.degrees(p) - 90.0, 0, 0))
+    fr.prism(a, pts, 0.04, col=lambda f: col if abs(f.normal.y) > 0.6 else "hide_dark")
+
+
+def upgrade(a, level):
+    """2: флажок над верхней кромкой кровли, две шкуры сушатся на скате, стопка кожи вдвое выше.
+    3: + чаны с красителем (синий и багряный) у внешних стоек рам, коптильня — каменная труба сквозь
+    кровлю, вывеска гильдии с золотой шкурой на переднем прогоне, фонари на передних стойках навеса,
+    золотая доска по верхней кромке кровли."""
+    pennant(a, 1.05, YB + 0.10, ZB + 0.18, level, h=1.20, side=-1)
+    _roof_hide(a, 0.55, -0.62, "hide_light", 11)
+    _roof_hide(a, 0.62, 0.58, "hide", 12)
+    _leather_stack(a, Frame((-1.22, -1.30, 0.53), rz=10), n=4, seed=8)        # поверх прежней стопки
+    if level < 3:
+        return
+    _vat(a, Frame((-1.84, -1.06, 0)), r=0.22, h=0.36, fill="roof", seg=12)
+    _vat(a, Frame((1.84, -1.06, 0)), r=0.20, h=0.32, fill="berry", seg=12)
+    for sx in (-1, 1):
+        wall_lantern(a, sx * SX, YF - 0.10, 1.80, out=(-sx * 0.25, -0.97))
+    # коптильня: каменная труба сквозь кровлю у левого заднего угла
+    cx, cy = -0.98, 1.12
+    zroof = ZF + (cy - YF) * math.tan(PITCH)
+    a.add(p_box((0.42, 0.42, 1.30), loc=(cx, cy, zroof + 0.40), bevel=0.04), "stone_mid")
+    a.add(p_box((0.56, 0.56, 0.12), loc=(cx, cy, zroof + 1.02), bevel=0.04), "stone_dark")
+    a.add(p_box((0.28, 0.28, 0.03), loc=(cx, cy, zroof + 1.095), bevel=0.0), "black")
+    # вывеска гильдии на переднем прогоне: доска в золотой рамке, золотая шкура
+    ys = YF - 0.14
+    for sx in (-1, 1):
+        a.add(p_box((0.03, 0.03, 0.22), loc=(sx * 0.20, ys, 1.72), bevel=0.0), "iron_dark")
+    a.add(p_box((0.62, 0.05, 0.46), loc=(0, ys + 0.01, 1.42), bevel=0.0), "gold")
+    a.add(p_box((0.52, 0.06, 0.36), loc=(0, ys - 0.01, 1.42), bevel=0.0), "wood_dark")
+    fr = Frame((0, ys - 0.05, 1.42))
+    fr.prism(a, _hide_outline(0.16, 0.14, random.Random(5)), 0.03, col="gold")
+    p = PITCH
+    up = Vector((0, math.cos(p), math.sin(p)))
+    top = Vector((0, YF, ZF)) + up * ((YB - YF + 0.22) / math.cos(p))
+    a.add(p_box((2 * SX + 0.56, 0.06, 0.14), loc=(0, top.y - 0.03, top.z + 0.12), bevel=0.0), "gold")

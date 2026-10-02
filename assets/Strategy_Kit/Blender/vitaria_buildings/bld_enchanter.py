@@ -12,6 +12,7 @@ import random
 import bmesh
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, by_normal, TM
 from vitaria_buildings.common import Frame, crystal, STONE_TOP, STONE_DARK_TOP
+from vitaria_buildings.levels import pennant, finial
 
 NAME = "Bld_Enchanter"
 TITLE = "Зачарователь"
@@ -192,3 +193,40 @@ def build(a):
     _crystals(a, ztop)
     _floor_runes(a)
     _arch(a)
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def _rune_stone(a, x, y, rz, h=0.92):
+    """Рунный камень: сужающийся столб, две светящиеся руны лицом к камере."""
+    fr = Frame((x, y, 0.16), rz=rz)
+    fr.taper(a, (0.34, 0.24), (0.22, 0.16), h, col=by_normal("stone_light", "stone_mid", "stone_dark", 0.8))
+    fr.cyl(a, 0.13, 0.0, 0.16, 4, loc=(0, 0, h), spin=45, col="stone_light")
+    for z, w in ((h * 0.62, 0.09), (h * 0.34, 0.12)):
+        fr.box(a, (w, 0.02, 0.16), (0, -0.115 + (z / h) * 0.04, z), col="rune", bevel=0.0)
+
+
+def upgrade(a, level):
+    """2: флажок на кольце над задней правой колонной, рунные камни по сторонам арки, ещё три осколка
+    на орбите кристалла. 3: + второе, парящее кольцо вокруг кристалла (золото и магия), светящийся круг
+    рун по краю пола, золотые навершия на колоннах и на замке арки."""
+    pennant(a, CR * math.cos(math.radians(45)), CR * math.sin(math.radians(45)), ZRG + 0.12, level, h=1.25,
+            side=1, fl=0.78, fh=0.48)
+    for sx in (-1, 1):
+        _rune_stone(a, sx * 1.30, -1.20, sx * 18)
+    zc = FL + 1.68 + 0.31 + 0.25
+    for ang, dz, tilt in ((140, 0.10, -14), (20, 0.40, 16), (265, 0.70, -18)):
+        t = math.radians(ang)
+        x, y = 0.74 * math.cos(t), 0.74 * math.sin(t)
+        crystal(a, Frame((x, y, zc + dz), rot=(tilt, 0, ang + 90)), r=0.065, h=0.26)
+    if level < 3:
+        return
+    zh = zc + 1.10
+    _ring(a, 0.62, 0.54, 0.06, 16, TM((0, 0, zh), (8, 0, 0)), "gold")
+    _ring(a, 0.53, 0.49, 0.05, 16, TM((0, 0, zh + 0.005), (8, 0, 0)), "arcane")
+    _ring(a, 1.52, 1.44, 0.02, 24, TM((0, 0, FL)), "rune")
+    for k in range(4):
+        ang = math.radians(45 + 90 * k)
+        finial(a, CR * math.cos(ang), CR * math.sin(ang), ZRG + 0.16 + 0.36, h=0.26)
+    finial(a, 0.0, YA, 2.95, h=0.34)

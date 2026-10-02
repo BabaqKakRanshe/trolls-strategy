@@ -49,25 +49,13 @@ namespace TrollStrategy.Editor.Setup
             return land;
         }
 
-        [MenuItem("TrollStrategy/Isle/Install Land Presenter")]
-        public static void InstallLandPresenterMenu()
-        {
-            var boot = UnityEngine.Object.FindAnyObjectByType<GameBootstrap>();
-            var systems = UnityEngine.Object.FindAnyObjectByType<MapInputHandler>();
-            if (boot == null || systems == null)
-                throw new InvalidOperationException("Open MainColonyScene: GameBootstrap or GameSystems is missing");
-            InstallLandPresenter(systems.gameObject, boot);
-            EditorSceneManager.MarkSceneDirty(boot.gameObject.scene);
-            Debug.Log("[Isle] LandPresenter installed on " + systems.name);
-        }
-
-        [MenuItem("TrollStrategy/Setup Game Scene")]
+        [MenuItem("TrollStrategy/Dev/Setup Game Scene")]
         public static void BuildDefaultScene()
         {
             Debug.Log("[GameSceneBuilder] Starting full project & scene setup...");
 
             EnsureDirectories();
-            try { AssetSlicer.SliceAll(); } catch (System.Exception ex) { Debug.LogWarning($"[GameSceneBuilder] SliceAll warning: {ex.Message}"); }
+            try { AssetSlicer.SliceUnits(); AssetDatabase.SaveAssets(); } catch (System.Exception ex) { Debug.LogWarning($"[GameSceneBuilder] SliceUnits warning: {ex.Message}"); }
             try { ConfigureBuildingImports(); } catch (System.Exception ex) { Debug.LogWarning($"[GameSceneBuilder] ConfigureBuildingImports warning: {ex.Message}"); }
 
             var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath);

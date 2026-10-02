@@ -51,7 +51,7 @@ def parse_args():
 # ----------------------------------------------------------------------------------------
 # Версия кита: пишется в раскладки (kitVersion) и в Unity/Assets/Vitaria/kit_version.json (build_all.py).
 # Поднимать при любом изменении, которое меняет модели, палитру или раскладки в Unity.
-KIT_VERSION = "2026.09.29"
+KIT_VERSION = "2026.10.02"
 
 TEX = 256
 NCELL = 16                      # 16x16 swatches of 16px
@@ -114,6 +114,10 @@ PALETTE = [
     ("slate", "#5b6680"), ("slate_dark", "#444e66"), ("slate_light", "#7985a0"),
     ("roof_old", "#8b7f70"), ("roof_old_dark", "#6d6356"), ("roof_old_light", "#a39888"),
     ("leather_light", "#b8683a"),
+    # --- товары и снаряжение третьей очереди (vitaria_resources, vitaria_gear): синеватая сталь —
+    # стальные слитки, меч, латы (steel — светлая кромка, есть выше); багряная ткань — рулон, плюмаж шлема
+    ("steel_mid", "#8d9db5"), ("steel_dark", "#56637b"),
+    ("cloth", "#b8323f"), ("cloth_light", "#d9535a"), ("cloth_dark", "#86202e"),
 ]
 EMISSIVE = {"glow", "glow_hot", "lantern_glow", "arcane", "rune", "ember"}
 # Темы кровли: перекраска синей черепицы кита (roof*) целиком по мешу — вместе с флагами и тентами
@@ -839,7 +843,7 @@ ORE = {
     "copper": ("ore_rock", "ore_rock_dk", ["copper_ore_vein", "malachite"]),
 }
 METAL = {"gold": ("gold_light", "gold", "gold_dark"), "iron": ("iron_light", "iron", "iron_dark"),
-         "copper": ("copper_light", "copper", "copper_dark")}
+         "copper": ("copper_light", "copper", "copper_dark"), "steel": ("steel", "steel_mid", "steel_dark")}
 
 def ore_chunk(a, kind, seed, loc=(0, 0, 0), size=0.15):
     rng = random.Random(seed)
@@ -1035,6 +1039,19 @@ def ext_kit():
         return []
 
 
+def ext_resources():
+    """Ресурсы второй очереди из vitaria_resources.py рядом с этим файлом (уголь, мясо, пир и др.)."""
+    try:
+        here = os.path.dirname(os.path.abspath(__file__))
+        if here not in sys.path:
+            sys.path.insert(0, here)
+        import vitaria_resources
+        return vitaria_resources.kit_entries()
+    except Exception as ex:
+        print("vitaria_resources не подключён:", ex)
+        return []
+
+
 # ----------------------------------------------------------------------------------------
 # scene layout: остров с дорожками, реквизитом и природой. Зданий на острове нет — их ставит
 # игра (или руками в Scene_Buildings). FOOTPRINTS — площадки под здания: там не растут
@@ -1136,7 +1153,7 @@ def main():
         except Exception as ex:
             print("asset mark skipped:", ex)
 
-    for cat, name, fn in KIT + ext_kit():
+    for cat, name, fn in KIT + ext_kit() + ext_resources():
         a = Asset(name)
         fn(a)
         register(name, finish(a, kit_c[cat]), cat)

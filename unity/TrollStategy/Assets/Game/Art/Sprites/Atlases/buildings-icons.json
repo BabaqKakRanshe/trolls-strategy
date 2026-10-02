@@ -302,6 +302,48 @@
       "w": 126,
       "h": 126
      }
+    },
+    {
+     "filename": "BuildingIcon_Tavern.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 126,
+      "h": 126
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 126,
+      "h": 126
+     },
+     "frame": {
+      "x": 257,
+      "y": 385,
+      "w": 126,
+      "h": 126
+     }
+    },
+    {
+     "filename": "BuildingIcon_HaulersGuild.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 126,
+      "h": 126
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 126,
+      "h": 126
+     },
+     "frame": {
+      "x": 385,
+      "y": 385,
+      "w": 126,
+      "h": 126
+     }
     }
    ]
   }

@@ -16,6 +16,7 @@ import random
 from mathutils import Vector
 from build_vitaria import p_box, p_cyl, p_ico, by_normal, rock_face_color, ore_chunk, TM
 from vitaria_buildings.common import Frame, lantern, STONE_TOP
+from vitaria_buildings.levels import pennant, wall_banner, wall_lantern, finial
 
 NAME = "Bld_Mine"
 TITLE = "Шахта"
@@ -215,3 +216,62 @@ def build(a):
                scl=(1, 0.85, 0.8), col=NUG)
     _pickaxe(a, Frame((PX + 0.30, YP - 0.10, 0.0), rot=(12, -14, 0)))
     _shovel(a, Frame((PX + 0.52, YP + 0.06, 0.24), rot=(10, -20, 0)))
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def _siding(a, rng, level):
+    """Запасной путь вправо от главного и вторая вагонетка на нём — шахта даёт больше руды."""
+    y0, y1 = -1.10, -1.95
+    for sx in (-1, 1):
+        a.add(p_box((0.08, y0 - y1, 0.08), loc=(1.72 + sx * 0.26, (y0 + y1) / 2, 0.10), bevel=0.0),
+              by_normal("iron_light", "rail"))
+    for i in range(4):
+        y = y1 + 0.12 + i * (y0 - y1 - 0.24) / 3
+        a.add(p_box((0.76, 0.17, 0.08), loc=(1.72, y, 0.035), bevel=0.0), "wood_dark")
+    _minecart(a, Frame((1.72, -1.52, 0), s=0.92), rng)
+
+
+def _windlass(a, level):
+    """Ворот над шурфом на вершине холма: две А-образные стойки, вал вдоль Y, колесо-штурвал на переднем
+    конце вала лицом к камере, верёвка в шурф. Сруб шурфа — рама из бруса вокруг тёмного проёма."""
+    cx, cy, z0 = -0.55, 0.58, 2.62
+    for sy in (-1, 1):
+        for sx in (-1, 1):
+            a.add(p_box((0.12, 0.12, 1.30), loc=(cx + sx * 0.24, cy + sy * 0.32, z0 + 0.58), rot=(0, -sx * 12, 0),
+                        bevel=0.0), "wood_mid")
+        a.add(p_box((0.62, 0.10, 0.10), loc=(cx, cy + sy * 0.32, z0 + 0.42), bevel=0.0), "wood_dark")
+    a.add(p_cyl(0.08, 0.08, 0.80, 8, loc=(cx, cy + 0.40, z0 + 1.18), rot=(90, 0, 0)), "wood_light")
+    fr = Frame((cx, cy - 0.44, z0 + 1.18))
+    fr.cyl(a, 0.44, 0.44, 0.07, 12, loc=(0, 0.035, 0), rot=(90, 0, 0), col="wood_light")
+    fr.cyl(a, 0.34, 0.34, 0.08, 12, loc=(0, 0.04, 0), rot=(90, 0, 0), col="wood_dark")
+    for k in range(4):
+        fr.box(a, (0.06, 0.05, 0.80), (0, -0.03, 0), rot=(0, k * 45, 0), col="wood_mid", bevel=0.0)
+    fr.cyl(a, 0.07, 0.07, 0.10, 8, loc=(0, -0.02, 0), rot=(90, 0, 0), col="iron_dark")
+    a.add(p_box((0.03, 0.03, 0.82), loc=(cx, cy + 0.05, z0 + 0.74), bevel=0.0), "rope")
+    for sy in (-1, 1):
+        a.add(p_box((0.86, 0.12, 0.12), loc=(cx, cy + sy * 0.30, z0 + 0.04), bevel=0.0), "wood_dark")
+    for sx in (-1, 1):
+        a.add(p_box((0.12, 0.48, 0.12), loc=(cx + sx * 0.37, cy, z0 + 0.04), bevel=0.0), "wood_dark")
+    a.add(p_box((0.60, 0.46, 0.03), loc=(cx, cy, z0 + 0.06), bevel=0.0), "black")
+
+
+def upgrade(a, level):
+    """2: флажок на вершине холма, запасной путь со второй вагонеткой справа, фонари на стойках рамы.
+    3: + ворот над шурфом на вершине, знамёна на стойках рамы, золотая оправа вывески и золотые
+    навершия на концах перемычки, куча золотой руды у левого валуна."""
+    rng = random.Random(23)
+    pennant(a, 0.20, 0.10, 2.70, level, h=1.30, side=1)
+    _siding(a, rng, level)
+    for sx in (-1, 1):
+        lantern(a, Frame((sx * (PX + 0.20), YP - 0.05, 1.30)))
+        a.add(p_box((0.30, 0.05, 0.05), loc=(sx * (PX + 0.10), YP - 0.05, 1.74), bevel=0.0), "iron_dark")
+    if level < 3:
+        return
+    _windlass(a, level)
+    for sx in (-1, 1):
+        wall_banner(a, sx * PX, YP - 0.17, ZL - 0.22, w=0.30, h=0.66)
+        finial(a, sx * 1.16, YP, ZL + 0.25, h=0.34)
+    a.add(p_box((0.94, 0.04, 0.38), loc=(0, YP - 0.19, ZL), bevel=0.0), "gold")
+    _ore_pile(a, -1.95, -0.55, 9)

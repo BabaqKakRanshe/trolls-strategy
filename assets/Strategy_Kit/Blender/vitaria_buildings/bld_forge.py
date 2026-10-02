@@ -10,6 +10,7 @@ import random
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, p_taper_box, by_normal
 from vitaria_buildings.common import (Frame, gable_roof, chimney, post, brace, sword, hammer,
                                       armor_stand, tub, STONE_TOP, PLANK_TOP)
+from vitaria_buildings.levels import pennant, gold_ridge, wall_banner, wall_lantern, ingot_pallet
 
 NAME = "Bld_Forge"
 TITLE = "Кузница"
@@ -234,3 +235,44 @@ def build(a):
     a.add(p_box((0.40, 0.08, 0.32), loc=(PX + 0.27, YF, zb - 0.34), bevel=0.03), PLANK_TOP)
     _anvil_sign(a, Frame((PX + 0.27, YF - 0.046, zb - 0.34)), s=1.1)
 
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py): кузница та же, добавляются детали
+# =========================================================================================
+def _crest(a, x, y, z, r=0.34):
+    """Герб гильдии на фронтоне: щит-диск цвета цепочки в золотом ободе, золотая наковальня."""
+    a.add(p_cyl(r + 0.05, r + 0.05, 0.06, 12, loc=(x, y + 0.03, z), rot=(90, 0, 0)), "gold")
+    a.add(p_cyl(r, r, 0.06, 12, loc=(x, y - 0.01, z), rot=(90, 0, 0)), "roof")
+    _anvil_sign(a, Frame((x - 0.01, y - 0.06, z - 0.01)), s=1.45)
+
+
+def upgrade(a, level):
+    """2: флажок на правом скате у фасада, труба выше на 0.5 м с искрогасителем, поддон слитков
+    между наковальней и манекеном, железные хомуты на стойках. 3: + золото по коньку и навершия, знамя у
+    левой стены, фонарь на правой стойке, герб с золотой наковальней на фронтоне, золотая рамка вывески."""
+    zr = ZT + 0.08 + (RW / 2) * math.tan(math.radians(30))       # конёк gable_roof(..., pitch_deg=30)
+    ly = RD + 2 * 0.30
+    # флажок на правом скате у фасада, а не на коньке: на уровне 3 по коньку идёт золотая полоса, и древко
+    # на ней читалось бы её продолжением
+    pennant(a, 0.75, -1.20, zr - 0.75 * math.tan(math.radians(30)) + 0.08, level, side=1)
+    # труба: надставка на 0.5 м и железный колпак-искрогаситель на четырёх ножках
+    cx, cy, ztop = HX - 0.03, 0.70, 1.98 + 1.74
+    a.add(p_box((0.52, 0.52, 0.52), loc=(cx, cy, ztop + 0.26), bevel=0.045), "stone_mid")
+    a.add(p_box((0.65, 0.65, 0.14), loc=(cx, cy, ztop + 0.47), bevel=0.045), "stone_dark")
+    a.add(p_box((0.36, 0.36, 0.03), loc=(cx, cy, ztop + 0.555), bevel=0.0), "black")
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            a.add(p_box((0.05, 0.05, 0.26), loc=(cx + sx * 0.22, cy + sy * 0.22, ztop + 0.66), bevel=0.0), "iron_dark")
+    a.add(p_cyl(0.46, 0.0, 0.22, 4, loc=(cx, cy, ztop + 0.78), spin=45), "iron_dark")
+    ingot_pallet(a, 0.80, -1.22, F, rz=-6)
+    for y in (YF, YM):
+        for z in (F + 0.55, ZT - 0.62):
+            a.add(p_box((0.25, 0.25, 0.07), loc=(PX, y, z), bevel=0.0), "iron_dark")
+    if level < 3:
+        return
+    gold_ridge(a, ly + 0.14, zr, axis="y")
+    wall_banner(a, -1.45, YF - 0.14, ZT - 0.22, w=0.40, h=0.80)
+    wall_lantern(a, PX - 0.02, YF - 0.12, 1.86, out=(-0.55, -0.85))
+    _crest(a, 0.0, YF - 0.17, 2.70)
+    a.add(p_box((0.44, 0.05, 0.38), loc=(PX + 0.27, YF + 0.045, 2.00 - 0.34), bevel=0.0), "gold")

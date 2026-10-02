@@ -10,6 +10,7 @@ import random
 
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, p_taper_box, by_normal, ingot, ore_chunk
 from vitaria_buildings.common import Frame, seg_frame, STONE_TOP, PLANK_TOP
+from vitaria_buildings.levels import pennant, ingot_pallet, wall_banner, brazier
 
 NAME = "Bld_Smeltery"
 TITLE = "Плавильня"
@@ -260,3 +261,31 @@ def build(a):
             ore_chunk(a, kind, 40 + k + 7 * n, loc=(ox + dx * rs / 0.3, oy + dy * rs / 0.3, F + dz), size=sz)
     # горка угля у задней кромки справа от трубы
     a.add(p_ico(0.34, 1, loc=(0.62, 1.72, F - 0.02), scl=(1.2, 0.8, 0.42), jitter=0.12, rng=rng, cut=0.0), "coal")
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def _hood(a, top):
+    """Искрогаситель над устьем трубы: четыре железные ножки и шатровый колпак — как у кузницы."""
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            a.add(p_box((0.06, 0.06, 0.44), loc=(sx * 0.30, YC + sy * 0.30, top + 0.20), bevel=0.0), "iron_dark")
+    a.add(p_cyl(0.62, 0.0, 0.30, 4, loc=(0, YC, top + 0.40), spin=45), "iron_dark")
+
+
+def upgrade(a, level):
+    """2: флажок над правым краем уступа печи, искрогаситель над трубой, поддон стальных слитков у правого
+    переднего угла двора. 3: + золотой венец трубы, жаровни по сторонам порога, знамя на трубе, вторая
+    пирамида золота."""
+    pennant(a, 0.78, Y2 - 0.20, Z2 + 0.05, level, h=1.40, side=1)
+    _hood(a, ZC + 0.24)
+    ingot_pallet(a, 2.05, -1.45, F - 0.005, rz=8, col="steel")
+    if level < 3:
+        return
+    s = CT + 0.24
+    a.add(p_box((s, s, 0.10), loc=(0, YC, ZC + 0.07), bevel=0.0), "gold")
+    for sx in (-1, 1):
+        brazier(a, sx * 1.02, YF - 0.62, F - 0.01, h=0.66)
+    wall_banner(a, 0.0, YC - _chimney_side(2.30) / 2 - 0.02, 2.36, w=0.52, h=0.74)
+    _ingot_stack(a, "gold", -1.95, -0.62, rz=80, layers=(3, 2, 1), s=1.2)

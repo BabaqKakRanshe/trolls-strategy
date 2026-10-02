@@ -2,10 +2,16 @@
 Иконки зданий и ресурсов Vitaria из моделей кита: один ракурс, один свет, прозрачный фон.
 
 Запуск:  python render_icons.py --blend vitaria_kit.blend [--samples 64] [--only buildings|resources]
+                                [--keys flour,bread,...]
+
+--keys: рендерятся только эти иконки, остальные кадры берутся из прежнего атласа как есть, пиксель в пиксель.
+Без --keys рендерится всё.
 
 Выход (Strategy_Kit/Icons), формат TexturePacker как у старых атласов игры:
-  buildings-icons-0.png + buildings-icons.json   512 x 512, клетки 128, кадры 126 x 126
-  resources-icons-0.png + resources-icons.json   1024 x 1024, клетки 256, кадры 254 x 254
+  buildings-icons-0.png + buildings-icons.json   512 x 512, клетки 128, кадры 126 x 126 (16 мест)
+  resources-icons-0.png + resources-icons.json   2048 x 2048, клетки 256, кадры 254 x 254 (64 места). Кадры идут
+                                                 блоками 1024 px по 4 в ряд: первые 32 стоят там же, где стояли
+                                                 в атласе 1024 x 2048, следующие 32 — в правой половине
   icons_preview.png                             оба атласа на фоне панели HUD
 Имена кадров прежние (BuildingIcon_<Kind>.png, iron-ore.png, ...): ResourceAtlasImporter режет по ним,
 spriteID сохраняются по имени — ссылки в префабах и определениях не рвутся.
@@ -19,10 +25,13 @@ if HERE not in sys.path:
 
 RENDER_PX = 512
 ATLASES = {
-    # имя атласа: (размер атласа, клетка, кадр, азимут камеры, высота камеры)
-    "buildings-icons": (512, 128, 126, 34.0, 30.0),
-    "resources-icons": (1024, 256, 254, 24.0, 36.0),
+    # имя атласа: ((ширина, высота) атласа, клетка, кадр, азимут камеры, высота камеры)
+    "buildings-icons": ((512, 512), 128, 126, 34.0, 30.0),
+    "resources-icons": ((2048, 2048), 256, 254, 24.0, 36.0),
 }
+# Кадры раскладываются блоками BLOCK px по 4 в ряд: атлас растёт вправо, а прежние кадры не сдвигаются.
+# 2048 — потолок maxTextureSize импорта атласа в игре.
+BLOCK = 1024
 LIGHT_FROM = (-0.5, -0.62, 0.6)      # ключевой свет спереди-слева-сверху: видимые грани с разной светотенью
 
 
@@ -160,26 +169,57 @@ def render_icon(scn, cam, subject, az, el, path, focus=None):
         bpy.data.objects.remove(ob, do_unlink=True)
 
 
-def pack(name, frames, out_dir):
-    """frames: [(имя кадра, путь к рендеру)] -> атлас PNG + JSON TexturePacker (без поворотов и обрезки)."""
+def slot(i, size, cell):
+    """Левый верхний угол клетки i: блоки шириной BLOCK, в блоке — по строкам слева направо."""
+    aw, ah = size
+    bw = min(aw, BLOCK)
+    per_row = bw // cell
+    per_block = per_row * (ah // cell)
+    b, j = divmod(i, per_block)
+    return b * bw + (j % per_row) * cell, (j // per_row) * cell, (aw // bw) * per_block
+
+
+def atlas_frames(out_dir, name):
+    """Кадры прежнего атласа: имя кадра -> картинка кадра как есть (их не пересэмплируем)."""
     from PIL import Image
-    size, cell, fpx, _, _ = ATLASES[name]
-    atlas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    per_row = size // cell
+    png, js = os.path.join(out_dir, name + "-0.png"), os.path.join(out_dir, name + ".json")
+    if not (os.path.exists(png) and os.path.exists(js)):
+        return {}
+    atlas = Image.open(png).convert("RGBA")
+    out = {}
+    for f in json.load(open(js, encoding="utf-8"))["textures"][0]["frames"]:
+        r = f["frame"]
+        out[os.path.splitext(f["filename"])[0]] = atlas.crop((r["x"], r["y"], r["x"] + r["w"], r["y"] + r["h"]))
+    return out
+
+
+def pack(name, frames, out_dir):
+    """frames: [(имя кадра, путь к рендеру или готовый кадр PIL)] -> атлас PNG + JSON TexturePacker (без
+    поворотов и обрезки). Готовый кадр нужного размера (из прежнего атласа) ставится как есть."""
+    from PIL import Image
+    (aw, ah), cell, fpx, _, _ = ATLASES[name]
+    cap = slot(0, (aw, ah), cell)[2]
+    if len(frames) > cap:
+        raise RuntimeError("%s: %d кадров не помещаются в %dx%d (клетка %d)" % (name, len(frames), aw, ah, cell))
+    atlas = Image.new("RGBA", (aw, ah), (0, 0, 0, 0))
     items = []
-    for i, (fname, path) in enumerate(frames):
-        im = Image.open(path).convert("RGBA")
-        im = im.convert("RGBa").resize((fpx, fpx), Image.LANCZOS).convert("RGBA")   # без тёмной каймы по альфе
-        x = (i % per_row) * cell + (cell - fpx) // 2
-        y = (i // per_row) * cell + (cell - fpx) // 2
-        atlas.alpha_composite(im, (x, y))
+    for i, (fname, src) in enumerate(frames):
+        if isinstance(src, str):
+            im = Image.open(src).convert("RGBA")
+            im = im.convert("RGBa").resize((fpx, fpx), Image.LANCZOS).convert("RGBA")   # без тёмной каймы по альфе
+        else:
+            im = src
+            assert im.size == (fpx, fpx), (fname, im.size)
+        cx, cy, _ = slot(i, (aw, ah), cell)
+        x, y = cx + (cell - fpx) // 2, cy + (cell - fpx) // 2
+        atlas.paste(im, (x, y))
         items.append({"filename": fname, "rotated": False, "trimmed": False,
                       "sourceSize": {"w": fpx, "h": fpx},
                       "spriteSourceSize": {"x": 0, "y": 0, "w": fpx, "h": fpx},
                       "frame": {"x": x, "y": y, "w": fpx, "h": fpx}})
     png = os.path.join(out_dir, name + "-0.png")
     atlas.save(png)
-    data = {"textures": [{"image": name + "-0.png", "format": "RGBA8888", "size": {"w": size, "h": size},
+    data = {"textures": [{"image": name + "-0.png", "format": "RGBA8888", "size": {"w": aw, "h": ah},
                           "scale": 1, "frames": items}],
             "meta": {"app": "Strategy_Kit/Blender/render_icons.py", "version": "1.0"}}
     with open(os.path.join(out_dir, name + ".json"), "w", encoding="utf-8") as f:
@@ -234,14 +274,18 @@ def main():
                                          for k, mesh in VI.BUILDING_ICONS.items()]))
     if o["only"] in (None, "resources"):
         todo.append(("resources-icons", [("%s.png" % k, pl) for k, pl in VI.RESOURCE_ICONS.items()]))
+    keys = o["keys"].split(",") if o["keys"] else None
     for atlas, entries in todo:
         _, _, _, az, el = ATLASES[atlas]
+        prev = atlas_frames(out_dir, atlas) if keys is not None else {}
         frames = []
         for fname, placements in entries:
             key = os.path.splitext(fname)[0]
+            if keys is not None and key not in keys and key in prev:      # --keys: прочие кадры — из атласа
+                frames.append((fname, prev[key]))
+                continue
             path = os.path.join(tmp, key + ".png")
-            keys = o["keys"].split(",") if o["keys"] else None
-            if keys is None or key in keys or not os.path.exists(path):    # --keys: перерисовать только эти
+            if keys is None or key in keys or not os.path.exists(path):
                 focus = VI.ICON_FOCUS.get(key)
                 render_icon(scn, cam, build_subject(V, mat, placements, key), az, el, path, focus)
                 print("icon", fname)

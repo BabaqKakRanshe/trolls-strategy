@@ -11,7 +11,8 @@ import math
 import random
 
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, by_normal, coin, build_sack
-from vitaria_buildings.common import Frame, barrel, crate, STONE_TOP, PLANK_TOP
+from vitaria_buildings.common import Frame, barrel, crate, lantern, STONE_TOP, PLANK_TOP
+from vitaria_buildings.levels import pennant, standard, finial
 
 NAME = "Bld_Market"
 TITLE = "Рынок"
@@ -207,3 +208,30 @@ def build(a):
     crate(a, (1.80, -0.62, 0.52), s=0.40, rot=(0, 0, -6))
     # ручки тележки к камере: локальная -X смотрит почти в -Y
     _handcart(a, Frame((0.80, -1.10, 0.08), rz=72), rng)
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def upgrade(a, level):
+    """2: флажок над задней стойкой навеса, у правого края площади бочки и ящик с яблоками, корзины
+    у прилавка. 3: + знамя на древке у правого края, золотой обод шатра и навершие крупнее, фонари на
+    передних стойках навеса, золотая рамка вывески."""
+    rng = random.Random(29)
+    pennant(a, SX + 1.15, SY + 0.62, 2.48, level, h=1.20, side=-1)
+    barrel(a, (2.02, -1.30, 0.08), r=0.21, h=0.44)
+    barrel(a, (2.06, -0.86, 0.08), r=0.20, h=0.42)
+    _produce_crate(a, Frame((0, 0, 0)), (1.62, -1.48, 0.08), -10, ("berry", 0.075, (1, 1, 0.95)), 7, tilt=0)
+    for x, y in ((-1.90, -0.62), (-1.62, -0.78)):
+        a.add(p_cyl(0.17, 0.20, 0.24, 8, loc=(x, y, 0.08)), "burlap")
+        a.add(p_ico(0.15, 1, loc=(x, y, 0.30), scl=(1.0, 1.0, 0.5), cut=0.0), "leaf_light" if x < -1.7 else "copper")
+    if level < 3:
+        return
+    standard(a, 2.40, -0.10, 0.0, level, h=2.70, w=0.50, bh=0.86)
+    fr = Frame((TX, TY, 0.08))
+    fr.cyl(a, 1.03, 1.03, 0.06, 8, loc=(0, 0, 1.78 + 0.04), col="gold")
+    finial(a, TX, TY, 0.08 + 1.78 + 1.12 + 0.06, h=0.30)
+    for sx in (-1, 1):
+        lantern(a, Frame((SX + sx * 1.15, SY - 0.72 - 0.16, 1.58)))
+        a.add(p_box((0.05, 0.22, 0.05), loc=(SX + sx * 1.15, SY - 0.72 - 0.08, 1.92), bevel=0.0), "iron_dark")
+    a.add(p_box((0.52, 0.05, 0.46), loc=(SX + 1.15 + 0.09 + 0.32, SY - 0.72 + 0.045, 1.86 - 0.38), bevel=0.0), "gold")

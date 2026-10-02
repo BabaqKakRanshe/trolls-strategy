@@ -9,6 +9,7 @@ import math, random
 import bmesh
 from build_vitaria import p_box, p_cyl, p_ico, by_normal
 from vitaria_buildings.common import Frame, fence_line
+from vitaria_buildings.levels import pennant, lamp_post, finial, wall_banner
 
 NAME = "Bld_Field"
 TITLE = "Поле"
@@ -205,3 +206,55 @@ def build(a):
     _wheelbarrow(a, Frame((1.75, -2.2, 0.0), rz=-150, s=0.9))
     _sheaf(a, Frame((-2.0, -2.2, 0.0), rot=(0, 10, 0), s=1.12))
     _sheaf(a, Frame((-1.66, -2.26, 0.0), rot=(0, -10, 8), s=1.12))
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def _gate(a, level):
+    """Въездные ворота делянки: два столба с золотыми навершиями, перекладина и вывеска со снопом."""
+    y = PY - PD / 2 - 0.10
+    for sx in (-1, 1):
+        a.add(p_box((0.16, 0.16, 1.70), loc=(sx * 0.62, y, 0.85), bevel=0.0), "wood_dark")
+        finial(a, sx * 0.62, y, 1.70, h=0.30)
+    a.add(p_box((1.56, 0.14, 0.14), loc=(0, y, 1.56), bevel=0.0), "wood_dark")
+    a.add(p_box((0.70, 0.06, 0.34), loc=(0, y - 0.04, 1.30), bevel=0.0), "wood_pale")
+    fr = Frame((0, y - 0.08, 1.30))
+    fr.cyl(a, 0.04, 0.06, 0.18, 6, loc=(0, 0, -0.14), col="wheat_dark")
+    fr.cyl(a, 0.06, 0.11, 0.12, 6, loc=(0, 0, 0.04), col="gold")
+    for k in (-1, 1):
+        fr.box(a, (0.04, 0.03, 0.18), (k * 0.10, 0, 0.06), rot=(0, k * 25, 0), col="gold", bevel=0.0)
+
+
+def upgrade(a, level):
+    """2: флажок у заднего левого угла изгороди, всходы на второй борозде, мешки зерна у снопов,
+    бочка с водой и лейка справа. 3: + всходы и на первой борозде, въездные ворота со снопом на вывеске,
+    фонарные столбы на передних углах, золотые колосья в заднем ряду."""
+    rng = random.Random(31)
+    yb = PY + PD / 2 + 0.14
+    pennant(a, -FX, yb, 0.62, level, h=1.55, side=1)
+    for k in range(14):
+        x = -2.0 + k * 0.308 + rng.uniform(-0.03, 0.03)
+        _sprout(a, x, ROWS[1] + rng.uniform(-0.03, 0.03), ZP + 0.08, rng, 0.26, n=3)
+    for x, y in ((-1.42, -2.30), (-1.20, -2.12)):
+        sk = Frame((x, y, 0.0), rz=rng.uniform(-30, 30))
+        sk.ico(a, 0.17, loc=(0, 0, 0.15), scl=(1.0, 0.85, 1.1), col="burlap", cut=-0.7)
+        sk.cyl(a, 0.07, 0.04, 0.10, 6, loc=(0, 0, 0.31), col="burlap_dark")
+    b = Frame((2.18, -2.02, 0.0))
+    b.cyl(a, 0.20, 0.20, 0.44, 10, col="wood_mid")
+    b.cyl(a, 0.215, 0.215, 0.05, 10, loc=(0, 0, 0.30), col="iron_dark")
+    b.cyl(a, 0.18, 0.18, 0.02, 10, loc=(0, 0, 0.42), col="water")
+    if level < 3:
+        return
+    for k in range(13):
+        x = -2.0 + k * 0.32 + rng.uniform(-0.03, 0.03)
+        _sprout(a, x, ROWS[0] + rng.uniform(-0.03, 0.03), ZP + 0.10, rng, 0.20, n=3)
+    _gate(a, level)
+    for sx in (-1, 1):
+        lamp_post(a, sx * 2.32, PY - PD / 2 - 0.10, 0.0, h=1.45)
+    for k in range(5):
+        x = -1.8 + k * 0.9
+        y = ROWS[6] + 0.08
+        for j in range(3):
+            fr = Frame((x + (j - 1) * 0.07, y, ZP + 0.85), rot=(0, (j - 1) * 14, 0))
+            fr.cyl(a, 0.035, 0.05, 0.16, 5, col="gold")

@@ -58,6 +58,10 @@ namespace TrollStrategy.Presentation.Island
         private bool _pinching;
         private float _pinchDistance;
         private Vector3 _pinchAnchor;
+        private bool _intro;
+        private float _introTime, _introSeconds;
+        private Vector3 _introFrom, _introTo;
+        private float _introFromSide, _introToSide;
 
         public Camera Camera => _camera;
         public IslandView Island => _island;
@@ -66,6 +70,41 @@ namespace TrollStrategy.Presentation.Island
         /// <summary>Side of the land square the camera frames, m.</summary>
         public float Side => _side;
         public bool ReadInput { get => _readInput; set => _readInput = value; }
+        /// <summary>The first-launch flight is on; input waits until it lands or is skipped.</summary>
+        public bool IsPlayingIntro => _intro;
+
+        /// <summary>
+        /// The first-launch flight: from high above the whole island down to the view the scene set, over
+        /// <paramref name="seconds"/>. Any key, click or touch lands it at once.
+        /// </summary>
+        public void PlayIntro(float seconds = 4f)
+        {
+            if (_camera == null || _island == null) return;
+            if (!_ready) Begin();
+            _introTo = _goal;
+            _introToSide = _goalSide;
+            _introFrom = ClampTarget(_island.transform.position);
+            _introFromSide = ClampSide(float.MaxValue);
+            _target = _introFrom;
+            _side = _introFromSide;
+            _velocity = Vector3.zero;
+            _sideVelocity = 0f;
+            _introTime = 0f;
+            _introSeconds = Mathf.Max(.1f, seconds);
+            _intro = true;
+            Place();
+        }
+
+        public void SkipIntro()
+        {
+            if (!_intro) return;
+            _intro = false;
+            _target = _goal = _introTo;
+            _side = _goalSide = _introToSide;
+            _velocity = Vector3.zero;
+            _sideVelocity = 0f;
+            Place();
+        }
 
         public void Configure(Camera camera, IslandView island, float fieldOfView, float offsetX, float distancePerSide)
         {
@@ -149,6 +188,11 @@ namespace TrollStrategy.Presentation.Island
             if (_camera == null || _island == null) return;
             if (!_ready) Begin();
             if (!_camera.isActiveAndEnabled) return;
+            if (_intro)
+            {
+                TickIntro(Time.unscaledDeltaTime);
+                return;
+            }
             if (_readInput) ReadPointer();
             float dt = Time.unscaledDeltaTime;
             _target = Vector3.SmoothDamp(_target, _goal, ref _velocity, _smoothTime, Mathf.Infinity, dt);
@@ -157,6 +201,26 @@ namespace TrollStrategy.Presentation.Island
         }
 
         private void Place() => _camera.transform.position = _target + _viewDirection * Distance(_side);
+
+        private void TickIntro(float dt)
+        {
+            bool skip = (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame) ||
+                        (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) ||
+                        (UnityEngine.InputSystem.Touchscreen.current != null &&
+                         UnityEngine.InputSystem.Touchscreen.current.primaryTouch.press.wasPressedThisFrame);
+            _introTime += dt;
+            float t = Mathf.Clamp01(_introTime / _introSeconds);
+            if (skip || t >= 1f)
+            {
+                SkipIntro();
+                return;
+            }
+            // eases in and out: a slow start over the island, a soft landing over the colony
+            float e = t * t * (3f - 2f * t);
+            _target = Vector3.Lerp(_introFrom, _introTo, e);
+            _side = Mathf.Lerp(_introFromSide, _introToSide, e);
+            Place();
+        }
 
         private float Distance(float side) => side * _distancePerSide * 1.41421356f;
 

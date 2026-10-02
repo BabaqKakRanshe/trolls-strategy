@@ -3,6 +3,7 @@ using NUnit.Framework;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Island;
+using TrollStrategy.Presentation.Map;
 using TrollStrategy.Presentation.WorldUi;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -18,24 +19,62 @@ namespace TrollStrategy.Tests
         private const string ScenePath = "Assets/Game/Scenes/MainColonyScene.unity";
         private const string RendererPath = "Assets/Settings/Colony3DRenderer.asset";
 
-        // every block the game can sell must have land on the island to raise; blocks once deleted from the scene's
-        // island left their slots empty and bought land never showed
+        // hand edits of the scene's island once deleted 48 blocks and moved two rows of them 10.81 m north: bought
+        // land rose off its slot or not at all, and the trees of the deleted blocks lost their wind
         [Test]
-        public void SavedScene_IslandHasAViewForEveryLandBlock()
+        public void SavedScene_IslandIsThePrefabAsBuilt()
         {
             EditorSceneManager.OpenScene(ScenePath);
             var island = Object.FindObjectsByType<IslandView>(FindObjectsInactive.Include).SingleOrDefault();
             Assert.That(island, Is.Not.Null);
+            var root = PrefabUtility.GetOutermostPrefabInstanceRoot(island.gameObject);
+            Assert.That(root, Is.Not.Null, "the island is an instance of Colony_Isle.prefab");
+            const string fix = "; TrollStrategy > Isle > Reset Island In Scene To Prefab";
+            Assert.That(PrefabUtility.GetRemovedGameObjects(root).Select(r => r.assetGameObject.name), Is.Empty,
+                "nothing of the island is deleted in the scene" + fix);
+            Assert.That(PrefabUtility.GetRemovedComponents(root), Is.Empty, "no component is removed" + fix);
+            Assert.That(PrefabUtility.GetAddedGameObjects(root), Is.Empty, "nothing is added to the island" + fix);
+            Assert.That(PrefabUtility.GetAddedComponents(root), Is.Empty, "no component is added" + fix);
+            var source = PrefabUtility.GetCorrespondingObjectFromSource(root);
+            var foreign = PrefabUtility.GetPropertyModifications(root)
+                .Where(m => !(m.target == source && m.propertyPath == "m_Name") &&
+                            !(m.target == source.transform && IsPlacement(m.propertyPath)))
+                .Select(m => $"{m.target.name}.{m.propertyPath}");
+            Assert.That(foreign, Is.Empty, "only the island's name and placement are the scene's" + fix);
+        }
+
+        // the island shows a block where the game sells it: its lawn lies over the block's cells on the game grid
+        [Test]
+        public void SavedScene_EveryBlocksLawnLiesOverItsCellsOnTheGameGrid()
+        {
+            EditorSceneManager.OpenScene(ScenePath);
+            var island = Object.FindObjectsByType<IslandView>(FindObjectsInactive.Include).SingleOrDefault();
+            var worldView = Object.FindAnyObjectByType<TilemapWorldView>();
+            Assert.That(island, Is.Not.Null);
+            Assert.That(worldView, Is.Not.Null);
             var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(
                 "Assets/Game/Content/Definitions/GameContentCatalog.asset");
             var land = LandRules.CreateStart(catalog.Economy);
             Assert.That(land, Is.Not.Null);
             Assert.That(island.BlocksPerSide, Is.EqualTo(land.BlocksPerSide));
-            Assert.That(island.MissingBlocks(), Is.Empty, "every slot needs its block");
-            var removed = PrefabUtility.GetRemovedGameObjects(PrefabUtility.GetOutermostPrefabInstanceRoot(island.gameObject));
-            Assert.That(removed.Select(r => r.assetGameObject.name), Is.Empty,
-                "nothing of the island prefab is deleted in the scene: blocks and cover puffs are all needed");
+            Assert.That(island.BrokenBlocks(), Is.Empty, "every slot has its own block at the island's origin");
+            int size = land.BlockSize;
+            for (int y = 0; y < land.BlocksPerSide; y++)
+            for (int x = 0; x < land.BlocksPerSide; x++)
+            {
+                var top = island.Block(x, y).Land.Find("Top");
+                Assert.That(top, Is.Not.Null, $"block {x},{y} has a lawn");
+                var mesh = top.GetComponent<MeshFilter>().sharedMesh;
+                var lawn = top.TransformPoint(mesh.bounds.center);
+                var cells = worldView.BuildingCenterWorld(new Cell(x * size, y * size), size, size);
+                Assert.That(new Vector2(lawn.x - cells.x, lawn.z - cells.z).magnitude, Is.LessThan(.05f),
+                    $"the lawn of block {x},{y} stands at {lawn}, its cells at {cells}");
+            }
         }
+
+        private static bool IsPlacement(string path) =>
+            path.StartsWith("m_LocalPosition") || path.StartsWith("m_LocalRotation") ||
+            path.StartsWith("m_LocalEulerAnglesHint") || path.StartsWith("m_LocalScale");
 
         // depth of field blurred labels standing over the far clouds: they draw after post-processing now
         [Test]

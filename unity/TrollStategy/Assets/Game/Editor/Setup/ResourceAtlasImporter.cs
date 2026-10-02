@@ -42,7 +42,7 @@ namespace TrollStrategy.Editor.Setup
         }
         [Serializable] private sealed class AtlasRect { public int x; public int y; public int w; public int h; }
 
-        [MenuItem("TrollStrategy/Import Icon Atlases")]
+        [MenuItem("TrollStrategy/Dev/Import Icon Atlases")]
         public static void Import()
         {
             SyncSharedSource();

@@ -155,7 +155,7 @@ namespace TrollStrategy.Editor.Setup
         // ------------------------------------------------------------------------------------------ menus
 
         /// <summary>Prefab from the layout, installed into MainColonyScene with the island look; saves the scene.</summary>
-        [MenuItem("TrollStrategy/Isle/Install Island Into Colony Scene")]
+        [MenuItem("TrollStrategy/Dev/Isle/Install Island Into Colony Scene")]
         public static void RebuildIsland()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
@@ -174,16 +174,16 @@ namespace TrollStrategy.Editor.Setup
             Debug.Log($"[Isle] {ScenePath}: island installed");
         }
 
-        [MenuItem("TrollStrategy/Isle/Build Island Prefab")]
+        [MenuItem("TrollStrategy/Dev/Isle/Build Island Prefab")]
         public static void BuildPrefabMenu() => Build();
 
-        [MenuItem("TrollStrategy/Isle/Preview Stage/Start")]
+        [MenuItem("TrollStrategy/Dev/Isle/Preview Stage/Start")]
         public static void PreviewStart() => PreviewStage("start");
 
-        [MenuItem("TrollStrategy/Isle/Preview Stage/Mid (grown, 2 wild blocks, 1 rising)")]
+        [MenuItem("TrollStrategy/Dev/Isle/Preview Stage/Mid (grown, 2 wild blocks, 1 rising)")]
         public static void PreviewMid() => PreviewStage("mid");
 
-        [MenuItem("TrollStrategy/Isle/Preview Stage/Max (40x40)")]
+        [MenuItem("TrollStrategy/Dev/Isle/Preview Stage/Max (40x40)")]
         public static void PreviewMax() => PreviewStage("max");
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace TrollStrategy.Editor.Setup
         /// and so on): compare them with Strategy_Kit/Previews/colony_isle_start.png, _mid.png, _max.png. Ends on the
         /// start stage. The kit previews also show the stage's buildings; the capture shows the scene's.
         /// </summary>
-        [MenuItem("TrollStrategy/Isle/Capture Stages (16:9)")]
+        [MenuItem("TrollStrategy/Dev/Isle/Capture Stages (16:9)")]
         public static void CaptureStages()
         {
             if (SceneManager.GetActiveScene().path != ScenePath) EditorSceneManager.OpenScene(ScenePath);

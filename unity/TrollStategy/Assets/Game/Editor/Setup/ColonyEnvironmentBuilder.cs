@@ -124,7 +124,7 @@ namespace TrollStrategy.Editor.Setup
         // ------------------------------------------------------------------------------------------ menus
 
         /// <summary>Prefab from the layout, installed into MainColonyScene with the layout's light; saves the scene.</summary>
-        [MenuItem("TrollStrategy/Colony/Rebuild Colony Map")]
+        [MenuItem("TrollStrategy/Dev/Colony/Rebuild Colony Map")]
         public static void RebuildColonyMap()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
@@ -147,7 +147,7 @@ namespace TrollStrategy.Editor.Setup
             Debug.Log($"[Colony] {ScenePath}: environment installed, light from {Path.GetFileName(layoutPath)}");
         }
 
-        [MenuItem("TrollStrategy/Colony/Build Environment Prefab")]
+        [MenuItem("TrollStrategy/Dev/Colony/Build Environment Prefab")]
         public static void BuildPrefabMenu()
         {
             var layoutPath = FindLayout();

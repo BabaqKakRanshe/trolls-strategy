@@ -206,7 +206,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1
-        y: 769
+        y: 1793
         width: 254
         height: 254
       alignment: 9
@@ -228,7 +228,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 257
-        y: 769
+        y: 1793
         width: 254
         height: 254
       alignment: 9
@@ -250,7 +250,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 513
-        y: 769
+        y: 1793
         width: 254
         height: 254
       alignment: 9
@@ -272,7 +272,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1
-        y: 1
+        y: 1025
         width: 254
         height: 254
       alignment: 9
@@ -294,7 +294,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 769
-        y: 769
+        y: 1793
         width: 254
         height: 254
       alignment: 9
@@ -316,7 +316,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1
-        y: 513
+        y: 1537
         width: 254
         height: 254
       alignment: 9
@@ -338,7 +338,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 513
-        y: 257
+        y: 1281
         width: 254
         height: 254
       alignment: 9
@@ -360,7 +360,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 769
-        y: 513
+        y: 1537
         width: 254
         height: 254
       alignment: 9
@@ -382,7 +382,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 513
-        y: 513
+        y: 1537
         width: 254
         height: 254
       alignment: 9
@@ -404,7 +404,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 769
-        y: 257
+        y: 1281
         width: 254
         height: 254
       alignment: 9
@@ -426,7 +426,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 257
-        y: 257
+        y: 1281
         width: 254
         height: 254
       alignment: 9
@@ -448,7 +448,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 257
-        y: 513
+        y: 1537
         width: 254
         height: 254
       alignment: 9
@@ -470,7 +470,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1
-        y: 257
+        y: 1281
         width: 254
         height: 254
       alignment: 9
@@ -492,7 +492,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 257
-        y: 1
+        y: 1025
         width: 254
         height: 254
       alignment: 9
@@ -514,7 +514,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 513
-        y: 1
+        y: 1025
         width: 254
         height: 254
       alignment: 9
@@ -527,6 +527,974 @@ TextureImporter:
       bones: []
       spriteID: 6cad41314c675484387788189a6cc2cf
       internalID: 1449877732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coal
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 1025
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b361bc74436ea14cb1115a647744943
+      internalID: -2049394506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gold-nugget
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 769
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a3162d445318ea488a64f3c55812621
+      internalID: 598382384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: straw
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 769
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f726d89c8a63ce4caf0fa2639769338
+      internalID: -1930775912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: golden-wheat
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 769
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46720b8a2f6103c49b3615cc65df021f
+      internalID: 1998128125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: meat
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 769
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01187fc577e01314ab4922a9583ca1ac
+      internalID: 1121322568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: milk
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 513
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4f9622ab6021f74abf72f77450a9743
+      internalID: 1865495490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: scrap
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 513
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e45d1cb0c682cee4ea5d543be4b21f4f
+      internalID: -789947134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: feast
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 513
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b77084ac52ac15d40bfe26a99446bb85
+      internalID: -2063385165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: battle-axe
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 513
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fc3ec049787fe34aa964cec25b65f3d
+      internalID: -362982171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: stone
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 257
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc27c7c50253a8d498cc78156f6274d6
+      internalID: 1778923127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: copper-ore
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 257
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 421f45976b634fa4eb3dbdf728fd5622
+      internalID: -2097054474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: copper-ingot
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 257
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b7dcafcd5c8a604ea6c8ee26b659376
+      internalID: -327528250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gold-ore
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 257
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fc673deb01cce8449673508ba305fef
+      internalID: -845132943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gold-ingot
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6df96d38856f26946b5b7a565ff9de90
+      internalID: -192730131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: flour
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 1
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09752e83a0b4da646b260d647f9b3676
+      internalID: 1587826723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bread
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 1
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8f7db6bf4b841e408e6fa55ab9db530
+      internalID: -2087561642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cheese
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 1
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68c0ec56126c6594baf554b24218393f
+      internalID: -2033114804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ale
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 1793
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a622d99a71384c409a84effbc1caf01
+      internalID: -290327355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wool
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 1793
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73f127d7a2b62944fb6b66a1c4fe38ca
+      internalID: 1057242086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cloth
+      rect:
+        serializedVersion: 2
+        x: 1537
+        y: 1793
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67226d93f8f679640a28e87de3278b8c
+      internalID: 1820213575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: steel
+      rect:
+        serializedVersion: 2
+        x: 1793
+        y: 1793
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6e566ab3dbedb440a7bbb35a4acad57
+      internalID: -1928325901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-rusty-sword
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 1537
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db8f1ef5e98004142b6fcd67b1103b56
+      internalID: -1442886578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-battle-axe
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 1537
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65ac9088c32314740b3598d9b7bff038
+      internalID: -1602360647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-patched-armor
+      rect:
+        serializedVersion: 2
+        x: 1537
+        y: 1537
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef3852b01c225074e859e6403bb443bf
+      internalID: 103864642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-iron-armor
+      rect:
+        serializedVersion: 2
+        x: 1793
+        y: 1537
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46391ceccd9d21f44b287204e8586be3
+      internalID: 1574717794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-wooden-shield
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 1281
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a55c389c6a0860a4d9846f99860bbf70
+      internalID: 61971469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: steel-sword
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 1281
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ee9f70ae089cab44b5ad6c8dd24e53c
+      internalID: 422431949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-steel-sword
+      rect:
+        serializedVersion: 2
+        x: 1537
+        y: 1281
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f60bdb57d970d74c9ad29a2fbd7dc64
+      internalID: -1668322358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spear
+      rect:
+        serializedVersion: 2
+        x: 1793
+        y: 1281
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63ca587ef47f5f849ad64ea5b494a548
+      internalID: -270420401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-spear
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 1025
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8cf3c125097faf458927f5bdd92fa53
+      internalID: -1497429091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bow
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 1025
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8321fac633f5984f990f2e21408925a
+      internalID: 1044888530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-bow
+      rect:
+        serializedVersion: 2
+        x: 1537
+        y: 1025
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f64187eb9332ca42bf9af00541c9b85
+      internalID: 598735164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: war-hammer
+      rect:
+        serializedVersion: 2
+        x: 1793
+        y: 1025
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7c31aad45a12d64a991bf4268214e64
+      internalID: -1522275951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-war-hammer
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 769
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5706751b895ac7541b98bc6936ec5d52
+      internalID: 175947767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: leather-armor
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 769
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2296da0b5bbb9c4a80dcb8ea744b8c7
+      internalID: -1721971011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-leather-armor
+      rect:
+        serializedVersion: 2
+        x: 1537
+        y: 769
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ce23d8b596478844b83526915d1f6d1
+      internalID: -1973532255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: chainmail
+      rect:
+        serializedVersion: 2
+        x: 1793
+        y: 769
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 383e96bc76d179f4d8c139d2422d4dfc
+      internalID: 106085837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-chainmail
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 513
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88468ff2737019a45b5493c3e1956629
+      internalID: 500440112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: steel-armor
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 513
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b3b2e7020585ed43b4fe35ed15891f2
+      internalID: -1815209015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-steel-armor
+      rect:
+        serializedVersion: 2
+        x: 1537
+        y: 513
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b850bd3588083fb4bba05941e6d96877
+      internalID: -776298098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: helmet
+      rect:
+        serializedVersion: 2
+        x: 1793
+        y: 513
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17fcd33983b39f74fac27fa9c55a464e
+      internalID: -1071898678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-helmet
+      rect:
+        serializedVersion: 2
+        x: 1025
+        y: 257
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4a18f153d150ef4f8caf42dde5ddd4a
+      internalID: -1044268620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: iron-shield
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 257
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a1cc64f7d2ffda49ad841136251e4b2
+      internalID: -629867628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: enchanted-iron-shield
+      rect:
+        serializedVersion: 2
+        x: 1537
+        y: 257
+        width: 254
+        height: 254
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e8f6485f803c7b4ab4d0e8f09e7d5ea
+      internalID: 1948439519
       vertices: []
       indices: 
       edges: []
@@ -547,21 +1515,65 @@ TextureImporter:
       - key: SpriteEditor.SliceOnImport
         value: False
     nameFileIdTable:
+      ale: -290327355
       animal-hide: -711378300
+      battle-axe: -362982171
+      bow: 1044888530
+      bread: -2087561642
+      chainmail: 106085837
+      cheese: -2033114804
+      cloth: 1820213575
+      coal: -2049394506
       coins: 638093292
+      copper-ingot: -327528250
+      copper-ore: -2097054474
+      enchanted-battle-axe: -1602360647
+      enchanted-bow: 598735164
+      enchanted-chainmail: 500440112
+      enchanted-helmet: -1044268620
+      enchanted-iron-armor: 1574717794
+      enchanted-iron-shield: 1948439519
+      enchanted-leather-armor: -1973532255
+      enchanted-patched-armor: 103864642
+      enchanted-rusty-sword: -1442886578
+      enchanted-spear: -1497429091
+      enchanted-steel-armor: -776298098
+      enchanted-steel-sword: -1668322358
       enchanted-sword: 1465269554
+      enchanted-war-hammer: 175947767
+      enchanted-wooden-shield: 61971469
+      feast: -2063385165
+      flour: 1587826723
+      gold-ingot: -192730131
+      gold-nugget: 598382384
+      gold-ore: -845132943
+      golden-wheat: 1998128125
+      helmet: -1071898678
       iron-armor: 1562037474
       iron-ingot: -255195324
       iron-ore: 104497840
+      iron-shield: -629867628
       iron-sword: 1512361336
       leather: 1084967311
+      leather-armor: -1721971011
       logs: 1284599114
+      meat: 1121322568
+      milk: 1865495490
       patched-armor: 1449877732
       planks: 1067552197
       rusty-sword: 1059859425
+      scrap: -789947134
+      spear: -270420401
+      steel: -1928325901
+      steel-armor: -1815209015
+      steel-sword: 422431949
+      stone: 1778923127
+      straw: -1930775912
       violet-crystal: 534537650
+      war-hammer: -1522275951
       wheat: -250620656
       wooden-shield: 1574400780
+      wool: 1057242086
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

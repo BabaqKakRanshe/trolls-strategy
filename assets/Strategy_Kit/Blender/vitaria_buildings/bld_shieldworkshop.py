@@ -12,6 +12,8 @@ from build_vitaria import p_box, by_normal, TM
 from vitaria_buildings.common import (Frame, gable_roof, gable_wall, stone_base, cornice, plank_door,
                                       barrel, bucket, round_shield, heater_shield,
                                       STONE_DARK_TOP, PLANK_TOP)
+from vitaria_buildings.levels import pennant, gold_ridge, wall_lantern
+from build_vitaria import p_cyl, p_ico
 
 NAME = "Bld_ShieldWorkshop"
 TITLE = "Мастерская щитов"
@@ -211,3 +213,34 @@ def build(a):
     _sawhorse(a, Frame((-1.5, -0.62, 0), rz=90))
     _plank_pile(a, Frame((-1.5, 0.72, 0), rz=90))
     barrel(a, (1.52, -0.40, 0.0))
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def upgrade(a, level):
+    """2: флажок на правом скате, каменная труба сквозь левый скат (печь для клея и краски), стопка
+    железных ободов у верстака. 3: + золотой обод вокруг щита-героя и скрещённые копья за ним, золото
+    по коньку с навершиями, фонари по сторонам двери."""
+    p = math.radians(PITCH)
+    zr = ZT + 0.08 + (W / 2) * math.tan(p)
+    xp = 0.62
+    pennant(a, xp, Y0 - 0.55, zr - xp * math.tan(p) + 0.10, level, side=1)
+    xc = -0.72
+    zc = zr - abs(xc) * math.tan(p) - 0.30
+    a.add(p_box((0.40, 0.40, 1.20), loc=(xc, Y0 + 0.45, zc + 0.60), bevel=0.04), "stone_mid")
+    a.add(p_box((0.52, 0.52, 0.12), loc=(xc, Y0 + 0.45, zc + 1.16), bevel=0.04), "stone_dark")
+    a.add(p_box((0.26, 0.26, 0.03), loc=(xc, Y0 + 0.45, zc + 1.235), bevel=0.0), "black")
+    for k in range(3):
+        a.add(p_cyl(0.24, 0.24, 0.05, 12, loc=(0.42, -1.50, 0.02 + k * 0.055)),
+              lambda f: "iron_light" if f.normal.z > 0.5 else "iron")
+    if level < 3:
+        return
+    a.add(p_cyl(R_SH + 0.08, R_SH + 0.08, 0.05, 16, loc=(0, YSH + T_SH / 2 + 0.05, ZSH), rot=(90, 0, 0)), "gold")
+    for s in (-1, 1):
+        fr = Frame((0, YSH + T_SH / 2 + 0.10, ZSH), rot=(0, s * 42, 0))
+        fr.cyl(a, 0.04, 0.04, 2.30, 6, loc=(0, 0, -1.15), col="wood_mid")
+        fr.taper(a, (0.14, 0.04), (0.01, 0.01), 0.26, loc=(0, 0, 1.15), col="steel")
+    gold_ridge(a, D + 2 * OY + 0.14, zr, axis="y", y=Y0)
+    for sx in (-1, 1):
+        wall_lantern(a, sx * 0.70, YF - 0.06, 1.44, out=(sx * 0.3, -0.95))

@@ -61,7 +61,7 @@ Assets/Vitaria (всё это перезаписывает экспорт кит
 - IslandView.cs и IslandBlockView.cs — показывают состояния блоков (LandBlockState — в IslandView.cs). Правил игры в них нет.
 - IslandAtmosphere.cs — туман и размытие по расстоянию камеры.
 - IslandCameraRig.cs — сдвиг и зум камеры над островом.
-- IslandEnvironmentBuilder.cs — меню TrollStrategy > Isle: префаб острова, установка в сцену, этапы, снимки.
+- IslandEnvironmentBuilder.cs — меню TrollStrategy > Dev > Isle: префаб острова, установка в сцену, этапы, снимки.
 - ThreeDSceneSetup.cs — версия игры от 29.09 (08:56) плюс правка: ставит остров, если есть isle_layout.json.
 
 Каждый компонент — в файле со своим именем, иначе Unity не сохранит ссылку на скрипт в префабе и сцене.
@@ -80,7 +80,7 @@ Assets/Vitaria (всё это перезаписывает экспорт кит
 
    Пространство имён TrollStrategy.Application перекрывает UnityEngine.Application. В новых файлах это учтено, помни об этом в своём коде.
 
-3. **Префаб.** TrollStrategy > Isle > Build Island Prefab собирает Assets/Game/Prefabs/Environments/Colony_Isle.prefab.
+3. **Префаб.** TrollStrategy > Dev > Isle > Build Island Prefab собирает Assets/Game/Prefabs/Environments/Colony_Isle.prefab.
    - В Console строка вида «64 blocks, 895 pieces, 466 wild objects, 71 cover clouds, 10 satellite and sky objects».
    - Строк «missing» и «model names found twice» нет.
    - Устройство префаба:
@@ -89,7 +89,7 @@ Assets/Vitaria (всё это перезаписывает экспорт кит
      - Satellites и Sky.
    - Деревья и кусты дикой земли висят под пивотами *_Wind.
 
-4. **Сцена.** TrollStrategy > Isle > Install Island Into Colony Scene. Команда:
+4. **Сцена.** TrollStrategy > Dev > Isle > Install Island Into Colony Scene. Команда:
    - ставит Colony_Isle вместо Colony_Meadow (корень ColonyEnvironment) в середину сетки игры, без поворота;
    - включает свет:
      - солнце ColonySun, 1.5;
@@ -109,10 +109,10 @@ Assets/Vitaria (всё это перезаписывает экспорт кит
    - Тени — 60 м (ThreeDSceneSetup). На кадре max камера дальше: если там видна граница теней, подними ShadowDistance до 90–100 м и сравни FPS.
 
 6. **Этапы и снимки.**
-   - TrollStrategy > Isle > Preview Stage > Start / Mid / Max показывает этапы кита в сцене:
+   - TrollStrategy > Dev > Isle > Preview Stage > Start / Mid / Max показывает этапы кита в сцене:
      - mid — старт и ещё 6 блоков: 3 расчищены, 2 дикие (лес и луг), 1 поднимается из облаков;
      - max — все 40 × 40, 2 блока дикие.
-   - TrollStrategy > Isle > Capture Stages (16:9) сохраняет ../colony_isle_capture_start.png, _mid.png и _max.png и возвращает сцену на start.
+   - TrollStrategy > Dev > Isle > Capture Stages (16:9) сохраняет ../colony_isle_capture_start.png, _mid.png и _max.png и возвращает сцену на start.
    - Этап записывается в сцену как изменения префаба и доживает до Play Mode — так удобно мерить max. Перед сохранением сцены верни Start.
    - Сравни снимки с Previews\colony_isle_*.png. Должно совпасть:
      - газон, уступы и скругления по краю владений;
@@ -182,7 +182,7 @@ Assets/Vitaria (всё это перезаписывает экспорт кит
 - Покупка и расчистка идут через GameSession.Dispatch, как остальные команды.
 
 **Сцена**
-- После смены сетки запусти TrollStrategy > Isle > Install Island Into Colony Scene ещё раз: остров встанет в MapToWorld(20, 20), то есть на 13 клеток дальше по обеим осям.
+- После смены сетки запусти TrollStrategy > Dev > Isle > Install Island Into Colony Scene ещё раз: остров встанет в MapToWorld(20, 20), то есть на 13 клеток дальше по обеим осям.
 - Стартовые здания сцены (Market, Warehouse) сдвинь на +13 клеток по обеим осям карты: они останутся на том же месте острова. SceneBuildingPlacements пересчитает их клетки сам.
 - Проверь другие объекты сцены, которые стоят по старым клеткам.
 
@@ -238,7 +238,7 @@ Assets/Vitaria (всё это перезаписывает экспорт кит
 - FBX, раскладки, текстуры и материалы в Assets/Vitaria не правь: их перезаписывает экспорт кита. Замечания к арту — списком в отчёт.
 - Правки в IslandView.cs, IslandBlockView.cs, IslandAtmosphere.cs, IslandCameraRig.cs, IslandEnvironmentBuilder.cs, ThreeDSceneSetup.cs и VitariaTools.cs повтори в Strategy_Kit: Unity\Integration\TrollStrategy и Unity\Assets\Vitaria\Editor.
 - Domain и Application — только механика земли из части 2.
-- Colony_Meadow и ColonyEnvironmentBuilder не удаляй. TrollStrategy > Colony > Rebuild Colony Map ставит старую «Долину» — для острова это меню не используй. Если «Долину» всё же вернёшь, убери из сцены ColonyVolume и IslandCameraRig с камеры: они от острова.
+- Colony_Meadow и ColonyEnvironmentBuilder не удаляй. TrollStrategy > Dev > Colony > Rebuild Colony Map ставит старую «Долину» — для острова это меню не используй. Если «Долину» всё же вернёшь, убери из сцены ColonyVolume и IslandCameraRig с камеры: они от острова.
 
 ## Отчёт
 - Что поменял: файл и суть.

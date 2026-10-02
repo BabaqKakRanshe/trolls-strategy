@@ -11,6 +11,7 @@ import math, random
 from mathutils import Vector
 from build_vitaria import p_box, p_ico, by_normal
 from vitaria_buildings.common import Frame, fence_line, hay_bale
+from vitaria_buildings.levels import pennant, gold_ridge, wall_banner, wall_lantern, finial
 
 NAME = "Bld_Farm"
 TITLE = "Ферма"
@@ -362,3 +363,62 @@ def build(a):
     _haystack(a, Frame((1.62, 1.62, 0.0)))
     _sack(a, Frame((-0.14, -0.66, 0.0), rz=20), rng)
     _sack(a, Frame((-0.05, -0.98, 0.0), rz=-30), rng)
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def _well(a, fr, level):
+    """Колодец: каменный сруб, ворот на двух стойках, двускатная крышка цвета кровли, ведро."""
+    st = by_normal("stone_light", "stone_mid", "stone_dark", 0.8)
+    fr.cyl(a, 0.36, 0.36, 0.46, 10, loc=(0, 0, 0.0), col=st, bevel=0.03)
+    fr.cyl(a, 0.27, 0.27, 0.02, 10, loc=(0, 0, 0.40), col="water")
+    for sx in (-1, 1):
+        fr.box(a, (0.09, 0.09, 1.12), (sx * 0.30, 0, 0.56), col="wood_dark", bevel=0.0)
+        fr.box(a, (0.07, 0.62, 0.06), (sx * 0.24, 0, 1.17), rot=(sx * 0, 0, 0), col="wood_dark", bevel=0.0)
+    fr.cyl(a, 0.06, 0.06, 0.62, 8, loc=(-0.31, 0, 0.84), rot=(0, 90, 0), col="wood_light")
+    fr.box(a, (0.05, 0.05, 0.22), (0.33, 0.0, 0.76), col="iron_dark", bevel=0.0)
+    for sy in (-1, 1):
+        fr.box(a, (0.80, 0.42, 0.06), (0, sy * 0.17, 1.30), rot=(-sy * 34, 0, 0),
+               col="roof" if sy < 0 else "roof_dark", bevel=0.0)
+    fr.cyl(a, 0.08, 0.10, 0.14, 8, loc=(0.0, 0.0, 0.50), col="wood_mid")
+
+
+def _silo(a, fr, level):
+    """Силос: каменный цоколь, дощатый ствол с железными обручами, купол цвета кровли, золотое навершие."""
+    r, h = 0.44, 2.30
+    fr.cyl(a, r + 0.06, r + 0.06, 0.30, 12, loc=(0, 0, -0.06), col=by_normal("stone_mid", "stone_dark", "stone_dark", 0.8),
+           bevel=0.03)
+    fr.cyl(a, r, r, h, 12, loc=(0, 0, 0.24), col=by_normal("wood_light", "wood_mid", "wood_dark", 0.8))
+    for z in (0.75, 1.45, 2.15):
+        fr.cyl(a, r + 0.02, r + 0.02, 0.06, 12, loc=(0, 0, 0.24 + z - 0.4), col="iron_dark")
+    fr.cyl(a, r + 0.07, r + 0.07, 0.08, 12, loc=(0, 0, 0.24 + h), col="cream")
+    fr.cyl(a, r + 0.04, 0.08, 0.50, 12, loc=(0, 0, 0.24 + h + 0.08), col="roof")
+    finial(a, fr.at((0, 0, 0)).x, fr.at((0, 0, 0)).y, fr.at((0, 0, 0.24 + h + 0.56)).z, h=0.40)
+    # окошко-люк к камере
+    fr.box(a, (0.26, 0.08, 0.30), (0, -r + 0.01, 0.24 + h - 0.45), col="cream", bevel=0.0)
+    fr.box(a, (0.18, 0.06, 0.22), (0, -r - 0.02, 0.24 + h - 0.45), col="black", bevel=0.0)
+
+
+def upgrade(a, level):
+    """2: флажок на правом скате амбара, колодец у левого угла, вторая овца у кормушки, поросёнок,
+    ещё два тюка сена. 3: + силос между амбаром и стогом, золото по коньку амбара с навершиями,
+    знамя слева от ворот, фонари у ворот."""
+    rng = random.Random(17)
+    hw, t1, t2, zb, zr = _roof_geom()
+    xp = 0.45
+    pennant(a, BX + xp, BY - 0.85, zr - xp * t2 + 0.10, level, side=1)
+    _well(a, Frame((-2.02, -1.55, 0.0), rz=-8), level)
+    _sheep(a, Frame((0.62, 0.38, ZG), rz=-12), rng)
+    pg = Frame((2.08, -1.66, ZG), rz=-150, s=0.62)
+    _pig(a, pg)
+    hay_bale(a, (-1.62, -0.62, 0.0), s=(0.52, 0.40, 0.34), rot=(0, 0, -14))
+    hay_bale(a, (-1.95, -0.30, 0.0), s=(0.50, 0.38, 0.32), rot=(0, 0, 80))
+    if level < 3:
+        return
+    _silo(a, Frame((0.66, 1.58, 0.0)), level)
+    gold_ridge(a, D + 2 * OY + 0.14, zr - 0.01, axis="y", x=BX, y=BY, cap=0.30)
+    yF = BY - D / 2
+    wall_banner(a, BX - 0.92, yF - 0.07, 1.58, w=0.36, h=0.70)
+    for sx in (-1, 1):
+        wall_lantern(a, BX + sx * 0.84, yF - 0.06, 1.44, out=(sx * 0.35, -0.94))

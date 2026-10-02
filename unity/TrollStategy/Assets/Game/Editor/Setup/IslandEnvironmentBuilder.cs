@@ -155,7 +155,7 @@ namespace TrollStrategy.Editor.Setup
         // ------------------------------------------------------------------------------------------ menus
 
         /// <summary>Prefab from the layout, installed into MainColonyScene with the island look; saves the scene.</summary>
-        [MenuItem("TrollStrategy/Isle/Install Island Into Colony Scene")]
+        [MenuItem("TrollStrategy/Dev/Isle/Install Island Into Colony Scene")]
         public static void RebuildIsland()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
@@ -174,16 +174,16 @@ namespace TrollStrategy.Editor.Setup
             Debug.Log($"[Isle] {ScenePath}: island installed");
         }
 
-        [MenuItem("TrollStrategy/Isle/Build Island Prefab")]
+        [MenuItem("TrollStrategy/Dev/Isle/Build Island Prefab")]
         public static void BuildPrefabMenu() => Build();
 
-        [MenuItem("TrollStrategy/Isle/Preview Stage/Start")]
+        [MenuItem("TrollStrategy/Dev/Isle/Preview Stage/Start")]
         public static void PreviewStart() => PreviewStage("start");
 
-        [MenuItem("TrollStrategy/Isle/Preview Stage/Mid (grown, 2 wild blocks, 1 rising)")]
+        [MenuItem("TrollStrategy/Dev/Isle/Preview Stage/Mid (grown, 2 wild blocks, 1 rising)")]
         public static void PreviewMid() => PreviewStage("mid");
 
-        [MenuItem("TrollStrategy/Isle/Preview Stage/Max (40x40)")]
+        [MenuItem("TrollStrategy/Dev/Isle/Preview Stage/Max (40x40)")]
         public static void PreviewMax() => PreviewStage("max");
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace TrollStrategy.Editor.Setup
         /// and so on): compare them with Strategy_Kit/Previews/colony_isle_start.png, _mid.png, _max.png. Ends on the
         /// start stage. The kit previews also show the stage's buildings; the capture shows the scene's.
         /// </summary>
-        [MenuItem("TrollStrategy/Isle/Capture Stages (16:9)")]
+        [MenuItem("TrollStrategy/Dev/Isle/Capture Stages (16:9)")]
         public static void CaptureStages()
         {
             if (SceneManager.GetActiveScene().path != ScenePath) EditorSceneManager.OpenScene(ScenePath);
@@ -416,6 +416,75 @@ namespace TrollStrategy.Editor.Setup
             EditorSceneManager.MarkSceneDirty(view.gameObject.scene);
             Debug.Log($"[Isle] stage {stageName}: {stage.owned?.Length ?? 0} blocks bought, {stage.wild?.Length ?? 0} wild" +
                       (stage.rising >= 0 ? ", 1 rising" : ""));
+        }
+
+        /// <summary>
+        /// Makes the colony scene's island the prefab as built again and saves the scene: drops every override but the
+        /// root's name and placement, and brings back pieces deleted in the scene. A hand-edited instance shows land
+        /// away from the game's grid (a moved block rises off its slot) or none at all (a deleted block), and the
+        /// overrides of deleted pieces stay in the scene and come back with them. Stage previews are overrides too:
+        /// this also ends one.
+        /// </summary>
+        [MenuItem("TrollStrategy/Dev/Isle/Reset Island In Scene To Prefab")]
+        public static void ResetIslandInScene()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+                throw new InvalidOperationException("Stop Play Mode before resetting the island");
+            var view = FindIsland() ?? throw new InvalidOperationException(
+                "No island in the open scene: run TrollStrategy > Isle > Install Island Into Colony Scene");
+            var root = PrefabUtility.GetOutermostPrefabInstanceRoot(view.gameObject) ??
+                       throw new InvalidOperationException($"{view.name} is not a prefab instance");
+            int dropped = RevertToPrefab(root);
+            EditorSceneManager.MarkSceneDirty(root.scene);
+            EditorSceneManager.SaveScene(root.scene);
+            Debug.Log($"[Isle] {root.scene.path}: island reset to its prefab, {dropped} overrides and deleted pieces dropped; " +
+                      $"{view.BrokenBlocks().Count} blocks missing or moved");
+        }
+
+        /// <summary>Keeps only the root's name and placement on an island instance; returns what was dropped.</summary>
+        internal static int RevertToPrefab(GameObject root)
+        {
+            int dropped = 0;
+            foreach (var removed in PrefabUtility.GetRemovedGameObjects(root))
+            {
+                removed.Revert(InteractionMode.AutomatedAction);
+                dropped++;
+            }
+            foreach (var removed in PrefabUtility.GetRemovedComponents(root))
+            {
+                removed.Revert(InteractionMode.AutomatedAction);
+                dropped++;
+            }
+            foreach (var added in PrefabUtility.GetAddedGameObjects(root))
+            {
+                added.Revert(InteractionMode.AutomatedAction);
+                dropped++;
+            }
+            foreach (var added in PrefabUtility.GetAddedComponents(root))
+            {
+                added.Revert(InteractionMode.AutomatedAction);
+                dropped++;
+            }
+            var source = PrefabUtility.GetCorrespondingObjectFromSource(root);
+            var modifications = PrefabUtility.GetPropertyModifications(root) ?? Array.Empty<PropertyModification>();
+            var kept = new List<PropertyModification>();
+            foreach (var modification in modifications)
+                if (IsRootPlacement(modification, source)) kept.Add(modification);
+            dropped += modifications.Length - kept.Count;
+            PrefabUtility.SetPropertyModifications(root, kept.ToArray());
+            return dropped;
+        }
+
+        /// <summary>The overrides an installed island keeps: its name and where it stands in the scene.</summary>
+        private static bool IsRootPlacement(PropertyModification modification, GameObject source)
+        {
+            if (modification.target == source) return modification.propertyPath == "m_Name";
+            if (modification.target != source.transform) return false;
+            string path = modification.propertyPath;
+            return path.StartsWith("m_LocalPosition", StringComparison.Ordinal) ||
+                   path.StartsWith("m_LocalRotation", StringComparison.Ordinal) ||
+                   path.StartsWith("m_LocalEulerAnglesHint", StringComparison.Ordinal) ||
+                   path.StartsWith("m_LocalScale", StringComparison.Ordinal);
         }
 
         private static IslandView FindIsland()

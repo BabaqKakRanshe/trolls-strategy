@@ -455,6 +455,50 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: BuildingIcon_Tavern
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 1
+        width: 126
+        height: 126
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7be7308e238cd342a0ecd875ec2c985
+      internalID: -656329827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BuildingIcon_HaulersGuild
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 1
+        width: 126
+        height: 126
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15a164b32cbdbac47b1cb6d630ff364e
+      internalID: 1472086167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -477,6 +521,7 @@ TextureImporter:
       BuildingIcon_Farm: 1071465003
       BuildingIcon_Field: 87856467
       BuildingIcon_Forge: -1514039061
+      BuildingIcon_HaulersGuild: 1472086167
       BuildingIcon_LumberCamp: 160272043
       BuildingIcon_LumberMill: 1096762937
       BuildingIcon_Market: 1510558811
@@ -484,6 +529,7 @@ TextureImporter:
       BuildingIcon_ShieldWorkshop: -2016311397
       BuildingIcon_Smeltery: 1137213937
       BuildingIcon_Tannery: -431204425
+      BuildingIcon_Tavern: -656329827
       BuildingIcon_Warehouse: 1734039533
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0

@@ -19,22 +19,11 @@ namespace TrollStrategy.Editor.Setup
         // The colony map is the Vitaria kit's floating island (Colony_Isle) when the kit has exported it:
         // IslandEnvironmentBuilder builds and installs it with its look. Without Layout/isle_layout.json it is
         // Colony_Meadow, installed and lit like the arena by ColonyEnvironmentBuilder. This menu stays as the old entry point.
-        [MenuItem("TrollStrategy/Refresh Diorama")]
+        [MenuItem("TrollStrategy/Dev/Refresh Diorama")]
         public static void RefreshDiorama()
         {
             if (IslandEnvironmentBuilder.HasLayout) IslandEnvironmentBuilder.RebuildIsland();
             else ColonyEnvironmentBuilder.RebuildColonyMap();
-        }
-
-        [MenuItem("TrollStrategy/Convert Colony To 3D")]
-        public static void ConvertCurrentScene()
-        {
-            EnsureRenderer();
-            var scene = EditorSceneManager.OpenScene(ScenePath);
-            ApplyToOpenScene(true);
-            EditorSceneManager.MarkSceneDirty(scene);
-            EditorSceneManager.SaveScene(scene);
-            AssetDatabase.SaveAssets();
         }
 
         // the three frames the Vitaria kit previews are rendered in (Strategy_Kit/Previews/colony_meadow_*.png)
@@ -47,7 +36,7 @@ namespace TrollStrategy.Editor.Setup
         /// same three frames as the kit's Blender previews: after every kit import, compare them side by side.
         /// The HUD is UI Toolkit and is not in the capture; its bands cover the top 8.5% and the bottom 7%.
         /// </summary>
-        [MenuItem("TrollStrategy/Colony/Capture Previews (16:9, 21:9, 4:3)")]
+        [MenuItem("TrollStrategy/Dev/Colony/Capture Previews (16:9, 21:9, 4:3)")]
         public static void CapturePreview()
         {
             EditorSceneManager.OpenScene(ScenePath);

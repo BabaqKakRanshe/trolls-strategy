@@ -22,7 +22,7 @@ namespace TrollStrategy.Presentation.Island
     public sealed class LandPresenter : MonoBehaviour
     {
         // the kit's corner model lies in the FBX's Y-up; in the map plane (local -Z up, +Y north) it is turned like
-        // the SelectionRim corners of the building prefabs (BuildingKitDetailsMigration.KitRotation)
+        // the SelectionRim corners of the building prefabs (the kit's building contract)
         private static readonly Quaternion KitRotation = new Quaternion(0f, 0.7071068f, -0.7071068f, 0f);
 
         [Tooltip("The kit's corner piece (Vitaria/Models/Colony/FX_Select_Corner) that frames a block for sale.")]
@@ -189,7 +189,7 @@ namespace TrollStrategy.Presentation.Island
                 if (bar == null) continue;
                 bar.Panel.gameObject.SetActive(true);
                 bar.Fill.style.width = Length.Percent(Mathf.Clamp01(block.ClearProgress) * 100f);
-                bar.Label.text = $"Расчистка, {Mathf.CeilToInt(block.ClearSecondsLeft)} с";
+                bar.Label.text = Localization.T($"Расчистка, {Mathf.CeilToInt(block.ClearSecondsLeft)} с");
             }
             foreach (var pair in _bars)
                 if (!clearing.Contains(pair.Key) && pair.Value.Panel.gameObject.activeSelf)
@@ -239,7 +239,7 @@ namespace TrollStrategy.Presentation.Island
                     marker.Price.transform.position = forSale
                         ? marker.Root.position + _worldView.GroundOffset(_priceHeight)
                         : OverWild(block.X, block.Y);
-                    marker.Label.text = forSale ? Gold(land.NextPrice) : "Расчистить?";
+                    marker.Label.text = Localization.T(forSale ? Gold(land.NextPrice) : "Расчистить?");
                     marker.Label.EnableInClassList("land-price--short", forSale && snapshot.Gold < land.NextPrice);
                     marker.Label.EnableInClassList("land-price--picked", picked);
                 }

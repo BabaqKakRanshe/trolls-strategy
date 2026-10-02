@@ -470,6 +470,506 @@
   ]
  },
  {
+  "asset": "Res_Coal",
+  "category": "Resources",
+  "tris": 219,
+  "size_unity": [
+   0.708,
+   0.35,
+   0.603
+  ]
+ },
+ {
+  "asset": "Res_GoldNugget",
+  "category": "Resources",
+  "tris": 260,
+  "size_unity": [
+   0.551,
+   0.224,
+   0.432
+  ]
+ },
+ {
+  "asset": "Res_Straw",
+  "category": "Resources",
+  "tris": 296,
+  "size_unity": [
+   0.799,
+   0.355,
+   0.45
+  ]
+ },
+ {
+  "asset": "Res_GoldenWheat",
+  "category": "Resources",
+  "tris": 1230,
+  "size_unity": [
+   0.57,
+   0.892,
+   0.407
+  ]
+ },
+ {
+  "asset": "Res_Meat",
+  "category": "Resources",
+  "tris": 233,
+  "size_unity": [
+   0.838,
+   0.316,
+   0.376
+  ]
+ },
+ {
+  "asset": "Res_Milk",
+  "category": "Resources",
+  "tris": 460,
+  "size_unity": [
+   0.422,
+   0.44,
+   0.344
+  ]
+ },
+ {
+  "asset": "Res_Scrap",
+  "category": "Resources",
+  "tris": 487,
+  "size_unity": [
+   0.768,
+   0.327,
+   0.602
+  ]
+ },
+ {
+  "asset": "Res_Feast",
+  "category": "Resources",
+  "tris": 758,
+  "size_unity": [
+   0.908,
+   0.28,
+   0.627
+  ]
+ },
+ {
+  "asset": "Res_BattleAxe",
+  "category": "Resources",
+  "tris": 374,
+  "size_unity": [
+   0.84,
+   1.18,
+   0.11
+  ]
+ },
+ {
+  "asset": "Res_Wheat",
+  "category": "Resources",
+  "tris": 1008,
+  "size_unity": [
+   0.388,
+   0.857,
+   0.346
+  ]
+ },
+ {
+  "asset": "Res_Hide",
+  "category": "Resources",
+  "tris": 688,
+  "size_unity": [
+   0.612,
+   0.054,
+   0.84
+  ]
+ },
+ {
+  "asset": "Res_Leather",
+  "category": "Resources",
+  "tris": 312,
+  "size_unity": [
+   0.684,
+   0.215,
+   0.602
+  ]
+ },
+ {
+  "asset": "Res_Crystal",
+  "category": "Resources",
+  "tris": 140,
+  "size_unity": [
+   0.832,
+   0.855,
+   0.44
+  ]
+ },
+ {
+  "asset": "Res_Flour",
+  "category": "Resources",
+  "tris": 446,
+  "size_unity": [
+   0.585,
+   0.548,
+   0.576
+  ]
+ },
+ {
+  "asset": "Res_Bread",
+  "category": "Resources",
+  "tris": 230,
+  "size_unity": [
+   0.552,
+   0.19,
+   0.515
+  ]
+ },
+ {
+  "asset": "Res_Cheese",
+  "category": "Resources",
+  "tris": 352,
+  "size_unity": [
+   0.765,
+   0.16,
+   0.63
+  ]
+ },
+ {
+  "asset": "Res_Ale",
+  "category": "Resources",
+  "tris": 626,
+  "size_unity": [
+   0.739,
+   0.379,
+   0.644
+  ]
+ },
+ {
+  "asset": "Res_Wool",
+  "category": "Resources",
+  "tris": 657,
+  "size_unity": [
+   0.632,
+   0.309,
+   0.584
+  ]
+ },
+ {
+  "asset": "Res_Cloth",
+  "category": "Resources",
+  "tris": 268,
+  "size_unity": [
+   0.604,
+   0.263,
+   0.687
+  ]
+ },
+ {
+  "asset": "Res_Ingot_Steel",
+  "category": "Resources",
+  "tris": 44,
+  "size_unity": [
+   0.294,
+   0.075,
+   0.126
+  ]
+ },
+ {
+  "asset": "Res_IngotStack_Steel",
+  "category": "Resources",
+  "tris": 352,
+  "size_unity": [
+   0.426,
+   0.223,
+   0.426
+  ]
+ },
+ {
+  "asset": "Res_Sword_Rusty",
+  "category": "Resources",
+  "tris": 228,
+  "size_unity": [
+   0.34,
+   0.937,
+   0.075
+  ]
+ },
+ {
+  "asset": "Res_Sword_Rusty_Enchanted",
+  "category": "Resources",
+  "tris": 296,
+  "size_unity": [
+   0.34,
+   0.937,
+   0.097
+  ]
+ },
+ {
+  "asset": "Res_Sword_Iron",
+  "category": "Resources",
+  "tris": 144,
+  "size_unity": [
+   0.34,
+   0.987,
+   0.075
+  ]
+ },
+ {
+  "asset": "Res_Sword_Enchanted",
+  "category": "Resources",
+  "tris": 176,
+  "size_unity": [
+   0.34,
+   1.037,
+   0.094
+  ]
+ },
+ {
+  "asset": "Res_BattleAxe_Enchanted",
+  "category": "Resources",
+  "tris": 446,
+  "size_unity": [
+   0.84,
+   1.18,
+   0.147
+  ]
+ },
+ {
+  "asset": "Res_Armor_Patched",
+  "category": "Resources",
+  "tris": 416,
+  "size_unity": [
+   0.738,
+   0.554,
+   0.43
+  ]
+ },
+ {
+  "asset": "Res_Armor_Patched_Enchanted",
+  "category": "Resources",
+  "tris": 540,
+  "size_unity": [
+   0.738,
+   0.668,
+   0.467
+  ]
+ },
+ {
+  "asset": "Res_Armor_Iron",
+  "category": "Resources",
+  "tris": 296,
+  "size_unity": [
+   0.738,
+   0.554,
+   0.274
+  ]
+ },
+ {
+  "asset": "Res_Armor_Iron_Enchanted",
+  "category": "Resources",
+  "tris": 436,
+  "size_unity": [
+   0.738,
+   0.665,
+   0.314
+  ]
+ },
+ {
+  "asset": "Res_Shield_Wood",
+  "category": "Resources",
+  "tris": 568,
+  "size_unity": [
+   0.9,
+   0.9,
+   0.136
+  ]
+ },
+ {
+  "asset": "Res_Shield_Wood_Enchanted",
+  "category": "Resources",
+  "tris": 612,
+  "size_unity": [
+   0.9,
+   0.9,
+   0.173
+  ]
+ },
+ {
+  "asset": "Res_Sword_Steel",
+  "category": "Resources",
+  "tris": 372,
+  "size_unity": [
+   0.524,
+   1.16,
+   0.085
+  ]
+ },
+ {
+  "asset": "Res_Sword_Steel_Enchanted",
+  "category": "Resources",
+  "tris": 420,
+  "size_unity": [
+   0.524,
+   1.16,
+   0.123
+  ]
+ },
+ {
+  "asset": "Res_Spear",
+  "category": "Resources",
+  "tris": 244,
+  "size_unity": [
+   0.211,
+   1.914,
+   0.099
+  ]
+ },
+ {
+  "asset": "Res_Spear_Enchanted",
+  "category": "Resources",
+  "tris": 292,
+  "size_unity": [
+   0.211,
+   1.914,
+   0.133
+  ]
+ },
+ {
+  "asset": "Res_Bow",
+  "category": "Resources",
+  "tris": 304,
+  "size_unity": [
+   0.71,
+   1.151,
+   0.085
+  ]
+ },
+ {
+  "asset": "Res_Bow_Enchanted",
+  "category": "Resources",
+  "tris": 376,
+  "size_unity": [
+   0.71,
+   1.191,
+   0.098
+  ]
+ },
+ {
+  "asset": "Res_WarHammer",
+  "category": "Resources",
+  "tris": 362,
+  "size_unity": [
+   0.48,
+   1.2,
+   0.21
+  ]
+ },
+ {
+  "asset": "Res_WarHammer_Enchanted",
+  "category": "Resources",
+  "tris": 434,
+  "size_unity": [
+   0.48,
+   1.2,
+   0.238
+  ]
+ },
+ {
+  "asset": "Res_Armor_Leather",
+  "category": "Resources",
+  "tris": 558,
+  "size_unity": [
+   0.747,
+   0.511,
+   0.264
+  ]
+ },
+ {
+  "asset": "Res_Armor_Leather_Enchanted",
+  "category": "Resources",
+  "tris": 686,
+  "size_unity": [
+   0.747,
+   0.532,
+   0.268
+  ]
+ },
+ {
+  "asset": "Res_Armor_Chainmail",
+  "category": "Resources",
+  "tris": 624,
+  "size_unity": [
+   0.657,
+   0.488,
+   0.285
+  ]
+ },
+ {
+  "asset": "Res_Armor_Chainmail_Enchanted",
+  "category": "Resources",
+  "tris": 672,
+  "size_unity": [
+   0.657,
+   0.509,
+   0.294
+  ]
+ },
+ {
+  "asset": "Res_Armor_Steel",
+  "category": "Resources",
+  "tris": 528,
+  "size_unity": [
+   0.907,
+   0.645,
+   0.291
+  ]
+ },
+ {
+  "asset": "Res_Armor_Steel_Enchanted",
+  "category": "Resources",
+  "tris": 736,
+  "size_unity": [
+   0.907,
+   0.753,
+   0.331
+  ]
+ },
+ {
+  "asset": "Res_Helmet",
+  "category": "Resources",
+  "tris": 340,
+  "size_unity": [
+   0.339,
+   0.472,
+   0.418
+  ]
+ },
+ {
+  "asset": "Res_Helmet_Enchanted",
+  "category": "Resources",
+  "tris": 424,
+  "size_unity": [
+   0.339,
+   0.51,
+   0.376
+  ]
+ },
+ {
+  "asset": "Res_Shield_Iron",
+  "category": "Resources",
+  "tris": 132,
+  "size_unity": [
+   0.74,
+   0.92,
+   0.103
+  ]
+ },
+ {
+  "asset": "Res_Shield_Iron_Enchanted",
+  "category": "Resources",
+  "tris": 180,
+  "size_unity": [
+   0.74,
+   0.92,
+   0.163
+  ]
+ },
+ {
   "asset": "Env_Island",
   "category": "Environment",
   "tris": 4638,
@@ -907,6 +1407,346 @@
    5.365,
    4.416,
    4.36
+  ]
+ },
+ {
+  "asset": "Bld_Tavern",
+  "category": "Buildings",
+  "tris": 4060,
+  "size_unity": [
+   4.822,
+   4.883,
+   4.44
+  ]
+ },
+ {
+  "asset": "Bld_HaulersGuild",
+  "category": "Buildings",
+  "tris": 4420,
+  "size_unity": [
+   5.436,
+   5.23,
+   4.35
+  ]
+ },
+ {
+  "asset": "Bld_Mine_L2",
+  "category": "Buildings",
+  "tris": 4261,
+  "size_unity": [
+   4.729,
+   4.21,
+   4.196
+  ]
+ },
+ {
+  "asset": "Bld_Mine_L3",
+  "category": "Buildings",
+  "tris": 5553,
+  "size_unity": [
+   4.849,
+   4.3,
+   4.196
+  ]
+ },
+ {
+  "asset": "Bld_Market_L2",
+  "category": "Buildings",
+  "tris": 4908,
+  "size_unity": [
+   4.492,
+   3.91,
+   3.52
+  ]
+ },
+ {
+  "asset": "Bld_Market_L3",
+  "category": "Buildings",
+  "tris": 5270,
+  "size_unity": [
+   4.87,
+   3.91,
+   3.52
+  ]
+ },
+ {
+  "asset": "Bld_Smeltery_L2",
+  "category": "Buildings",
+  "tris": 3790,
+  "size_unity": [
+   4.9,
+   4.1,
+   4.3
+  ]
+ },
+ {
+  "asset": "Bld_Smeltery_L3",
+  "category": "Buildings",
+  "tris": 4378,
+  "size_unity": [
+   4.9,
+   4.1,
+   4.3
+  ]
+ },
+ {
+  "asset": "Bld_Forge_L2",
+  "category": "Buildings",
+  "tris": 3598,
+  "size_unity": [
+   3.52,
+   4.86,
+   3.52
+  ]
+ },
+ {
+  "asset": "Bld_Forge_L3",
+  "category": "Buildings",
+  "tris": 4024,
+  "size_unity": [
+   3.52,
+   4.86,
+   3.52
+  ]
+ },
+ {
+  "asset": "Bld_Armory_L2",
+  "category": "Buildings",
+  "tris": 3444,
+  "size_unity": [
+   3.52,
+   4.561,
+   3.174
+  ]
+ },
+ {
+  "asset": "Bld_Armory_L3",
+  "category": "Buildings",
+  "tris": 3912,
+  "size_unity": [
+   3.52,
+   4.561,
+   3.244
+  ]
+ },
+ {
+  "asset": "Bld_Field_L2",
+  "category": "Buildings",
+  "tris": 4863,
+  "size_unity": [
+   5.182,
+   2.38,
+   5.106
+  ]
+ },
+ {
+  "asset": "Bld_Field_L3",
+  "category": "Buildings",
+  "tris": 5691,
+  "size_unity": [
+   5.287,
+   2.38,
+   5.106
+  ]
+ },
+ {
+  "asset": "Bld_Farm_L2",
+  "category": "Buildings",
+  "tris": 4427,
+  "size_unity": [
+   5.125,
+   4.283,
+   4.421
+  ]
+ },
+ {
+  "asset": "Bld_Farm_L3",
+  "category": "Buildings",
+  "tris": 5237,
+  "size_unity": [
+   5.125,
+   4.283,
+   4.491
+  ]
+ },
+ {
+  "asset": "Bld_Tannery_L2",
+  "category": "Buildings",
+  "tris": 3556,
+  "size_unity": [
+   3.52,
+   4.29,
+   3.384
+  ]
+ },
+ {
+  "asset": "Bld_Tannery_L3",
+  "category": "Buildings",
+  "tris": 4424,
+  "size_unity": [
+   3.52,
+   4.29,
+   3.384
+  ]
+ },
+ {
+  "asset": "Bld_LumberCamp_L2",
+  "category": "Buildings",
+  "tris": 3686,
+  "size_unity": [
+   3.52,
+   3.67,
+   3.471
+  ]
+ },
+ {
+  "asset": "Bld_LumberCamp_L3",
+  "category": "Buildings",
+  "tris": 4116,
+  "size_unity": [
+   3.52,
+   3.67,
+   3.471
+  ]
+ },
+ {
+  "asset": "Bld_LumberMill_L2",
+  "category": "Buildings",
+  "tris": 3504,
+  "size_unity": [
+   5.45,
+   4.884,
+   3.876
+  ]
+ },
+ {
+  "asset": "Bld_LumberMill_L3",
+  "category": "Buildings",
+  "tris": 3984,
+  "size_unity": [
+   5.45,
+   4.884,
+   3.876
+  ]
+ },
+ {
+  "asset": "Bld_ShieldWorkshop_L2",
+  "category": "Buildings",
+  "tris": 3192,
+  "size_unity": [
+   3.52,
+   3.95,
+   3.241
+  ]
+ },
+ {
+  "asset": "Bld_ShieldWorkshop_L3",
+  "category": "Buildings",
+  "tris": 3624,
+  "size_unity": [
+   3.52,
+   3.95,
+   3.296
+  ]
+ },
+ {
+  "asset": "Bld_Enchanter_L2",
+  "category": "Buildings",
+  "tris": 2622,
+  "size_unity": [
+   3.52,
+   4.38,
+   3.52
+  ]
+ },
+ {
+  "asset": "Bld_Enchanter_L3",
+  "category": "Buildings",
+  "tris": 3320,
+  "size_unity": [
+   3.52,
+   4.38,
+   3.52
+  ]
+ },
+ {
+  "asset": "Bld_Tavern_L2",
+  "category": "Buildings",
+  "tris": 4884,
+  "size_unity": [
+   5.105,
+   5.165,
+   4.44
+  ]
+ },
+ {
+  "asset": "Bld_Tavern_L3",
+  "category": "Buildings",
+  "tris": 5336,
+  "size_unity": [
+   5.135,
+   5.165,
+   4.44
+  ]
+ },
+ {
+  "asset": "Bld_HaulersGuild_L2",
+  "category": "Buildings",
+  "tris": 4920,
+  "size_unity": [
+   5.436,
+   5.23,
+   4.819
+  ]
+ },
+ {
+  "asset": "Bld_HaulersGuild_L3",
+  "category": "Buildings",
+  "tris": 5416,
+  "size_unity": [
+   5.436,
+   5.413,
+   4.889
+  ]
+ },
+ {
+  "asset": "Bld_Barracks_L2",
+  "category": "Buildings",
+  "tris": 3350,
+  "size_unity": [
+   5.52,
+   4.532,
+   4.411
+  ]
+ },
+ {
+  "asset": "Bld_Barracks_L3",
+  "category": "Buildings",
+  "tris": 4082,
+  "size_unity": [
+   5.52,
+   5.62,
+   4.411
+  ]
+ },
+ {
+  "asset": "Bld_Warehouse_L2",
+  "category": "Buildings",
+  "tris": 3060,
+  "size_unity": [
+   5.379,
+   4.849,
+   4.843
+  ]
+ },
+ {
+  "asset": "Bld_Warehouse_L3",
+  "category": "Buildings",
+  "tris": 3956,
+  "size_unity": [
+   5.379,
+   4.954,
+   4.947
   ]
  },
  {

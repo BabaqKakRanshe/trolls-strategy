@@ -7,6 +7,7 @@ import math, random
 from mathutils import Vector
 from build_vitaria import p_box, p_cyl, p_ico, p_prism
 from vitaria_buildings.common import Frame, axe, brace, STONE_TOP
+from vitaria_buildings.levels import pennant, wall_banner, wall_lantern, finial
 
 NAME = "Bld_LumberCamp"
 TITLE = "Лесозаготовка"
@@ -242,3 +243,58 @@ def build(a):
     _log_stack(a, Frame((0.86, -0.60, 0), rz=-10))
     _fir(a, 1.50, 1.12)
     _chips(a, XT + 0.44, YT - 0.30, 3, 0.34, 0.55, 200, 340, seed=22)
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def _sawhorse_log(a, fr):
+    """Козлы с бревном и лучковой пилой: бревно вдоль X рамы, пила воткнута в пропил."""
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            fr.box(a, (0.08, 0.08, 0.66), (sx * 0.40, sy * 0.12, 0.30), rot=(sy * 22, 0, 0), col="wood_dark",
+                   bevel=0.0)
+        fr.box(a, (0.10, 0.10, 0.10), (sx * 0.40, 0, 0.58), col="wood_dark", bevel=0.0)
+    fr.cyl(a, 0.15, 0.15, 1.30, 8, loc=(-0.65, 0, 0.75), rot=(0, 90, 0),
+           col=lambda f: "wood_pale" if abs(f.normal.x) > 0.7 else "bark")
+    fr.box(a, (0.03, 0.30, 0.03), (0.10, 0, 1.08), col="wood_light", bevel=0.0)
+    for sy in (-1, 1):
+        fr.box(a, (0.03, 0.03, 0.36), (0.10, sy * 0.14, 0.92), col="wood_light", bevel=0.0)
+    fr.box(a, (0.02, 0.28, 0.06), (0.10, 0, 0.78), col="iron", bevel=0.0)
+
+
+def _tripod(a, x, y, h=2.55):
+    """Тренога-подъёмник над штабелем: три ноги, цепь с крюком и бревно на стропе."""
+    top = (x, y, h)
+    for ang in (90, 210, 330):
+        bx, by = x + 0.62 * math.cos(math.radians(ang)), y + 0.62 * math.sin(math.radians(ang))
+        dx, dy, dz = top[0] - bx, top[1] - by, h
+        L = math.sqrt(dx * dx + dy * dy + dz * dz)
+        tilt = math.degrees(math.acos(dz / L))
+        rz = math.degrees(math.atan2(dy, dx))
+        a.add(p_cyl(0.06, 0.05, L, 6, loc=(bx, by, 0.0), rot=(0, tilt, rz)), "wood_mid")
+    a.add(p_box((0.03, 0.03, 0.80), loc=(x, y, h - 0.42), bevel=0.0), "iron_dark")
+    a.add(p_box((0.10, 0.04, 0.08), loc=(x, y, h - 0.84), bevel=0.0), "iron_dark")
+    a.add(p_cyl(0.13, 0.13, 1.10, 8, loc=(x - 0.55, y, h - 1.02), rot=(0, 90, 0)),
+          lambda f: "wood_pale" if abs(f.normal.x) > 0.7 else "bark")
+
+
+def upgrade(a, level):
+    """2: флажок над правым передним столбом шатра, козлы с бревном и пилой перед штабелем, ещё
+    поленница у ели. 3: + тренога с подвешенным бревном над штабелем, знамя под передней обвязкой
+    шатра, золотое навершие шатра, фонари на передних столбах, топор в пне с золотым обухом."""
+    pennant(a, XT + PX, YT - PY, ZE - 0.10, level, h=1.40, side=1)
+    _sawhorse_log(a, Frame((0.42, -1.42, 0.0), rz=4))
+    for k in range(2):
+        a.add(p_cyl(0.11, 0.11, 0.62, 7, loc=(1.62 - k * 0.24, 0.40, 0.11), rot=(-90, 0, 0)),
+              lambda f: "wood_pale" if abs(f.normal.y) > 0.7 else "bark")
+    a.add(p_cyl(0.11, 0.11, 0.62, 7, loc=(1.50, 0.40, 0.31), rot=(-90, 0, 0)),
+          lambda f: "wood_pale" if abs(f.normal.y) > 0.7 else "bark")
+    if level < 3:
+        return
+    _tripod(a, 0.92, -0.55, h=2.60)
+    wall_banner(a, XT, YT - PY - 0.12, ZE - 0.22, w=0.40, h=0.66)
+    zt = ZE + 0.02 + 0.72
+    finial(a, XT, YT, zt + 0.28, h=0.30)
+    for sx in (-1, 1):
+        wall_lantern(a, XT + sx * PX, YT - PY - 0.10, 1.70, out=(sx * 0.3, -0.95))

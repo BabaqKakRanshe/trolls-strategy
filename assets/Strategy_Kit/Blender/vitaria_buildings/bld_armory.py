@@ -10,6 +10,7 @@ from build_vitaria import p_box, p_cyl, p_prism, p_taper_box, by_normal
 from vitaria_buildings.common import (Frame, gable_roof, gable_wall, stone_base, cornice, banner,
                                       barrel, heater_shield, spear, sword, armor_stand,
                                       STONE_DARK_TOP)
+from vitaria_buildings.levels import pennant, gold_ridge, wall_lantern, turret, finial
 
 NAME = "Bld_Armory"
 TITLE = "Склад экипировки"
@@ -179,3 +180,38 @@ def build(a):
     # --- решётки на боках; тыл глухой — склад и должен быть глухим, русты его держат
     for sx in (-1, 1):
         _barred_window(a, Frame((sx * W / 2, 0.20, 1.34), rz=sx * 90))
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def _canopy(a):
+    """Козырёк над дверью: два кованых кронштейна из стены и маленькая двускатная кровля цвета цепочки."""
+    y0, z0 = YF - 0.02, F + DH + 0.42
+    for sx in (-1, 1):
+        a.add(p_box((0.09, 0.56, 0.09), loc=(sx * 0.70, y0 - 0.28, z0), bevel=0.0), "iron_dark")
+        a.add(p_box((0.07, 0.07, 0.48), loc=(sx * 0.70, y0 - 0.20, z0 - 0.20), rot=(-40, 0, 0), bevel=0.0),
+              "iron_dark")
+    for sx in (-1, 1):
+        a.add(p_box((0.86, 0.70, 0.08), loc=(sx * 0.39, y0 - 0.30, z0 + 0.19), rot=(0, sx * 26, 0), bevel=0.0),
+              "roof" if sx < 0 else "roof_dark")
+    a.add(p_box((0.12, 0.74, 0.12), loc=(0, y0 - 0.30, z0 + 0.39), rot=(0, 45, 0), bevel=0.0), "wood_dark")
+
+
+def upgrade(a, level):
+    """2: флажок на правом скате у фасада, козырёк над дверью на кованых кронштейнах, ящик с копьями
+    перед левой хоругвью. 3: + башенка на левом переднем углу, золото по коньку и навершия, фонари по
+    сторонам двери."""
+    zr = ZT + 0.08 + (W / 2) * math.tan(math.radians(PITCH))
+    pennant(a, 0.62, YF + 0.10, zr - 0.62 * math.tan(math.radians(PITCH)) + 0.10, level, side=1)
+    _canopy(a)
+    cr = Frame((-0.78, YF - 0.40, 0.0), rz=4)
+    cr.box(a, (0.56, 0.34, 0.34), (0, 0, 0.17), col=by_normal("wood_pale", "wood_light", "wood_dark", 0.7), bevel=0.03)
+    for k in range(4):
+        spear(a, cr.sub((-0.18 + k * 0.12, 0.0, 0.24), rot=(0, (k - 1.5) * 5, 0)), L=1.05)
+    if level < 3:
+        return
+    turret(a, -W / 2 + 0.11, YF + 0.06, 1.70, level, r=0.36, h=1.30, rh=0.95)
+    gold_ridge(a, D + 2 * 0.08 + 0.14, zr, axis="y")
+    for sx in (-1, 1):
+        wall_lantern(a, sx * 0.86, YF - 0.06, 1.84, out=(sx * 0.3, -0.95))

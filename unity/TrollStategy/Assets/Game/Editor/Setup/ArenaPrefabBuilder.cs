@@ -132,7 +132,7 @@ namespace TrollStrategy.Editor.Setup
             };
         }
 
-        [MenuItem("TrollStrategy/Arena/Build Arena Prefabs")]
+        [MenuItem("TrollStrategy/Dev/Arena/Build Arena Prefabs")]
         public static void BuildAll()
         {
             foreach (var path in FindLayouts())

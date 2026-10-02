@@ -4,8 +4,8 @@
    "image": "resources-icons-0.png",
    "format": "RGBA8888",
    "size": {
-    "w": 1024,
-    "h": 1024
+    "w": 2048,
+    "h": 2048
    },
    "scale": 1,
    "frames": [
@@ -320,6 +320,930 @@
      "frame": {
       "x": 513,
       "y": 769,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "coal.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 769,
+      "y": 769,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "gold-nugget.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1,
+      "y": 1025,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "straw.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 257,
+      "y": 1025,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "golden-wheat.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 513,
+      "y": 1025,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "meat.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 769,
+      "y": 1025,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "milk.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1,
+      "y": 1281,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "scrap.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 257,
+      "y": 1281,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "feast.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 513,
+      "y": 1281,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "battle-axe.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 769,
+      "y": 1281,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "stone.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1,
+      "y": 1537,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "copper-ore.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 257,
+      "y": 1537,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "copper-ingot.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 513,
+      "y": 1537,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "gold-ore.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 769,
+      "y": 1537,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "gold-ingot.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1,
+      "y": 1793,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "flour.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 257,
+      "y": 1793,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "bread.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 513,
+      "y": 1793,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "cheese.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 769,
+      "y": 1793,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "ale.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1025,
+      "y": 1,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "wool.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1281,
+      "y": 1,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "cloth.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1537,
+      "y": 1,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "steel.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1793,
+      "y": 1,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-rusty-sword.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1025,
+      "y": 257,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-battle-axe.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1281,
+      "y": 257,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-patched-armor.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1537,
+      "y": 257,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-iron-armor.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1793,
+      "y": 257,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-wooden-shield.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1025,
+      "y": 513,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "steel-sword.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1281,
+      "y": 513,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-steel-sword.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1537,
+      "y": 513,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "spear.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1793,
+      "y": 513,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-spear.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1025,
+      "y": 769,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "bow.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1281,
+      "y": 769,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-bow.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1537,
+      "y": 769,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "war-hammer.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1793,
+      "y": 769,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-war-hammer.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1025,
+      "y": 1025,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "leather-armor.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1281,
+      "y": 1025,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-leather-armor.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1537,
+      "y": 1025,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "chainmail.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1793,
+      "y": 1025,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-chainmail.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1025,
+      "y": 1281,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "steel-armor.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1281,
+      "y": 1281,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-steel-armor.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1537,
+      "y": 1281,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "helmet.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1793,
+      "y": 1281,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-helmet.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1025,
+      "y": 1537,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "iron-shield.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1281,
+      "y": 1537,
+      "w": 254,
+      "h": 254
+     }
+    },
+    {
+     "filename": "enchanted-iron-shield.png",
+     "rotated": false,
+     "trimmed": false,
+     "sourceSize": {
+      "w": 254,
+      "h": 254
+     },
+     "spriteSourceSize": {
+      "x": 0,
+      "y": 0,
+      "w": 254,
+      "h": 254
+     },
+     "frame": {
+      "x": 1537,
+      "y": 1537,
       "w": 254,
       "h": 254
      }

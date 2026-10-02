@@ -14,6 +14,7 @@ import bmesh
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, by_normal, TM
 from vitaria_buildings.common import (Frame, gable_roof_x, gable_wall_x, stone_base, post, brace,
                                       cornice, plank_stack, STONE_TOP)
+from vitaria_buildings.levels import pennant, gold_ridge, wall_banner, wall_lantern, finial
 
 NAME = "Bld_LumberMill"
 TITLE = "Пилорама"
@@ -275,3 +276,45 @@ def build(a):
     # --- снаружи торцов: брёвна слева, штабель досок справа ---------------------------
     _log_pile(a)
     plank_stack(a, Frame((2.33, -0.55, 0.0), rz=90), L=1.3, w=0.24, t=0.07, cols=2, layers=5)
+
+
+# =========================================================================================
+# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# =========================================================================================
+def _crane(a, x, y, h=2.70):
+    """Кран над кучей брёвен: П-рама поперёк кучи, стрела вдоль Y к фасаду с подкосом, бревно на стропе
+    вдоль Y (к камере торцом) — кран не выходит за след по X."""
+    for sx in (-1, 1):
+        a.add(p_box((0.13, 0.13, h), loc=(x + sx * 0.30, y + 0.30, h / 2), bevel=0.0), "wood_mid")
+    a.add(p_box((0.78, 0.14, 0.14), loc=(x, y + 0.30, h), bevel=0.0), "wood_dark")
+    a.add(p_box((0.14, 1.60, 0.14), loc=(x, y - 0.40, h + 0.12), bevel=0.0), "wood_dark")
+    a.add(p_box((0.10, 0.10, 0.92), loc=(x, y + 0.02, h - 0.28), rot=(-40, 0, 0), bevel=0.0), "wood_dark")
+    a.add(p_box((0.03, 0.03, 0.62), loc=(x, y - 1.10, h - 0.22), bevel=0.0), "rope")
+    a.add(p_cyl(0.14, 0.14, 1.00, 8, loc=(x, y - 1.60, h - 0.66), rot=(-90, 0, 0)),
+          lambda f: "wood_pale" if abs(f.normal.y) > 0.7 else "bark")
+
+
+def upgrade(a, level):
+    """2: флажок на вершине щипца, второй штабель досок перед правым торцом, тачка с опилками перед
+    рамой. 3: + кран с подвешенным бревном над кучей брёвен, золото по коньку с навершиями, знамя
+    под щипцом, фонари на передних угловых стойках."""
+    tp = math.tan(math.radians(PITCH))
+    zr = ZT + 0.08 + PY * tp
+    ye = PY + OY
+    pennant(a, 0.0, -ye - 0.12, zr + 0.18, level, h=1.25, side=1)
+    plank_stack(a, Frame((1.62, -1.98, 0.0), rz=0), L=1.20, w=0.22, t=0.07, cols=2, layers=4)
+    wb = Frame((-0.72, -2.02, 0.0), rz=-12)
+    wb.prism(a, [(-0.30, 0.0), (0.12, 0.0), (0.36, 0.26), (-0.36, 0.26)], 0.46, loc=(0, 0, 0.22),
+             col=lambda f: "wood_dark" if f.normal.z < -0.5 else "wood_mid")
+    wb.ico(a, 0.26, loc=(0.0, 0, 0.50), scl=(1.2, 0.85, 0.45), col=by_normal("wood_pale", "wood_yellow", "wood_yellow", 0.4),
+           cut=0.0)
+    wb.cyl(a, 0.16, 0.16, 0.06, 10, loc=(0.40, 0.0, 0.16), rot=(90, 0, 0), col="wood_dark")
+    for sy in (-1, 1):
+        wb.box(a, (0.62, 0.05, 0.05), (-0.52, sy * 0.18, 0.28), rot=(0, -10, 0), col="wood_mid", bevel=0.0)
+    if level < 3:
+        return
+    _crane(a, -2.28, -0.30, h=2.75)
+    gold_ridge(a, 2 * PX + 2 * 0.30 + 0.14, zr, axis="x")
+    wall_banner(a, 0.0, -ye - 0.20, 2.40, w=0.44, h=0.70)
+    for sx in (-1, 1):
+        wall_lantern(a, sx * PX, -PY - 0.10, 1.95, out=(-sx * 0.3, -0.95))

@@ -23,7 +23,7 @@ namespace TrollStrategy.Editor.Setup
             PrefabStage.prefabSaved += OnPrefabSaved;
         }
 
-        [MenuItem("TrollStrategy/Bake Building Entrances")]
+        [MenuItem("TrollStrategy/Dev/Bake Building Entrances")]
         public static void BakeAll()
         {
             var catalog = LoadCatalog();
