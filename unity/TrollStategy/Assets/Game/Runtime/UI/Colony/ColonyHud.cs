@@ -27,6 +27,10 @@ namespace TrollStrategy.UI
         [SerializeField] private UIDocument _contextBar;
         [SerializeField] private UIDocument _commandFan;
         [SerializeField] private UIDocument _haulCargo;
+        [SerializeField] private UIDocument _arena;
+        [SerializeField] private UIDocument _menu;
+        [SerializeField] private UIDocument _wiki;
+        [SerializeField] private UIDocument _intro;
         [SerializeField] private UIDocument _reward;
         [SerializeField] private UIDocument _battleReward;
         [Tooltip("Developer cheat menu (F1); removed from release players.")]
@@ -60,7 +64,14 @@ namespace TrollStrategy.UI
             _mapInput = mapInput;
             _context.Session.OnSnapshotChanged += OnSnapshotChanged;
             _context.Interaction.OnInteractionChanged += OnInteractionChanged;
-            if (_mapInput != null) _mapInput.CommandFanRequested += OnCommandFanRequested;
+            if (_mapInput != null)
+            {
+                _mapInput.CommandFanRequested += OnCommandFanRequested;
+                _mapInput.MenuRequested += OnMenuRequested;
+                // an open dialog takes Esc and keeps the map's keys off while it is up
+                _mapInput.EscapeOverlay = () => _view != null && _view.CloseTopOverlay();
+                _mapInput.InputBlocked = () => _view != null && _view.BlocksMap;
+            }
             TryBuild();
         }
 
@@ -81,6 +92,10 @@ namespace TrollStrategy.UI
                 Context = Of(_contextBar),
                 Fan = Of(_commandFan),
                 HaulCargo = Of(_haulCargo),
+                Arena = Of(_arena),
+                Menu = Of(_menu),
+                Wiki = Of(_wiki),
+                Intro = Of(_intro),
                 Reward = Of(_reward),
                 BattleReward = Of(_battleReward),
                 Cheat = Of(_cheat),
@@ -121,8 +136,17 @@ namespace TrollStrategy.UI
             if ((_view == null || IsStale()) && !TryBuild()) return;
             _view.Tick(Time.unscaledDeltaTime);
             // the quest card folds and opens like its button; a HUD-only view state, not a colony command
-            if (_visible && Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame)
-                _view.Quest.ToggleCollapsed();
+            if (_visible && !_view.BlocksMap)
+            {
+                if (Hotkeys.Quest.WasPressed) _view.Quest.ToggleCollapsed();
+                if (Hotkeys.Catalog.WasPressed) _view.ToggleCatalogTool();
+                if (Hotkeys.Arena.WasPressed) _view.Arena.Toggle();
+            }
+            // K opens the book and closes it again, unless the player types it into the book's search
+            if (_visible && _view.Wiki != null && Hotkeys.Wiki.WasPressed && !_view.Wiki.IsTyping &&
+                (_view.Wiki.IsOpen || !_view.BlocksMap))
+                _view.Wiki.Toggle();
+            if (_visible && _view.Intro.IsOpen && Hotkeys.Confirm.WasPressed) _view.Intro.Close();
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
             if (_visible && Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)
                 _view.ToggleCheat();
@@ -161,6 +185,11 @@ namespace TrollStrategy.UI
 
         private void OnSnapshotChanged(GameSnapshot snapshot) => _view?.Refresh(snapshot);
 
+        private void OnMenuRequested()
+        {
+            if (_visible) _view?.Menu.Toggle();
+        }
+
         private void OnInteractionChanged()
         {
             if (_view != null) _view.OnInteractionChanged(_context.Session.CurrentSnapshot);
@@ -183,7 +212,11 @@ namespace TrollStrategy.UI
                 _context.Session.OnSnapshotChanged -= OnSnapshotChanged;
                 _context.Interaction.OnInteractionChanged -= OnInteractionChanged;
             }
-            if (_mapInput != null) _mapInput.CommandFanRequested -= OnCommandFanRequested;
+            if (_mapInput != null)
+            {
+                _mapInput.CommandFanRequested -= OnCommandFanRequested;
+                _mapInput.MenuRequested -= OnMenuRequested;
+            }
         }
     }
 }

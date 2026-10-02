@@ -39,6 +39,35 @@ namespace TrollStrategy.UI
             public Label Hint;
         }
 
+        private sealed class UpgradeRow
+        {
+            public VisualElement Root;
+            public Label Title;
+            public Label Info;
+            public Button Buy;
+            public string Id;
+            public string Description;
+        }
+
+        // what one level gives, short; the whole description is in the hint
+        private static string EffectText(UpgradeSnapshot upgrade)
+        {
+            int n = upgrade.AmountPerLevel;
+            switch (upgrade.Effect)
+            {
+                case UpgradeEffect.WalkSpeedPercent: return $"+{n}% к шагу за уровень";
+                case UpgradeEffect.CarryPercent: return $"+{n}% к грузу за уровень";
+                case UpgradeEffect.HandlingTimePercent: return $"−{n}% к погрузке за уровень";
+                case UpgradeEffect.LoadersPerDoor: return $"+{n} место у двери за уровень";
+                case UpgradeEffect.SquadSize: return $"+{n} боец в отряде за уровень";
+                case UpgradeEffect.FighterHealthPercent: return $"+{n}% здоровья бойцов за уровень";
+                case UpgradeEffect.FighterDamage: return $"+{n} к урону бойцов за уровень";
+                case UpgradeEffect.BattleCooldownPercent: return $"−{n}% к отдыху арены за уровень";
+                case UpgradeEffect.BattleRewardPercent: return $"+{n}% к награде арены за уровень";
+                default: return upgrade.Description;
+            }
+        }
+
         private readonly ColonyHudContext _context;
         private readonly VisualElement _panel;
         private readonly Label _title;
@@ -49,15 +78,20 @@ namespace TrollStrategy.UI
         private readonly VisualElement _slots;
         private readonly List<Row> _rowPool = new();
         private readonly List<Slot> _slotPool = new();
+        private readonly VisualElement _upgrades;
+        private readonly List<UpgradeRow> _upgradePool = new();
         private readonly StaffList _staff;
         private readonly ActionButton[] _actions = new ActionButton[ActionCount];
         private int _rowCount;
         private int _actionCount;
         private string _shownId;
 
-        public InspectPanel(VisualElement root, ColonyHudContext context)
+        private readonly HudTooltip _tooltip;
+
+        public InspectPanel(VisualElement root, ColonyHudContext context, HudTooltip tooltip = null)
         {
             _context = context;
+            _tooltip = tooltip;
             _panel = Ui.Require<VisualElement>(root, "inspect");
             _title = Ui.Require<Label>(root, "inspect-title");
             _subtitle = Ui.Require<Label>(root, "inspect-subtitle");
@@ -65,6 +99,9 @@ namespace TrollStrategy.UI
             _note = Ui.Require<Label>(root, "inspect-note");
             _slotsHeader = Ui.Require<Label>(root, "inspect-slots-header");
             _slots = Ui.Require<VisualElement>(root, "inspect-slots");
+            // the guild's and the barracks' colony upgrades, one row each, under the facts
+            _upgrades = Ui.Box("upgrades");
+            _rows.parent.Insert(_rows.parent.IndexOf(_rows) + 1, _upgrades);
             var staffScroll = Ui.Require<ScrollView>(root, "inspect-staff-scroll");
             staffScroll.verticalScrollerVisibility = ScrollerVisibility.Hidden;
             staffScroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
@@ -85,6 +122,18 @@ namespace TrollStrategy.UI
         public bool IsShown => Ui.IsShown(_panel);
         public string Title => _title.text;
         public StaffList Staff => _staff;
+
+        /// <summary>The buy buttons of the shown upgrades, top to bottom.</summary>
+        public IReadOnlyList<Button> UpgradeButtons
+        {
+            get
+            {
+                var visible = new List<Button>();
+                foreach (var row in _upgradePool)
+                    if (Ui.IsShown(row.Root)) visible.Add(row.Buy);
+                return visible;
+            }
+        }
 
         /// <summary>The visible action buttons, left to right.</summary>
         public IReadOnlyList<Button> Actions
@@ -174,9 +223,12 @@ namespace TrollStrategy.UI
                     break;
             }
             if (building.Kind == BuildingKind.Barracks)
-                note = "Здесь собираются и отдыхают свободные миньоны.";
+                note = "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене.";
+            if (building.Kind == BuildingKind.HaulersGuild)
+                note = "Улучшения гильдии действуют на всех носильщиков колонии сразу.";
             EndRows();
             SetNote(note);
+            RenderUpgrades(building.Kind, snapshot);
             RenderSlots(building);
             _staff.Show(building, snapshot);
 
@@ -187,9 +239,10 @@ namespace TrollStrategy.UI
             {
                 foreach (var unit in catalog.Units)
                 {
-                    if (unit == null || _actionCount >= ActionCount) continue;
+                    if (unit == null || !unit.Hireable || _actionCount >= ActionCount) continue;
                     var kind = unit.Kind;
                     bool open = snapshot.Progress.IsUnitUnlocked(kind);
+                    if (!open) continue;
                     int price = _context.Session.HirePrice(kind);
                     AddAction("Нанять: " + unit.DisplayName.ToLowerInvariant(), open ? Ui.Gold(price) : "закрыто",
                         "btn--primary", open && snapshot.Gold >= price, () => interaction.RecruitUnit(kind));
@@ -198,8 +251,10 @@ namespace TrollStrategy.UI
             else
             {
                 bool maxed = building.UpgradeCost < 0;
-                AddAction("Улучшить", maxed ? "макс. уровень" : Ui.Gold(building.UpgradeCost), "btn--primary",
-                    !maxed && snapshot.Gold >= building.UpgradeCost, interaction.UpgradeInspectedBuilding);
+                // a building without levels (the guild, the armory) shows no upgrade at all
+                if (definition.MaxLevel > 1)
+                    AddAction("Улучшить", maxed ? "макс. уровень" : Ui.Gold(building.UpgradeCost), "btn--primary",
+                        !maxed && snapshot.Gold >= building.UpgradeCost, interaction.UpgradeInspectedBuilding);
                 bool removable = definition.Constructible;
                 AddAction("Снести", removable ? "вернуть " + Ui.Gold(building.RefundGold) : "нельзя снести", "btn--danger",
                     removable, interaction.DemolishInspectedBuilding);
@@ -230,6 +285,7 @@ namespace TrollStrategy.UI
             if (assignment.Kind == AssignmentKind.Haul) AddRow("Возит", _context.Session.DescribeCargo(assignment));
             EndRows();
             _staff.Hide();
+            HideUpgrades();
 
             var selected = _context.Interaction.SelectedIds;
             var note = new List<string>();
@@ -385,6 +441,50 @@ namespace TrollStrategy.UI
             root.Add(count);
             _slots.Add(root);
             return new Slot { Root = root, Icon = icon, Count = count };
+        }
+
+        // One row per upgrade this building hosts: its level, what it does, and a button with the next price.
+        private void RenderUpgrades(BuildingKind host, GameSnapshot snapshot)
+        {
+            int shown = 0;
+            foreach (var upgrade in snapshot.Upgrades)
+            {
+                if (upgrade.Host != host) continue;
+                if (shown == _upgradePool.Count) _upgradePool.Add(CreateUpgradeRow());
+                var row = _upgradePool[shown++];
+                row.Id = upgrade.Id;
+                Ui.Show(row.Root, true);
+                Ui.SetText(row.Title, $"{upgrade.Name}: {upgrade.Level} из {upgrade.MaxLevel}");
+                Ui.SetText(row.Info, EffectText(upgrade));
+                row.Description = upgrade.Description;
+                Ui.SetCaption(row.Buy, upgrade.IsMaxed ? "максимум" : Ui.Gold(upgrade.NextCost));
+                UiFeel.SetAvailable(row.Buy, !upgrade.IsMaxed && upgrade.HostBuilt && snapshot.Gold >= upgrade.NextCost);
+            }
+            for (int i = shown; i < _upgradePool.Count; i++) Ui.Show(_upgradePool[i].Root, false);
+            Ui.Show(_upgrades, shown > 0);
+        }
+
+        private void HideUpgrades()
+        {
+            foreach (var row in _upgradePool) Ui.Show(row.Root, false);
+            Ui.Show(_upgrades, false);
+        }
+
+        private UpgradeRow CreateUpgradeRow()
+        {
+            var row = new UpgradeRow { Root = Ui.Box("upgrade") };
+            var text = Ui.Box("upgrade__text");
+            row.Title = Ui.Text(string.Empty, "upgrade__title t-bold");
+            row.Info = Ui.Text(string.Empty, "upgrade__info");
+            text.Add(row.Title);
+            text.Add(row.Info);
+            row.Buy = Ui.CaptionButton(string.Empty, null, "btn btn--primary upgrade__buy");
+            UiFeel.Bind(row.Buy, () => { if (row.Id != null) _context.Interaction.BuyUpgrade(row.Id); });
+            _tooltip?.Attach(row.Root, () => row.Title.text, () => row.Description);
+            row.Root.Add(text);
+            row.Root.Add(row.Buy);
+            _upgrades.Add(row.Root);
+            return row;
         }
 
         private void BeginActions() => _actionCount = 0;

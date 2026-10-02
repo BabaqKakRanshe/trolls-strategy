@@ -69,6 +69,34 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void QuestCard_FoldsForABuildingCard_AndOpensWhenThePlayerAsks()
+        {
+            var building = _session.CurrentSnapshot.Buildings.First();
+            _interaction.SelectBuilding(building.Id);
+            Refresh();
+            Assert.That(_hud.Inspect.IsShown, Is.True);
+            Assert.That(_hud.Quest.IsCollapsed, Is.True, "The building card takes the column");
+
+            _hud.Quest.ToggleCollapsed();
+            Refresh();
+            Refresh();
+            Assert.That(_hud.Quest.IsCollapsed, Is.False, "The player opened it: the next refresh must not fold it again");
+
+            _hud.Quest.ToggleCollapsed();
+            _interaction.CloseInspect();
+            Refresh();
+            Assert.That(_hud.Inspect.IsShown, Is.False);
+            Assert.That(_hud.Quest.IsCollapsed, Is.True, "Folded by the player, it stays folded");
+
+            _hud.Quest.ToggleCollapsed();
+            _interaction.SelectBuilding(building.Id);
+            Refresh();
+            _interaction.CloseInspect();
+            Refresh();
+            Assert.That(_hud.Quest.IsCollapsed, Is.False, "Folded for the card, it opens again when the card closes");
+        }
+
+        [Test]
         public void Catalog_OpensOnCreatures_PointsAtTheGoblin_AndKeepsClosedThingsShut()
         {
             Assert.That(_hud.Catalog.ShowsUnits, Is.True);
@@ -218,6 +246,10 @@ namespace TrollStrategy.Tests
             Assert.That(_hud.Reward.Facts[0], Is.EqualTo($"{mine.Width}×{mine.Height}"));
             Assert.That(_hud.Reward.Facts, Does.Contain($"до {mine.MaxWorkers} рабочих"));
             Assert.That(_hud.Reward.Facts, Does.Contain(string.Join(" ", parts)), "The recipe as pictures and numbers");
+            Assert.That(_hud.Reward.Facts, Does.Contain(_catalog.GetBuilding(BuildingKind.Smeltery).DisplayName),
+                "Where the ore goes: the smeltery takes it");
+            Assert.That(_hud.Reward.Facts, Does.Contain(_catalog.GetBuilding(BuildingKind.Market).DisplayName),
+                "and the market buys it");
             Assert.That(_hud.Reward.Where,
                 Is.EqualTo($"Уже в каталоге, вкладка «Здания», {_session.BuildingPrice(BuildingKind.Mine)} золота"));
         }

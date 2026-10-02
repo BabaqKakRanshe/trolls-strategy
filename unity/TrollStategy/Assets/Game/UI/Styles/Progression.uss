@@ -280,6 +280,33 @@
     margin-top: 8px;
 }
 
+/* a building's chain: one line per fact group, its caption on the left */
+.reward__facts--chain {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.reward__line {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin: 2px 0;
+}
+
+.reward__line-caption {
+    font-size: 20px;
+    margin-right: 4px;
+    color: var(--ink-soft);
+}
+
+.reward__fact-building {
+    width: 46px;
+    height: 46px;
+    margin-right: 4px;
+}
+
 .reward__fact {
     flex-direction: row;
     align-items: center;

@@ -229,6 +229,12 @@
     opacity: 0;
 }
 
+/* under the orders tray while creatures are selected or the map waits for a pick */
+.catalog.is-covered {
+    translate: 0 300px;
+    opacity: 0;
+}
+
 /* The tabs, at the band's left end. */
 .catalog__side {
     position: absolute;
@@ -290,9 +296,11 @@
     -unity-text-align: middle-center;
 }
 
-/* A thing to build or hire: a round picture with its name and price under it; details in the hint. */
+/* A thing to build or hire: a round picture with its name and price under it; details in the hint. A token
+   keeps its width in a scrolling tray: shrunk, its name breaks letter by letter. */
 .token {
     width: 139px;
+    flex-shrink: 0;
     align-items: center;
     margin: 0 13px 2px 13px;
 }
@@ -437,69 +445,180 @@
 }
 
 /*
- * The order prompt: a white sheet at the top in the middle, what the map expects and the way out. Its layer
- * centres it, so it measures against the whole width; past its width the buttons go onto a line of their
- * own, and it stays clear of the quest column and the tools.
+ * The orders tray (ContextBar): while creatures are selected or the map waits for a pick, the catalog steps
+ * down and the orders take its place. The left end says who or what, as the catalog's tabs stand there; the
+ * middle holds round tokens like the catalog's; the right end stays clear for the status line.
  */
 
-.context {
-    align-self: center;
-    margin-top: 96px;
-    max-width: 1000px;
-    align-items: center;
-}
-
-.context__targets {
+.orders {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 16px;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 10px;
+    align-items: flex-end;
 }
 
-.context__row {
+.orders__side {
+    width: 460px;
+    flex-shrink: 0;
     flex-direction: row;
-    flex-wrap: wrap;
+    align-items: center;
+    padding-left: 96px;
+    margin-bottom: 34px;
+}
+
+/* disc.png's 66 px circle in this 88 box; the picture of who or what sits on it */
+.orders__portrait {
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+    margin: -11px 2px -11px -11px;
     align-items: center;
     justify-content: center;
+    background-image: url("../Sprites/disc.png");
 }
 
-.context__text {
+.orders__portrait-art {
+    width: 46px;
+    height: 46px;
+}
+
+.orders__text {
     flex-shrink: 1;
-    margin-right: 16px;
-    margin-bottom: 4px;
-    max-width: 440px;
+    align-items: flex-start;
 }
 
-.context__title {
-    font-size: 19px;
-    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
+.orders__title {
+    font-size: 24px;
+    white-space: normal;
 }
 
-.context__prompt {
-    font-size: 15px;
+.orders__prompt {
+    margin-top: 2px;
+    font-size: 16px;
     color: var(--ink-soft);
     white-space: normal;
 }
 
-.context__actions {
+.orders__clear {
+    min-height: 30px;
+    margin-top: 6px;
+    margin-left: -10px;
+    padding: 0 10px;
+    border-width: 0;
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 15px;
+    color: var(--ink-soft);
+}
+
+.orders__clear:hover {
+    background-color: rgba(255, 255, 255, 0.6);
+    color: var(--ink);
+}
+
+.orders__middle {
+    flex-grow: 1;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.orders__row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* the load of one selected hauler: the good and its count, then the coin and its price */
+.orders__load {
+    flex-direction: row;
+    align-items: center;
+    align-self: center;
+    margin: 0 24px 22px 0;
+}
+
+.orders__load-art {
+    width: 56px;
+    height: 56px;
+    margin-right: 4px;
+}
+
+.orders__load-text {
+    font-size: 26px;
+    margin-right: 14px;
+}
+
+.orders__end {
+    width: 460px;
+    flex-shrink: 0;
+}
+
+/* a name with its key under the disc */
+.orders__name {
+    flex-direction: row;
     align-items: center;
     justify-content: center;
 }
 
-.context__actions > .btn {
-    margin-left: 8px;
+/* keys as white keycaps, readable over the island */
+.orders__key,
+.orders__clear .hotkey {
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 7px;
+    border-width: 1px;
+    border-color: var(--paper-line);
+    background-color: var(--paper);
+    font-size: 13px;
+    color: var(--ink);
 }
 
-.chip {
-    min-height: 38px;
-    margin: 0 4px 6px 4px;
-    padding: 0 16px;
-    font-size: 15px;
+.orders__key {
+    margin-top: 6px;
 }
 
-/* Right-click command fan */
+.orders .token__disc > .glyph {
+    width: 44px;
+    height: 44px;
+}
+
+.orders__coin-art {
+    width: 72px;
+    height: 72px;
+}
+
+/* the main orders: a roof-blue disc with a white glyph, as in the tools */
+.orders .btn-disc.is-primary,
+.fan .btn-disc.is-primary {
+    -unity-background-image-tint-color: var(--accent);
+}
+
+.orders .btn-disc.is-primary > .glyph,
+.fan .btn-disc.is-primary > .glyph {
+    -unity-background-image-tint-color: var(--paper);
+}
+
+/* the quest's next order still breathes, blue or not */
+.orders .btn-disc.is-primary.is-suggested {
+    -unity-background-image-tint-color: var(--accent-soft);
+}
+
+.hud-pulse .orders .btn-disc.is-primary.is-suggested {
+    -unity-background-image-tint-color: var(--accent-pulse);
+}
+
+.orders .btn-disc.is-primary.is-suggested > .glyph {
+    -unity-background-image-tint-color: var(--accent-deep);
+}
+
+/*
+ * Right-click orders (CommandFan): an arc of three round buttons over the click; the key's letter on each
+ * rim, the name and meaning in the hint.
+ */
 
 .fan {
     position: absolute;
@@ -507,15 +626,30 @@
     height: 0;
 }
 
-/* left/top come from code and mark the button's centre */
-.fan__button {
+/* left/top come from code and mark the button's centre; disc.png's 60 px circle in this 80 box */
+.fan__disc {
     position: absolute;
     translate: -50% -50%;
-    width: 132px;
-    height: 50px;
-    min-height: 50px;
-    border-radius: 25px;
-    border-color: rgba(47, 91, 174, 0.4);
+    width: 80px;
+    height: 80px;
+}
+
+.fan__disc > .glyph {
+    width: 28px;
+    height: 28px;
+}
+
+.fan__key {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    padding: 1px 6px;
+    border-radius: 7px;
+    background-color: var(--paper);
+    border-width: 1px;
+    border-color: var(--paper-line);
+    font-size: 13px;
+    color: var(--ink);
 }
 
 /* What a haul order carries: a dialog in the middle of the screen, a card per good */
@@ -716,4 +850,711 @@
     height: 30px;
     min-height: 30px;
     font-size: 18px;
+}
+
+/* colony upgrades in the guild's and the barracks' card: one row each, the price on a button */
+.upgrades {
+    flex-direction: column;
+    margin-top: 6px;
+}
+
+.upgrade {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.upgrade__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-right: 8px;
+}
+
+.upgrade__title {
+    font-size: 17px;
+}
+
+.upgrade__info {
+    font-size: 14px;
+    white-space: normal;
+}
+
+.upgrade__buy {
+    flex-shrink: 0;
+    min-width: 96px;
+    height: 38px;
+    font-size: 15px;
+}
+
+/* The left column: the quest keeps its height, the inspect card below it shrinks (and its quest folds). */
+.col-fixed {
+    flex-shrink: 0;
+}
+
+.col-flex {
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+/*
+ * Catalog pages (CatalogPager): a row of whole tokens, round arrows hanging at its ends in the band's clear
+ * ends, a dot per page over the row. The arrow towards the quest's page wears an accent pip.
+ */
+.catalog-pager {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-shrink: 0;
+}
+
+.catalog-arrow {
+    position: absolute;
+    top: 30px;
+    width: 64px;
+    height: 64px;
+    align-items: center;
+    justify-content: center;
+}
+
+.catalog-arrow--prev {
+    right: 100%;
+    margin-right: 4px;
+}
+
+.catalog-arrow--next {
+    left: 100%;
+    margin-left: 4px;
+}
+
+.catalog-arrow__glyph {
+    width: 24px;
+    height: 24px;
+}
+
+.catalog-arrow--prev > .catalog-arrow__glyph {
+    rotate: -90deg;
+}
+
+.catalog-arrow--next > .catalog-arrow__glyph {
+    rotate: 90deg;
+}
+
+.catalog-arrow__pip {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    border-width: 2px;
+    border-color: var(--paper);
+    background-color: var(--accent);
+}
+
+.catalog-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -22px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.catalog-dot {
+    width: 10px;
+    height: 10px;
+    margin: 0 4px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-width: 1px;
+    border-color: var(--paper-line);
+}
+
+.catalog-dot.is-on {
+    background-color: var(--ink);
+    border-color: var(--ink);
+}
+
+.catalog-dot.is-quest {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+/* the hire stepper steps aside for the page arrow */
+.stepper.stepper--paged {
+    margin-right: 108px;
+}
+
+/* Catalog trays: one row of tokens that scrolls sideways when the band is too narrow. */
+.tray-scroll {
+    flex-shrink: 1;
+    max-width: 100%;
+}
+
+.tray--row {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+}
+
+/*
+ * Arena poster (ArenaPanel): the ladder as a rail of level discs on the left, the chosen level on the right.
+ * The rail scrolls when the ladder outgrows the sheet; the poster keeps its place.
+ */
+.arena-dialog {
+    flex-direction: row;
+    width: 900px;
+    max-width: 94%;
+    max-height: 90%;
+    padding: 40px 48px 54px 36px;
+}
+
+/* the poster sets the sheet's height; the rail fills it and scrolls, so a long ladder leaves no blank sheet */
+.arena-rail {
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.arena-rail__scroll {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.arena-rail__scroll .unity-scroll-view__content-container {
+    align-items: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.arena-rail__level {
+    align-items: center;
+}
+
+.arena-rail__path {
+    align-items: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.arena-rail__dot {
+    width: 6px;
+    height: 6px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border-radius: 3px;
+    background-color: var(--paper-line);
+}
+
+.arena-rail__level.is-closed .arena-rail__path {
+    opacity: 0.5;
+}
+
+/* disc.png: a 57 px circle in this box */
+.arena-rail__disc {
+    width: 76px;
+    height: 76px;
+}
+
+.arena-rail__disc > .btn__caption {
+    font-size: 24px;
+}
+
+.arena-rail__level.is-closed .arena-rail__disc > .btn__caption {
+    color: var(--ink-faint);
+}
+
+.arena-rail__level .arena-rail__disc.is-on > .btn__caption {
+    color: var(--paper);
+}
+
+/* a tick on a won level, a lock on the closed one, on the disc's upper right */
+.arena-rail__badge {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+    border-color: var(--paper);
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+}
+
+.arena-rail__badge--won {
+    background-color: var(--good-fill);
+}
+
+.arena-rail__badge--closed {
+    background-color: var(--ink-faint);
+}
+
+.arena-rail__badge > .glyph {
+    width: 13px;
+    height: 13px;
+    -unity-background-image-tint-color: var(--paper);
+}
+
+.arena-rail__rest {
+    flex-direction: row;
+    align-items: center;
+    margin-top: -6px;
+}
+
+.arena-rail__rest > .glyph {
+    width: 14px;
+    height: 14px;
+    margin-right: 3px;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.arena-rail__rest-time {
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+.arena-dialog__rule {
+    width: 1px;
+    flex-shrink: 0;
+    margin: 4px 0;
+    background-color: var(--paper-line);
+}
+
+.arena-poster {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    padding-left: 28px;
+}
+
+.arena-poster__head {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.arena-poster__titles {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.arena-poster__eyebrow {
+    font-size: 15px;
+    color: var(--ink-soft);
+}
+
+.arena-poster__name {
+    font-size: 32px;
+    white-space: normal;
+}
+
+/* your squad's places against the enemy, as they stand on the board; both captions on one line */
+.arena-lineup {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 14px 20px 14px 22px;
+    margin-bottom: 18px;
+    border-radius: 22px;
+    background-color: var(--paper-soft);
+}
+
+.arena-lineup__side--enemy {
+    align-items: flex-end;
+}
+
+.arena-lineup__caption {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+}
+
+/* the rows fill the height under the captions and centre on each other */
+.arena-lineup__row {
+    flex-grow: 1;
+    flex-direction: row;
+    align-items: center;
+}
+
+/* four places to a row */
+.arena-squad {
+    flex-wrap: wrap;
+    align-content: center;
+    width: 184px;
+}
+
+.arena-slot {
+    width: 40px;
+    height: 40px;
+    margin: 0 6px 6px 0;
+    border-width: 2px;
+    border-color: var(--paper-line);
+    border-radius: 20px;
+}
+
+/* level with the rows: pushed down by the captions' height */
+.arena-lineup__versus {
+    align-self: center;
+    width: 34px;
+    height: 34px;
+    margin: 31px 10px 0 10px;
+    -unity-background-image-tint-color: var(--ink-faint);
+}
+
+.arena-foe {
+    align-items: center;
+    margin-left: 2px;
+}
+
+/* disc.png: a 72 px circle in this box */
+.arena-foe__disc {
+    width: 96px;
+    height: 96px;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../Sprites/disc.png");
+}
+
+.arena-foe__art {
+    width: 54px;
+    height: 54px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.arena-foe__count {
+    margin-top: -22px;
+    padding: 0 9px;
+    border-radius: 11px;
+    background-color: var(--ink);
+    color: var(--paper);
+    font-size: 15px;
+}
+
+.arena-facts {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+/* a picture, its number or name, and a line on what it means */
+.arena-fact {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 36px;
+    margin-bottom: 4px;
+}
+
+.arena-fact__coin {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.arena-fact__ring {
+    width: 44px;
+    height: 44px;
+    margin-right: 10px;
+    border-width: 3px;
+    border-color: var(--accent);
+    border-radius: 22px;
+    background-color: var(--accent-soft);
+    align-items: center;
+    justify-content: center;
+}
+
+.arena-fact__art {
+    width: 28px;
+    height: 28px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.arena-fact__value {
+    font-size: 18px;
+}
+
+.arena-fact__value--gold {
+    font-size: 24px;
+    color: var(--coin-deep);
+}
+
+.arena-fact__value--hire {
+    color: var(--accent-deep);
+}
+
+.arena-fact__note {
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.arena-poster__foot {
+    flex-direction: row;
+    align-items: center;
+}
+
+.arena-poster__picture {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    margin-right: 8px;
+}
+
+.arena-poster__glyph {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.arena-poster__state {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-right: 16px;
+    font-size: 15px;
+    color: var(--ink-soft);
+    white-space: normal;
+}
+
+.arena-poster__fight {
+    min-width: 200px;
+    min-height: 56px;
+    border-radius: 28px;
+    font-size: 19px;
+}
+
+/* Pause menu: the first page on the halo over the island, the others on a sheet with a back arrow */
+.menu-pause {
+    align-items: center;
+    margin-top: -40px;
+}
+
+.menu-pause__title {
+    font-size: 64px;
+}
+
+.menu-pause__note {
+    margin-top: 2px;
+    font-size: 19px;
+}
+
+/* room above the discs for a hint card, so it never covers the title */
+.menu-pause__actions {
+    flex-direction: row;
+    margin-top: 100px;
+}
+
+.pause-action {
+    align-items: center;
+    width: 172px;
+}
+
+/* disc.png: the 102 px circle sits in the middle of this box */
+.pause-action__disc {
+    width: 136px;
+    height: 136px;
+}
+
+.pause-action__disc > .glyph {
+    width: 40px;
+    height: 40px;
+}
+
+.pause-action__caption {
+    margin-top: -10px;
+    font-size: 19px;
+}
+
+.menu-dialog {
+    width: 580px;
+    max-width: 94%;
+}
+
+.menu-dialog__title {
+    flex-grow: 1;
+    margin-left: 10px;
+    font-size: 30px;
+}
+
+.menu-page {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.menu-caption {
+    margin-top: 4px;
+    margin-bottom: 2px;
+}
+
+.setting-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 48px;
+}
+
+.setting-row__glyph {
+    width: 22px;
+    height: 22px;
+    margin-right: 14px;
+}
+
+/* a longer word in another language pushes its control instead of running under it */
+.setting-row__label {
+    min-width: 104px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    font-size: 17px;
+}
+
+.setting-row__control {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.setting-row__value {
+    width: 44px;
+    flex-shrink: 0;
+    font-size: 16px;
+    -unity-text-align: middle-right;
+}
+
+/* under the graphics choices, from where they start */
+.setting-note {
+    margin: 0 0 4px 148px;
+    font-size: 14px;
+    white-space: normal;
+}
+
+.language-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.language-choice {
+    width: 32.5%;
+    margin-bottom: 8px;
+    padding: 0 8px;
+}
+
+.menu-text {
+    margin-bottom: 12px;
+    font-size: 16px;
+    white-space: normal;
+}
+
+.menu-help {
+    margin-bottom: 10px;
+}
+
+.menu-note {
+    margin-bottom: 8px;
+    font-size: 14px;
+    white-space: normal;
+}
+
+.menu-version {
+    margin-top: 12px;
+    font-size: 13px;
+    -unity-text-align: middle-center;
+}
+
+.menu-buttons {
+    flex-direction: row;
+    margin-top: 18px;
+}
+
+.menu-buttons__button {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-height: 52px;
+    margin: 0 5px;
+}
+
+/* The notice that opens a new version: what this build is on the left, the community on the right */
+.intro-dialog {
+    width: 900px;
+    max-width: 94%;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.intro-dialog__main {
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding-right: 26px;
+}
+
+.intro-dialog__heading {
+    flex-direction: row;
+    align-items: center;
+}
+
+.intro-dialog__title {
+    margin-right: 12px;
+    font-size: 36px;
+}
+
+.intro-dialog__text {
+    margin-top: 12px;
+    font-size: 17px;
+    white-space: normal;
+}
+
+.intro-dialog__help {
+    margin-top: 14px;
+}
+
+.intro-dialog__note {
+    margin-top: 18px;
+    font-size: 14px;
+    white-space: normal;
+}
+
+.intro-dialog__actions {
+    flex-direction: row;
+    margin-top: 10px;
+}
+
+.intro-play {
+    min-width: 220px;
+    min-height: 54px;
+    margin-right: 12px;
+}
+
+.intro-steam {
+    min-height: 54px;
+}
+
+.intro-steam__glyph {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+.intro-dialog__side {
+    width: 280px;
+    flex-shrink: 0;
+    padding: 18px 16px;
+}
+
+.link-rows > .link-row {
+    margin-top: 8px;
+}
+
+.rotate-dialog {
+    width: 80%;
+    align-items: center;
+}
+
+.rotate-dialog__title {
+    font-size: 36px;
+}
+
+.rotate-dialog__text {
+    font-size: 17px;
+    white-space: normal;
+    -unity-text-align: middle-center;
 }

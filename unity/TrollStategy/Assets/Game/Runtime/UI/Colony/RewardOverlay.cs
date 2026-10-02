@@ -60,6 +60,7 @@ namespace TrollStrategy.UI
         private readonly VisualElement[] _head;
         private readonly VisualElement[] _details;
         private readonly List<string> _factTexts = new();
+        private VisualElement _line;
 
         private QuestSnapshot _shown;
         private RewardSnapshot _headline;
@@ -298,6 +299,8 @@ namespace TrollStrategy.UI
         {
             _facts.Clear();
             _factTexts.Clear();
+            _line = null;
+            _facts.RemoveFromClassList("reward__facts--chain");
             string description = reward?.Description ?? string.Empty;
             string where = string.Empty;
             var session = _context.Session;
@@ -313,9 +316,7 @@ namespace TrollStrategy.UI
                         break;
                     }
                     description = string.Empty;
-                    AddFact("glyph--grid", $"{building.Width}×{building.Height}");
-                    if (building.MaxWorkers > 0) AddFact("glyph--idle", $"до {building.MaxWorkers} рабочих");
-                    foreach (var recipe in building.Recipes) AddRecipe(recipe);
+                    AddChain(building);
                     break;
                 case QuestRewardKind.UnlockUnit:
                     var unit = Unit(reward.Reward.Unit);
@@ -341,7 +342,98 @@ namespace TrollStrategy.UI
             _factTexts.Add(text);
         }
 
-        // A recipe as pictures and numbers: what goes in, an arrow, what comes out; a bonus as its own fact.
+        // The building's place in the chain, one line each: its size and crew, its main recipe, where its goods
+        // come from and where they go, what it finds by chance and spoils. The other recipes are counted, not
+        // drawn: the card of the building lists them.
+        private void AddChain(BuildingDefinition building)
+        {
+            _facts.AddToClassList("reward__facts--chain");
+            Line(null);
+            AddFact("glyph--grid", $"{building.Width}×{building.Height}");
+            if (building.MaxWorkers > 0) AddFact("glyph--idle", $"до {building.MaxWorkers} рабочих");
+
+            var main = GameSession.MainRecipe(building);
+            Line(main.Inputs.Length > 0 ? "Делает" : "Добывает");
+            AddRecipe(main);
+
+            var sources = Four(ChainLinks.Makers(_context.Catalog, ChainLinks.Kinds(main.Inputs), building.Kind));
+            if (sources.Count > 0)
+            {
+                Line("Откуда сырьё");
+                foreach (var source in sources) AddBuilding(source);
+            }
+            var users = Four(ChainLinks.Takers(_context.Catalog, ChainLinks.Kinds(main.Outputs), building.Kind));
+            if (users.Count > 0)
+            {
+                Line("Куда товар");
+                foreach (var user in users) AddBuilding(user);
+            }
+            if (main.Extras.Length > 0)
+            {
+                Line("Иногда");
+                foreach (var extra in main.Extras)
+                {
+                    var bonus = Fact();
+                    string text = Amount(bonus, extra.Output, "+");
+                    string chance = extra.MinLevel > 1 ? $"{extra.ChancePercent}%, с {extra.MinLevel} уровня" : $"{extra.ChancePercent}%";
+                    var note = FactText(chance);
+                    note.AddToClassList("reward__fact-note");
+                    bonus.Add(note);
+                    _factTexts.Add(text + " " + chance);
+                }
+            }
+            if (main.FailChancePercent > 0 && main.FailOutputs.Length > 0)
+            {
+                Line($"Брак {main.FailChancePercent}%");
+                _factTexts.Add(Amount(Fact(), main.FailOutputs[0], string.Empty));
+            }
+            int later = building.Recipes.Count - 1;
+            if (later > 0)
+            {
+                Line(null);
+                string more = $"Других рецептов: {later}, они в карточке здания";
+                var note = FactText(more);
+                note.AddToClassList("reward__fact-note");
+                Fact().Add(note);
+                _factTexts.Add(more);
+            }
+            _line = null;
+        }
+
+        // at most four neighbours a line, in catalog order
+        private static List<BuildingDefinition> Four(List<BuildingDefinition> list)
+        {
+            if (list.Count > 4) list.RemoveRange(4, list.Count - 4);
+            return list;
+        }
+
+        private void AddBuilding(BuildingDefinition building)
+        {
+            var fact = Fact();
+            var icon = RewardArt.BuildingIcon(building);
+            if (icon != null)
+            {
+                var art = new Image { sprite = icon, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                art.AddToClassList("reward__fact-building");
+                fact.Add(art);
+            }
+            fact.Add(FactText(building.DisplayName));
+            _factTexts.Add(building.DisplayName);
+        }
+
+        // A new line of facts with its caption at the left; without a caption the line just starts.
+        private void Line(string caption)
+        {
+            _line = Ui.Box("reward__line");
+            _line.pickingMode = PickingMode.Ignore;
+            _facts.Add(_line);
+            if (string.IsNullOrEmpty(caption)) return;
+            var label = Ui.Text(caption, "reward__line-caption t-bold");
+            label.pickingMode = PickingMode.Ignore;
+            _line.Add(label);
+        }
+
+        // A recipe as pictures and numbers: what goes in, an arrow, what comes out.
         private void AddRecipe(ProductionRecipe recipe)
         {
             var fact = Fact();
@@ -353,16 +445,14 @@ namespace TrollStrategy.UI
                 words.Add("→");
             }
             foreach (var output in recipe.Outputs) words.Add(Amount(fact, output, string.Empty));
+            if (recipe.MinLevel > 1)
+            {
+                var level = FactText($"с {recipe.MinLevel} уровня");
+                level.AddToClassList("reward__fact-note");
+                fact.Add(level);
+                words.Add($"с {recipe.MinLevel} уровня");
+            }
             _factTexts.Add(string.Join(" ", words));
-            if (!recipe.HasBonus) return;
-
-            var bonus = Fact();
-            string text = Amount(bonus, recipe.BonusOutput, "+");
-            string every = $"раз в {recipe.BonusEveryCycles} циклов";
-            var note = FactText(every);
-            note.AddToClassList("reward__fact-note");
-            bonus.Add(note);
-            _factTexts.Add(text + " " + every);
         }
 
         private string Amount(VisualElement fact, ResourceAmount amount, string sign)
@@ -387,7 +477,7 @@ namespace TrollStrategy.UI
         {
             var fact = Ui.Box("reward__fact");
             fact.pickingMode = PickingMode.Ignore;
-            _facts.Add(fact);
+            (_line ?? _facts).Add(fact);
             return fact;
         }
 

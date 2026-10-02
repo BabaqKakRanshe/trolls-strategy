@@ -129,6 +129,34 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void SelectedHauler_ShowsItsLoadAndWhatItFetches_OverTheOrders()
+        {
+            var workers = new[] { Buy(UnitKind.Troll), Buy(UnitKind.Troll) };
+            string hauler = Buy(UnitKind.Goblin);
+            Assert.That(_session.Dispatch(new AssignWorkCommand(workers, _mine)).Ok, Is.True);
+            Assert.That(_session.Dispatch(new AssignHaulCommand(new[] { hauler }, _mine, "market-1")).Ok, Is.True);
+            _interaction.SelectUnits(new[] { hauler });
+            Refresh();
+            Assert.That(_hud.ContextBar.ShowsLoad, Is.False, "Empty hands: nothing to price");
+
+            for (int i = 0; i < 2400 && Unit(hauler).Assignment.Carried == 0; i++) _session.Advance(.25f);
+            var assignment = Unit(hauler).Assignment;
+            Assert.That(assignment.Carried, Is.GreaterThan(0), "The hauler picks up a load within ten minutes");
+            Refresh();
+
+            Assert.That(_hud.ContextBar.ShowsLoad, Is.True);
+            Assert.That(_hud.ContextBar.Load.Count, Is.EqualTo($"×{assignment.Carried}"));
+            Assert.That(_hud.ContextBar.Load.Value, Is.EqualTo(_session.CargoValue(assignment).ToString()));
+            Assert.That(_session.CargoValue(assignment), Is.GreaterThan(0));
+
+            string idle = Buy(UnitKind.Goblin);
+            _interaction.SelectUnits(new[] { hauler, idle });
+            Refresh();
+            Assert.That(_interaction.SelectedIds, Has.Count.EqualTo(2));
+            Assert.That(_hud.ContextBar.ShowsLoad, Is.False, "A group has no single load");
+        }
+
+        [Test]
         public void BuildingCard_ListsItsStaff_AndTakesThemOffOneByOneOrAllAtOnce()
         {
             var workers = new[] { Buy(UnitKind.Goblin), Buy(UnitKind.Goblin), Buy(UnitKind.Troll) };

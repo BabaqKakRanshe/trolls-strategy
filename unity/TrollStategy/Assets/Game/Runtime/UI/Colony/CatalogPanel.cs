@@ -33,12 +33,14 @@ namespace TrollStrategy.UI
         {
             public UnitDefinition Definition;
             public Token View;
+            public bool Listed;
         }
 
         private sealed class BuildingToken
         {
             public BuildingDefinition Definition;
             public Token View;
+            public bool Listed;
         }
 
         private readonly ColonyHudContext _context;
@@ -48,6 +50,10 @@ namespace TrollStrategy.UI
         private readonly VisualElement _panel;
         private readonly VisualElement _unitsPage;
         private readonly VisualElement _buildingsPage;
+        private readonly VisualElement _buildingCards;
+        private readonly VisualElement _stepper;
+        private readonly CatalogPager _unitPager;
+        private readonly CatalogPager _buildingPager;
         private readonly Button _unitsTab;
         private readonly Button _buildingsTab;
         private readonly Label _hireAmountLabel;
@@ -80,8 +86,21 @@ namespace TrollStrategy.UI
             UiFeel.Bind(Ui.Require<Button>(root, "hire-more"), () => SetHireAmount(_hireAmount + 1));
 
             var cards = Ui.Require<VisualElement>(root, "unit-cards");
+            _buildingCards = Ui.Require<VisualElement>(root, "building-cards");
+            _stepper = _unitsPage.Q(className: "stepper");
+            // arena creatures never join the colony; the folk that do are listed, closed ones until they open
             foreach (var unit in context.Catalog.Units)
-                if (unit != null) _units.Add(CreateUnitToken(cards, unit));
+                if (unit != null && unit.Hireable) _units.Add(CreateUnitToken(cards, unit));
+            // more tokens than the band holds turn a page at a time; the band's edge never cuts one
+            _unitPager = new CatalogPager(_panel, cards, Ui.Require<Button>(root, "unit-prev"),
+                Ui.Require<Button>(root, "unit-next"), Ui.Require<VisualElement>(root, "unit-dots"));
+            _buildingPager = new CatalogPager(_panel, _buildingCards, Ui.Require<Button>(root, "building-prev"),
+                Ui.Require<Button>(root, "building-next"), Ui.Require<VisualElement>(root, "building-dots"));
+            // the hire stepper steps aside for the page arrow
+            _unitPager.Turned += () => _stepper?.EnableInClassList("stepper--paged", _unitPager.HasPages);
+            foreach (var mission in context.Catalog.Missions)
+                if (mission != null && mission.UnlockUnit.HasValue && !_arenaUnlocks.ContainsKey(mission.UnlockUnit.Value))
+                    _arenaUnlocks[mission.UnlockUnit.Value] = mission.Level;
             foreach (var building in context.Catalog.Buildings)
                 if (building != null && building.Constructible) _buildings.Add(CreateBuildingToken(building));
 
@@ -90,12 +109,35 @@ namespace TrollStrategy.UI
             SetOpen(true);
         }
 
+        private readonly Dictionary<UnitKind, int> _arenaUnlocks = new();
+
         public bool IsOpen { get; private set; }
+        /// <summary>The orders tray holds the bottom while creatures are selected or the map waits for a pick.</summary>
+        public bool IsCovered { get; private set; }
         public bool ShowsUnits => Ui.IsShown(_unitsPage);
         public int HireAmount => _hireAmount;
         public int BuildingCount => _buildings.Count;
+        /// <summary>The page turner of the buildings' tray, and of the creatures'.</summary>
+        public CatalogPager BuildingPages => _buildingPager;
+        public CatalogPager UnitPages => _unitPager;
+
+        /// <summary>Whether a building's token stands on the page of its tray shown now.</summary>
+        public bool IsOnPage(BuildingKind kind)
+        {
+            var token = _buildings.Find(candidate => candidate.Definition.Kind == kind);
+            return token != null && _buildingPager.IsOnPage(token.View.Root);
+        }
 
         public void Toggle() => SetOpen(!IsOpen);
+
+        /// <summary>Steps down under the orders tray and back; whether the catalog is open stays as it was.</summary>
+        public void SetCovered(bool covered)
+        {
+            if (covered == IsCovered) return;
+            IsCovered = covered;
+            _panel.EnableInClassList("is-covered", covered);
+            if (covered) _showcase.Hide();
+        }
 
         public void SetOpen(bool open)
         {
@@ -144,10 +186,11 @@ namespace TrollStrategy.UI
         public string PriceOf(BuildingKind kind) => _buildings.Find(token => token.Definition.Kind == kind)?.View.PriceValue.text;
         public string PriceOf(UnitKind kind) => _units.Find(token => token.Definition.Kind == kind)?.View.PriceValue.text;
 
+        /// <summary>Whether a building is in the tray at all, on whatever page: closed ones stay out but the next.</summary>
         public bool IsListed(BuildingKind kind)
         {
             var token = _buildings.Find(candidate => candidate.Definition.Kind == kind);
-            return token != null && Ui.IsShown(token.View.Root);
+            return token != null && token.Listed;
         }
 
         public bool IsSuggested(BuildingKind kind) =>
@@ -159,6 +202,11 @@ namespace TrollStrategy.UI
         private void RefreshPrices()
         {
             bool campaign = _progress.Enabled;
+            // of the creatures the arena opens, only the next one waits in the tray
+            int nextArena = int.MaxValue;
+            foreach (var token in _units)
+                if (!_progress.IsUnitUnlocked(token.Definition.Kind) && _arenaUnlocks.TryGetValue(token.Definition.Kind, out int at))
+                    nextArena = Math.Min(nextArena, at);
             foreach (var token in _units)
             {
                 var unit = token.Definition;
@@ -166,6 +214,10 @@ namespace TrollStrategy.UI
                 int total = _context.Session.HirePrice(unit.Kind, _hireAmount);
                 Ui.SetText(token.View.Name, _hireAmount > 1 ? $"{unit.DisplayName} ×{_hireAmount}" : unit.DisplayName);
                 SetPrice(token.View, locked, _progress.UnlockLevel(unit.Kind), total);
+                bool fromArena = _arenaUnlocks.TryGetValue(unit.Kind, out int arenaLevel);
+                if (locked && fromArena && _progress.UnlockLevel(unit.Kind) <= 0)
+                    Ui.SetText(token.View.Lock, $"арена, ур. {arenaLevel}");
+                token.Listed = !locked || !fromArena || arenaLevel == nextArena || _progress.UnlockLevel(unit.Kind) > 0;
                 // a campaign points at what the quest asks; a sandbox, once the mine stands, at hands to work it
                 bool suggested = campaign ? _focus.Hire == unit.Kind : _hasMine && !_hasUnits;
                 token.View.Root.EnableInClassList("is-suggested", suggested && !locked);
@@ -184,12 +236,30 @@ namespace TrollStrategy.UI
                 bool locked = !_progress.IsBuildingUnlocked(kind);
                 int level = _progress.UnlockLevel(kind);
                 // closed buildings stay out of the tray, except the next one to open
-                Ui.Show(token.View.Root, !locked || level == nextLevel);
+                token.Listed = !locked || level == nextLevel;
                 SetPrice(token.View, locked, level, _context.Session.BuildingPrice(kind));
                 bool suggested = campaign ? _focus.Build == kind : !_hasMine && kind == BuildingKind.Mine;
                 token.View.Root.EnableInClassList("is-suggested", suggested && !locked);
                 token.View.Buy.EnableInClassList("is-suggested", suggested && !locked);
             }
+
+            // a page at a time; the quest's token pulls its page forward once
+            var unitTokens = new List<(VisualElement, bool)>();
+            VisualElement unitFocus = null;
+            foreach (var token in _units)
+            {
+                unitTokens.Add((token.View.Root, token.Listed));
+                if (token.View.Root.ClassListContains("is-suggested")) unitFocus = token.View.Root;
+            }
+            _unitPager.Show(unitTokens, unitFocus);
+            var buildingTokens = new List<(VisualElement, bool)>();
+            VisualElement buildingFocus = null;
+            foreach (var token in _buildings)
+            {
+                buildingTokens.Add((token.View.Root, token.Listed));
+                if (token.View.Root.ClassListContains("is-suggested")) buildingFocus = token.View.Root;
+            }
+            _buildingPager.Show(buildingTokens, buildingFocus);
 
             _unitsTab.EnableInClassList("is-suggested", campaign && _focus.Hire != null && !ShowsUnits);
             _buildingsTab.EnableInClassList("is-suggested", campaign && _focus.Build != null && ShowsUnits);
@@ -241,7 +311,7 @@ namespace TrollStrategy.UI
                 _tooltip?.Attach(look, () => "Посмотреть", () => $"{building.DisplayName} в 3D");
                 view.Root.Add(look);
             }
-            _buildingsPage.Add(view.Root);
+            _buildingCards.Add(view.Root);
             return new BuildingToken { Definition = building, View = view };
         }
 
@@ -292,6 +362,13 @@ namespace TrollStrategy.UI
             return token != null ? UnitHint(token.Definition) : string.Empty;
         }
 
+        /// <summary>The hover hint of a building: its main recipe, then its size and crew.</summary>
+        public string Hint(BuildingKind kind)
+        {
+            var token = _buildings.Find(candidate => candidate.Definition.Kind == kind);
+            return token != null ? BuildingHint(token.Definition) : string.Empty;
+        }
+
         private string UnitHint(UnitDefinition unit)
         {
             var lines = new List<string>();
@@ -303,9 +380,13 @@ namespace TrollStrategy.UI
             return string.Join("\n", lines);
         }
 
+        // What the building turns into what, then its size and crew; chances, spoilage and the recipes of later
+        // levels are in its card
         private string BuildingHint(BuildingDefinition building)
         {
-            string text = _context.Session.DescribeBuilding(building);
+            string main = _context.Session.DescribeMainRecipe(building);
+            string text = _context.Session.DescribeBuilding(building, recipes: false);
+            if (!string.IsNullOrEmpty(main)) text = main + "\n" + text;
             if (_context.Catalog.Economy.BuildingCopyPriceGrowth > 1f) text += "\nКаждая следующая такая постройка дороже.";
             return _progress.IsBuildingUnlocked(building.Kind) ? text : text + "\n" + Opens(_progress.UnlockLevel(building.Kind));
         }

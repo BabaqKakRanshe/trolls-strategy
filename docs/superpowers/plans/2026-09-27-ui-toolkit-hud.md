@@ -9,7 +9,7 @@
 - Вёрстка и стили — `Assets/Game/UI/` (`Uxml/`, `Styles/`, `Fonts/`, `Settings/`, `Prefabs/`). Один `Theme.uss` задаёт цвета, шрифт, кнопки и панели; экраны и подписи в мире добавляют только раскладку и размеры.
 - Шрифт — Rubik 1.x (OFL, кириллица), лицензия лежит рядом со шрифтом.
 - **Экранный UI — префаб `UI.prefab`, дерево вложенных `UIDocument`.** Каждый экран, полоса и панель — свой GameObject со своим `UIDocument`; Unity вкладывает корень дочернего документа в корень родительского (`parentUI`), так что это одно дерево элементов в одной панели. Панели имеют свой UXML (`Uxml/Colony/*`, `Uxml/Battle/*`); полосы и колонки UXML не имеют и получают классы раскладки (`.middle`, `.left-column`, `.layer`…) из компонента `UiDocumentClasses`. Порядок соседей — `sortingOrder`.
-- Дерево описано в `UiSetup`; `TrollStrategy/Setup UI` пересобирает префаб, ставит его в сцену и подключает к `GameBootstrap`. `UIDocument` добавляется после того, как у GameObject есть родитель: родительский документ запоминается в момент добавления компонента.
+- Дерево описано в `UiSetup`; `TrollStrategy/Dev/Setup UI` пересобирает префаб, ставит его в сцену и подключает к `GameBootstrap`. `UIDocument` добавляется после того, как у GameObject есть родитель: родительский документ запоминается в момент добавления компонента.
 - Код экранов — обычные классы поверх корня своего документа (`Runtime/UI/Colony`, `Runtime/UI/Battle`); `ColonyHud` и `BattleHud` только собирают корни частей и связывают документы, сессию и ввод. EditMode-тесты собирают то же дерево из префаба (`TestUi`).
 - **Бой.** Расстановка (кто где стоит, кто выбран, кто что надел) — `BattleDeployment` в слое Application. `BattleSceneController` держит арену, камеру и часы повтора и говорит с экраном только через `IBattleScreen`; реализацию (`BattleHud`) отдаёт `GameBootstrap`.
 - **Подписи в мире** — `WorldPanel`: world-space `UIDocument` с элементами, собранными в коде, на `WorldPanelSettings` (100 px на единицу мира, тема `WorldTheme.tss`, без коллайдеров). Масштаб объекта 1; размер шрифта в USS = прежний размер TMP ×10. Порядок относительно спрайтов задаёт `sortingOrder` рендерера (подписи 25, HP 33, выручка 43, урон 60, тост 80).
@@ -51,7 +51,7 @@ UI                      корень экрана (.ui-screen)
 
 Все этапы выполнены.
 
-- EditMode: 182 из 183. Новые тесты: 8 в `BattleHudTests`, проверка вложенного дерева в `SavedScene_UsesTheUiToolkitHudWiredToTheBootstrap`. Единственное падение — `SavedScene_StartingBuildingsFormValidLayoutOnGrid` (склад в сцене смещён от сетки на 0.42, к UI не относится). Тесты запускаются меню `TrollStrategy/Tools/Run EditMode Tests`, итог — `Builds/Tests/editmode-summary.txt`.
+- EditMode: 182 из 183. Новые тесты: 8 в `BattleHudTests`, проверка вложенного дерева в `SavedScene_UsesTheUiToolkitHudWiredToTheBootstrap`. Единственное падение — `SavedScene_StartingBuildingsFormValidLayoutOnGrid` (склад в сцене смещён от сетки на 0.42, к UI не относится). Тесты запускаются меню `TrollStrategy/Dev/Tools/Run EditMode Tests`, итог — `Builds/Tests/editmode-summary.txt`.
 - Play Mode 1920×1080: HUD колонии в прежней раскладке; клик по карте проходит, над панелями блокируется. Бой: расстановка внизу, повтор со скоростями, итог и возврат в колонию; HUD колонии возвращается, HUD боя скрывается. Подписи зданий, тост отказа, «+золото» при продаже, полоски HP и цифры урона видны поверх спрайтов.
 - Windows player (`TrollStrategy/Build Windows Player`) собран: 0 ошибок.
 

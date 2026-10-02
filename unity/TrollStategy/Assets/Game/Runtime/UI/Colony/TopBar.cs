@@ -3,13 +3,14 @@ using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Audio;
+using TrollStrategy.Presentation.Visuals;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// Settlement counters and the tools that are always at hand: pick the next idle creature, buy and clear
+    /// Gold and creature counters and the tools that are always at hand: pick the next idle creature, buy and clear
     /// land, show the grid and routes, go to battle, open the catalog. Each counter is a picture and a number,
     /// each tool a round button with its caption; names, details and keys are in the hints. The battle caption
     /// counts down to the mission.
@@ -19,11 +20,9 @@ namespace TrollStrategy.UI
         private const float BattleCheckSeconds = .5f;
 
         private readonly ColonyHudContext _context;
-        private readonly BattleMissionDefinition _mission;
+        private BattleMissionDefinition _mission;
         private readonly CounterLabel _gold;
-        private readonly CounterLabel _ore;
         private readonly CounterLabel _population;
-        private readonly CounterLabel _sold;
         private readonly Label _idle;
         private readonly Label _battleCaption;
         private readonly Button _idleButton;
@@ -31,6 +30,8 @@ namespace TrollStrategy.UI
         private readonly Button _landButton;
         private readonly Button _battleButton;
         private readonly Button _catalogButton;
+        private readonly Button _menuButton;
+        private readonly Button _wikiButton;
         private bool? _battleReady;
         private float _nextBattleCheck;
         private int _units;
@@ -43,18 +44,14 @@ namespace TrollStrategy.UI
         {
             _context = context;
             _gold = new CounterLabel(Ui.Require<Label>(root, "gold-value"), punch: true);
-            _ore = new CounterLabel(Ui.Require<Label>(root, "ore-value"), punch: false);
             _population = new CounterLabel(Ui.Require<Label>(root, "population-value"), punch: true);
-            _sold = new CounterLabel(Ui.Require<Label>(root, "sold-value"), punch: false);
             _idle = Ui.Require<Label>(root, "population-idle");
 
-            // the pictures come from the content: the market's coins, the ore, the barracks and the market
+            // the pictures come from the content: the market's coins and the barracks
             var catalog = context.Catalog;
             GoldIcon = Ui.Require<VisualElement>(root, "gold-icon");
             Ui.SetPicture(GoldIcon, RewardArt.Coin(catalog));
-            Ui.SetPicture(Ui.Require<VisualElement>(root, "ore-icon"), catalog?.TryGetResource(ResourceKind.IronOre)?.Icon);
             Ui.SetPicture(Ui.Require<VisualElement>(root, "population-icon"), RewardArt.BuildingIcon(catalog, BuildingKind.Barracks));
-            Ui.SetPicture(Ui.Require<VisualElement>(root, "sold-icon"), RewardArt.BuildingIcon(catalog, BuildingKind.Market));
 
             _idleButton = UiFeel.Bind(Ui.Require<Button>(root, "idle-button"), context.Interaction.SelectNextIdle,
                 silentClick: true);
@@ -62,32 +59,39 @@ namespace TrollStrategy.UI
             ShowTool(_landButton, context.Session.CurrentSnapshot.Land != null);
             _gridButton = UiFeel.Bind(Ui.Require<Button>(root, "grid-button"), ToggleGuides);
             ShowTool(_gridButton, context.ToggleGuides != null);
-            _mission = context.FirstMission;
+            _mission = context.Session.SuggestedMission();
             _battleButton = UiFeel.Bind(Ui.Require<Button>(root, "battle-button"), OpenBattle);
             _battleCaption = Ui.Require<Label>(root, "battle-caption");
             ShowTool(_battleButton, _mission != null && context.OpenBattle != null);
             _catalogButton = UiFeel.Bind(Ui.Require<Button>(root, "catalog-button"), toggleCatalog);
+            _menuButton = UiFeel.Bind(Ui.Require<Button>(root, "menu-button"), () => _context.OpenMenu?.Invoke());
+            _wikiButton = UiFeel.Bind(Ui.Require<Button>(root, "wiki-button"), () => _context.OpenWiki?.Invoke());
+            ShowTool(_wikiButton, false);
 
             if (tooltip != null)
             {
                 tooltip.Attach(Ui.Require<VisualElement>(root, "gold"), () => "Золото",
                     () => "Казна поселения. Рынок платит за каждый доставленный товар.");
-                tooltip.Attach(Ui.Require<VisualElement>(root, "ore"), () => "Руда",
-                    () => "Вся руда в зданиях поселения.");
                 tooltip.Attach(Ui.Require<VisualElement>(root, "population"), () => "Существа", PopulationHint);
-                tooltip.Attach(Ui.Require<VisualElement>(root, "sold"), () => "Продано",
-                    () => "Сколько товаров купил рынок.");
-                tooltip.Attach(_idleButton, () => "Свободный", () => "Показать следующее существо без работы.", "1");
-                tooltip.Attach(_landButton, () => "Земля", () => "Купить участок у острова или расчистить свой.", "L");
-                tooltip.Attach(_gridButton, () => "Сетка", () => "Клетки поля и пути носильщиков.", "G");
-                tooltip.Attach(_battleButton, () => "Бой", () => _battleCaption.text);
-                tooltip.Attach(_catalogButton, () => "Каталог", () => "Здания и существа, лоток внизу экрана.");
+                tooltip.Attach(_idleButton, () => "Свободный",
+                    () => "Показать следующее существо без работы; камера едет к нему. Ещё раз — следующее.", Hotkeys.Idle.Label);
+                tooltip.Attach(_landButton, () => "Земля", () => "Купить участок у острова или расчистить свой.", Hotkeys.Land.Label);
+                tooltip.Attach(_gridButton, () => "Сетка", () => "Клетки поля и пути носильщиков.", Hotkeys.Grid.Label);
+                tooltip.Attach(_battleButton, () => "Арена",
+                    () => "Уровни арены: победа открывает следующий, пройденный можно повторять ради золота. " + _battleCaption.text + ".",
+                    Hotkeys.Arena.Label);
+                tooltip.Attach(_catalogButton, () => "Каталог", () => "Здания и существа, лоток внизу экрана.", Hotkeys.Catalog.Label);
+                tooltip.Attach(_wikiButton, () => "Справочник",
+                    () => "Существа, здания, товары, улучшения и арена: кто что делает и сколько стоит.", Hotkeys.Wiki.Label);
+                tooltip.Attach(_menuButton, () => "Меню", () => "Пауза, настройки звука, графики и языка, об игре, начать заново.",
+                    Hotkeys.Menu.Label);
             }
             RefreshBattle();
         }
 
         public Button BattleButton => _battleButton;
         public Button IdleButton => _idleButton;
+        public Button WikiButton => _wikiButton;
         public Button CatalogButton => _catalogButton;
         public Button LandButton => _landButton;
         /// <summary>What the battle tool says: when the mission opens, or that it is open.</summary>
@@ -117,9 +121,7 @@ namespace TrollStrategy.UI
             // a battle opened or closed by the quest chain says so at once, not at the next timer check
             if (_mission != null && missionWasOpen != _progress.IsMissionUnlocked(_mission.MissionId)) RefreshBattle();
             _gold.Set(snapshot.Gold);
-            _ore.Set(snapshot.TotalOre);
             _population.Set(snapshot.Units.Count);
-            _sold.Set(snapshot.SoldGoods);
 
             int idle = 0;
             foreach (var unit in snapshot.Units)
@@ -130,6 +132,8 @@ namespace TrollStrategy.UI
             UiFeel.SetAvailable(_idleButton, idle > 0);
             _gridButton.EnableInClassList("is-on", _context.GuidesVisible?.Invoke() ?? false);
             ShowTool(_landButton, snapshot.Land != null);
+            // the book shows once the HUD has one (the UI prefab carries its document)
+            ShowTool(_wikiButton, _context.OpenWiki != null);
             _landButton.EnableInClassList("is-on",
                 _context.Interaction.Mode.Type == InteractionModeType.ManagingLand);
         }
@@ -150,8 +154,9 @@ namespace TrollStrategy.UI
 
         public void RefreshBattle()
         {
-            if (_mission == null) return;
             var session = _context.Session;
+            _mission = session.SuggestedMission();
+            if (_mission == null) return;
             bool ready = session.CanEnterMission(_mission.MissionId).Ok;
             if (ready && _battleReady == false)
             {
@@ -195,9 +200,11 @@ namespace TrollStrategy.UI
             _gridButton.EnableInClassList("is-on", _context.GuidesVisible?.Invoke() ?? false);
         }
 
+        // the arena ladder when the HUD has one, else straight into the best open mission
         private void OpenBattle()
         {
-            if (_mission != null) _context.OpenBattle?.Invoke(_mission);
+            if (_context.OpenArena != null) _context.OpenArena();
+            else if (_mission != null) _context.OpenBattle?.Invoke(_mission);
         }
     }
 }

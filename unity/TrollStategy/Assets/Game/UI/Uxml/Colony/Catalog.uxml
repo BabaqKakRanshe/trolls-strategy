@@ -18,8 +18,21 @@
                     <ui:Button name="hire-more" text="+" class="btn btn-icon" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="unit-cards" class="tray halo" picking-mode="Ignore" />
+            <!-- a page of tokens at a time: arrows at the tray's ends, a dot per page above it (CatalogPager) -->
+            <ui:VisualElement class="catalog-pager" picking-mode="Ignore">
+                <ui:Button name="unit-prev" class="btn-disc catalog-arrow catalog-arrow--prev"><ui:VisualElement class="glyph glyph--chevron catalog-arrow__glyph" picking-mode="Ignore" /></ui:Button>
+                <ui:VisualElement name="unit-cards" class="tray tray--row halo" picking-mode="Ignore" />
+                <ui:Button name="unit-next" class="btn-disc catalog-arrow catalog-arrow--next"><ui:VisualElement class="glyph glyph--chevron catalog-arrow__glyph" picking-mode="Ignore" /></ui:Button>
+                <ui:VisualElement name="unit-dots" class="catalog-dots" picking-mode="Ignore" />
+            </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="buildings-page" class="catalog__page tray halo" picking-mode="Ignore" />
+        <ui:VisualElement name="buildings-page" class="catalog__page" picking-mode="Ignore">
+            <ui:VisualElement class="catalog-pager" picking-mode="Ignore">
+                <ui:Button name="building-prev" class="btn-disc catalog-arrow catalog-arrow--prev"><ui:VisualElement class="glyph glyph--chevron catalog-arrow__glyph" picking-mode="Ignore" /></ui:Button>
+                <ui:VisualElement name="building-cards" class="tray tray--row halo" picking-mode="Ignore" />
+                <ui:Button name="building-next" class="btn-disc catalog-arrow catalog-arrow--next"><ui:VisualElement class="glyph glyph--chevron catalog-arrow__glyph" picking-mode="Ignore" /></ui:Button>
+                <ui:VisualElement name="building-dots" class="catalog-dots" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -14,7 +14,7 @@ namespace TrollStrategy.Tests
     {
         private const string Folder = "Builds/Tests";
 
-        [MenuItem("TrollStrategy/Tools/Run EditMode Tests")]
+        [MenuItem("TrollStrategy/Dev/Tools/Run EditMode Tests")]
         public static void Run()
         {
             Directory.CreateDirectory(Folder);

@@ -49,7 +49,7 @@ namespace TrollStrategy.Tests
         public void ScreenUiPrefab_KeepsItsDocumentsInOrder()
         {
             Assert.That(TestUi.Load().Prefab.GetComponent<UiDocumentOrder>(), Is.Not.Null,
-                "TrollStrategy/Setup UI puts UiDocumentOrder on the screen UI's root");
+                "TrollStrategy/Dev/Setup UI puts UiDocumentOrder on the screen UI's root");
         }
     }
 }

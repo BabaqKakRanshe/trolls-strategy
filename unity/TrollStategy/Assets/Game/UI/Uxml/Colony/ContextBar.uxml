@@ -2,14 +2,24 @@
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/ColonyHud.uss" />
     <ui:Style src="../../Styles/Progression.uss" />
-    <ui:VisualElement name="context" class="sheet context">
-        <ui:VisualElement name="context-targets" class="context__targets" />
-        <ui:VisualElement class="context__row">
-            <ui:VisualElement class="context__text">
-                <ui:Label name="context-title" class="context__title" />
-                <ui:Label name="context-prompt" class="context__prompt" />
+    <!-- the orders tray: in the catalog's place along the bottom while creatures are selected or the map waits -->
+    <ui:VisualElement name="context" class="orders halo" picking-mode="Ignore">
+        <!-- the left end, where the catalog's tabs stand: who is selected, or what the map expects -->
+        <ui:VisualElement class="orders__side" picking-mode="Ignore">
+            <ui:VisualElement name="context-portrait" class="orders__portrait" picking-mode="Ignore" />
+            <ui:VisualElement name="context-side-text" class="orders__text" picking-mode="Ignore">
+                <ui:Label name="context-title" class="orders__title t-black" picking-mode="Ignore" />
+                <ui:Label name="context-prompt" class="orders__prompt t-medium" picking-mode="Ignore" />
             </ui:VisualElement>
-            <ui:VisualElement name="context-actions" class="context__actions" />
         </ui:VisualElement>
+        <!-- the middle: the valid targets, then the orders and the way out; ContextBar builds the tokens -->
+        <ui:VisualElement class="orders__middle" picking-mode="Ignore">
+            <!-- what one selected hauler carries now and what it fetches at the market -->
+            <ui:VisualElement name="context-load" class="orders__load" picking-mode="Ignore" />
+            <ui:VisualElement name="context-targets" class="orders__row" picking-mode="Ignore" />
+            <ui:VisualElement name="context-actions" class="orders__row" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <!-- the right end stays for the status line -->
+        <ui:VisualElement class="orders__end" picking-mode="Ignore" />
     </ui:VisualElement>
 </ui:UXML>

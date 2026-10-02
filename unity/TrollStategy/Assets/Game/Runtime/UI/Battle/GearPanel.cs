@@ -13,10 +13,14 @@ namespace TrollStrategy.UI
     /// </summary>
     public sealed class GearPanel
     {
+        // one button per kind of item: thirty swords are one sword with "×30"
         private sealed class Item
         {
-            public EquipmentSnapshot Equipment;
+            public string DefinitionId;
+            public string Name;
+            public readonly List<EquipmentSnapshot> Items = new();
             public Button Button;
+            public Label Count;
         }
 
         private readonly VisualElement _panel;
@@ -51,13 +55,18 @@ namespace TrollStrategy.UI
         public string Damage => _damage.text;
         public string Armor => _armor.text;
 
-        public Button ItemButton(string itemId) => _items.Find(item => item.Equipment.Id == itemId)?.Button;
+        public Button ItemButton(string itemId) => GroupOf(itemId)?.Button;
+
+        /// <summary>How many buttons the inventory row has: one per kind of item.</summary>
+        public int ButtonCount => _items.Count;
 
         public string HintOf(string itemId)
         {
-            var item = _items.Find(candidate => candidate.Equipment.Id == itemId);
-            return item != null ? ItemHint(item.Equipment) : null;
+            var group = GroupOf(itemId);
+            return group != null ? ItemHint(group) : null;
         }
+
+        private Item GroupOf(string itemId) => _items.Find(group => group.Items.Exists(item => item.Id == itemId));
 
         public void Build(BattleDeployment deployment)
         {
@@ -66,13 +75,22 @@ namespace TrollStrategy.UI
             _items.Clear();
             foreach (var equipment in deployment.Equipment)
             {
-                var button = Ui.TextButton(string.Empty, "btn btn-disc battle-item");
-                button.Add(Ui.Art(IconOf(deployment, equipment.DefinitionId), equipment.DisplayName, "battle-item__art"));
-                var item = new Item { Equipment = equipment, Button = button };
-                UiFeel.Bind(button, () => Toggle(item.Equipment.Id), silentClick: true);
-                _tooltip?.Attach(button, () => item.Equipment.DisplayName, () => ItemHint(item.Equipment));
-                _list.Add(button);
-                _items.Add(item);
+                var item = _items.Find(group => group.DefinitionId == equipment.DefinitionId);
+                if (item == null)
+                {
+                    var button = Ui.TextButton(string.Empty, "btn btn-disc battle-item");
+                    button.Add(Ui.Art(IconOf(deployment, equipment.DefinitionId), equipment.DisplayName, "battle-item__art"));
+                    var count = Ui.Text(string.Empty, "battle-item__count t-black");
+                    count.pickingMode = PickingMode.Ignore;
+                    button.Add(count);
+                    item = new Item { DefinitionId = equipment.DefinitionId, Name = equipment.DisplayName, Button = button, Count = count };
+                    var group = item;
+                    UiFeel.Bind(button, () => Toggle(group), silentClick: true);
+                    _tooltip?.Attach(button, () => group.Name, () => ItemHint(group));
+                    _list.Add(button);
+                    _items.Add(item);
+                }
+                item.Items.Add(equipment);
             }
             Ui.Show(_list, _items.Count > 0);
             Refresh();
@@ -90,22 +108,40 @@ namespace TrollStrategy.UI
             Ui.SetText(_armor, armor.ToString());
             foreach (var item in _items)
             {
-                string owner = _deployment.OwnerOf(item.Equipment.Id);
-                item.Button.EnableInClassList("is-on", owner == selected);
-                item.Button.EnableInClassList("is-taken", owner != null && owner != selected);
+                bool worn = false;
+                int free = 0;
+                foreach (var equipment in item.Items)
+                {
+                    string owner = _deployment.OwnerOf(equipment.Id);
+                    if (owner == selected) worn = true;
+                    else if (owner == null) free++;
+                }
+                item.Button.EnableInClassList("is-on", worn);
+                item.Button.EnableInClassList("is-taken", !worn && free == 0);
+                Ui.SetText(item.Count, item.Items.Count > 1 ? "×" + free : string.Empty);
             }
         }
 
-        private string ItemHint(EquipmentSnapshot equipment)
+        private string ItemHint(Item group)
         {
-            if (_deployment == null) return null;
+            if (_deployment == null || group.Items.Count == 0) return null;
+            var equipment = group.Items[0];
             var bonus = new List<string>();
             if (equipment.DamageBonus != 0) bonus.Add($"урон {equipment.DamageBonus:+0;-0;0}");
             if (equipment.ArmorBonus != 0) bonus.Add($"броня {equipment.ArmorBonus:+0;-0;0}");
-            string owner = _deployment.OwnerOf(equipment.Id);
-            string where = owner == null ? "Лежит в инвентаре, нажми, чтобы надеть."
-                : owner == _deployment.SelectedUnitId ? "Надето, нажми, чтобы снять."
-                : $"Сейчас на бойце {_deployment.UnitName(owner)}, нажми, чтобы передать.";
+            string selected = _deployment.SelectedUnitId;
+            int free = 0;
+            string worn = null, other = null;
+            foreach (var item in group.Items)
+            {
+                string owner = _deployment.OwnerOf(item.Id);
+                if (owner == null) free++;
+                else if (owner == selected) worn = item.Id;
+                else other ??= owner;
+            }
+            string where = worn != null ? "Надето, нажми, чтобы снять."
+                : free > 0 ? (group.Items.Count > 1 ? $"Свободно {free} из {group.Items.Count}, нажми, чтобы надеть." : "Лежит в инвентаре, нажми, чтобы надеть.")
+                : $"Сейчас на бойце {_deployment.UnitName(other)}, нажми, чтобы передать.";
             return bonus.Count > 0 ? $"{string.Join(", ", bonus)}. {where}" : where;
         }
 
@@ -118,7 +154,10 @@ namespace TrollStrategy.UI
             var geared = _deployment.GearedStats(selected);
             int own = damage ? definition.CombatDamage : definition.CombatArmor;
             int bonus = (damage ? geared.Damage : geared.Armor) - own;
-            return bonus == 0 ? null : $"{(damage ? "Свой" : "Своя")} {own}, от снаряжения {bonus:+0;-0;0}.";
+            if (bonus == 0) return null;
+            return damage
+                ? $"Свой урон {own}, от снаряжения {bonus:+0;-0;0}."
+                : $"Своя броня {own}, от снаряжения {bonus:+0;-0;0}.";
         }
 
         private static UnityEngine.Sprite IconOf(BattleDeployment deployment, string definitionId)
@@ -131,6 +170,17 @@ namespace TrollStrategy.UI
         private void RemoveSelected()
         {
             if (_deployment != null && _deployment.RemoveSelected()) GameAudio.Play(Sfx.UiBack);
+        }
+
+        // the selected fighter takes off the one it wears, or takes a free one, or one from another fighter
+        private void Toggle(Item group)
+        {
+            if (_deployment == null || group.Items.Count == 0) return;
+            string selected = _deployment.SelectedUnitId;
+            EquipmentSnapshot pick = group.Items.Find(item => _deployment.OwnerOf(item.Id) == selected && selected != null) ??
+                                     group.Items.Find(item => _deployment.OwnerOf(item.Id) == null) ??
+                                     group.Items[0];
+            Toggle(pick.Id);
         }
 
         private void Toggle(string itemId)

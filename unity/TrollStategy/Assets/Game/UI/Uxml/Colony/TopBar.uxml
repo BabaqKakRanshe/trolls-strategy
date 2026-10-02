@@ -9,23 +9,21 @@
                 <ui:VisualElement name="gold-icon" class="resource__icon" picking-mode="Ignore" />
                 <ui:Label name="gold-value" text="0" class="resource__value t-black" picking-mode="Ignore" />
             </ui:VisualElement>
-            <ui:VisualElement name="ore" class="resource">
-                <ui:VisualElement name="ore-icon" class="resource__icon" picking-mode="Ignore" />
-                <ui:Label name="ore-value" text="0" class="resource__value t-black" picking-mode="Ignore" />
-            </ui:VisualElement>
             <ui:VisualElement name="population" class="resource">
                 <ui:VisualElement name="population-icon" class="resource__icon" picking-mode="Ignore" />
                 <ui:Label name="population-value" text="0" class="resource__value t-black" picking-mode="Ignore" />
                 <ui:Label name="population-idle" text="" class="resource__note" picking-mode="Ignore" />
             </ui:VisualElement>
-            <ui:VisualElement name="sold" class="resource">
-                <ui:VisualElement name="sold-icon" class="resource__icon" picking-mode="Ignore" />
-                <ui:Label name="sold-value" text="0" class="resource__value t-black" picking-mode="Ignore" />
-            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="spacer" picking-mode="Ignore" />
         <!-- the tools down the right edge, the catalog first; their keys are in the hints -->
         <ui:VisualElement name="tools" class="tools" picking-mode="Ignore">
+            <ui:VisualElement class="tool" picking-mode="Ignore">
+                <ui:Label text="Меню" class="tool__caption halo t-medium" picking-mode="Ignore" />
+                <ui:Button name="menu-button" class="btn btn-disc tool__button">
+                    <ui:VisualElement class="glyph glyph--menu" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
             <ui:VisualElement class="tool" picking-mode="Ignore">
                 <ui:Label text="Каталог" class="tool__caption halo t-medium" picking-mode="Ignore" />
                 <ui:Button name="catalog-button" class="btn btn-disc tool__button">
@@ -48,6 +46,12 @@
                 <ui:Label text="Сетка" class="tool__caption halo t-medium" picking-mode="Ignore" />
                 <ui:Button name="grid-button" class="btn btn-disc tool__button">
                     <ui:VisualElement class="glyph glyph--grid" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+            <ui:VisualElement class="tool" picking-mode="Ignore">
+                <ui:Label text="Справочник" class="tool__caption halo t-medium" picking-mode="Ignore" />
+                <ui:Button name="wiki-button" class="btn btn-disc tool__button">
+                    <ui:VisualElement class="glyph glyph--book" picking-mode="Ignore" />
                 </ui:Button>
             </ui:VisualElement>
             <ui:VisualElement class="tool" picking-mode="Ignore">

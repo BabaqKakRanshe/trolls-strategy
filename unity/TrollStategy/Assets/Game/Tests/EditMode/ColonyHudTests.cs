@@ -124,6 +124,20 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void Catalog_BuildingHint_NamesOnlyTheMainRecipe()
+        {
+            string hint = _hud.Catalog.Hint(BuildingKind.Smeltery);
+            var smeltery = _catalog.GetBuilding(BuildingKind.Smeltery);
+            Assume.That(smeltery.Recipes.Count, Is.GreaterThan(1), "The smeltery has a coal and a scrap recipe too");
+
+            Assert.That(hint, Does.StartWith(_session.DescribeMainRecipe(smeltery)), "What goes in and what comes out");
+            Assert.That(GameSession.MainRecipe(smeltery).Inputs.Length, Is.EqualTo(1), "The plain ore recipe, not the coal one");
+            Assert.That(hint, Does.Contain($"{smeltery.Width}×{smeltery.Height}"));
+            Assert.That(hint, Does.Not.Contain("%"), "Chances and spoilage are in the building's card");
+            Assert.That(hint, Does.Not.Contain("уровня"), "So are the recipes of later levels");
+        }
+
+        [Test]
         public void UnaffordableHire_IsRefusedWithoutStartingPlacement()
         {
             var troll = _catalog.GetUnit(UnitKind.Troll);
@@ -160,7 +174,8 @@ namespace TrollStrategy.Tests
             Refresh();
 
             var hints = _hud.Inspect.Actions.Select(Hint).ToList();
-            foreach (var unit in _catalog.Units)
+            // the card has room for two hires beside "move": the first creatures that may join the colony
+            foreach (var unit in _catalog.Units.Where(u => u != null && u.Hireable && _session.IsUnitUnlocked(u.Kind)).Take(2))
                 Assert.That(hints.Contains(Ui.Gold(_session.HirePrice(unit.Kind))), Is.True,
                     $"{unit.DisplayName}: {string.Join(", ", hints)}");
 
@@ -228,6 +243,27 @@ namespace TrollStrategy.Tests
             var assignment = _session.CurrentSnapshot.Units[0].Assignment.Kind;
             Assert.That(assignment == AssignmentKind.ToWork || assignment == AssignmentKind.Work, Is.True,
                 assignment.ToString());
+        }
+
+        [Test]
+        public void Orders_TakeTheTraysPlace_AndTheCatalogToolBringsItBack()
+        {
+            var id = BuyUnit(UnitKind.Goblin);
+            Refresh();
+            Assert.That(_hud.Catalog.IsCovered, Is.False);
+
+            _interaction.ClickUnit(id, false);
+            Refresh();
+            Assert.That(_hud.ContextBar.IsShown, Is.True);
+            Assert.That(_hud.Catalog.IsCovered, Is.True, "The orders hold the bottom while a creature is selected");
+            Assert.That(_hud.ContextBar.Title, Is.EqualTo(_catalog.GetUnit(UnitKind.Goblin).DisplayName));
+
+            UiFeel.Press(_hud.TopBar.CatalogButton);
+            Refresh();
+            Assert.That(_interaction.SelectedIds, Is.Empty, "The catalog tool drops the selection");
+            Assert.That(_hud.ContextBar.IsShown, Is.False);
+            Assert.That(_hud.Catalog.IsCovered, Is.False);
+            Assert.That(_hud.Catalog.IsOpen, Is.True);
         }
 
         [Test]

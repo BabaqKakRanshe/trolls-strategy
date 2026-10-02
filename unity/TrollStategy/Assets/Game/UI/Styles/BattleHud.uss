@@ -293,3 +293,18 @@
 .battle-banner.is-draw .battle-banner__text {
     color: var(--paper-soft);
 }
+
+/* how many items of a kind are free, on its button */
+.battle-item__count {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    font-size: 14px;
+    color: var(--ink);
+    text-shadow: 0 0 3px rgb(255, 255, 255);
+}
+
+/* the middle of the deployment band keeps room for its hint, whatever the squad's row needs */
+.battle-grow {
+    min-width: 280px;
+}

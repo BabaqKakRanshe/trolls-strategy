@@ -32,6 +32,7 @@ namespace TrollStrategy.Editor.Setup
         public const string FallbackFontPath = "Assets/Game/UI/Fonts/LiberationSans Fallback.asset";
         public const string WorldPanelSettingsPath = "Assets/Game/UI/Settings/WorldPanelSettings.asset";
         public const string WorldThemePath = "Assets/Game/UI/Settings/WorldTheme.tss";
+        public const string LanguagesPath = "Assets/Game/UI/Localization/Languages.asset";
         private const string BuildingBasePath = "Assets/Game/Prefabs/BuildingBase.prefab";
         private const string UnitBasePath = "Assets/Game/Prefabs/UnitBase.prefab";
         private const string FallbackSourcePath = "Assets/TextMesh Pro/Fonts/LiberationSans.ttf";
@@ -79,8 +80,9 @@ namespace TrollStrategy.Editor.Setup
                     Part("Colony", "TopBar", 0, "_topBar", "hud-band"),
                     Box("Middle", 1, new[] { "middle" },
                         Box("LeftColumn", 0, new[] { "left-column" },
-                            Part("Colony", "Quest", 0, "_quest"),
-                            Part("Colony", "Inspect", 1, "_inspect")),
+                            // the quest keeps its height; the card below it shrinks, so they never overlap
+                            Part("Colony", "Quest", 0, "_quest", "col-fixed"),
+                            Part("Colony", "Inspect", 1, "_inspect", "col-flex")),
                         Box("RightColumn", 1, new[] { "right-column" },
                             Part("Colony", "Showcase", 0, "_showcase"))),
                     // the catalog tray in the middle; the status line lies over the band's left end
@@ -95,9 +97,13 @@ namespace TrollStrategy.Editor.Setup
                 Layer("Colony", "ContextBar", 5, "_contextBar"),
                 Layer("Colony", "CommandFan", 10, "_commandFan"),
                 Layer("Colony", "HaulCargo", 20, "_haulCargo"),
+                Layer("Colony", "Arena", 25, "_arena"),
                 Layer("Colony", "Reward", 30, "_reward"),
                 Layer("Colony", "BattleReward", 31, "_battleReward"),
+                Layer("Colony", "Wiki", 33, "_wiki"),
+                Layer("Colony", "Menu", 35, "_menu"),
                 Layer("Colony", "Cheat", 40, "_cheat"),
+                Layer("Colony", "Intro", 45, "_intro"),
                 new Node { Name = "Tooltip", Order = 50, Field = "_tooltip", Absolute = true, Classes = new[] { "layer" } }
             }
         };
@@ -146,7 +152,7 @@ namespace TrollStrategy.Editor.Setup
             Children = new[] { Layer("Support", "TechInfo", 0, "_techInfo") }
         };
 
-        [MenuItem("TrollStrategy/Setup UI")]
+        [MenuItem("TrollStrategy/Dev/Setup UI")]
         public static void SetupOpenScene()
         {
             if (EditorApplication.isPlaying)
@@ -199,6 +205,12 @@ namespace TrollStrategy.Editor.Setup
                 .objectReferenceValue = supportHud;
             (serialized.FindProperty("_worldPanel") ?? throw new InvalidOperationException("GameBootstrap has no _worldPanel field"))
                 .objectReferenceValue = worldPanel;
+            // the translations: a scene saved without them silently stays in Russian
+            var languages = AssetDatabase.LoadAssetAtPath<TrollStrategy.Presentation.LanguageTable>(LanguagesPath);
+            if (languages != null)
+                (serialized.FindProperty("_languages") ?? throw new InvalidOperationException("GameBootstrap has no _languages field"))
+                    .objectReferenceValue = languages;
+            else Debug.LogWarning("[UiSetup] No " + LanguagesPath + ": run TrollStrategy/Dev/Setup Localization Fonts");
             serialized.ApplyModifiedProperties();
             return hud;
         }

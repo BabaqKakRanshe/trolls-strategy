@@ -63,9 +63,17 @@ namespace TrollStrategy.UI
         public void Attach(VisualElement target, Func<string> title, Func<string> body, string key = null)
         {
             target.RegisterCallback<PointerEnterEvent>(_ => Show(target, title?.Invoke(), body?.Invoke(), key));
-            target.RegisterCallback<PointerLeaveEvent>(_ => Hide(target));
+            // a finger leaves as it lifts: the card stays long enough to be read
+            target.RegisterCallback<PointerLeaveEvent>(evt =>
+            {
+                if (evt.pointerType == UnityEngine.UIElements.PointerType.touch)
+                    target.schedule.Execute(() => Hide(target)).ExecuteLater(TouchHoldMs);
+                else Hide(target);
+            });
             target.RegisterCallback<DetachFromPanelEvent>(_ => Hide(target));
         }
+
+        private const long TouchHoldMs = 2500;
 
         /// <summary>Opens the card by the element; tests call it directly, since they have no pointer.</summary>
         public void Show(VisualElement target, string title, string body, string key = null)

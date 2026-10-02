@@ -19,6 +19,11 @@ namespace TrollStrategy.UI
         public VisualElement Context { get; set; }
         public VisualElement Fan { get; set; }
         public VisualElement HaulCargo { get; set; }
+        public VisualElement Arena { get; set; }
+        public VisualElement Menu { get; set; }
+        /// <summary>The book; optional until the UI prefab is rebuilt with it (TrollStrategy/Dev/Setup UI).</summary>
+        public VisualElement Wiki { get; set; }
+        public VisualElement Intro { get; set; }
         public VisualElement Reward { get; set; }
         public VisualElement BattleReward { get; set; }
         /// <summary>The developer cheat menu; missing from release players.</summary>
@@ -27,8 +32,8 @@ namespace TrollStrategy.UI
 
         public VisualElement[] Required => new[]
         {
-            Screen, TopBar, Quest, Inspect, Showcase, Catalog, Status, Context, Fan, HaulCargo, Reward,
-            BattleReward, Tooltip
+            Screen, TopBar, Quest, Inspect, Showcase, Catalog, Status, Context, Fan, HaulCargo, Arena, Reward,
+            BattleReward, Menu, Intro, Tooltip
         };
     }
 }

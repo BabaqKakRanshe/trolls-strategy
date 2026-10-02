@@ -139,7 +139,34 @@ namespace TrollStrategy.UI
         }
 
         /// <summary>Folds the card to its heading, title and the goals' count, or opens it again (Q).</summary>
-        public void ToggleCollapsed() => SetCollapsed(!_collapsed);
+        public void ToggleCollapsed()
+        {
+            _madeRoom = false;
+            SetCollapsed(!_collapsed);
+        }
+
+        private bool _madeRoom;
+        private bool _roomWanted;
+
+        /// <summary>
+        /// Folds the card to its header when another card comes to need the column, and opens it again afterwards
+        /// unless the player folded it themselves. Only the change folds: a card the player opens meanwhile stays open.
+        /// </summary>
+        public void SetMakingRoom(bool making)
+        {
+            if (making == _roomWanted) return;
+            _roomWanted = making;
+            if (making && !_collapsed)
+            {
+                _madeRoom = true;
+                SetCollapsed(true);
+            }
+            else if (!making && _madeRoom)
+            {
+                _madeRoom = false;
+                SetCollapsed(false);
+            }
+        }
 
         public void SetCollapsed(bool collapsed)
         {

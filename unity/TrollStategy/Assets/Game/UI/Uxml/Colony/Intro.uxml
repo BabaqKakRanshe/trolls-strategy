@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:VisualElement name="intro-overlay" class="overlay overlay--deep">
+        <ui:VisualElement name="intro-dialog" class="sheet intro-dialog">
+            <!-- what this build is, and the way into the game -->
+            <ui:VisualElement class="intro-dialog__main">
+                <ui:VisualElement class="intro-dialog__heading">
+                    <ui:Label name="intro-title" class="intro-dialog__title t-black" />
+                    <ui:Label name="intro-version" class="chip" />
+                </ui:VisualElement>
+                <ui:Label name="intro-body" class="intro-dialog__text" />
+                <ui:VisualElement name="intro-help" />
+                <ui:VisualElement class="spacer" />
+                <ui:Label name="intro-note" class="intro-dialog__note t-muted" />
+                <ui:VisualElement name="intro-actions" class="intro-dialog__actions" />
+            </ui:VisualElement>
+            <!-- where to find the author and other players -->
+            <ui:VisualElement class="intro-dialog__side panel-soft">
+                <ui:Label text="Заходите в гости" class="t-caption" />
+                <ui:VisualElement name="intro-links" class="link-rows" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="rotate-overlay" class="overlay overlay--deep rotate-overlay">
+        <ui:VisualElement class="sheet rotate-dialog">
+            <ui:Label text="Поверните устройство" class="rotate-dialog__title t-black" />
+            <ui:Label text="Игра рассчитана на горизонтальный экран." class="rotate-dialog__text" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -26,7 +26,7 @@ namespace TrollStrategy.Presentation.Feel
             var toast = panel.gameObject.AddComponent<WorldToast>();
             toast._panel = panel;
             toast._label = panel.AddLabel("world-label world-label--toast");
-            toast._label.text = text;
+            toast._label.text = Localization.T(text);
             toast._origin = position;
             toast._up = up.sqrMagnitude > .0001f ? up.normalized : Vector3.up;
             toast._color = color;

@@ -1,0 +1,345 @@
+/*
+ * The book (WikiPanel): a sheet over the island like the menu. Sections on the left, a table in the middle
+ * whose rows are pictures and numbers, the chosen entry on the right. Colours come from Theme.uss.
+ */
+.wiki-dialog {
+    width: 1500px;
+    height: 860px;
+    max-width: 96%;
+    max-height: 92%;
+}
+
+.wiki-header {
+    flex-shrink: 0;
+    padding-bottom: 12px;
+}
+
+.wiki-title {
+    font-size: 32px;
+    margin: 0 22px 0 6px;
+}
+
+.wiki-search {
+    flex-grow: 1;
+    max-width: 520px;
+    margin-right: auto;
+}
+
+.wiki-search > .unity-base-text-field__input {
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: 23px;
+    border-width: 2px;
+    border-color: var(--paper-line);
+    background-color: var(--paper);
+    font-size: 18px;
+    color: var(--ink);
+}
+
+.wiki-search:focus > .unity-base-text-field__input {
+    border-color: var(--accent);
+}
+
+.wiki-body {
+    flex-grow: 1;
+    flex-direction: row;
+    min-height: 0;
+    border-top-width: 1px;
+    border-color: var(--paper-line);
+}
+
+.wiki-nav {
+    width: 230px;
+    flex-shrink: 0;
+    padding: 14px 12px 14px 0;
+    border-right-width: 1px;
+    border-color: var(--paper-line);
+}
+
+.wiki-nav__item {
+    flex-direction: row;
+    justify-content: space-between;
+    min-height: 46px;
+    margin-bottom: 4px;
+    padding: 0 16px;
+    border-radius: 16px;
+}
+
+.wiki-nav__item.is-on {
+    background-color: var(--accent-soft);
+    border-color: var(--accent-soft);
+}
+
+.wiki-nav__title {
+    font-size: 19px;
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
+    color: var(--ink-soft);
+}
+
+.wiki-nav__item.is-on .wiki-nav__title,
+.wiki-nav__item.is-on .wiki-nav__count {
+    color: var(--accent-deep);
+}
+
+.wiki-nav__count {
+    font-size: 16px;
+    color: var(--ink-soft);
+}
+
+.wiki-main {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    padding: 8px 12px 0 16px;
+}
+
+.wiki-rows {
+    flex-grow: 1;
+}
+
+.wiki-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 64px;
+    margin-bottom: 4px;
+    padding: 4px 10px;
+    border-radius: 16px;
+    white-space: normal;
+}
+
+.wiki-row.is-on {
+    background-color: var(--accent-soft);
+    border-color: var(--accent);
+}
+
+.wiki-row--head {
+    min-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.wiki-head__cell {
+    font-size: 15px;
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
+    color: var(--ink-soft);
+}
+
+/* the picture at the row's start: a white disc with its shadow */
+.wiki-pic {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../Sprites/disc.png");
+}
+
+.wiki-row--head > .wiki-pic {
+    background-image: none;
+    height: 1px;
+}
+
+.wiki-art {
+    width: 70%;
+    height: 70%;
+}
+
+.wiki-art--pixel {
+    width: 56%;
+    height: 56%;
+}
+
+.wiki-cell {
+    flex-shrink: 0;
+    margin-right: 10px;
+    font-size: 18px;
+    white-space: normal;
+}
+
+.wiki-cell--name {
+    width: 230px;
+    flex-shrink: 1;
+}
+
+.wiki-cell--num {
+    width: 72px;
+}
+
+.wiki-cell--fight {
+    width: 116px;
+}
+
+.wiki-cell--price {
+    width: 92px;
+}
+
+.wiki-cell--reward {
+    width: 120px;
+}
+
+.wiki-cell--host {
+    width: 90px;
+}
+
+.wiki-cell--wide {
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: 120px;
+}
+
+.wiki-cell--text {
+    flex-grow: 1;
+}
+
+.wiki-name {
+    font-size: 19px;
+    white-space: normal;
+}
+
+.wiki-note {
+    font-size: 15px;
+    white-space: normal;
+}
+
+.wiki-num {
+    -unity-font-definition: url("../Fonts/Nunito-Black.ttf");
+}
+
+.wiki-icons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.wiki-icon {
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+}
+
+.wiki-icon > .wiki-art {
+    width: 100%;
+    height: 100%;
+}
+
+.wiki-icon > .wiki-art--pixel {
+    width: 80%;
+    height: 80%;
+}
+
+.wiki-count {
+    font-size: 16px;
+    margin: 0 8px 0 1px;
+}
+
+.wiki-arrow {
+    font-size: 18px;
+    margin: 0 6px;
+}
+
+.wiki-bonus {
+    font-size: 16px;
+    color: var(--good);
+    margin-left: 4px;
+}
+
+.wiki-price {
+    flex-direction: row;
+    align-items: center;
+}
+
+.wiki-price > Image {
+    width: 26px;
+    height: 26px;
+    margin-right: 2px;
+}
+
+.wiki-price__value {
+    font-size: 18px;
+    color: var(--coin-deep);
+}
+
+.wiki-empty {
+    margin: 24px;
+    font-size: 18px;
+}
+
+/* the chosen entry */
+.wiki-detail {
+    width: 470px;
+    flex-shrink: 0;
+    padding: 18px 8px 10px 24px;
+    border-left-width: 1px;
+    border-color: var(--paper-line);
+    background-color: var(--paper-soft);
+}
+
+.wiki-big {
+    width: 150px;
+    height: 150px;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../Sprites/disc.png");
+}
+
+.wiki-detail__title {
+    font-size: 28px;
+    margin-top: 6px;
+}
+
+.wiki-detail__price {
+    margin-top: 12px;
+}
+
+.wiki-caption {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    margin-bottom: 6px;
+}
+
+.wiki-para {
+    font-size: 17px;
+    color: var(--ink-soft);
+}
+
+.wiki-chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.wiki-chip {
+    flex-direction: row;
+    align-items: center;
+    min-height: 46px;
+    margin: 0 8px 8px 0;
+    padding: 2px 12px 2px 6px;
+    border-radius: 14px;
+    border-width: 1px;
+    border-color: var(--paper-line);
+    background-color: var(--paper);
+}
+
+.wiki-chip > .glyph {
+    width: 20px;
+    height: 20px;
+    margin: 0 6px 0 4px;
+}
+
+.wiki-chip__value {
+    font-size: 18px;
+}
+
+.wiki-chip__word {
+    font-size: 16px;
+    margin-left: 4px;
+    -unity-font-definition: url("../Fonts/Nunito-Bold.ttf");
+}
+
+.wiki-chip--link {
+    min-height: 46px;
+}

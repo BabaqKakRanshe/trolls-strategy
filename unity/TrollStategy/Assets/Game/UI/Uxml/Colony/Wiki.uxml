@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Wiki.uss" />
+    <!-- the book: sections, a table of pictures and numbers, the chosen entry; WikiPanel fills it from the content -->
+    <ui:VisualElement name="wiki-overlay" class="overlay">
+        <ui:VisualElement name="wiki-dialog" class="sheet wiki-dialog">
+            <ui:VisualElement class="dialog__header wiki-header">
+                <ui:Label text="Справочник" class="wiki-title t-black" />
+                <ui:TextField name="wiki-search" class="wiki-search" />
+                <ui:Button name="wiki-close" text="×" class="btn btn-close" />
+            </ui:VisualElement>
+            <ui:VisualElement class="wiki-body">
+                <ui:VisualElement name="wiki-nav" class="wiki-nav" />
+                <ui:VisualElement class="wiki-main">
+                    <ui:VisualElement name="wiki-head" class="wiki-row wiki-row--head" />
+                    <ui:ScrollView name="wiki-rows" class="wiki-rows" />
+                </ui:VisualElement>
+                <ui:ScrollView name="wiki-detail" class="wiki-detail" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

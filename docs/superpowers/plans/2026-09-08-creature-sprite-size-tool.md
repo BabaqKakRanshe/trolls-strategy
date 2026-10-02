@@ -57,7 +57,7 @@ Run the same Unity command and expect all `UnitVisualScaleTests` tests to pass.
 
 **Interfaces:**
 - Consumes: `GameContentCatalog.Units`, serialized `_spriteScale`, and `UnitView.ApplySpriteScale()`
-- Produces: menu item `TrollStrategy/Tools/Creature Size Tool`
+- Produces: menu item `TrollStrategy/Dev/Tools/Creature Size Tool`
 
 - [ ] **Step 1: Build the editor window**
 

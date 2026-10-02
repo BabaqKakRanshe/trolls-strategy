@@ -1,0 +1,61 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:VisualElement name="arena-overlay" class="overlay overlay--soft">
+        <ui:VisualElement name="arena-dialog" class="sheet arena-dialog">
+            <!-- the ladder: a disc per open level and the first closed one (ArenaPanel builds them); it scrolls
+                 inside the poster's height and never stretches the sheet -->
+            <ui:VisualElement class="arena-rail" picking-mode="Ignore">
+                <ui:ScrollView name="arena-levels" class="arena-rail__scroll" />
+            </ui:VisualElement>
+            <ui:VisualElement class="arena-dialog__rule" picking-mode="Ignore" />
+            <!-- the chosen level as a poster -->
+            <ui:VisualElement class="arena-poster" picking-mode="Ignore">
+                <ui:VisualElement class="arena-poster__head" picking-mode="Ignore">
+                    <ui:VisualElement class="arena-poster__titles" picking-mode="Ignore">
+                        <ui:Label name="arena-level" class="arena-poster__eyebrow t-medium" />
+                        <ui:Label name="arena-name" class="arena-poster__name t-black" />
+                    </ui:VisualElement>
+                    <ui:Button name="arena-close" text="×" class="btn btn-close" />
+                </ui:VisualElement>
+                <ui:VisualElement class="arena-lineup" picking-mode="Ignore">
+                    <ui:VisualElement class="arena-lineup__side" picking-mode="Ignore">
+                        <ui:Label text="Ваш отряд" class="arena-lineup__caption t-medium" picking-mode="Ignore" />
+                        <ui:VisualElement name="arena-squad" class="arena-lineup__row arena-squad" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="glyph glyph--battle arena-lineup__versus" picking-mode="Ignore" />
+                    <ui:VisualElement class="arena-lineup__side arena-lineup__side--enemy" picking-mode="Ignore">
+                        <ui:Label text="Противник" class="arena-lineup__caption t-medium" picking-mode="Ignore" />
+                        <ui:VisualElement name="arena-enemies" class="arena-lineup__row" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="arena-facts" picking-mode="Ignore">
+                    <ui:VisualElement class="arena-fact" picking-mode="Ignore">
+                        <ui:VisualElement name="arena-coin" class="arena-fact__coin" picking-mode="Ignore" />
+                        <ui:VisualElement class="arena-fact__text" picking-mode="Ignore">
+                            <ui:Label name="arena-gold" class="arena-fact__value arena-fact__value--gold t-black" />
+                            <ui:Label name="arena-gold-note" class="arena-fact__note" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="arena-hire" class="arena-fact" picking-mode="Ignore">
+                        <ui:VisualElement class="arena-fact__ring" picking-mode="Ignore">
+                            <ui:VisualElement name="arena-hire-art" class="arena-fact__art" picking-mode="Ignore" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="arena-fact__text" picking-mode="Ignore">
+                            <ui:Label name="arena-hire-name" class="arena-fact__value arena-fact__value--hire t-bold" />
+                            <ui:Label text="найм откроется первой победой" class="arena-fact__note" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="arena-poster__foot" picking-mode="Ignore">
+                    <ui:VisualElement name="arena-state-picture" class="arena-poster__picture" picking-mode="Ignore" />
+                    <ui:VisualElement name="arena-state-glyph" class="glyph arena-poster__glyph" picking-mode="Ignore" />
+                    <ui:Label name="arena-state" class="arena-poster__state" />
+                    <ui:Button name="arena-fight" class="btn btn--primary arena-poster__fight">
+                        <ui:Label text="В бой" class="btn__caption" picking-mode="Ignore" />
+                    </ui:Button>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

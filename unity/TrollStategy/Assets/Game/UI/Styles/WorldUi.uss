@@ -100,6 +100,78 @@
     background-color: var(--paper);
 }
 
+/*
+ * The fighter's gear at the bar's sides: the weapon on the left, armour and helmet on the right. The groups
+ * hang outside the bar, so it stays centred over the fighter however many tokens there are.
+ */
+.hp-bar__row {
+    align-items: center;
+    /* room for three tokens a side and their height, inside the panel the document sizes by its content */
+    padding: 11px 76px;
+}
+
+.hp-bar__gear {
+    position: absolute;
+    top: -10.5px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.hp-bar__gear--left {
+    right: 100%;
+    margin-right: 3px;
+    flex-direction: row-reverse;
+}
+
+.hp-bar__gear--right {
+    left: 100%;
+    margin-left: 3px;
+}
+
+/* One worn item: a white disc with its shadow (disc.png, the 26 px circle in a 35 px box) and the item's picture. */
+.hp-gear {
+    width: 35px;
+    height: 35px;
+    margin: 0 -3px;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../Sprites/disc.png");
+    -unity-background-image-tint-color: var(--paper);
+}
+
+.hp-gear__art {
+    width: 21px;
+    height: 21px;
+}
+
+/* enchanted: the violet rim of the enchanter's work */
+.hp-gear__rim {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    border-width: 2.5px;
+    border-color: var(--magic);
+}
+
+/* a free slot while the squad is placed: a dark hollow with the slot's pictogram, asking for an item */
+.hp-gear--empty {
+    background-image: none;
+    width: 25px;
+    height: 25px;
+    margin: 5px 3px;
+    border-radius: 13px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(30, 42, 64, 0.3);
+}
+
+.hp-gear--empty > .glyph {
+    width: 15px;
+    height: 15px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.95);
+}
+
 /* Land mode: the price over a block for sale; red while the treasury is short, blue on the picked block. */
 .land-price {
     font-size: 58px;

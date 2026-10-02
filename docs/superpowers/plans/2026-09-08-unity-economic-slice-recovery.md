@@ -120,7 +120,7 @@
 - Produces: `MainColonyScene` with non-null bindings and the only enabled build-scene entry.
 
 - [ ] Back up the current generated scene outside the repository before regeneration.
-- [ ] Execute `TrollStrategy/Setup Game Scene` once through Unity MCP.
+- [ ] Execute `TrollStrategy/Dev/Setup Game Scene` once through Unity MCP.
 - [ ] Inspect `GameBootstrap`, HUD, shop, command dock, world view, prefabs, EventSystem, and camera bindings.
 - [ ] Enter Play Mode, complete build-mine and hire-unit smoke actions, and confirm no console errors.
 

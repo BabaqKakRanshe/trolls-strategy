@@ -30,15 +30,25 @@ namespace TrollStrategy.UI
             Tooltip = new HudTooltip(roots.Tooltip);
             Showcase = new ShowcasePanel(roots.Showcase, context.Showcase);
             Catalog = new CatalogPanel(roots.Catalog, context, Showcase, Tooltip);
-            TopBar = new TopBar(roots.TopBar, context, Catalog.Toggle, Tooltip);
+            TopBar = new TopBar(roots.TopBar, context, ToggleCatalog, Tooltip);
             Catalog.OpenChanged += TopBar.SetCatalogOpen;
             TopBar.SetCatalogOpen(Catalog.IsOpen);
             Quest = new QuestTracker(roots.Quest, context, Tooltip);
-            Inspect = new InspectPanel(roots.Inspect, context);
-            ContextBar = new ContextBar(roots.Context, context);
+            Inspect = new InspectPanel(roots.Inspect, context, Tooltip);
+            ContextBar = new ContextBar(roots.Context, context, Tooltip);
             HaulCargo = new HaulCargoDialog(roots.HaulCargo, context, Tooltip);
+            Arena = new ArenaPanel(roots.Arena, context, Tooltip);
+            Menu = new MenuPanel(roots.Menu, context, Tooltip);
+            if (roots.Wiki != null)
+            {
+                Wiki = new WikiPanel(roots.Wiki, context);
+                context.OpenWiki = Wiki.Open;
+            }
+            Intro = new IntroPanel(roots.Intro, context.Edition, () => context.IntroClosed?.Invoke());
+            context.OpenArena = Arena.Open;
+            context.OpenMenu = Menu.Open;
             Status = new StatusLine(roots.Status);
-            Fan = new CommandFan(roots.Fan, context);
+            Fan = new CommandFan(roots.Fan, context, Tooltip);
             Reward = new RewardOverlay(roots.Reward, context, Showcase);
             // the battle's gold flies into the treasury's counter
             BattleReward = new BattleRewardOverlay(roots.BattleReward, context, TopBar);
@@ -46,6 +56,8 @@ namespace TrollStrategy.UI
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
             if (roots.Cheat != null) Cheat = new CheatPanel(roots.Cheat, context);
 #endif
+            // the static texts of every part's layout in the player's language
+            TrollStrategy.Presentation.Localization.TranslateTree(roots.Screen);
             var snapshot = context.Session.CurrentSnapshot;
             Refresh(snapshot);
             Status.Show(context.Interaction, first: true);
@@ -59,6 +71,13 @@ namespace TrollStrategy.UI
         public InspectPanel Inspect { get; }
         public ContextBar ContextBar { get; }
         public HaulCargoDialog HaulCargo { get; }
+        public ArenaPanel Arena { get; }
+        public MenuPanel Menu { get; }
+        /// <summary>The book; null while the UI prefab has no document for it.</summary>
+        public WikiPanel Wiki { get; }
+        public IntroPanel Intro { get; }
+        /// <summary>A dialog holds the screen: the map's clicks and keys wait.</summary>
+        public bool BlocksMap => Intro.IsOpen || Intro.AsksToRotate || Menu.IsOpen || Arena.IsOpen || Wiki?.IsOpen == true;
         public StatusLine Status { get; }
         public CommandFan Fan { get; }
         public RewardOverlay Reward { get; }
@@ -84,8 +103,13 @@ namespace TrollStrategy.UI
             if (_hudVisible) Quest.Refresh(snapshot);
             Inspect.Refresh(snapshot);
             ContextBar.Refresh(snapshot);
+            // the orders take the tray's place while creatures are selected or the map waits for a pick
+            var interaction = _context.Interaction;
+            Catalog.SetCovered(interaction.SelectedIds.Count > 0 || interaction.Mode.Type != InteractionModeType.Neutral);
             HaulCargo.Refresh(snapshot);
             Fan.Refresh();
+            // a building's or creature's card needs the column: the quest folds to its header meanwhile
+            Quest.SetMakingRoom(Inspect.IsShown);
             OfferReward();
         }
 
@@ -105,6 +129,8 @@ namespace TrollStrategy.UI
             Showcase.Tick(unscaledDeltaTime);
             Reward.Tick(unscaledDeltaTime);
             BattleReward.Tick(unscaledDeltaTime);
+            Arena.Tick(unscaledDeltaTime);
+            Intro.SetPortrait(Screen.height > Screen.width * 1.1f);
             _pulseTime += unscaledDeltaTime;
             Root.EnableInClassList(PulseClass, (int)(_pulseTime / PulseSeconds) % 2 == 1);
         }
@@ -144,6 +170,52 @@ namespace TrollStrategy.UI
 
         public void OpenCommandFan(Vector2 panelPoint) => Fan.OpenAt(panelPoint);
 
+        /// <summary>Esc: closes the topmost dialog (the notice, the menu's page, the arena); false when none is open.</summary>
+        public bool CloseTopOverlay()
+        {
+            if (Intro.IsOpen)
+            {
+                Intro.Close();
+                return true;
+            }
+            if (Menu.IsOpen)
+            {
+                Menu.Back();
+                return true;
+            }
+            if (Wiki?.IsOpen == true)
+            {
+                Wiki.Close();
+                return true;
+            }
+            if (Arena.IsOpen)
+            {
+                Arena.Close();
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>The catalog tool's action, also on its key.</summary>
+        public void ToggleCatalogTool() => ToggleCatalog();
+
+        // The catalog tool: while the orders hold the tray it drops the selection or the pick and brings the
+        // catalog back; otherwise it opens and closes the catalog.
+        private void ToggleCatalog()
+        {
+            if (!Catalog.IsCovered)
+            {
+                Catalog.Toggle();
+                return;
+            }
+            // a pick is dropped first, then the selection under it
+            var interaction = _context.Interaction;
+            for (int i = 0; i < 3 && (interaction.SelectedIds.Count > 0 || interaction.Mode.Type != InteractionModeType.Neutral); i++)
+                interaction.CancelOrClear();
+            Catalog.SetCovered(false);
+            Catalog.SetOpen(true);
+        }
+
         public void ToggleCheat()
         {
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
@@ -155,7 +227,7 @@ namespace TrollStrategy.UI
         // placement or order is half done; one at a time.
         private void OfferReward()
         {
-            if (_snapshot == null || Reward.IsOpen || BattleReward.IsOpen || !_hudVisible) return;
+            if (_snapshot == null || Reward.IsOpen || BattleReward.IsOpen || !_hudVisible || BlocksMap) return;
             if (_context.Interaction.Mode.Type != InteractionModeType.Neutral) return;
             if (_snapshot.BattleReward != null)
             {

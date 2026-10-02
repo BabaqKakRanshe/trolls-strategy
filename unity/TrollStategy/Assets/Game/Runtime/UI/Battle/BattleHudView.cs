@@ -32,6 +32,7 @@ namespace TrollStrategy.UI
             Replay = new ReplayBar(roots.Replay, () => PauseToggled?.Invoke(), speed => SpeedChosen?.Invoke(speed),
                 () => CloseRequested?.Invoke(), Tooltip);
             Banner = new BattleBanner(roots.Banner);
+            TrollStrategy.Presentation.Localization.TranslateTree(roots.Screen);
         }
 
         public event Action StartRequested;

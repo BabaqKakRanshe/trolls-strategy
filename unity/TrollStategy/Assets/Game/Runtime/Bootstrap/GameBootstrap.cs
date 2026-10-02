@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
@@ -14,6 +15,7 @@ using TrollStrategy.Presentation.Map;
 using TrollStrategy.Presentation.Units;
 using TrollStrategy.Presentation.Visuals;
 using TrollStrategy.Presentation.WorldUi;
+using TrollStrategy.Support;
 using TrollStrategy.UI;
 
 namespace TrollStrategy.Bootstrap
@@ -46,9 +48,16 @@ namespace TrollStrategy.Bootstrap
         [SerializeField] private SupportHud _support;
         [Tooltip("World-space panel settings for labels, numbers and bars over things in the world.")]
         [SerializeField] private PanelSettings _worldPanel;
+        [Tooltip("Translation files (LocalizationSetup fills it).")]
+        [SerializeField] private LanguageTable _languages;
 
         private GameSession _session;
         private InteractionController _interaction;
+        private CampaignTelemetry _telemetry;
+        // the pause menu stops the colony's time; the session never advances while it is up
+        private bool _paused;
+        private PanelSettings _screenPanel;
+        private Vector2Int _designedResolution;
 
         public GameSession Session => _session;
         public InteractionController Interaction => _interaction;
@@ -70,6 +79,10 @@ namespace TrollStrategy.Bootstrap
         private void Awake()
         {
             if (_camera == null) _camera = Camera.main;
+            GameSettings.Load();
+            Localization.Use(_languages);
+            Localization.Load();
+            GameSettings.Changed += ApplyUiScale;
             WorldPanel.Configure(_worldPanel);
 
             if (_catalog == null)
@@ -125,6 +138,8 @@ namespace TrollStrategy.Bootstrap
             for (int i = 0; i < placements.Count; i++)
                 sceneViews.Add(_session.StartingBuildingIds[i], placements[i].View);
             _interaction = new InteractionController(_session);
+            // where players stop: quests, battles and a heartbeat go to analytics while the player allows it
+            _telemetry = new CampaignTelemetry(_session, e => Telemetry.Game.Record(e.Name, e.Fields));
             if (_support != null) _support.Init(() => SessionDigest.Describe(_session));
 
             if (_buildingManager != null)
@@ -157,12 +172,26 @@ namespace TrollStrategy.Bootstrap
                     ToggleGuides = _routeVisualizer != null ? _routeVisualizer.ToggleGuides : null,
                     GuidesVisible = _routeVisualizer != null ? () => _routeVisualizer.GuidesVisible : null,
                     OpenBattle = mission => BattleSceneController.Open(this, mission),
+                    SetPaused = SetPaused,
+                    Restart = Restart,
+                    IntroClosed = PlayFirstFlight,
+                    Languages = Localization.Languages,
+                    CurrentLanguage = () => Localization.Current,
+                    SetLanguage = Localization.Select,
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
                     OpenQuickBattle = mission => BattleSceneController.OpenQuick(this, mission),
 #endif
                     Showcase = new BuildingShowcase()
                 };
                 _hud.Init(context, _inputHandler);
+                _screenPanel = _hud.Document != null ? _hud.Document.panelSettings : null;
+                if (_screenPanel != null) _designedResolution = _screenPanel.referenceResolution;
+                ApplyUiScale();
+                // a new version opens with the alpha notice; the first launch flies in once it is closed
+                if (_hud.View == null || !_hud.View.Intro.OpenOnce()) PlayFirstFlight();
+#if UNITY_EDITOR || UNITY_ENABLE_CHECKS
+                if (_support != null) _support.SetCheats(() => _hud.View?.ToggleCheat());
+#endif
             }
             else Debug.LogError($"{nameof(GameBootstrap)} has no {nameof(ColonyHud)}; the colony has no HUD.", this);
 
@@ -171,13 +200,63 @@ namespace TrollStrategy.Bootstrap
             feedback.transform.SetParent(transform, false);
             feedback.Init(_session, _interaction, _worldView, _buildingManager,
                 _hud != null ? _hud.PlayRefusalCue : null);
+            // the camera goes to the creature the player asked to see
+            _interaction.FocusRequested += FocusOn;
             // the theme opens the game, then colony music and the meadow bed
             Soundscape.Enter(SoundScene.Colony);
         }
 
         private void Update()
         {
-            _session?.Advance(Time.deltaTime);
+            if (!_paused) _session?.Advance(Time.deltaTime);
+        }
+
+        private void SetPaused(bool paused)
+        {
+            _paused = paused;
+            Soundscape.SetPaused(paused);
+        }
+
+        // a new colony from the scene: the same as launching the game again
+        private void Restart()
+        {
+            SetPaused(false);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        private IslandCameraRig Rig => _camera != null ? _camera.GetComponent<IslandCameraRig>() : null;
+
+        private void PlayFirstFlight()
+        {
+            if (GameSettings.FlightShown) return;
+            var rig = Rig;
+            if (rig == null) return;
+            rig.PlayIntro();
+            GameSettings.MarkFlightShown();
+        }
+
+        private void FocusOn(TrollStrategy.Domain.WorldPosition position)
+        {
+            var rig = Rig;
+            if (rig == null || _worldView == null) return;
+            rig.Frame(_worldView.MapToWorld(new Vector3(position.X, position.Y, 0f)), rig.Side);
+        }
+
+        private void OnDestroy()
+        {
+            _telemetry?.Dispose();
+            GameSettings.Changed -= ApplyUiScale;
+            // the panel settings are an asset: leave them as designed
+            if (_screenPanel != null && _designedResolution != default) _screenPanel.referenceResolution = _designedResolution;
+        }
+
+        // a larger interface frames a smaller part of the reference resolution
+        private void ApplyUiScale()
+        {
+            if (_screenPanel == null || _designedResolution == default) return;
+            float scale = GameSettings.EffectiveUiScale;
+            _screenPanel.referenceResolution = new Vector2Int(
+                Mathf.RoundToInt(_designedResolution.x / scale), Mathf.RoundToInt(_designedResolution.y / scale));
         }
     }
 }

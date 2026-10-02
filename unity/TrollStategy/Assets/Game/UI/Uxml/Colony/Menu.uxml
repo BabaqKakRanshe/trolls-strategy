@@ -1,0 +1,26 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="../../Styles/Theme.uss" />
+    <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:VisualElement name="menu-overlay" class="overlay">
+        <!-- the first page has no card: the title on the halo and four round actions, their words in the hint -->
+        <ui:VisualElement name="menu-pause" class="menu-pause" picking-mode="Ignore">
+            <ui:Label text="Пауза" class="menu-pause__title t-black halo" picking-mode="Ignore" />
+            <ui:Label text="Колония стоит, пока открыто меню" class="menu-pause__note t-bold t-muted halo" picking-mode="Ignore" />
+            <ui:VisualElement name="menu-actions" class="menu-pause__actions" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <!-- the other pages: a sheet with a back arrow -->
+        <ui:VisualElement name="menu-dialog" class="sheet menu-dialog">
+            <ui:VisualElement class="dialog__header">
+                <ui:Button name="menu-back" class="btn btn-close btn-back">
+                    <ui:VisualElement class="glyph glyph--chevron" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Label name="menu-title" text="Настройки" class="menu-dialog__title t-black" />
+                <ui:Button name="menu-close" text="×" class="btn btn-close" />
+            </ui:VisualElement>
+            <ui:VisualElement name="menu-settings" class="menu-page" />
+            <ui:VisualElement name="menu-languages" class="menu-page" />
+            <ui:VisualElement name="menu-about" class="menu-page" />
+            <ui:VisualElement name="menu-restart" class="menu-page" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

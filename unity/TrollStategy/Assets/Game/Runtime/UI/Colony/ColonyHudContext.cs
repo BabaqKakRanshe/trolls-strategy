@@ -2,6 +2,7 @@ using System;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Presentation.Buildings;
+using TrollStrategy.Support;
 
 namespace TrollStrategy.UI
 {
@@ -28,6 +29,24 @@ namespace TrollStrategy.UI
         /// <summary>Development builds only: places the squad and starts the replay at once.</summary>
         public Func<BattleMissionDefinition, bool> OpenQuickBattle { get; set; }
         public BuildingShowcase Showcase { get; set; }
+        /// <summary>Opens the arena ladder; set by the HUD view, called by the battle tool.</summary>
+        public Action OpenArena { get; set; }
+        /// <summary>Opens the pause menu; set by the HUD view, called by the menu tool.</summary>
+        public Action OpenMenu { get; set; }
+        /// <summary>Opens the book; set by the HUD view when the UI has it, called by the book tool.</summary>
+        public Action OpenWiki { get; set; }
+        /// <summary>Stops or resumes the colony's time while a menu holds the screen (the bootstrap owns time).</summary>
+        public Action<bool> SetPaused { get; set; }
+        /// <summary>Starts the colony over from the beginning.</summary>
+        public Action Restart { get; set; }
+        /// <summary>The alpha notice was closed: the first-launch camera flight may start.</summary>
+        public Action IntroClosed { get; set; }
+        /// <summary>Languages the menu offers, as code and name in that language.</summary>
+        public System.Collections.Generic.List<(string Code, string Name)> Languages { get; set; }
+        public Func<string> CurrentLanguage { get; set; }
+        public Action<string> SetLanguage { get; set; }
+        /// <summary>Which public build runs (the itch.io alpha or the Steam demo): the intro and the about page word it.</summary>
+        public BuildEdition Edition { get; set; } = BuildInfo.Current.Edition;
 
         /// <summary>The mission the colony's battle button leads to, or null when the catalog has none.</summary>
         public BattleMissionDefinition FirstMission

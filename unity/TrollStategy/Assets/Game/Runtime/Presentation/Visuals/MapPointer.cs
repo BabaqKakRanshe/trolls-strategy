@@ -19,6 +19,7 @@ namespace TrollStrategy.Presentation.Visuals
         private static int s_fingers;
         private static bool s_gesture, s_moved, s_overUi, s_tapped;
         private static Vector2 s_start, s_finger;
+        private static float s_gestureStart;
         private static float s_lastTouch = float.NegativeInfinity, s_lastMouse = float.NegativeInfinity;
 
         /// <summary>A finger must move this far to stop being a tap, px (larger than the mouse's: fingers shake).</summary>
@@ -74,6 +75,23 @@ namespace TrollStrategy.Presentation.Visuals
             }
         }
 
+        /// <summary>How long the finger has stayed down without moving, s; 0 without such a gesture.</summary>
+        public static float HeldSeconds
+        {
+            get
+            {
+                Refresh();
+                return s_gesture && !s_moved ? Time.unscaledTime - s_gestureStart : 0f;
+            }
+        }
+
+        /// <summary>The gesture did its job (a long press): lifting the finger is not a tap any more.</summary>
+        public static void ConsumeGesture()
+        {
+            Refresh();
+            if (s_gesture) s_moved = true;
+        }
+
         /// <summary>A tap ended this frame at <paramref name="at"/>.</summary>
         public static bool Tapped(out Vector2 at)
         {
@@ -119,6 +137,7 @@ namespace TrollStrategy.Presentation.Visuals
                     s_gesture = true;
                     s_moved = false;
                     s_start = first;
+                    s_gestureStart = now;
                     s_overUi = UIInputUtils.IsOverDocument(first);
                 }
                 if (fingers > 1 || Vector2.Distance(s_start, first) >= TouchDragThresholdPixels) s_moved = true;

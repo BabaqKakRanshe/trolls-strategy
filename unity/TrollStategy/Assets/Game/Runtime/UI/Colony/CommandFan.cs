@@ -7,27 +7,35 @@ using UnityEngine.UIElements;
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// Right-click fan of commands for the selected creatures, opened where the player clicked. It shows
-    /// only while the interaction controller keeps the commands open; any other intent closes it.
+    /// Right-click fan of orders for the selected creatures: a small arc of round buttons over the point the
+    /// player clicked, the key's letter on each, its name and meaning in the hint. It shows only while the
+    /// interaction controller keeps the commands open; any other intent closes it.
     /// </summary>
     public sealed class CommandFan
     {
         private const float EdgeMargin = 140f;
+        // The arc: three discs on a half circle of this radius over the click, kept clear of the pointer.
+        private const float ArcRadius = 82f;
 
         private readonly ColonyHudContext _context;
+        private readonly HudTooltip _tooltip;
         private readonly VisualElement _layer;
         private readonly VisualElement _fan;
         private readonly List<Button> _buttons = new();
 
-        public CommandFan(VisualElement root, ColonyHudContext context)
+        public CommandFan(VisualElement root, ColonyHudContext context, HudTooltip tooltip = null)
         {
             _context = context;
+            _tooltip = tooltip;
             _layer = Ui.Require<VisualElement>(root, "fan-layer");
             _fan = Ui.Require<VisualElement>(root, "command-fan");
             var interaction = context.Interaction;
-            Add("Работа", "E", new Vector2(-122f, -8f), interaction.BeginWorkTarget, silent: false);
-            Add("Перенос", "H", new Vector2(0f, -66f), interaction.BeginHaulTarget, silent: false);
-            Add("Свободны", "R", new Vector2(122f, -8f), interaction.ReleaseSelected, silent: true);
+            Add("Работа", "E", "glyph--work", primary: true, 200f, interaction.BeginWorkTarget,
+                "Потом кликни по зданию: туда встанут работать.", silent: false);
+            Add("Перенос", "H", "glyph--haul", primary: true, 270f, interaction.BeginHaulTarget,
+                "Кликни по двум зданиям: откуда и куда носить.", silent: false);
+            Add("Свободны", "R", "glyph--free", primary: false, 340f, interaction.ReleaseSelected,
+                "Снять с работы и маршрута.", silent: true);
             Ui.Show(_fan, false);
         }
 
@@ -56,17 +64,27 @@ namespace TrollStrategy.UI
                           interaction.Mode.Type == InteractionModeType.Neutral);
         }
 
-        private void Add(string text, string hotkey, Vector2 offset, Action action, bool silent)
+        // One round button at an angle on the arc (screen degrees: 270 is straight up), its key on its rim.
+        private void Add(string name, string hotkey, string glyph, bool primary, float degrees, Action action, string hint,
+            bool silent)
         {
-            var button = Ui.CaptionButton(text, hotkey, "btn fan__button");
-            button.style.left = offset.x;
-            button.style.top = offset.y;
+            var button = Ui.TextButton(string.Empty, "btn btn-disc fan__disc" + (primary ? " is-primary" : string.Empty));
+            float angle = degrees * Mathf.Deg2Rad;
+            button.style.left = Mathf.Cos(angle) * ArcRadius;
+            button.style.top = Mathf.Sin(angle) * ArcRadius;
+            var icon = Ui.Box("glyph " + glyph);
+            icon.pickingMode = PickingMode.Ignore;
+            button.Add(icon);
+            var key = Ui.Text(hotkey, "fan__key t-black");
+            key.pickingMode = PickingMode.Ignore;
+            button.Add(key);
             var interaction = _context.Interaction;
             UiFeel.Bind(button, () =>
             {
                 interaction.ToggleCommands(false);
                 action();
             }, silentClick: silent);
+            _tooltip?.Attach(button, () => name, () => hint, hotkey);
             _fan.Add(button);
             _buttons.Add(button);
         }

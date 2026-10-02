@@ -30,6 +30,8 @@
     --coin: #F6C343;
     --coin-hover: #FFD263;
     --coin-deep: #8F6200;
+    /* the enchanter's violet: enchanted items, never a second accent */
+    --magic: #8E5BE0;
     --veil: rgba(228, 236, 245, 0.45);
     --veil-deep: rgba(220, 230, 241, 0.72);
 }
@@ -402,6 +404,22 @@
     background-image: url("../Icons/auto.svg");
 }
 
+.glyph--work {
+    background-image: url("../Icons/work.svg");
+}
+
+.glyph--haul {
+    background-image: url("../Icons/haul.svg");
+}
+
+.glyph--free {
+    background-image: url("../Icons/free.svg");
+}
+
+.glyph--cancel {
+    background-image: url("../Icons/cancel.svg");
+}
+
 .glyph--pause {
     background-image: url("../Icons/pause.svg");
 }
@@ -420,6 +438,26 @@
 
 .glyph--armor {
     background-image: url("../Icons/armor.svg");
+}
+
+.glyph--helmet {
+    background-image: url("../Icons/helmet.svg");
+}
+
+.glyph--book {
+    background-image: url("../Icons/book.svg");
+}
+
+.glyph--check {
+    background-image: url("../Icons/check.svg");
+}
+
+.glyph--lock {
+    background-image: url("../Icons/lock.svg");
+}
+
+.glyph--rest {
+    background-image: url("../Icons/rest.svg");
 }
 
 /*
@@ -687,4 +725,386 @@
 .dialog .btn {
     margin-bottom: 10px;
     min-height: 52px;
+}
+
+.glyph--menu {
+    background-image: url("../Icons/menu.svg");
+}
+
+/* Devanagari needs shaping: the advanced text generator for Hindi (Localization) */
+.lang-complex {
+    -unity-text-generator: advanced;
+}
+
+/* Pictograms of the menu, the settings and the links */
+.glyph--settings {
+    background-image: url("../Icons/settings.svg");
+}
+
+.glyph--info {
+    background-image: url("../Icons/info.svg");
+}
+
+.glyph--restart {
+    background-image: url("../Icons/restart.svg");
+}
+
+.glyph--music {
+    background-image: url("../Icons/music.svg");
+}
+
+.glyph--sound {
+    background-image: url("../Icons/sound.svg");
+}
+
+.glyph--nature {
+    background-image: url("../Icons/nature.svg");
+}
+
+.glyph--graphics {
+    background-image: url("../Icons/graphics.svg");
+}
+
+.glyph--text-size {
+    background-image: url("../Icons/text-size.svg");
+}
+
+.glyph--language {
+    background-image: url("../Icons/language.svg");
+}
+
+.glyph--telegram {
+    background-image: url("../Icons/telegram.svg");
+}
+
+.glyph--youtube {
+    background-image: url("../Icons/youtube.svg");
+}
+
+.glyph--discord {
+    background-image: url("../Icons/discord.svg");
+}
+
+.glyph--players {
+    background-image: url("../Icons/players.svg");
+}
+
+.glyph--mail {
+    background-image: url("../Icons/mail.svg");
+}
+
+.glyph--external {
+    background-image: url("../Icons/external.svg");
+}
+
+.glyph--heart {
+    background-image: url("../Icons/heart.svg");
+}
+
+.glyph--muted {
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.t-faint {
+    color: var(--ink-faint);
+}
+
+/* A round button that leads (roof blue, white glyph) or warns (red glyph). */
+.btn-disc.is-primary {
+    -unity-background-image-tint-color: var(--accent);
+}
+
+.btn-disc.is-primary > .glyph {
+    -unity-background-image-tint-color: var(--paper);
+}
+
+.btn-disc.is-danger > .glyph {
+    -unity-background-image-tint-color: var(--bad);
+}
+
+/* A round button's key as a keycap on its rim. */
+.disc-key {
+    position: absolute;
+    right: 12%;
+    bottom: 14%;
+    padding: 1px 7px;
+    border-radius: 7px;
+    background-color: var(--paper);
+    border-width: 1px;
+    border-color: var(--paper-line);
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+/* A key named in a sentence: a white keycap with a deeper bottom edge. */
+.keycap {
+    flex-shrink: 0;
+    padding: 0 8px;
+    border-radius: 7px;
+    background-color: var(--paper);
+    border-width: 1px;
+    border-bottom-width: 3px;
+    border-color: var(--paper-line);
+    font-size: 14px;
+    color: var(--ink);
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
+}
+
+/* The back arrow at the start of a sheet's header: the chevron turned to the left on a soft disc. */
+.btn-back {
+    background-color: var(--paper-soft);
+}
+
+.btn-back > .glyph {
+    width: 18px;
+    height: 18px;
+    rotate: -90deg;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+/* A soft panel inside a sheet. */
+.panel-soft {
+    background-color: var(--paper-soft);
+    border-radius: 20px;
+}
+
+/* A line with a keycap or a picture before its text, on a soft panel; red for a warning. */
+.callout {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 16px;
+    background-color: var(--paper-soft);
+}
+
+.callout__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-left: 12px;
+    font-size: 15px;
+    white-space: normal;
+}
+
+.callout__glyph {
+    width: 26px;
+    height: 26px;
+}
+
+.callout--danger {
+    background-color: var(--bad-soft);
+}
+
+.callout--danger > .callout__glyph {
+    -unity-background-image-tint-color: var(--bad);
+}
+
+/* A short fact beside a title, such as the version. */
+.chip {
+    padding: 2px 10px;
+    border-radius: 14px;
+    background-color: var(--accent-soft);
+    color: var(--accent-deep);
+    font-size: 15px;
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
+}
+
+/*
+ * Unity's slider. The game imports no Unity theme, so its parts are drawn here: a soft track with the
+ * filled share in roof blue (slider__fill, added by code: the dragger only moves) and a white knob.
+ */
+.slider {
+    flex-direction: row;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0;
+}
+
+.slider .unity-base-field__input {
+    flex-grow: 1;
+}
+
+.slider .unity-base-slider__drag-container {
+    flex-grow: 1;
+    height: 32px;
+}
+
+.slider .unity-base-slider__tracker {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 11px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: var(--accent-soft);
+    overflow: hidden;
+}
+
+.slider__fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--accent);
+}
+
+.slider .unity-base-slider__dragger {
+    position: absolute;
+    top: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: var(--accent);
+    background-color: var(--paper);
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+.slider:hover .unity-base-slider__dragger {
+    scale: 1.12 1.12;
+}
+
+.slider .unity-base-slider__dragger-border {
+    display: none;
+}
+
+/* A row of choices in one soft track; the taken one wears the accent like a switch that is on. */
+.segmented {
+    flex-direction: row;
+    padding: 4px;
+    border-radius: 22px;
+    background-color: var(--paper-soft);
+}
+
+.segmented > .btn {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-height: 36px;
+    height: 36px;
+    margin: 0 1px;
+    padding: 0 6px;
+    border-radius: 18px;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--ink-soft);
+    font-size: 15px;
+}
+
+.segmented > .btn:hover {
+    background-color: var(--paper);
+    border-color: rgba(0, 0, 0, 0);
+    scale: 1 1;
+}
+
+.segmented > .btn.is-on {
+    background-color: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-deep);
+    -unity-font-definition: url("../Fonts/Nunito-ExtraBold.ttf");
+}
+
+/* Sizes shown as the letter A growing. */
+.segmented > .segmented__letter {
+    -unity-font-definition: url("../Fonts/Nunito-Black.ttf");
+}
+
+.segmented > .segmented__letter--1 {
+    font-size: 14px;
+}
+
+.segmented > .segmented__letter--2 {
+    font-size: 18px;
+}
+
+.segmented > .segmented__letter--3 {
+    font-size: 23px;
+}
+
+/* A button that opens a list: the choice on the left, a chevron turned right on the right. */
+.btn-picker {
+    justify-content: space-between;
+    min-height: 44px;
+    height: 44px;
+    padding: 0 14px 0 18px;
+    border-radius: 22px;
+    font-size: 16px;
+}
+
+.btn-picker:hover {
+    scale: 1 1;
+}
+
+.btn-picker__chevron {
+    width: 18px;
+    height: 18px;
+    rotate: 90deg;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+/* Links: round buttons with the name under them, or rows with a picture, the name and an arrow out. */
+.link-discs {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.link-disc {
+    align-items: center;
+    width: 92px;
+}
+
+/* disc.png: the 57 px circle sits in the middle of this box */
+.link-disc__button {
+    width: 76px;
+    height: 76px;
+}
+
+.link-disc__button > .glyph {
+    width: 26px;
+    height: 26px;
+}
+
+.link-disc__caption {
+    margin-top: -6px;
+    font-size: 14px;
+}
+
+.link-row {
+    justify-content: flex-start;
+    min-height: 44px;
+    height: 44px;
+    padding: 0 12px 0 6px;
+    border-radius: 16px;
+}
+
+.link-row:hover {
+    scale: 1.02 1.02;
+}
+
+.link-row__icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+    border-radius: 16px;
+    background-color: var(--accent-soft);
+    align-items: center;
+    justify-content: center;
+}
+
+.link-row__icon > .glyph {
+    width: 18px;
+    height: 18px;
+    -unity-background-image-tint-color: var(--accent-deep);
+}
+
+.link-row > .btn__caption {
+    flex-grow: 1;
+    font-size: 16px;
+    -unity-text-align: middle-left;
+}
+
+.link-row__out {
+    width: 16px;
+    height: 16px;
+    -unity-background-image-tint-color: var(--ink-faint);
 }
