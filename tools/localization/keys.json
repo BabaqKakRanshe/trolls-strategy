@@ -1,0 +1,2676 @@
+{
+ "Миссия не найдена": [
+  "Runtime/Application/BattleApplication.cs",
+  "Runtime/Application/GameSession.cs",
+  "Runtime/UI/Colony/CheatPanel.cs"
+ ],
+ "Сначала завершите текущий бой": [
+  "Runtime/Application/BattleApplication.cs",
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Сначала победите на предыдущем уровне арены": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Бой откроется по заданию": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Миссия ещё не открыта": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Арена восстанавливается после боя": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Неверные данные боя": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Данные миссии некорректны": [
+  "Runtime/Application/BattleApplication.cs",
+  "Runtime/UI/Colony/CheatPanel.cs"
+ ],
+ "Нужно выбрать от 1 до {0} бойцов": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Недопустимая расстановка": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Боец не найден": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Предмет указан дважды": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Предмет не найден": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Снаряжение можно выдать только бойцу отряда": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Неизвестный тип снаряжения": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Владелец предмета не найден": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "У бойца уже занят слот снаряжения": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Бой не удалось рассчитать": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Награды за бой нет": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "Нет активного боя": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
+ "другого бойца": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "Таких бойцов в колонии нет": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "{0}: все уже на поле": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "В отряде не больше {0} бойцов": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "Все бойцы уже на поле": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "Этого бойца нет на поле": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "Нет бойцов: найми их в колонии": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "Нажми синюю клетку: встанет {0}": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "Перетащи бойца, чтобы переставить": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "Клетка занята преградой": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "Бойцов ставят на синие клетки": [
+  "Runtime/Application/BattleDeployment.cs"
+ ],
+ "Нет текущего задания": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "В этой игре все постройки уже открыты": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Сумма должна быть больше нуля": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "В этой игре земля не покупается": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Команда не задана": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Существ в поселении": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Нанять: {0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Построить: {0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Рабочие → {0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Работает: {0} → {1}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Носильщики: {0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Носит {0}: {1}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Золото в казне": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Выручка рынка, золото": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Продано товаров": [
+  "Runtime/Application/GameSession.cs",
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Продано: {0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Победы в бою": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Уровень: {0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Уровень арены": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Куплено земли, блоков": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Сделано: {0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Улучшения гильдии и бараков, уровней": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Бойцов в снаряжении": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Предметов на складе экипировки": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Новая постройка": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Теперь её можно строить: каталог внизу, вкладка «Здания», {0} золота.": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Новое существо": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Теперь его можно нанимать: каталог внизу, вкладка «Существа», {0} золота.": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Кнопка «В бой» справа открыта.": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Кнопка «В бой» справа открыта. В бой идут до {0} бойцов, первая победа принесёт {1} золота.": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Новый бой": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "{0} золота": [
+  "Runtime/Application/GameSession.cs",
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Золото": [
+  "Runtime/Application/GameSession.cs",
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Пополнит казну поселения.": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "от {0} до {1}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ ", до {0} рабочих": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ ", хранит сырьё": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ ", продаёт товары": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ ", снаряжение отряда": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "С {0} уровня: ": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ " с {0} уровня": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "брак {0}%": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Свободен": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Отдыхает в бараках": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Идёт в бараки": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Идёт на работу: {0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Работает: {0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "источник": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "цель": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Несёт {0} {1} на {2} зол.: {3} → {4}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Возит {0}: {1} → {2}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "всё": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "На рынке: {0} зол. за штуку": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Делают: ": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Нужен для: ": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "урон +{0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "броня +{0}": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Снаряжение бойца: ": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Постройте шахту и наймите рабочих.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Задание «{0}»: что делать — в карточке слева вверху.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Ни одно здание не примет всё выбранное сразу. Уберите лишнее или выберите «Всё».": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Кликните на карте по зданию, куда носить.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Снято с работы: {0}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Выбор снят.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Выбрано юнитов: {0}": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "В рамке нет юнитов.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Выбрано рамкой: {0}": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Свободных существ нет.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Выбрано свободных: {0}": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Свободное существо: {0}. Ещё раз — следующее.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Свободное существо: {0}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Существо «{0}» откроется за задание.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Кликните по клетке, где появятся все {0} существ.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Нанято существ: {0}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Постройка «{0}» откроется за задание.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Выберите свободные клетки: {0}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Шахта построена. Теперь назначьте рабочих.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Построено: {0}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "На поле не осталось места для этой постройки.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Режим земли закрыт.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Здесь земля не покупается.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "За краем острова земли нет.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Эта земля уже расчищена: здесь можно строить.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Участок расчищают: осталось {0} с.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Расчистить участок: {0} с": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ ", {0} зол.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ ", бесплатно": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ ". Пока лес не сведён, строить здесь нельзя.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Купить участок {0}×{1} за {2} зол.? Он поднимется из облаков диким.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Участок стоит {0} зол. {1}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Сначала выберите участок": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Участок куплен и поднимается из облаков. Расчистите его, чтобы строить.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Расчистка началась: деревья и камни уберут за ": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ " с.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Участки в рамке продаются: следующий за {0} зол. Своя дикая земля расчищается кликом.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Укажите производство для выбранных рабочих.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Сначала укажите, откуда носить товар.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "{0} нанят в поселение!": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Награда за бой: +{0} зол.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Награда получена: {0}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Награда получена.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Выбрано: {0}": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Здание выбрано.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Постройка улучшена.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Улучшение куплено.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Постройка разобрана.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Кликните по новому месту: {0}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Постройка перенесена.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Сначала выберите, что носить, и нажмите «Куда носить».": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Это здание нельзя выбрать для текущего шага.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ " Остальные остались на прежних задачах.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "На работу назначено {0} из {1}.{2}": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Постоянный маршрут назначен.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Маршрут назначен, носят: {0}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Продано существ: {0}, получено {1} зол.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Юниты освобождены от работы.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Выберите участок.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Команда отменена.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Носить всё, что есть.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Носить: {0}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Сначала выберите хотя бы одного юнита.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Выбранные существа ушли в здание.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Режим: песочница": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Режим: кампания, уровень {0}, все задания выполнены": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Режим: кампания, уровень {0}, задание «{1}» ({2}){3}": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Золото: {0}, продано товаров: {1}": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Время колонии: {0} с, побед на арене: {1}, высший уровень: {2}": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Бой: идёт": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Бой: нет": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Постройки ({0}): ": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "{0} ур.{1}": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Жители ({0}): ": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Земля: своих участков {0}, расчищено {1} из {2}": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Ревизия состояния: {0}": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "нет": [
+  "Runtime/Application/SessionDigest.cs"
+ ],
+ "Первый бой": [
+  "Runtime/Content/BattleMissionDefinition.cs",
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Editor/Setup/ArenaContentSetup.cs",
+  "Content/Definitions/Mission_01.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Неизвестная команда": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Постройка выходит за границу поля": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Здесь уже стоит здание": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Постройка перекроет вход в другое здание": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Вход в постройку будет перекрыт": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Сначала купите и расчистите эту землю": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Существо «{0}» не нанимается в поселение": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Существо «{0}» ещё не открыто: выполняйте задания": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Количество должно быть от 1 до {0}": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Клетка находится за границей поля": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Эта клетка занята постройкой": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "В одной клетке помещается не больше {0} существ": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Недостаточно золота": [
+  "Runtime/Domain/ColonySimulation.cs",
+  "Runtime/Domain/Upgrades.cs"
+ ],
+ "Эту постройку нельзя построить": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Постройка «{0}» ещё не открыта: выполняйте задания": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Работать можно только на производстве": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Здание не найдено": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Этот маршрут не перевозит подходящий товар": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "По этому маршруту не возят: {0}": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Сначала выберите юнитов": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Юнит выбран дважды": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Юнит не найден": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Достигнут максимальный уровень": [
+  "Runtime/Domain/ColonySimulation.cs",
+  "Runtime/Domain/Upgrades.cs"
+ ],
+ "Эту постройку нельзя снести": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Сначала вывезите товары из постройки": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Сначала завершите перевозку груза": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Земля здесь не продаётся": [
+  "Runtime/Domain/Land.cs"
+ ],
+ "За краем острова земли нет": [
+  "Runtime/Domain/Land.cs"
+ ],
+ "Эта земля уже ваша": [
+  "Runtime/Domain/Land.cs"
+ ],
+ "Покупать можно только рядом со своей землёй": [
+  "Runtime/Domain/Land.cs"
+ ],
+ "Не хватает золота: нужно {0}": [
+  "Runtime/Domain/Land.cs"
+ ],
+ "Сначала купите эту землю": [
+  "Runtime/Domain/Land.cs"
+ ],
+ "Эта земля уже расчищена": [
+  "Runtime/Domain/Land.cs"
+ ],
+ "Эту землю уже расчищают": [
+  "Runtime/Domain/Land.cs"
+ ],
+ "В этой игре нет заданий": [
+  "Runtime/Domain/Progression.cs"
+ ],
+ "Все задания выполнены": [
+  "Runtime/Domain/Progression.cs"
+ ],
+ "Задание ещё не выполнено": [
+  "Runtime/Domain/Progression.cs"
+ ],
+ "Такого улучшения нет": [
+  "Runtime/Domain/Upgrades.cs"
+ ],
+ "Сначала постройте: {0}": [
+  "Runtime/Domain/Upgrades.cs"
+ ],
+ "Раб: {0}/{1}": [
+  "Runtime/Presentation/Buildings/BuildingView.cs"
+ ],
+ "Товары: {0}/{1}": [
+  "Runtime/Presentation/Buildings/BuildingView.cs"
+ ],
+ "Расчистка, {0} с": [
+  "Runtime/Presentation/Island/LandPresenter.cs"
+ ],
+ "Расчистить?": [
+  "Runtime/Presentation/Island/LandPresenter.cs"
+ ],
+ " зол.": [
+  "Runtime/Presentation/Island/LandPresenter.cs"
+ ],
+ "Отчёт: ": [
+  "Runtime/Support/BugReport.cs"
+ ],
+ "Отчёт игрока · {0} · ": [
+  "Runtime/Support/BugReport.cs"
+ ],
+ "[… начало лога обрезано: {0} байт …]": [
+  "Runtime/Support/BugReport.cs"
+ ],
+ "загрузки браузера, ": [
+  "Runtime/Support/BugReporter.cs"
+ ],
+ "браузер не сохранил файл": [
+  "Runtime/Support/BugReporter.cs"
+ ],
+ "редактор": [
+  "Runtime/Support/BuildInfo.cs"
+ ],
+ "[… раньше было ещё ": [
+  "Runtime/Support/LogRecorder.cs"
+ ],
+ " строк …]": [
+  "Runtime/Support/LogRecorder.cs"
+ ],
+ "Версия": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "Собрано": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "Экран": [
+  "Runtime/Support/SystemReport.cs",
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "{0}×{1}, {2} Гц, ": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "Видеокарта": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "{0} ({1} МБ, {2})": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "Процессор": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "{0} ({1} потоков)": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "Память": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "{0} МБ": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "Система": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "Качество": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "В игре": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "{0:0} (худший кадр {1:0} мс)": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "{0} ч {1} мин": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "{0} мин {1} с": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "{0} с": [
+  "Runtime/Support/SystemReport.cs"
+ ],
+ "Логи и техинфо": [
+  "Runtime/Support/UnityReportUploader.cs"
+ ],
+ "Снимок экрана": [
+  "Runtime/Support/UnityReportUploader.cs"
+ ],
+ "В колонию": [
+  "Runtime/UI/Battle/BattleHeader.cs",
+  "UI/Uxml/Battle/Replay.uxml"
+ ],
+ "Награда за победу": [
+  "Runtime/UI/Battle/BattleHeader.cs"
+ ],
+ "Враги": [
+  "Runtime/UI/Battle/BattleHeader.cs",
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "{0}: {1}. Победи всех, чтобы выиграть бой.": [
+  "Runtime/UI/Battle/BattleHeader.cs"
+ ],
+ "Сколько именно, узнаешь в колонии.": [
+  "Runtime/UI/Battle/BattleHeader.cs"
+ ],
+ "Золото за первую победу. {0} Следующие победы: {1}.": [
+  "Runtime/UI/Battle/BattleHeader.cs"
+ ],
+ "Золото за победу. {0}": [
+  "Runtime/UI/Battle/BattleHeader.cs"
+ ],
+ "Бой не начнётся, бойцы вернутся к работе.": [
+  "Runtime/UI/Battle/BattleHudView.cs"
+ ],
+ "В бой!": [
+  "Runtime/UI/Battle/BattleHudView.cs"
+ ],
+ "Победа": [
+  "Runtime/UI/Battle/BattleHudView.cs"
+ ],
+ "Поражение": [
+  "Runtime/UI/Battle/BattleHudView.cs"
+ ],
+ "Ничья": [
+  "Runtime/UI/Battle/BattleHudView.cs"
+ ],
+ "Авторасстановка": [
+  "Runtime/UI/Battle/DeploymentActions.cs"
+ ],
+ "Поставить бойцов из резерва на свободные синие клетки.": [
+  "Runtime/UI/Battle/DeploymentActions.cs"
+ ],
+ "Начать бой": [
+  "Runtime/UI/Battle/DeploymentActions.cs"
+ ],
+ "Бой идёт сам. Павшие бойцы и их снаряжение не вернутся.": [
+  "Runtime/UI/Battle/DeploymentActions.cs"
+ ],
+ "В резерв": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "Убрать бойца с поля, его снаряжение вернётся. Можно и унести бойца за край поля.": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "Здоровье": [
+  "Runtime/UI/Battle/GearPanel.cs",
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Урон": [
+  "Runtime/UI/Battle/GearPanel.cs",
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Броня": [
+  "Runtime/UI/Battle/GearPanel.cs",
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "урон {0}": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "броня {0}": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "Надето, нажми, чтобы снять.": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "Свободно {0} из {1}, нажми, чтобы надеть.": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "Лежит в инвентаре, нажми, чтобы надеть.": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "Сейчас на бойце {0}, нажми, чтобы передать.": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "Свой урон {0}, от снаряжения {1}.": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "Своя броня {0}, от снаряжения {1}.": [
+  "Runtime/UI/Battle/GearPanel.cs"
+ ],
+ "Скорость {0}×": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Продолжить": [
+  "Runtime/UI/Battle/ReplayBar.cs",
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Пауза": [
+  "Runtime/UI/Battle/ReplayBar.cs",
+  "Runtime/UI/Colony/MenuPanel.cs",
+  "UI/Uxml/Colony/Menu.uxml"
+ ],
+ "Пробел": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Твои бойцы в строю": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Враги в строю": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Вернулись": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Выжившие бойцы идут домой.": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Пали": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Погибшие бойцы не вернутся.": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Потеряно снаряжения": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Вещи павших бойцов пропали вместе с ними.": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Награда": [
+  "Runtime/UI/Battle/ReplayBar.cs",
+  "Runtime/UI/Colony/WikiPanel.cs",
+  "UI/Uxml/Colony/Quest.uxml"
+ ],
+ "Сколько золота, узнаешь в колонии.": [
+  "Runtime/UI/Battle/ReplayBar.cs"
+ ],
+ "Отряд": [
+  "Runtime/UI/Battle/SquadPanel.cs"
+ ],
+ "На поле {0}, в бой идут до {1}.": [
+  "Runtime/UI/Battle/SquadPanel.cs"
+ ],
+ "Бьёт издалека: ставь позади, за спинами тех, кто бьёт вблизи.": [
+  "Runtime/UI/Battle/SquadPanel.cs"
+ ],
+ "Бьёт вблизи: ставь впереди, на пути врага.": [
+  "Runtime/UI/Battle/SquadPanel.cs"
+ ],
+ "{0} В резерве {1}.": [
+  "Runtime/UI/Battle/SquadPanel.cs"
+ ],
+ "Ваш отряд": [
+  "Runtime/UI/Colony/ArenaPanel.cs",
+  "UI/Uxml/Colony/Arena.uxml"
+ ],
+ "В бой идут до {0} бойцов. Кого взять, решите перед боем.": [
+  "Runtime/UI/Colony/ArenaPanel.cs"
+ ],
+ "Уровень {0}. Побед: {1}": [
+  "Runtime/UI/Colony/ArenaPanel.cs"
+ ],
+ "Уровень {0}": [
+  "Runtime/UI/Colony/ArenaPanel.cs",
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "золота за первую победу": [
+  "Runtime/UI/Colony/ArenaPanel.cs"
+ ],
+ "золота за победу": [
+  "Runtime/UI/Colony/ArenaPanel.cs"
+ ],
+ "Улучшения бараков делают отряд сильнее": [
+  "Runtime/UI/Colony/ArenaPanel.cs"
+ ],
+ "Отдых {0}": [
+  "Runtime/UI/Colony/ArenaPanel.cs"
+ ],
+ "Побед: {0}. Можно в бой": [
+  "Runtime/UI/Colony/ArenaPanel.cs"
+ ],
+ "Можно в бой": [
+  "Runtime/UI/Colony/ArenaPanel.cs"
+ ],
+ "{0}, первая победа": [
+  "Runtime/UI/Colony/BattleRewardOverlay.cs"
+ ],
+ "Награда за бой: от {0} до {1} золота": [
+  "Runtime/UI/Colony/BattleRewardOverlay.cs"
+ ],
+ "Награда за бой: {0} золота": [
+  "Runtime/UI/Colony/BattleRewardOverlay.cs"
+ ],
+ "+{0} золота": [
+  "Runtime/UI/Colony/BattleRewardOverlay.cs",
+  "Runtime/UI/Colony/CheatPanel.cs"
+ ],
+ "арена, ур. {0}": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "с {0} уровня": [
+  "Runtime/UI/Colony/CatalogPanel.cs",
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "пока закрыто": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "Посмотреть": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "{0} в 3D": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "{0} золота за одного.": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "Каждое новое существо в поселении поднимает цену найма.": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "Каждая следующая такая постройка дороже.": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "Откроется на {0} уровне.": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "Пока закрыто.": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "Не хватает золота для тестового отряда": [
+  "Runtime/UI/Colony/CheatPanel.cs"
+ ],
+ "Не удалось запустить бой: проверь состав и данные миссии": [
+  "Runtime/UI/Colony/CheatPanel.cs"
+ ],
+ "Готово": [
+  "Runtime/UI/Colony/CheatPanel.cs"
+ ],
+ "Работа": [
+  "Runtime/UI/Colony/CommandFan.cs",
+  "Runtime/UI/Colony/ContextBar.cs",
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Потом кликни по зданию: туда встанут работать.": [
+  "Runtime/UI/Colony/CommandFan.cs",
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Перенос": [
+  "Runtime/UI/Colony/CommandFan.cs",
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Кликни по двум зданиям: откуда и куда носить.": [
+  "Runtime/UI/Colony/CommandFan.cs",
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Свободны": [
+  "Runtime/UI/Colony/CommandFan.cs",
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Снять с работы и маршрута.": [
+  "Runtime/UI/Colony/CommandFan.cs",
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Снять выбор": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Продать": [
+  "Runtime/UI/Colony/ContextBar.cs",
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Вернёт часть цены найма.": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Поставить сам": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Постройка встанет на первое свободное место.": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Изменить груз": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Вернуться к выбору, что носить.": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Купить": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Отмена": [
+  "Runtime/UI/Colony/ContextBar.cs",
+  "Runtime/UI/Colony/HaulCargoDialog.cs",
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Вернуться, ничего не меняя.": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Правый клик по карте: приказы у курсора": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "{0} за {1}": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Перенос постройки": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "{0} ×{1} за {2}": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Куда на работу": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Откуда носить": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Куда носить": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Земля: участок за {0}": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Земля": [
+  "Runtime/UI/Colony/ContextBar.cs",
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Расчистить, {0} с": [
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Чат игроков": [
+  "Runtime/UI/Colony/GameLinks.cs"
+ ],
+ "Почта": [
+  "Runtime/UI/Colony/GameLinks.cs"
+ ],
+ "Заходите в гости": [
+  "Runtime/UI/Colony/GameLinks.cs",
+  "UI/Uxml/Colony/Intro.uxml"
+ ],
+ "Если что-то пошло не так, нажмите F8 → «Отправить логи» или напишите мне.": [
+  "Runtime/UI/Colony/GameLinks.cs"
+ ],
+ "Куда носить →": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "Сейчас в «{0}»: {1}": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "в здании: ": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "Ни одно здание не примет всё выбранное сразу — уберите лишнее.": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "здания": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "Что носить из «{0}»?": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "Всё": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "что есть": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "Всё подряд": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "Носильщик берёт по очереди всё, что отдаёт «{0}» и примет место доставки.": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "Носильщик будет брать по очереди всё, что есть.": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "Носить: ": [
+  "Runtime/UI/Colony/HaulCargoDialog.cs"
+ ],
+ "+{0}% к шагу за уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "+{0}% к грузу за уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "−{0}% к погрузке за уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "+{0} место у двери за уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "+{0} боец в отряде за уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "+{0}% здоровья бойцов за уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "+{0} к урону бойцов за уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "−{0}% к отдыху арены за уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "+{0}% к награде арены за уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Уровень {0}, {1}×{2}": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Рецепт": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Запас": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "{0} (до {1})": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Надбавка к цене": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "+{0} зол. за ед.": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "В инвентаре": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Готовое снаряжение попадает в инвентарь отряда.": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Хранит сырьё и полуфабрикаты от носильщиков.": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене.": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Улучшения гильдии действуют на всех носильщиков колонии сразу.": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Перенести": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "указать на карте": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Нанять: ": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "закрыто": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Улучшить": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "макс. уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Снести": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "вернуть ": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "нельзя снести": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Носит за ходку": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "В бою": [
+  "Runtime/UI/Colony/InspectPanel.cs",
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "здоровье {0}, урон {1}, броня {2}": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Снаряжение": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Возит": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Команды ниже получат все выбранные: {0}.": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "В бараки": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "отдыхать": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Продать ×{0}": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "работает, цикл {0} с": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "простой: нет рабочих": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "простой: не хватает сырья": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "простой: выход заполнен": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Состояние": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Инвентарь: слоты {0} из {1}, товары {2} из {3}": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "{0}: {1} из {2}": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "максимум": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Привет! Это альфа-версия игры: колония троллей и гоблинов на парящем острове. Она ещё растёт — что-то не доделано, что-то не сбалансировано, а прогресс пока не сохраняется.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Привет! Это демо-версия игры: колония троллей и гоблинов на парящем острове. Полная игра ещё в работе: что-то будет меняться, а прогресс пока не сохраняется.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Играть": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Демо-версия": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Альфа-версия": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "В желаемое": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Демо в Steam": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Добавьте игру в желаемое, чтобы не пропустить выход.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "В Steam можно добавить игру в желаемое, чтобы не пропустить выход.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Авто": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Низкая": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Средняя": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Высокая": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Обычный": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Крупный": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Очень крупный": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Настройки": [
+  "Runtime/UI/Colony/MenuPanel.cs",
+  "UI/Uxml/Colony/Menu.uxml"
+ ],
+ "Язык": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Об игре": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Начать заново?": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Колония троллей и гоблинов на парящем острове: добывай, перерабатывай, вози, торгуй и выводи отряд на арену.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Игру делает один человек — Владимир Милютин. Это альфа: что-то не готово, что-то не сбалансировано.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Игру делает один человек — Владимир Милютин. Это демо-версия: полная игра ещё в работе.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Тексты на других языках переведены ИИ — если увидите ошибку, напишите автору.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Колония начнётся с самого начала: здания, существа, золото и задания пропадут.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Звук, графика, размер интерфейса и язык.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Кто делает игру и где его найти.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Начать заново": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Звук": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Музыка": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Звуки": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Природа": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Графика": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Интерфейс": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Версия {0}, {1}": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Русский": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Подобрано для этого устройства: {0}.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "низкая": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "средняя": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "высокая": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Развернуть задание": [
+  "Runtime/UI/Colony/QuestTracker.cs"
+ ],
+ "Свернуть задание": [
+  "Runtime/UI/Colony/QuestTracker.cs"
+ ],
+ "Показать, что делать и что дадут.": [
+  "Runtime/UI/Colony/QuestTracker.cs"
+ ],
+ "Оставить только название и счёт целей.": [
+  "Runtime/UI/Colony/QuestTracker.cs"
+ ],
+ "Обучение, уровень {0} из {1}": [
+  "Runtime/UI/Colony/QuestTracker.cs"
+ ],
+ "Задание, уровень {0}": [
+  "Runtime/UI/Colony/QuestTracker.cs"
+ ],
+ "Развернуть": [
+  "Runtime/UI/Colony/QuestTracker.cs"
+ ],
+ "Свернуть": [
+  "Runtime/UI/Colony/QuestTracker.cs",
+  "UI/Uxml/Colony/Quest.uxml"
+ ],
+ "{0} из {1}": [
+  "Runtime/UI/Colony/QuestTracker.cs"
+ ],
+ "Обучение: уровень {0} пройден": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Уровень {0} пройден": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Уже в каталоге, вкладка «Здания», {0} золота": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Уже в каталоге, вкладка «Существа», {0} золота": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "до {0} рабочих": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Делает": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Добывает": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Откуда сырьё": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Куда товар": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Иногда": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "{0}%, с {1} уровня": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Брак {0}%": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Других рецептов: {0}, они в карточке здания": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "Открыто: ": [
+  "Runtime/UI/Colony/RewardOverlay.cs"
+ ],
+ "работает": [
+  "Runtime/UI/Colony/StaffList.cs"
+ ],
+ "идёт на работу": [
+  "Runtime/UI/Colony/StaffList.cs"
+ ],
+ "Рабочие: {0} из {1}": [
+  "Runtime/UI/Colony/StaffList.cs"
+ ],
+ "Рабочие: {0}": [
+  "Runtime/UI/Colony/StaffList.cs"
+ ],
+ "Никто не работает: выделите существ → «Работа» → это здание.": [
+  "Runtime/UI/Colony/StaffList.cs"
+ ],
+ "увозит в «{0}»": [
+  "Runtime/UI/Colony/StaffList.cs"
+ ],
+ "привозит из «{0}»": [
+  "Runtime/UI/Colony/StaffList.cs"
+ ],
+ "Любой груз: {0}": [
+  "Runtime/UI/Colony/StaffList.cs"
+ ],
+ "Снять всех": [
+  "Runtime/UI/Colony/StaffList.cs"
+ ],
+ "Казна поселения. Рынок платит за каждый доставленный товар.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Существа": [
+  "Runtime/UI/Colony/TopBar.cs",
+  "Runtime/UI/Colony/WikiPanel.cs",
+  "UI/Uxml/Colony/Catalog.uxml"
+ ],
+ "Свободный": [
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Показать следующее существо без работы; камера едет к нему. Ещё раз — следующее.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Купить участок у острова или расчистить свой.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Сетка": [
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Клетки поля и пути носильщиков.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Арена": [
+  "Runtime/UI/Colony/TopBar.cs",
+  "Runtime/UI/Colony/WikiPanel.cs",
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Уровни арены: победа открывает следующий, пройденный можно повторять ради золота. ": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Каталог": [
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Здания и существа, лоток внизу экрана.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Справочник": [
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml",
+  "UI/Uxml/Colony/Wiki.uxml"
+ ],
+ "Существа, здания, товары, улучшения и арена: кто что делает и сколько стоит.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Меню": [
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Пауза, настройки звука, графики и языка, об игре, начать заново.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "{0} без дела": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Бой с {0} уровня": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Бой закрыт": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "В бой": [
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Battle/Actions.uxml",
+  "UI/Uxml/Colony/Arena.uxml",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Бой через ": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ " с": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Пока никого. Нанять можно в каталоге.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Всего {0}, без дела {1}.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Всего {0}, все при деле.": [
+  "Runtime/UI/Colony/TopBar.cs"
+ ],
+ "Здания": [
+  "Runtime/UI/Colony/WikiPanel.cs",
+  "UI/Uxml/Colony/Catalog.uxml"
+ ],
+ "Товары": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Улучшения": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Ничего не нашлось": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Существо": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Шаг": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Груз": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Бой": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Любимые здания": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Найм": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Враг": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Уровни арены": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Здание": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Размер": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Рабочих": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Главный рецепт": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Цена": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Товар": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "На рынке": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Делают": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Берут": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Улучшение": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Где": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Уровень": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Цены уровней": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Открывает": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Найдено": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Раздел": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "после {0} уровня арены": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "с начала игры": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "В колонии": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "работа": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "шаг": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "груз": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Работает быстрее на {0}%": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Как открыть": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Победи на {0} уровне арены, потом нанимай в каталоге.": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Есть в каталоге с начала игры.": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Быстрее работают": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Куплено уровней: {0} из {1}": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Покупается в": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "уровень {0}": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Первая победа: {0}–{1} золота. Повтор: {2}–{3}.": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Отряд до {0} бойцов, отдых после боя {1} с.": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Победа открывает": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "везде одинаково": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "{0} зол.": [
+  "Runtime/UI/Common/Ui.cs"
+ ],
+ "Отчёт уже собирается": [
+  "Runtime/UI/Support/SupportHud.cs"
+ ],
+ "Отправляю… {0}%": [
+  "Runtime/UI/Support/SupportHud.cs",
+  "Runtime/UI/Support/TechInfoPanel.cs"
+ ],
+ "Отчёт отправлен": [
+  "Runtime/UI/Support/SupportHud.cs"
+ ],
+ "Отчёт сохранён в загрузки": [
+  "Runtime/UI/Support/SupportHud.cs"
+ ],
+ "Отчёт не собран": [
+  "Runtime/UI/Support/SupportHud.cs"
+ ],
+ "Автоотчёт": [
+  "Runtime/UI/Support/SupportHud.cs"
+ ],
+ "Не удалось описать игру: ": [
+  "Runtime/UI/Support/SupportHud.cs"
+ ],
+ "Отчёт отправлен. Спасибо!": [
+  "Runtime/UI/Support/TechInfoPanel.cs"
+ ],
+ "Отправить не удалось — отчёт сохранён в файл:": [
+  "Runtime/UI/Support/TechInfoPanel.cs"
+ ],
+ "Не удалось собрать отчёт: ": [
+  "Runtime/UI/Support/TechInfoPanel.cs"
+ ],
+ "Статистика: отправляется": [
+  "Runtime/UI/Support/TechInfoPanel.cs",
+  "UI/Uxml/Support/TechInfo.uxml"
+ ],
+ "Статистика: не отправляется": [
+  "Runtime/UI/Support/TechInfoPanel.cs"
+ ],
+ "Собираю отчёт…": [
+  "Runtime/UI/Support/TechInfoPanel.cs"
+ ],
+ "Таверна": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/Building_Tavern.asset"
+ ],
+ "Гильдия носильщиков": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_HaulersGuild.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Железный меч": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/Equipment_IronSword.asset",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Усиленная броня": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/Equipment_IronArmor.asset",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Деревянный щит": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/Equipment_WoodenShield.asset",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Зачарованный меч": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/Equipment_EnchantedSword.asset",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Боевой топор": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/Equipment_BattleAxe.asset",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Руда": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Слиток": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Пшеница": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Шкура": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Кожа": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Брёвна": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Доски": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Кристалл": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Уголь": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Самородок": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Солома": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Золотой колос": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Мясо": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Молоко": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Лом": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Пир": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Лёгкий шаг": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Все существа ходят по колонии на 10% быстрее за уровень.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Крепкие спины": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Носильщики поднимают больше: +25% к выносливости за уровень, то есть лишняя единица груза каждые четыре ходки.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Быстрые руки": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Погрузка и выгрузка идут на 20% быстрее за уровень: меньше ожидания у дверей.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Широкие двери": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "У двери каждого здания грузится на одного носильщика больше: очередь тает быстрее.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Больше бойцов": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "В бой идёт на одного бойца больше.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Закалка": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Бойцы поселения выносливее: +15% здоровья за уровень.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Оружейная выучка": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Каждый удар бойца поселения наносит на 1 урона больше за уровень.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Отдых": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Арена восстанавливается после боя на 20% быстрее за уровень.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Слава арены": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Победы на арене приносят на 15% больше золота за уровень.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Первый работник": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Внизу, во вкладке «Существа», нажми на гоблина и кликни по свободной клетке на карте.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "Своя шахта": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Внизу, во вкладке «Здания», нажми на шахту. Кликни по свободному месту на карте или нажми «Поставить сам».": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "За работу!": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Найми тролля. Кликни по нему → «Работа» (E) → шахта. Затем кликни по гоблину → «Перенос» (H) → шахта → выбери, что носить → склад.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "Первая выручка": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Руда копится на складе. Найми ещё гоблина и дай ему «Перенос»: склад → рынок. Рынок платит за каждую доставленную руду.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "Казна": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Золото приходит, только когда руду довозят до рынка. Найми ещё гоблинов и дай им перенос: шахта → рынок или склад → рынок.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Бараки": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_Barracks.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Внизу, во вкладке «Здания», нажми на бараки и поставь их на свободное место. Снятые с работы существа отдыхают у их дверей, а из бараков открывается дорога на арену.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "Нажми «В бой» справа. Поставь до 4 бойцов в левые клетки: тролля вперёд, гоблинов за ним. Бой идёт сам.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "Урожай": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Поле растит пшеницу и солому без сырья и собирает их разом. Построй его поближе к складу и поставь трёх рабочих.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Хлеб на рынок": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Дай носильщикам перенос с поля или со склада на рынок и продай пшеницу.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Плавильня": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_Smeltery.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Плавильня делает из двух руд слиток, а с углём — два слитка. Построй её и дай ей двух рабочих.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Железо в цене": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Вози руду в плавильню, а слитки — на рынок: слиток стоит дороже двух руд.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Новая земля": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Острову тесно. Нажми «Земля» справа сверху (L), выбери блок рядом с колонией и купи его. Потом расчисти: на дикой земле строить нельзя.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "Носильщики толпятся у дверей шахты? Гильдия их учит. Построй её из вкладки «Здания», нажми на неё на карте и купи в её карточке два улучшения: «Широкие двери» пускают к двери больше носильщиков, «Быстрые руки» ускоряют погрузку.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "Кузница": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_Forge.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Кузница куёт мечи из слитков, а с кожей — броню; иногда портит работу в лом. Построй её и поставь двух рабочих.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Богатый рынок": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "Склад экипировки": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_Armory.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Построй склад экипировки и вози туда мечи из кузницы: перед боем их можно выдать бойцам.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Оружие для отряда": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Пусть на складе экипировки будет пять предметов: мечи, броня, щиты.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Третий уровень арены": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Каждая победа открывает следующий уровень арены. Дойди до третьего: там встретятся хоббиты, и после победы их можно нанимать.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Ферма": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_Farm.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Ферма кормит скот пшеницей и соломой и даёт шкуры, мясо и молоко. Построй её и дай ей двух рабочих.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Растущее поселение": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Больше рук — больше дел. Доведи население до 20 существ; каждое новое нанять чуть дороже.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Кожевня": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_Tannery.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Кожевня выделывает шкуры в кожу. Построй её и дай ей двух рабочих.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Кожа на продажу": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Кожа дорого стоит на рынке, а в кузнице из неё и слитков выходит броня.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Лесозаготовка": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_LumberCamp.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Лесозаготовка валит брёвна без сырья. Построй её и поставь трёх рабочих.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Торговый путь": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Налаженная торговля — основа казны. Заработай на рынке 3000 золота.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Пилорама": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_LumberMill.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Пилорама режет брёвна на доски. Построй её и дай ей двух рабочих.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Продай доски на рынке — или копи их для щитов.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Мастерская щитов": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_ShieldWorkshop.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Щиты из досок укрепляют отряд. Построй мастерскую и дай ей двух рабочих.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Отряд в железе": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Выдай снаряжение четырём бойцам: перед боем нажми на бойца и выбери предмет внизу.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Пир на весь остров": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Таверна собирает пир из четырёх товаров: пшеницы, мяса, молока и брёвен. Построй её, дай ей двух рабочих, привези всё нужное и приготовь шесть пиров.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Глубокая шахта": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Улучши шахту до третьего уровня и добудь 12 угля: со второго уровня в породе попадается уголь, с третьего — самородки. С углём плавильня даёт два слитка вместо одного.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Зачарователь": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_Enchanter.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Торговля": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Заработай на рынке золото. Задание повторяется, и цель растёт.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Выиграй бой. Повторные победы тоже приносят золото.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Оборот": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Продай на рынке товары любого вида.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Праздник": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Приготовь в таверне пиры.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Гном": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Dwarf.asset"
+ ],
+ "Упорный мастер: в шахте, плавильне и кузнице работает в полтора раза быстрее. Ходит медленно, в бою стоит стеной.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Dwarf.asset"
+ ],
+ "Рыжебородый гном": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_YellowBeardDwarf.asset"
+ ],
+ "Мастер огня и металла: в кузнице, плавильне и у зачарователя работает на 60% быстрее.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_YellowBeardDwarf.asset"
+ ],
+ "Эльф": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Elf.asset"
+ ],
+ "Лёгкий и быстрый: на лесозаготовке, пилораме и у зачарователя работает в полтора раза быстрее. В бою бьёт издалека.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Elf.asset"
+ ],
+ "Хоббит": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Halfling.asset"
+ ],
+ "Шустрый носильщик и хозяин: на поле, ферме и в таверне работает в полтора раза быстрее.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Halfling.asset"
+ ],
+ "Человек": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Human.asset"
+ ],
+ "Мастер на все руки: в кожевне, мастерской щитов и таверне работает на треть быстрее.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Human.asset"
+ ],
+ "Амазонка": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Amazon.asset"
+ ],
+ "Воительница: сильна в бою, на лесозаготовке и в поле работает на треть быстрее.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Amazon.asset"
+ ],
+ "Горожанин": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Townsfolk.asset"
+ ],
+ "Дёшев и вынослив: носит больше гоблина, на поле и ферме работает на четверть быстрее. Не боец.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Townsfolk.asset"
+ ],
+ "Орк": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Orc.asset"
+ ],
+ "Крепкий работяга: в шахте и плавильне работает на треть быстрее, в бою держит удар.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Orc.asset"
+ ],
+ "Дикий орк": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_WildOrc.asset"
+ ],
+ "Свирепый боец; в шахте и на лесозаготовке работает на пятую часть быстрее.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_WildOrc.asset"
+ ],
+ "Трасго": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Trasgo.asset"
+ ],
+ "Вертлявый проказник: бьёт слабо, зато часто.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Trasgo.asset"
+ ],
+ "Летучая мышь": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Bat.asset"
+ ],
+ "Быстрая и хрупкая; налетает стаей.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Bat.asset"
+ ],
+ "Волк": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Wolf.asset"
+ ],
+ "Быстрый охотник: первым добегает до отряда.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Wolf.asset"
+ ],
+ "Варг": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Warg.asset"
+ ],
+ "Огромный волк: быстрый и кусачий.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Warg.asset"
+ ],
+ "Зелёная слизь": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_GreenSlime.asset"
+ ],
+ "Медленная и слабая; опасна числом.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_GreenSlime.asset"
+ ],
+ "Синяя слизь": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_BlueSlime.asset"
+ ],
+ "Чуть крепче зелёной.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_BlueSlime.asset"
+ ],
+ "Мать зелёных слизней": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_GreenMotherSlime.asset"
+ ],
+ "Большая и живучая слизь.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_GreenMotherSlime.asset"
+ ],
+ "Мать синих слизней": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_BlueMotherSlime.asset"
+ ],
+ "Самая крепкая из слизней.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_BlueMotherSlime.asset"
+ ],
+ "Скелет": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Skeleton.asset"
+ ],
+ "Неутомимый мертвец с мечом.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Skeleton.asset"
+ ],
+ "Зомби": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Zombie.asset"
+ ],
+ "Медленный, но его трудно свалить.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Zombie.asset"
+ ],
+ "Блуждающий огонь": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Wildfire.asset"
+ ],
+ "Жжёт издалека; хрупок вблизи.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Wildfire.asset"
+ ],
+ "Тыквенный ужас": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_PumpkinHorror.asset"
+ ],
+ "Ожившая тыква: крепкая и злая.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_PumpkinHorror.asset"
+ ],
+ "Кентавр": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Centaur.asset"
+ ],
+ "Быстрый лучник: держите его подальше от слабых.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Centaur.asset"
+ ],
+ "Злой снеговик": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_EvilSnowman.asset"
+ ],
+ "Стоит на месте и швыряет снежки.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_EvilSnowman.asset"
+ ],
+ "Циклоп": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Cyclops.asset"
+ ],
+ "Великан: бьёт редко, но страшно.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Cyclops.asset"
+ ],
+ "Йети": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Editor/Setup/ArenaContentSetup.cs",
+  "Content/Definitions/Unit_Yeti.asset"
+ ],
+ "Снежный великан в густой шерсти.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Yeti.asset"
+ ],
+ "Минотавр": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Editor/Setup/ArenaContentSetup.cs",
+  "Content/Definitions/Unit_Minotaur.asset"
+ ],
+ "Хозяин арены: сильнейший из её бойцов.": [
+  "Editor/Setup/CreatureSetup.cs",
+  "Content/Definitions/Unit_Minotaur.asset"
+ ],
+ "Слизни на лугу": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Хоббиты-забияки": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Ночная стая": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Люди с холмов": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Волчья тропа": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Ярмарочная драка": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Мать слизней": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Лесные стрелки": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Старое кладбище": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Гномья застава": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Варги": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Орочий набег": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Синее болото": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Амазонки": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Мёртвые встают": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Блуждающие огни": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Дикие орки": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Тыквенная ночь": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Кентавры": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Рыжебородые": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Снежная засада": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Циклоп и свита": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Огонь и клыки": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Два циклопа": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Ледяная буря": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Бойня": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "Хозяева арены": [
+  "Editor/Setup/ArenaContentSetup.cs"
+ ],
+ "ждёт в колонии": [
+  "UI/Uxml/Battle/Replay.uxml"
+ ],
+ "Противник": [
+  "UI/Uxml/Colony/Arena.uxml"
+ ],
+ "найм откроется первой победой": [
+  "UI/Uxml/Colony/Arena.uxml"
+ ],
+ "Победа!": [
+  "UI/Uxml/Colony/BattleReward.uxml"
+ ],
+ "Забрать золото": [
+  "UI/Uxml/Colony/BattleReward.uxml"
+ ],
+ "Нанимать по": [
+  "UI/Uxml/Colony/Catalog.uxml"
+ ],
+ "Чит-меню": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "Миссия 1 без ожидания открытия и перезарядки.": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "Открыть расстановку": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "Быстрый бой": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "Выполнить текущее задание": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "Купить всю землю": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "Расчистить всю землю": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "Открыть все постройки": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "+1000 золота": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "Если бойцов нет, быстрый бой наймёт 1 тролля и 3 гоблинов.": [
+  "UI/Uxml/Colony/Cheat.uxml"
+ ],
+ "Отметьте один или несколько товаров или оставьте «Всё». Куда носить, укажете на карте.": [
+  "UI/Uxml/Colony/HaulCargo.uxml"
+ ],
+ "Поверните устройство": [
+  "UI/Uxml/Colony/Intro.uxml"
+ ],
+ "Игра рассчитана на горизонтальный экран.": [
+  "UI/Uxml/Colony/Intro.uxml"
+ ],
+ "Колония стоит, пока открыто меню": [
+  "UI/Uxml/Colony/Menu.uxml"
+ ],
+ "Забрать награду": [
+  "UI/Uxml/Colony/Quest.uxml"
+ ],
+ "Забрать": [
+  "UI/Uxml/Colony/Reward.uxml"
+ ],
+ "Техинфо": [
+  "UI/Uxml/Support/TechInfo.uxml"
+ ],
+ "Читы": [
+  "UI/Uxml/Support/TechInfo.uxml"
+ ],
+ "Отправить логи": [
+  "UI/Uxml/Support/TechInfo.uxml"
+ ],
+ "Игра отправляет анонимную статистику: до какого задания доходят игроки. Так мы находим, где играть трудно.": [
+  "UI/Uxml/Support/TechInfo.uxml"
+ ],
+ "Подробнее": [
+  "UI/Uxml/Support/TechInfo.uxml"
+ ],
+ "Не отправлять": [
+  "UI/Uxml/Support/TechInfo.uxml"
+ ],
+ "Хорошо": [
+  "UI/Uxml/Support/TechInfo.uxml"
+ ],
+ "Поле": [
+  "Content/Definitions/Building_Field.asset"
+ ],
+ "Рынок": [
+  "Content/Definitions/Building_Market.asset"
+ ],
+ "Шахта": [
+  "Content/Definitions/Building_Mine.asset"
+ ],
+ "Склад": [
+  "Content/Definitions/Building_Warehouse.asset"
+ ],
+ "Латаная броня": [
+  "Content/Definitions/Equipment_PatchedArmor.asset"
+ ],
+ "Ржавый меч": [
+  "Content/Definitions/Equipment_RustySword.asset"
+ ],
+ "2. Слизни на лугу": [
+  "Content/Definitions/Mission_02.asset"
+ ],
+ "3. Хоббиты-забияки": [
+  "Content/Definitions/Mission_03.asset"
+ ],
+ "4. Ночная стая": [
+  "Content/Definitions/Mission_04.asset"
+ ],
+ "5. Люди с холмов": [
+  "Content/Definitions/Mission_05.asset"
+ ],
+ "6. Волчья тропа": [
+  "Content/Definitions/Mission_06.asset"
+ ],
+ "7. Ярмарочная драка": [
+  "Content/Definitions/Mission_07.asset"
+ ],
+ "8. Мать слизней": [
+  "Content/Definitions/Mission_08.asset"
+ ],
+ "9. Лесные стрелки": [
+  "Content/Definitions/Mission_09.asset"
+ ],
+ "10. Старое кладбище": [
+  "Content/Definitions/Mission_10.asset"
+ ],
+ "11. Гномья застава": [
+  "Content/Definitions/Mission_11.asset"
+ ],
+ "12. Варги": [
+  "Content/Definitions/Mission_12.asset"
+ ],
+ "13. Орочий набег": [
+  "Content/Definitions/Mission_13.asset"
+ ],
+ "14. Синее болото": [
+  "Content/Definitions/Mission_14.asset"
+ ],
+ "15. Амазонки": [
+  "Content/Definitions/Mission_15.asset"
+ ],
+ "16. Мёртвые встают": [
+  "Content/Definitions/Mission_16.asset"
+ ],
+ "17. Блуждающие огни": [
+  "Content/Definitions/Mission_17.asset"
+ ],
+ "18. Дикие орки": [
+  "Content/Definitions/Mission_18.asset"
+ ],
+ "19. Тыквенная ночь": [
+  "Content/Definitions/Mission_19.asset"
+ ],
+ "20. Кентавры": [
+  "Content/Definitions/Mission_20.asset"
+ ],
+ "21. Рыжебородые": [
+  "Content/Definitions/Mission_21.asset"
+ ],
+ "22. Снежная засада": [
+  "Content/Definitions/Mission_22.asset"
+ ],
+ "23. Циклоп и свита": [
+  "Content/Definitions/Mission_23.asset"
+ ],
+ "24. Огонь и клыки": [
+  "Content/Definitions/Mission_24.asset"
+ ],
+ "25. Йети": [
+  "Content/Definitions/Mission_25.asset"
+ ],
+ "26. Два циклопа": [
+  "Content/Definitions/Mission_26.asset"
+ ],
+ "27. Минотавр": [
+  "Content/Definitions/Mission_27.asset"
+ ],
+ "28. Ледяная буря": [
+  "Content/Definitions/Mission_28.asset"
+ ],
+ "29. Бойня": [
+  "Content/Definitions/Mission_29.asset"
+ ],
+ "30. Хозяева арены": [
+  "Content/Definitions/Mission_30.asset"
+ ],
+ "В гильдии учат носильщиков: быстрее ходить, больше поднимать, скорее грузиться. Построй её и купи в гильдии или бараках два уровня улучшений.": [
+  "Content/Definitions/Progression.asset"
+ ],
+ "Гоблин": [
+  "Content/Definitions/Unit_Goblin.asset"
+ ],
+ "Дешёвый и шустрый: быстро носит грузы, но работает медленнее тролля.": [
+  "Content/Definitions/Unit_Goblin.asset"
+ ],
+ "Тролль": [
+  "Content/Definitions/Unit_Troll.asset"
+ ],
+ "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.": [
+  "Content/Definitions/Unit_Troll.asset"
+ ]
+}

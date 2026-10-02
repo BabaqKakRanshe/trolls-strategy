@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69c05d62c76da9d45a7b1c63751923c2, type: 3}
+  m_Name: Languages
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Presentation.LanguageTable
+  _languages:
+  - Code: cs
+    File: {fileID: 4900000, guid: b6e45b324557b664a8b4791937c00aec, type: 3}
+  - Code: de
+    File: {fileID: 4900000, guid: 91550b1789497ce4899aa97040e17145, type: 3}
+  - Code: en
+    File: {fileID: 4900000, guid: 724edc0b7eb5e4747a4101de3241f9a7, type: 3}
+  - Code: es
+    File: {fileID: 4900000, guid: 473d04a19274d4a4da0ad5d0c00e897d, type: 3}
+  - Code: fr
+    File: {fileID: 4900000, guid: 9a2cce551502ae24fb23dc7163b2908f, type: 3}
+  - Code: hi
+    File: {fileID: 4900000, guid: b3763484c19dbd541a1499f97d42b587, type: 3}
+  - Code: it
+    File: {fileID: 4900000, guid: 250f38f7a19609e43a813a5a87512725, type: 3}
+  - Code: ja
+    File: {fileID: 4900000, guid: f6c6b5365c8c348498154e569aff2770, type: 3}
+  - Code: kk
+    File: {fileID: 4900000, guid: dc55d7a0a719eba429041fd8b31a111b, type: 3}
+  - Code: ko
+    File: {fileID: 4900000, guid: 4e901cd531407824795022ccad4faac9, type: 3}
+  - Code: pl
+    File: {fileID: 4900000, guid: 926fb77cb1c295148810254435093750, type: 3}
+  - Code: pt
+    File: {fileID: 4900000, guid: 524b49593ea2d31498615a9e2dbff6f0, type: 3}
+  - Code: tr
+    File: {fileID: 4900000, guid: 6cbaba3c5bbc4a74899a751637650759, type: 3}
+  - Code: uk
+    File: {fileID: 4900000, guid: 7c793992dcf6e4b40af02342629fe141, type: 3}
+  - Code: zh
+    File: {fileID: 4900000, guid: e9aaad9d1e951c74e883c435c4e41b7d, type: 3}

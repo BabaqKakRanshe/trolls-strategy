@@ -1,0 +1,3256 @@
+{
+"entries": [
+{
+"k": "Миссия не найдена",
+"v": "Mission not found"
+},
+{
+"k": "Сначала завершите текущий бой",
+"v": "Finish the current battle first"
+},
+{
+"k": "Сначала победите на предыдущем уровне арены",
+"v": "Win the previous arena level first"
+},
+{
+"k": "Бой откроется по заданию",
+"v": "The battle unlocks with a quest"
+},
+{
+"k": "Миссия ещё не открыта",
+"v": "The mission isn't unlocked yet"
+},
+{
+"k": "Арена восстанавливается после боя",
+"v": "The arena is recovering after the battle"
+},
+{
+"k": "Неверные данные боя",
+"v": "Invalid battle data"
+},
+{
+"k": "Данные миссии некорректны",
+"v": "Mission data is invalid"
+},
+{
+"k": "Нужно выбрать от 1 до {0} бойцов",
+"v": "Pick from 1 to {0} fighters"
+},
+{
+"k": "Недопустимая расстановка",
+"v": "Invalid deployment"
+},
+{
+"k": "Боец не найден",
+"v": "Fighter not found"
+},
+{
+"k": "Предмет указан дважды",
+"v": "Item listed twice"
+},
+{
+"k": "Предмет не найден",
+"v": "Item not found"
+},
+{
+"k": "Снаряжение можно выдать только бойцу отряда",
+"v": "Gear can only be given to a squad fighter"
+},
+{
+"k": "Неизвестный тип снаряжения",
+"v": "Unknown gear type"
+},
+{
+"k": "Владелец предмета не найден",
+"v": "Item owner not found"
+},
+{
+"k": "У бойца уже занят слот снаряжения",
+"v": "The fighter's gear slot is already taken"
+},
+{
+"k": "Бой не удалось рассчитать",
+"v": "The battle could not be calculated"
+},
+{
+"k": "Награды за бой нет",
+"v": "No reward for this battle"
+},
+{
+"k": "Нет активного боя",
+"v": "No battle in progress"
+},
+{
+"k": "другого бойца",
+"v": "another fighter"
+},
+{
+"k": "Таких бойцов в колонии нет",
+"v": "You have no such fighters in the colony"
+},
+{
+"k": "{0}: все уже на поле",
+"v": "{0}: all are already on the field"
+},
+{
+"k": "В отряде не больше {0} бойцов",
+"v": "The squad holds at most {0} fighters"
+},
+{
+"k": "Все бойцы уже на поле",
+"v": "All fighters are already on the field"
+},
+{
+"k": "Этого бойца нет на поле",
+"v": "This fighter isn't on the field"
+},
+{
+"k": "Нет бойцов: найми их в колонии",
+"v": "No fighters: hire some in the colony"
+},
+{
+"k": "Нажми синюю клетку: встанет {0}",
+"v": "Click a blue tile to place {0}"
+},
+{
+"k": "Перетащи бойца, чтобы переставить",
+"v": "Drag a fighter to move them"
+},
+{
+"k": "Клетка занята преградой",
+"v": "That tile is blocked by an obstacle"
+},
+{
+"k": "Бойцов ставят на синие клетки",
+"v": "Place fighters on the blue tiles"
+},
+{
+"k": "Нет текущего задания",
+"v": "No current quest"
+},
+{
+"k": "В этой игре все постройки уже открыты",
+"v": "All buildings are already unlocked in this game"
+},
+{
+"k": "Сумма должна быть больше нуля",
+"v": "The amount must be above zero"
+},
+{
+"k": "В этой игре земля не покупается",
+"v": "Land can't be bought in this game"
+},
+{
+"k": "Команда не задана",
+"v": "No command given"
+},
+{
+"k": "Существ в поселении",
+"v": "Creatures in the colony"
+},
+{
+"k": "Нанять: {0}",
+"v": "Hire: {0}"
+},
+{
+"k": "Построить: {0}",
+"v": "Build: {0}"
+},
+{
+"k": "Рабочие → {0}",
+"v": "Workers → {0}"
+},
+{
+"k": "Работает: {0} → {1}",
+"v": "Working: {0} → {1}"
+},
+{
+"k": "Носильщики: {0}",
+"v": "Carriers: {0}"
+},
+{
+"k": "Носит {0}: {1}",
+"v": "Carries {0}: {1}"
+},
+{
+"k": "Золото в казне",
+"v": "Gold in the treasury"
+},
+{
+"k": "Выручка рынка, золото",
+"v": "Market income, gold"
+},
+{
+"k": "Продано товаров",
+"v": "Goods sold"
+},
+{
+"k": "Продано: {0}",
+"v": "Sold: {0}"
+},
+{
+"k": "Победы в бою",
+"v": "Battle wins"
+},
+{
+"k": "Уровень: {0}",
+"v": "Level: {0}"
+},
+{
+"k": "Уровень арены",
+"v": "Arena level"
+},
+{
+"k": "Куплено земли, блоков",
+"v": "Land bought, blocks"
+},
+{
+"k": "Сделано: {0}",
+"v": "Done: {0}"
+},
+{
+"k": "Улучшения гильдии и бараков, уровней",
+"v": "Guild and barracks upgrades, levels"
+},
+{
+"k": "Бойцов в снаряжении",
+"v": "Fighters with gear"
+},
+{
+"k": "Предметов на складе экипировки",
+"v": "Items in the gear store"
+},
+{
+"k": "Новая постройка",
+"v": "New building"
+},
+{
+"k": "Теперь её можно строить: каталог внизу, вкладка «Здания», {0} золота.",
+"v": "You can build it now: catalog at the bottom, “Buildings” tab, {0} gold."
+},
+{
+"k": "Новое существо",
+"v": "New creature"
+},
+{
+"k": "Теперь его можно нанимать: каталог внизу, вкладка «Существа», {0} золота.",
+"v": "You can hire it now: catalog at the bottom, “Creatures” tab, {0} gold."
+},
+{
+"k": "Кнопка «В бой» справа открыта.",
+"v": "The “To battle” button on the right is unlocked."
+},
+{
+"k": "Кнопка «В бой» справа открыта. В бой идут до {0} бойцов, первая победа принесёт {1} золота.",
+"v": "The “To battle” button on the right is unlocked. Up to {0} fighters go into battle, and the first win brings {1} gold."
+},
+{
+"k": "Новый бой",
+"v": "New battle"
+},
+{
+"k": "{0} золота",
+"v": "{0} gold"
+},
+{
+"k": "Золото",
+"v": "Gold"
+},
+{
+"k": "Пополнит казну поселения.",
+"v": "Fills the colony treasury."
+},
+{
+"k": "от {0} до {1}",
+"v": "{0} to {1}"
+},
+{
+"k": ", до {0} рабочих",
+"v": ", up to {0} workers"
+},
+{
+"k": ", хранит сырьё",
+"v": ", stores raw materials"
+},
+{
+"k": ", продаёт товары",
+"v": ", sells goods"
+},
+{
+"k": ", снаряжение отряда",
+"v": ", squad gear"
+},
+{
+"k": "С {0} уровня: ",
+"v": "From level {0}: "
+},
+{
+"k": " с {0} уровня",
+"v": " from level {0}"
+},
+{
+"k": "брак {0}%",
+"v": "scrap {0}%"
+},
+{
+"k": "Свободен",
+"v": "Idle"
+},
+{
+"k": "Отдыхает в бараках",
+"v": "Resting in the barracks"
+},
+{
+"k": "Идёт в бараки",
+"v": "Heading to the barracks"
+},
+{
+"k": "Идёт на работу: {0}",
+"v": "Heading to work: {0}"
+},
+{
+"k": "Работает: {0}",
+"v": "Working: {0}"
+},
+{
+"k": "источник",
+"v": "source"
+},
+{
+"k": "цель",
+"v": "target"
+},
+{
+"k": "Несёт {0} {1} на {2} зол.: {3} → {4}",
+"v": "Carrying {0} {1} worth {2} gold: {3} → {4}"
+},
+{
+"k": "Возит {0}: {1} → {2}",
+"v": "Carries {0}: {1} → {2}"
+},
+{
+"k": "всё",
+"v": "everything"
+},
+{
+"k": "На рынке: {0} зол. за штуку",
+"v": "At the market: {0} gold each"
+},
+{
+"k": "Делают: ",
+"v": "Makes: "
+},
+{
+"k": "Нужен для: ",
+"v": "Needed for: "
+},
+{
+"k": "урон +{0}",
+"v": "damage +{0}"
+},
+{
+"k": "броня +{0}",
+"v": "armor +{0}"
+},
+{
+"k": "Снаряжение бойца: ",
+"v": "Fighter's gear: "
+},
+{
+"k": "Постройте шахту и наймите рабочих.",
+"v": "Build a mine and hire workers."
+},
+{
+"k": "Задание «{0}»: что делать — в карточке слева вверху.",
+"v": "Quest “{0}”: what to do is on the card at the top left."
+},
+{
+"k": "Ни одно здание не примет всё выбранное сразу. Уберите лишнее или выберите «Всё».",
+"v": "No building can take everything selected at once. Remove something or choose “All”."
+},
+{
+"k": "Кликните на карте по зданию, куда носить.",
+"v": "Click a building on the map to carry to."
+},
+{
+"k": "Снято с работы: {0}.",
+"v": "Taken off work: {0}."
+},
+{
+"k": "Выбор снят.",
+"v": "Selection cleared."
+},
+{
+"k": "Выбрано юнитов: {0}",
+"v": "Units selected: {0}"
+},
+{
+"k": "В рамке нет юнитов.",
+"v": "No units in the frame."
+},
+{
+"k": "Выбрано рамкой: {0}",
+"v": "Selected by frame: {0}"
+},
+{
+"k": "Свободных существ нет.",
+"v": "No idle creatures."
+},
+{
+"k": "Выбрано свободных: {0}",
+"v": "Idle selected: {0}"
+},
+{
+"k": "Свободное существо: {0}. Ещё раз — следующее.",
+"v": "Idle creature: {0}. Again for the next one."
+},
+{
+"k": "Свободное существо: {0}.",
+"v": "Idle creature: {0}."
+},
+{
+"k": "Существо «{0}» откроется за задание.",
+"v": "“{0}” unlocks with a quest."
+},
+{
+"k": "Кликните по клетке, где появятся все {0} существ.",
+"v": "Click a tile where all {0} creatures will appear."
+},
+{
+"k": "Нанято существ: {0}.",
+"v": "Creatures hired: {0}."
+},
+{
+"k": "Постройка «{0}» откроется за задание.",
+"v": "“{0}” unlocks with a quest."
+},
+{
+"k": "Выберите свободные клетки: {0}.",
+"v": "Pick free tiles: {0}."
+},
+{
+"k": "Шахта построена. Теперь назначьте рабочих.",
+"v": "The mine is built. Now assign workers."
+},
+{
+"k": "Построено: {0}.",
+"v": "Built: {0}."
+},
+{
+"k": "На поле не осталось места для этой постройки.",
+"v": "There's no room left on the field for this building."
+},
+{
+"k": "Режим земли закрыт.",
+"v": "Land mode closed."
+},
+{
+"k": "Здесь земля не покупается.",
+"v": "Land can't be bought here."
+},
+{
+"k": "За краем острова земли нет.",
+"v": "There's no land beyond the island's edge."
+},
+{
+"k": "Эта земля уже расчищена: здесь можно строить.",
+"v": "This land is already cleared: you can build here."
+},
+{
+"k": "Участок расчищают: осталось {0} с.",
+"v": "The plot is being cleared: {0} s left."
+},
+{
+"k": "Расчистить участок: {0} с",
+"v": "Clear the plot: {0} s"
+},
+{
+"k": ", {0} зол.",
+"v": ", {0} gold"
+},
+{
+"k": ", бесплатно",
+"v": ", free"
+},
+{
+"k": ". Пока лес не сведён, строить здесь нельзя.",
+"v": ". You can't build here until the forest is cleared."
+},
+{
+"k": "Купить участок {0}×{1} за {2} зол.? Он поднимется из облаков диким.",
+"v": "Buy a {0}×{1} plot for {2} gold? It rises from the clouds wild."
+},
+{
+"k": "Участок стоит {0} зол. {1}.",
+"v": "The plot costs {0} gold. {1}."
+},
+{
+"k": "Сначала выберите участок",
+"v": "Pick a plot first"
+},
+{
+"k": "Участок куплен и поднимается из облаков. Расчистите его, чтобы строить.",
+"v": "Plot bought and rising from the clouds. Clear it to build."
+},
+{
+"k": "Расчистка началась: деревья и камни уберут за ",
+"v": "Clearing started: trees and rocks will be gone in "
+},
+{
+"k": " с.",
+"v": " s."
+},
+{
+"k": "Участки в рамке продаются: следующий за {0} зол. Своя дикая земля расчищается кликом.",
+"v": "Plots in the frame are for sale: the next one costs {0} gold. Click your own wild land to clear it."
+},
+{
+"k": "Укажите производство для выбранных рабочих.",
+"v": "Choose a production building for the selected workers."
+},
+{
+"k": "Сначала укажите, откуда носить товар.",
+"v": "First choose where to carry goods from."
+},
+{
+"k": "{0} нанят в поселение!",
+"v": "{0} joined the colony!"
+},
+{
+"k": "Награда за бой: +{0} зол.",
+"v": "Battle reward: +{0} gold"
+},
+{
+"k": "Награда получена: {0}.",
+"v": "Reward received: {0}."
+},
+{
+"k": "Награда получена.",
+"v": "Reward received."
+},
+{
+"k": "Выбрано: {0}",
+"v": "Selected: {0}"
+},
+{
+"k": "Здание выбрано.",
+"v": "Building selected."
+},
+{
+"k": "Постройка улучшена.",
+"v": "Building upgraded."
+},
+{
+"k": "Улучшение куплено.",
+"v": "Upgrade bought."
+},
+{
+"k": "Постройка разобрана.",
+"v": "Building demolished."
+},
+{
+"k": "Кликните по новому месту: {0}.",
+"v": "Click the new spot: {0}."
+},
+{
+"k": "Постройка перенесена.",
+"v": "Building moved."
+},
+{
+"k": "Сначала выберите, что носить, и нажмите «Куда носить».",
+"v": "First choose what to carry, then press “Carry to”."
+},
+{
+"k": "Это здание нельзя выбрать для текущего шага.",
+"v": "This building can't be picked for the current step."
+},
+{
+"k": " Остальные остались на прежних задачах.",
+"v": " The others stay on their previous tasks."
+},
+{
+"k": "На работу назначено {0} из {1}.{2}",
+"v": "{0} of {1} assigned to work.{2}"
+},
+{
+"k": "Постоянный маршрут назначен.",
+"v": "Permanent route assigned."
+},
+{
+"k": "Маршрут назначен, носят: {0}.",
+"v": "Route assigned, carrying: {0}."
+},
+{
+"k": "Продано существ: {0}, получено {1} зол.",
+"v": "Creatures sold: {0}, received {1} gold."
+},
+{
+"k": "Юниты освобождены от работы.",
+"v": "Units released from work."
+},
+{
+"k": "Выберите участок.",
+"v": "Choose a plot."
+},
+{
+"k": "Команда отменена.",
+"v": "Command cancelled."
+},
+{
+"k": "Носить всё, что есть.",
+"v": "Carry everything available."
+},
+{
+"k": "Носить: {0}.",
+"v": "Carry: {0}."
+},
+{
+"k": "Сначала выберите хотя бы одного юнита.",
+"v": "First select at least one unit."
+},
+{
+"k": "Выбранные существа ушли в здание.",
+"v": "The selected creatures went into the building."
+},
+{
+"k": "Режим: песочница",
+"v": "Mode: sandbox"
+},
+{
+"k": "Режим: кампания, уровень {0}, все задания выполнены",
+"v": "Mode: campaign, level {0}, all quests done"
+},
+{
+"k": "Режим: кампания, уровень {0}, задание «{1}» ({2}){3}",
+"v": "Mode: campaign, level {0}, quest “{1}” ({2}){3}"
+},
+{
+"k": "Золото: {0}, продано товаров: {1}",
+"v": "Gold: {0}, goods sold: {1}"
+},
+{
+"k": "Время колонии: {0} с, побед на арене: {1}, высший уровень: {2}",
+"v": "Colony time: {0} s, arena wins: {1}, highest level: {2}"
+},
+{
+"k": "Бой: идёт",
+"v": "Battle: in progress"
+},
+{
+"k": "Бой: нет",
+"v": "Battle: none"
+},
+{
+"k": "Постройки ({0}): ",
+"v": "Buildings ({0}): "
+},
+{
+"k": "{0} ур.{1}",
+"v": "{0} lv.{1}"
+},
+{
+"k": "Жители ({0}): ",
+"v": "Residents ({0}): "
+},
+{
+"k": "Земля: своих участков {0}, расчищено {1} из {2}",
+"v": "Land: own plots {0}, cleared {1} of {2}"
+},
+{
+"k": "Ревизия состояния: {0}",
+"v": "State revision: {0}"
+},
+{
+"k": "нет",
+"v": "none"
+},
+{
+"k": "Первый бой",
+"v": "First battle"
+},
+{
+"k": "Неизвестная команда",
+"v": "Unknown command"
+},
+{
+"k": "Постройка выходит за границу поля",
+"v": "The building goes beyond the field's edge"
+},
+{
+"k": "Здесь уже стоит здание",
+"v": "There's already a building here"
+},
+{
+"k": "Постройка перекроет вход в другое здание",
+"v": "The building would block another building's entrance"
+},
+{
+"k": "Вход в постройку будет перекрыт",
+"v": "The building's entrance would be blocked"
+},
+{
+"k": "Сначала купите и расчистите эту землю",
+"v": "Buy and clear this land first"
+},
+{
+"k": "Существо «{0}» не нанимается в поселение",
+"v": "“{0}” can't be hired into the colony"
+},
+{
+"k": "Существо «{0}» ещё не открыто: выполняйте задания",
+"v": "“{0}” isn't unlocked yet: complete quests"
+},
+{
+"k": "Количество должно быть от 1 до {0}",
+"v": "The amount must be from 1 to {0}"
+},
+{
+"k": "Клетка находится за границей поля",
+"v": "The tile is beyond the field's edge"
+},
+{
+"k": "Эта клетка занята постройкой",
+"v": "This tile is taken by a building"
+},
+{
+"k": "В одной клетке помещается не больше {0} существ",
+"v": "A single tile holds at most {0} creatures"
+},
+{
+"k": "Недостаточно золота",
+"v": "Not enough gold"
+},
+{
+"k": "Эту постройку нельзя построить",
+"v": "This building can't be built"
+},
+{
+"k": "Постройка «{0}» ещё не открыта: выполняйте задания",
+"v": "“{0}” isn't unlocked yet: complete quests"
+},
+{
+"k": "Работать можно только на производстве",
+"v": "You can only work at a production building"
+},
+{
+"k": "Здание не найдено",
+"v": "Building not found"
+},
+{
+"k": "Этот маршрут не перевозит подходящий товар",
+"v": "This route doesn't carry a suitable good"
+},
+{
+"k": "По этому маршруту не возят: {0}",
+"v": "This route doesn't carry: {0}"
+},
+{
+"k": "Сначала выберите юнитов",
+"v": "Select units first"
+},
+{
+"k": "Юнит выбран дважды",
+"v": "Unit selected twice"
+},
+{
+"k": "Юнит не найден",
+"v": "Unit not found"
+},
+{
+"k": "Достигнут максимальный уровень",
+"v": "Maximum level reached"
+},
+{
+"k": "Эту постройку нельзя снести",
+"v": "This building can't be demolished"
+},
+{
+"k": "Сначала вывезите товары из постройки",
+"v": "Take the goods out of the building first"
+},
+{
+"k": "Сначала завершите перевозку груза",
+"v": "Finish delivering the cargo first"
+},
+{
+"k": "Земля здесь не продаётся",
+"v": "Land isn't for sale here"
+},
+{
+"k": "За краем острова земли нет",
+"v": "There's no land beyond the island's edge"
+},
+{
+"k": "Эта земля уже ваша",
+"v": "This land is already yours"
+},
+{
+"k": "Покупать можно только рядом со своей землёй",
+"v": "You can only buy next to your own land"
+},
+{
+"k": "Не хватает золота: нужно {0}",
+"v": "Not enough gold: {0} needed"
+},
+{
+"k": "Сначала купите эту землю",
+"v": "Buy this land first"
+},
+{
+"k": "Эта земля уже расчищена",
+"v": "This land is already cleared"
+},
+{
+"k": "Эту землю уже расчищают",
+"v": "This land is already being cleared"
+},
+{
+"k": "В этой игре нет заданий",
+"v": "There are no quests in this game"
+},
+{
+"k": "Все задания выполнены",
+"v": "All quests are done"
+},
+{
+"k": "Задание ещё не выполнено",
+"v": "The quest isn't done yet"
+},
+{
+"k": "Такого улучшения нет",
+"v": "No such upgrade"
+},
+{
+"k": "Сначала постройте: {0}",
+"v": "Build first: {0}"
+},
+{
+"k": "Раб: {0}/{1}",
+"v": "Staff: {0}/{1}"
+},
+{
+"k": "Товары: {0}/{1}",
+"v": "Goods: {0}/{1}"
+},
+{
+"k": "Расчистка, {0} с",
+"v": "Clearing, {0} s"
+},
+{
+"k": "Расчистить?",
+"v": "Clear it?"
+},
+{
+"k": " зол.",
+"v": " gold"
+},
+{
+"k": "Отчёт: ",
+"v": "Report: "
+},
+{
+"k": "Отчёт игрока · {0} · ",
+"v": "Player report · {0} · "
+},
+{
+"k": "[… начало лога обрезано: {0} байт …]",
+"v": "[… start of log cut off: {0} bytes …]"
+},
+{
+"k": "загрузки браузера, ",
+"v": "browser downloads, "
+},
+{
+"k": "браузер не сохранил файл",
+"v": "the browser didn't save the file"
+},
+{
+"k": "редактор",
+"v": "editor"
+},
+{
+"k": "[… раньше было ещё ",
+"v": "[… there were "
+},
+{
+"k": " строк …]",
+"v": " more lines before …]"
+},
+{
+"k": "Версия",
+"v": "Version"
+},
+{
+"k": "Собрано",
+"v": "Built"
+},
+{
+"k": "Экран",
+"v": "Screen"
+},
+{
+"k": "{0}×{1}, {2} Гц, ",
+"v": "{0}×{1}, {2} Hz, "
+},
+{
+"k": "Видеокарта",
+"v": "Graphics card"
+},
+{
+"k": "{0} ({1} МБ, {2})",
+"v": "{0} ({1} MB, {2})"
+},
+{
+"k": "Процессор",
+"v": "Processor"
+},
+{
+"k": "{0} ({1} потоков)",
+"v": "{0} ({1} threads)"
+},
+{
+"k": "Память",
+"v": "Memory"
+},
+{
+"k": "{0} МБ",
+"v": "{0} MB"
+},
+{
+"k": "Система",
+"v": "System"
+},
+{
+"k": "Качество",
+"v": "Quality"
+},
+{
+"k": "В игре",
+"v": "In game"
+},
+{
+"k": "{0:0} (худший кадр {1:0} мс)",
+"v": "{0:0} (worst frame {1:0} ms)"
+},
+{
+"k": "{0} ч {1} мин",
+"v": "{0} h {1} min"
+},
+{
+"k": "{0} мин {1} с",
+"v": "{0} min {1} s"
+},
+{
+"k": "{0} с",
+"v": "{0} s"
+},
+{
+"k": "Логи и техинфо",
+"v": "Logs and tech info"
+},
+{
+"k": "Снимок экрана",
+"v": "Screenshot"
+},
+{
+"k": "В колонию",
+"v": "To the colony"
+},
+{
+"k": "Награда за победу",
+"v": "Victory reward"
+},
+{
+"k": "Враги",
+"v": "Enemies"
+},
+{
+"k": "{0}: {1}. Победи всех, чтобы выиграть бой.",
+"v": "{0}: {1}. Defeat them all to win the battle."
+},
+{
+"k": "Сколько именно, узнаешь в колонии.",
+"v": "You'll see how much once you're back in the colony."
+},
+{
+"k": "Золото за первую победу. {0} Следующие победы: {1}.",
+"v": "Gold for the first win. {0} Next wins: {1}."
+},
+{
+"k": "Золото за победу. {0}",
+"v": "Gold for a win. {0}"
+},
+{
+"k": "Бой не начнётся, бойцы вернутся к работе.",
+"v": "The battle won't start, and the fighters go back to work."
+},
+{
+"k": "В бой!",
+"v": "To battle!"
+},
+{
+"k": "Победа",
+"v": "Victory"
+},
+{
+"k": "Поражение",
+"v": "Defeat"
+},
+{
+"k": "Ничья",
+"v": "Draw"
+},
+{
+"k": "Авторасстановка",
+"v": "Auto-arrange"
+},
+{
+"k": "Поставить бойцов из резерва на свободные синие клетки.",
+"v": "Put fighters from the reserve on free blue tiles."
+},
+{
+"k": "Начать бой",
+"v": "Start battle"
+},
+{
+"k": "Бой идёт сам. Павшие бойцы и их снаряжение не вернутся.",
+"v": "The battle plays out by itself. Fallen fighters and their gear won't come back."
+},
+{
+"k": "В резерв",
+"v": "To reserve"
+},
+{
+"k": "Убрать бойца с поля, его снаряжение вернётся. Можно и унести бойца за край поля.",
+"v": "Take the fighter off the field and their gear comes back. You can also drag the fighter off the edge of the field."
+},
+{
+"k": "Здоровье",
+"v": "Health"
+},
+{
+"k": "Урон",
+"v": "Damage"
+},
+{
+"k": "Броня",
+"v": "Armor"
+},
+{
+"k": "урон {0}",
+"v": "damage {0}"
+},
+{
+"k": "броня {0}",
+"v": "armor {0}"
+},
+{
+"k": "Надето, нажми, чтобы снять.",
+"v": "Equipped. Click to take off."
+},
+{
+"k": "Свободно {0} из {1}, нажми, чтобы надеть.",
+"v": "{0} of {1} free. Click to equip."
+},
+{
+"k": "Лежит в инвентаре, нажми, чтобы надеть.",
+"v": "In the inventory. Click to equip."
+},
+{
+"k": "Сейчас на бойце {0}, нажми, чтобы передать.",
+"v": "Worn by {0} right now. Click to pass it on."
+},
+{
+"k": "Свой урон {0}, от снаряжения {1}.",
+"v": "Own damage {0}, from gear {1}."
+},
+{
+"k": "Своя броня {0}, от снаряжения {1}.",
+"v": "Own armour {0}, from gear {1}."
+},
+{
+"k": "Скорость {0}×",
+"v": "Speed {0}×"
+},
+{
+"k": "Продолжить",
+"v": "Resume"
+},
+{
+"k": "Пауза",
+"v": "Pause"
+},
+{
+"k": "Пробел",
+"v": "Space"
+},
+{
+"k": "Твои бойцы в строю",
+"v": "Your fighters standing"
+},
+{
+"k": "Враги в строю",
+"v": "Enemies standing"
+},
+{
+"k": "Вернулись",
+"v": "Returned"
+},
+{
+"k": "Выжившие бойцы идут домой.",
+"v": "The surviving fighters head home."
+},
+{
+"k": "Пали",
+"v": "Fallen"
+},
+{
+"k": "Погибшие бойцы не вернутся.",
+"v": "Fallen fighters won't come back."
+},
+{
+"k": "Потеряно снаряжения",
+"v": "Gear lost"
+},
+{
+"k": "Вещи павших бойцов пропали вместе с ними.",
+"v": "The fallen fighters' belongings are gone with them."
+},
+{
+"k": "Награда",
+"v": "Reward"
+},
+{
+"k": "Сколько золота, узнаешь в колонии.",
+"v": "You'll see how much gold once you're back in the colony."
+},
+{
+"k": "Отряд",
+"v": "Squad"
+},
+{
+"k": "На поле {0}, в бой идут до {1}.",
+"v": "{0} on the field, up to {1} go into battle."
+},
+{
+"k": "Бьёт издалека: ставь позади, за спинами тех, кто бьёт вблизи.",
+"v": "Fights from a distance: place behind those who fight up close."
+},
+{
+"k": "Бьёт вблизи: ставь впереди, на пути врага.",
+"v": "Fights up close: place in front, in the enemy's way."
+},
+{
+"k": "{0} В резерве {1}.",
+"v": "{0} In reserve: {1}."
+},
+{
+"k": "Ваш отряд",
+"v": "Your squad"
+},
+{
+"k": "В бой идут до {0} бойцов. Кого взять, решите перед боем.",
+"v": "Up to {0} fighters go into battle. You choose who before the fight."
+},
+{
+"k": "Уровень {0}. Побед: {1}",
+"v": "Level {0}. Wins: {1}"
+},
+{
+"k": "Уровень {0}",
+"v": "Level {0}"
+},
+{
+"k": "золота за первую победу",
+"v": "gold for the first win"
+},
+{
+"k": "золота за победу",
+"v": "gold per win"
+},
+{
+"k": "Улучшения бараков делают отряд сильнее",
+"v": "Barracks upgrades make the squad stronger"
+},
+{
+"k": "Отдых {0}",
+"v": "Rest {0}"
+},
+{
+"k": "Побед: {0}. Можно в бой",
+"v": "Wins: {0}. Ready to fight"
+},
+{
+"k": "Можно в бой",
+"v": "Ready to fight"
+},
+{
+"k": "{0}, первая победа",
+"v": "{0}, first win"
+},
+{
+"k": "Награда за бой: от {0} до {1} золота",
+"v": "Battle reward: {0} to {1} gold"
+},
+{
+"k": "Награда за бой: {0} золота",
+"v": "Battle reward: {0} gold"
+},
+{
+"k": "+{0} золота",
+"v": "+{0} gold"
+},
+{
+"k": "арена, ур. {0}",
+"v": "arena, lvl {0}"
+},
+{
+"k": "с {0} уровня",
+"v": "from level {0}"
+},
+{
+"k": "пока закрыто",
+"v": "locked for now"
+},
+{
+"k": "Посмотреть",
+"v": "View"
+},
+{
+"k": "{0} в 3D",
+"v": "{0} in 3D"
+},
+{
+"k": "{0} золота за одного.",
+"v": "{0} gold each."
+},
+{
+"k": "Каждое новое существо в поселении поднимает цену найма.",
+"v": "Every new creature in the colony raises the hiring price."
+},
+{
+"k": "Каждая следующая такая постройка дороже.",
+"v": "Each further building of this kind costs more."
+},
+{
+"k": "Откроется на {0} уровне.",
+"v": "Unlocks at level {0}."
+},
+{
+"k": "Пока закрыто.",
+"v": "Locked for now."
+},
+{
+"k": "Не хватает золота для тестового отряда",
+"v": "Not enough gold for a test squad"
+},
+{
+"k": "Не удалось запустить бой: проверь состав и данные миссии",
+"v": "Couldn't start the battle: check the lineup and the mission data"
+},
+{
+"k": "Готово",
+"v": "Done"
+},
+{
+"k": "Работа",
+"v": "Work"
+},
+{
+"k": "Потом кликни по зданию: туда встанут работать.",
+"v": "Then click a building: they'll work there."
+},
+{
+"k": "Перенос",
+"v": "Carry"
+},
+{
+"k": "Кликни по двум зданиям: откуда и куда носить.",
+"v": "Click two buildings: where to carry from and where to."
+},
+{
+"k": "Свободны",
+"v": "Idle"
+},
+{
+"k": "Снять с работы и маршрута.",
+"v": "Take off work and routes."
+},
+{
+"k": "Снять выбор",
+"v": "Deselect"
+},
+{
+"k": "Продать",
+"v": "Sell"
+},
+{
+"k": "Вернёт часть цены найма.",
+"v": "Returns part of the hiring price."
+},
+{
+"k": "Поставить сам",
+"v": "Place for me"
+},
+{
+"k": "Постройка встанет на первое свободное место.",
+"v": "The building goes on the first free spot."
+},
+{
+"k": "Изменить груз",
+"v": "Change cargo"
+},
+{
+"k": "Вернуться к выбору, что носить.",
+"v": "Go back to choosing what to carry."
+},
+{
+"k": "Купить",
+"v": "Buy"
+},
+{
+"k": "Отмена",
+"v": "Cancel"
+},
+{
+"k": "Вернуться, ничего не меняя.",
+"v": "Go back without changing anything."
+},
+{
+"k": "Правый клик по карте: приказы у курсора",
+"v": "Right-click the map: orders at the cursor"
+},
+{
+"k": "{0} за {1}",
+"v": "{0} for {1}"
+},
+{
+"k": "Перенос постройки",
+"v": "Moving a building"
+},
+{
+"k": "{0} ×{1} за {2}",
+"v": "{0} ×{1} for {2}"
+},
+{
+"k": "Куда на работу",
+"v": "Where to work"
+},
+{
+"k": "Откуда носить",
+"v": "Carry from"
+},
+{
+"k": "Куда носить",
+"v": "Carry to"
+},
+{
+"k": "Земля: участок за {0}",
+"v": "Land: plot for {0}"
+},
+{
+"k": "Земля",
+"v": "Land"
+},
+{
+"k": "Расчистить, {0} с",
+"v": "Clear, {0} s"
+},
+{
+"k": "Чат игроков",
+"v": "Player chat"
+},
+{
+"k": "Почта",
+"v": "Email"
+},
+{
+"k": "Заходите в гости",
+"v": "Come and visit"
+},
+{
+"k": "Если что-то пошло не так, нажмите F8 → «Отправить логи» или напишите мне.",
+"v": "If something goes wrong, press F8 → “Send logs” or write to me."
+},
+{
+"k": "Куда носить →",
+"v": "Carry to →"
+},
+{
+"k": "Сейчас в «{0}»: {1}",
+"v": "Now in “{0}”: {1}"
+},
+{
+"k": "в здании: ",
+"v": "in the building: "
+},
+{
+"k": "Ни одно здание не примет всё выбранное сразу — уберите лишнее.",
+"v": "No building can take everything selected at once — remove something."
+},
+{
+"k": "здания",
+"v": "buildings"
+},
+{
+"k": "Что носить из «{0}»?",
+"v": "What to carry from “{0}”?"
+},
+{
+"k": "Всё",
+"v": "All"
+},
+{
+"k": "что есть",
+"v": "whatever there is"
+},
+{
+"k": "Всё подряд",
+"v": "Anything"
+},
+{
+"k": "Носильщик берёт по очереди всё, что отдаёт «{0}» и примет место доставки.",
+"v": "The carrier takes, one after another, everything “{0}” gives out and the destination accepts."
+},
+{
+"k": "Носильщик будет брать по очереди всё, что есть.",
+"v": "The carrier will take, one after another, whatever there is."
+},
+{
+"k": "Носить: ",
+"v": "Carry: "
+},
+{
+"k": "+{0}% к шагу за уровень",
+"v": "+{0}% walking speed per level"
+},
+{
+"k": "+{0}% к грузу за уровень",
+"v": "+{0}% load per level"
+},
+{
+"k": "−{0}% к погрузке за уровень",
+"v": "−{0}% loading time per level"
+},
+{
+"k": "+{0} место у двери за уровень",
+"v": "+{0} place at the door per level"
+},
+{
+"k": "+{0} боец в отряде за уровень",
+"v": "+{0} fighter in the squad per level"
+},
+{
+"k": "+{0}% здоровья бойцов за уровень",
+"v": "+{0}% fighter health per level"
+},
+{
+"k": "+{0} к урону бойцов за уровень",
+"v": "+{0} fighter damage per level"
+},
+{
+"k": "−{0}% к отдыху арены за уровень",
+"v": "−{0}% arena rest per level"
+},
+{
+"k": "+{0}% к награде арены за уровень",
+"v": "+{0}% arena reward per level"
+},
+{
+"k": "Уровень {0}, {1}×{2}",
+"v": "Level {0}, {1}×{2}"
+},
+{
+"k": "Рецепт",
+"v": "Recipe"
+},
+{
+"k": "Запас",
+"v": "Stock"
+},
+{
+"k": "{0} (до {1})",
+"v": "{0} (up to {1})"
+},
+{
+"k": "Надбавка к цене",
+"v": "Price surcharge"
+},
+{
+"k": "+{0} зол. за ед.",
+"v": "+{0} gold per unit"
+},
+{
+"k": "В инвентаре",
+"v": "In the inventory"
+},
+{
+"k": "Готовое снаряжение попадает в инвентарь отряда.",
+"v": "Finished gear goes into the squad's inventory."
+},
+{
+"k": "Хранит сырьё и полуфабрикаты от носильщиков.",
+"v": "Stores raw materials and semi-finished goods from carriers."
+},
+{
+"k": "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене.",
+"v": "Idle creatures rest here. Barracks upgrades make the squad stronger in the arena."
+},
+{
+"k": "Улучшения гильдии действуют на всех носильщиков колонии сразу.",
+"v": "Guild upgrades apply to all the colony's carriers at once."
+},
+{
+"k": "Перенести",
+"v": "Move"
+},
+{
+"k": "указать на карте",
+"v": "pick on the map"
+},
+{
+"k": "Нанять: ",
+"v": "Hire: "
+},
+{
+"k": "закрыто",
+"v": "locked"
+},
+{
+"k": "Улучшить",
+"v": "Upgrade"
+},
+{
+"k": "макс. уровень",
+"v": "max level"
+},
+{
+"k": "Снести",
+"v": "Demolish"
+},
+{
+"k": "вернуть ",
+"v": "refund "
+},
+{
+"k": "нельзя снести",
+"v": "can't be demolished"
+},
+{
+"k": "Носит за ходку",
+"v": "Carries per trip"
+},
+{
+"k": "В бою",
+"v": "In battle"
+},
+{
+"k": "здоровье {0}, урон {1}, броня {2}",
+"v": "health {0}, damage {1}, armor {2}"
+},
+{
+"k": "Снаряжение",
+"v": "Gear"
+},
+{
+"k": "Возит",
+"v": "Carries"
+},
+{
+"k": "Команды ниже получат все выбранные: {0}.",
+"v": "The orders below go to everyone selected: {0}."
+},
+{
+"k": "В бараки",
+"v": "To the barracks"
+},
+{
+"k": "отдыхать",
+"v": "to rest"
+},
+{
+"k": "Продать ×{0}",
+"v": "Sell ×{0}"
+},
+{
+"k": "работает, цикл {0} с",
+"v": "working, cycle {0} s"
+},
+{
+"k": "простой: нет рабочих",
+"v": "stalled: no workers"
+},
+{
+"k": "простой: не хватает сырья",
+"v": "stalled: not enough raw materials"
+},
+{
+"k": "простой: выход заполнен",
+"v": "stalled: output is full"
+},
+{
+"k": "Состояние",
+"v": "Status"
+},
+{
+"k": "Инвентарь: слоты {0} из {1}, товары {2} из {3}",
+"v": "Inventory: slots {0} of {1}, goods {2} of {3}"
+},
+{
+"k": "{0}: {1} из {2}",
+"v": "{0}: {1} of {2}"
+},
+{
+"k": "максимум",
+"v": "maximum"
+},
+{
+"k": "Привет! Это альфа-версия игры: колония троллей и гоблинов на парящем острове. Она ещё растёт — что-то не доделано, что-то не сбалансировано, а прогресс пока не сохраняется.",
+"v": "Hi! This is an alpha version of the game: a colony of trolls and goblins on a floating island. It's still growing — some things are unfinished, some aren't balanced, and progress isn't saved yet."
+},
+{
+"k": "Привет! Это демо-версия игры: колония троллей и гоблинов на парящем острове. Полная игра ещё в работе: что-то будет меняться, а прогресс пока не сохраняется.",
+"v": "Hi! This is a demo version of the game: a colony of trolls and goblins on a floating island. The full game is still in the works: things will change, and progress isn't saved yet."
+},
+{
+"k": "Играть",
+"v": "Play"
+},
+{
+"k": "Демо-версия",
+"v": "Demo version"
+},
+{
+"k": "Альфа-версия",
+"v": "Alpha version"
+},
+{
+"k": "В желаемое",
+"v": "Wishlist"
+},
+{
+"k": "Демо в Steam",
+"v": "Demo on Steam"
+},
+{
+"k": "Добавьте игру в желаемое, чтобы не пропустить выход.",
+"v": "Add the game to your wishlist so you don't miss the release."
+},
+{
+"k": "В Steam можно добавить игру в желаемое, чтобы не пропустить выход.",
+"v": "On Steam you can add the game to your wishlist so you don't miss the release."
+},
+{
+"k": "Авто",
+"v": "Auto"
+},
+{
+"k": "Низкая",
+"v": "Low"
+},
+{
+"k": "Средняя",
+"v": "Medium"
+},
+{
+"k": "Высокая",
+"v": "High"
+},
+{
+"k": "Обычный",
+"v": "Normal"
+},
+{
+"k": "Крупный",
+"v": "Large"
+},
+{
+"k": "Очень крупный",
+"v": "Extra large"
+},
+{
+"k": "Настройки",
+"v": "Settings"
+},
+{
+"k": "Язык",
+"v": "Language"
+},
+{
+"k": "Об игре",
+"v": "About"
+},
+{
+"k": "Начать заново?",
+"v": "Start over?"
+},
+{
+"k": "Колония троллей и гоблинов на парящем острове: добывай, перерабатывай, вози, торгуй и выводи отряд на арену.",
+"v": "A colony of trolls and goblins on a floating island: mine, process, carry, trade and send a squad to the arena."
+},
+{
+"k": "Игру делает один человек — Владимир Милютин. Это альфа: что-то не готово, что-то не сбалансировано.",
+"v": "The game is made by one person — Vladimir Milyutin. This is an alpha: some things aren't ready, some aren't balanced."
+},
+{
+"k": "Игру делает один человек — Владимир Милютин. Это демо-версия: полная игра ещё в работе.",
+"v": "The game is made by one person — Vladimir Milyutin. This is a demo: the full game is still in the works."
+},
+{
+"k": "Тексты на других языках переведены ИИ — если увидите ошибку, напишите автору.",
+"v": "Texts in other languages are AI-translated — if you spot a mistake, write to the author."
+},
+{
+"k": "Колония начнётся с самого начала: здания, существа, золото и задания пропадут.",
+"v": "The colony starts from scratch: buildings, creatures, gold and quests will be lost."
+},
+{
+"k": "Звук, графика, размер интерфейса и язык.",
+"v": "Sound, graphics, interface size and language."
+},
+{
+"k": "Кто делает игру и где его найти.",
+"v": "Who makes the game and where to find him."
+},
+{
+"k": "Начать заново",
+"v": "Start over"
+},
+{
+"k": "Звук",
+"v": "Sound"
+},
+{
+"k": "Музыка",
+"v": "Music"
+},
+{
+"k": "Звуки",
+"v": "Sounds"
+},
+{
+"k": "Природа",
+"v": "Nature"
+},
+{
+"k": "Графика",
+"v": "Graphics"
+},
+{
+"k": "Интерфейс",
+"v": "Interface"
+},
+{
+"k": "Версия {0}, {1}",
+"v": "Version {0}, {1}"
+},
+{
+"k": "Русский",
+"v": "Русский"
+},
+{
+"k": "Подобрано для этого устройства: {0}.",
+"v": "Picked for this device: {0}."
+},
+{
+"k": "низкая",
+"v": "low"
+},
+{
+"k": "средняя",
+"v": "medium"
+},
+{
+"k": "высокая",
+"v": "high"
+},
+{
+"k": "Развернуть задание",
+"v": "Expand quest"
+},
+{
+"k": "Свернуть задание",
+"v": "Collapse quest"
+},
+{
+"k": "Показать, что делать и что дадут.",
+"v": "Show what to do and what you get."
+},
+{
+"k": "Оставить только название и счёт целей.",
+"v": "Keep only the title and the goal count."
+},
+{
+"k": "Обучение, уровень {0} из {1}",
+"v": "Tutorial, level {0} of {1}"
+},
+{
+"k": "Задание, уровень {0}",
+"v": "Quest, level {0}"
+},
+{
+"k": "Развернуть",
+"v": "Expand"
+},
+{
+"k": "Свернуть",
+"v": "Collapse"
+},
+{
+"k": "{0} из {1}",
+"v": "{0} of {1}"
+},
+{
+"k": "Обучение: уровень {0} пройден",
+"v": "Tutorial: level {0} complete"
+},
+{
+"k": "Уровень {0} пройден",
+"v": "Level {0} complete"
+},
+{
+"k": "Уже в каталоге, вкладка «Здания», {0} золота",
+"v": "Already in the catalog, “Buildings” tab, {0} gold"
+},
+{
+"k": "Уже в каталоге, вкладка «Существа», {0} золота",
+"v": "Already in the catalog, “Creatures” tab, {0} gold"
+},
+{
+"k": "до {0} рабочих",
+"v": "up to {0} workers"
+},
+{
+"k": "Делает",
+"v": "Makes"
+},
+{
+"k": "Добывает",
+"v": "Gathers"
+},
+{
+"k": "Откуда сырьё",
+"v": "Raw goods from"
+},
+{
+"k": "Куда товар",
+"v": "Goods go to"
+},
+{
+"k": "Иногда",
+"v": "Sometimes"
+},
+{
+"k": "{0}%, с {1} уровня",
+"v": "{0}%, from level {1}"
+},
+{
+"k": "Брак {0}%",
+"v": "Spoils {0}%"
+},
+{
+"k": "Других рецептов: {0}, они в карточке здания",
+"v": "Other recipes: {0}, listed in the building's card"
+},
+{
+"k": "Открыто: ",
+"v": "Unlocked: "
+},
+{
+"k": "работает",
+"v": "working"
+},
+{
+"k": "идёт на работу",
+"v": "heading to work"
+},
+{
+"k": "Рабочие: {0} из {1}",
+"v": "Workers: {0} of {1}"
+},
+{
+"k": "Рабочие: {0}",
+"v": "Workers: {0}"
+},
+{
+"k": "Никто не работает: выделите существ → «Работа» → это здание.",
+"v": "Nobody is working: select creatures → “Work” → this building."
+},
+{
+"k": "увозит в «{0}»",
+"v": "carries off to “{0}”"
+},
+{
+"k": "привозит из «{0}»",
+"v": "brings in from “{0}”"
+},
+{
+"k": "Любой груз: {0}",
+"v": "Any cargo: {0}"
+},
+{
+"k": "Снять всех",
+"v": "Take everyone off"
+},
+{
+"k": "Казна поселения. Рынок платит за каждый доставленный товар.",
+"v": "The colony treasury. The market pays for every good delivered."
+},
+{
+"k": "Существа",
+"v": "Creatures"
+},
+{
+"k": "Свободный",
+"v": "Idle"
+},
+{
+"k": "Показать следующее существо без работы; камера едет к нему. Ещё раз — следующее.",
+"v": "Show the next creature without a job; the camera flies to it. Again for the next one."
+},
+{
+"k": "Купить участок у острова или расчистить свой.",
+"v": "Buy a plot from the island or clear your own."
+},
+{
+"k": "Сетка",
+"v": "Grid"
+},
+{
+"k": "Клетки поля и пути носильщиков.",
+"v": "Field tiles and the carriers' paths."
+},
+{
+"k": "Арена",
+"v": "Arena"
+},
+{
+"k": "Уровни арены: победа открывает следующий, пройденный можно повторять ради золота. ",
+"v": "Arena levels: a win unlocks the next one, and cleared ones can be replayed for gold. "
+},
+{
+"k": "Каталог",
+"v": "Catalog"
+},
+{
+"k": "Здания и существа, лоток внизу экрана.",
+"v": "Buildings and creatures, the tray at the bottom of the screen."
+},
+{
+"k": "Справочник",
+"v": "Handbook"
+},
+{
+"k": "Существа, здания, товары, улучшения и арена: кто что делает и сколько стоит.",
+"v": "Creatures, buildings, goods, upgrades and the arena: who makes what and what it costs."
+},
+{
+"k": "Меню",
+"v": "Menu"
+},
+{
+"k": "Пауза, настройки звука, графики и языка, об игре, начать заново.",
+"v": "Pause, sound, graphics and language settings, about, start over."
+},
+{
+"k": "{0} без дела",
+"v": "{0} idle"
+},
+{
+"k": "Бой с {0} уровня",
+"v": "Battle from level {0}"
+},
+{
+"k": "Бой закрыт",
+"v": "Battle locked"
+},
+{
+"k": "В бой",
+"v": "To battle"
+},
+{
+"k": "Бой через ",
+"v": "Battle in "
+},
+{
+"k": " с",
+"v": " s"
+},
+{
+"k": "Пока никого. Нанять можно в каталоге.",
+"v": "Nobody yet. You can hire creatures in the catalog."
+},
+{
+"k": "Всего {0}, без дела {1}.",
+"v": "{0} in total, {1} idle."
+},
+{
+"k": "Всего {0}, все при деле.",
+"v": "{0} in total, all busy."
+},
+{
+"k": "Здания",
+"v": "Buildings"
+},
+{
+"k": "Товары",
+"v": "Goods"
+},
+{
+"k": "Улучшения",
+"v": "Upgrades"
+},
+{
+"k": "Ничего не нашлось",
+"v": "Nothing found"
+},
+{
+"k": "Существо",
+"v": "Creature"
+},
+{
+"k": "Шаг",
+"v": "Pace"
+},
+{
+"k": "Груз",
+"v": "Load"
+},
+{
+"k": "Бой",
+"v": "Fight"
+},
+{
+"k": "Любимые здания",
+"v": "Favourite buildings"
+},
+{
+"k": "Найм",
+"v": "Hire"
+},
+{
+"k": "Враг",
+"v": "Enemy"
+},
+{
+"k": "Уровни арены",
+"v": "Arena levels"
+},
+{
+"k": "Здание",
+"v": "Building"
+},
+{
+"k": "Размер",
+"v": "Size"
+},
+{
+"k": "Рабочих",
+"v": "Workers"
+},
+{
+"k": "Главный рецепт",
+"v": "Main recipe"
+},
+{
+"k": "Цена",
+"v": "Price"
+},
+{
+"k": "Товар",
+"v": "Good"
+},
+{
+"k": "На рынке",
+"v": "At market"
+},
+{
+"k": "Делают",
+"v": "Made by"
+},
+{
+"k": "Берут",
+"v": "Used by"
+},
+{
+"k": "Улучшение",
+"v": "Upgrade"
+},
+{
+"k": "Где",
+"v": "Where"
+},
+{
+"k": "Уровень",
+"v": "Level"
+},
+{
+"k": "Цены уровней",
+"v": "Level prices"
+},
+{
+"k": "Открывает",
+"v": "Unlocks"
+},
+{
+"k": "Найдено",
+"v": "Found"
+},
+{
+"k": "Раздел",
+"v": "Section"
+},
+{
+"k": "после {0} уровня арены",
+"v": "after arena level {0}"
+},
+{
+"k": "с начала игры",
+"v": "from the start"
+},
+{
+"k": "В колонии",
+"v": "In the colony"
+},
+{
+"k": "работа",
+"v": "work"
+},
+{
+"k": "шаг",
+"v": "pace"
+},
+{
+"k": "груз",
+"v": "load"
+},
+{
+"k": "Работает быстрее на {0}%",
+"v": "Works {0}% faster"
+},
+{
+"k": "Как открыть",
+"v": "How to unlock"
+},
+{
+"k": "Победи на {0} уровне арены, потом нанимай в каталоге.",
+"v": "Win arena level {0}, then hire in the catalog."
+},
+{
+"k": "Есть в каталоге с начала игры.",
+"v": "In the catalog from the start."
+},
+{
+"k": "Быстрее работают",
+"v": "Work faster here"
+},
+{
+"k": "Куплено уровней: {0} из {1}",
+"v": "Levels bought: {0} of {1}"
+},
+{
+"k": "Покупается в",
+"v": "Bought at"
+},
+{
+"k": "уровень {0}",
+"v": "level {0}"
+},
+{
+"k": "Первая победа: {0}–{1} золота. Повтор: {2}–{3}.",
+"v": "First win: {0}–{1} gold. Repeat: {2}–{3}."
+},
+{
+"k": "Отряд до {0} бойцов, отдых после боя {1} с.",
+"v": "Squad of up to {0} fighters, rest after a battle {1} s."
+},
+{
+"k": "Победа открывает",
+"v": "Victory unlocks"
+},
+{
+"k": "везде одинаково",
+"v": "same everywhere"
+},
+{
+"k": "{0} зол.",
+"v": "{0} gold"
+},
+{
+"k": "Отчёт уже собирается",
+"v": "The report is already being put together"
+},
+{
+"k": "Отправляю… {0}%",
+"v": "Sending… {0}%"
+},
+{
+"k": "Отчёт отправлен",
+"v": "Report sent"
+},
+{
+"k": "Отчёт сохранён в загрузки",
+"v": "Report saved to downloads"
+},
+{
+"k": "Отчёт не собран",
+"v": "Report not created"
+},
+{
+"k": "Автоотчёт",
+"v": "Auto report"
+},
+{
+"k": "Не удалось описать игру: ",
+"v": "Couldn't describe the game: "
+},
+{
+"k": "Отчёт отправлен. Спасибо!",
+"v": "Report sent. Thank you!"
+},
+{
+"k": "Отправить не удалось — отчёт сохранён в файл:",
+"v": "Sending failed — the report was saved to a file:"
+},
+{
+"k": "Не удалось собрать отчёт: ",
+"v": "Couldn't put the report together: "
+},
+{
+"k": "Статистика: отправляется",
+"v": "Statistics: being sent"
+},
+{
+"k": "Статистика: не отправляется",
+"v": "Statistics: not sent"
+},
+{
+"k": "Собираю отчёт…",
+"v": "Putting the report together…"
+},
+{
+"k": "Таверна",
+"v": "Tavern"
+},
+{
+"k": "Гильдия носильщиков",
+"v": "Carriers' guild"
+},
+{
+"k": "Железный меч",
+"v": "Iron sword"
+},
+{
+"k": "Усиленная броня",
+"v": "Reinforced armor"
+},
+{
+"k": "Деревянный щит",
+"v": "Wooden shield"
+},
+{
+"k": "Зачарованный меч",
+"v": "Enchanted sword"
+},
+{
+"k": "Боевой топор",
+"v": "Battle axe"
+},
+{
+"k": "Руда",
+"v": "Ore"
+},
+{
+"k": "Слиток",
+"v": "Ingot"
+},
+{
+"k": "Пшеница",
+"v": "Wheat"
+},
+{
+"k": "Шкура",
+"v": "Hide"
+},
+{
+"k": "Кожа",
+"v": "Leather"
+},
+{
+"k": "Брёвна",
+"v": "Logs"
+},
+{
+"k": "Доски",
+"v": "Planks"
+},
+{
+"k": "Кристалл",
+"v": "Crystal"
+},
+{
+"k": "Уголь",
+"v": "Coal"
+},
+{
+"k": "Самородок",
+"v": "Nugget"
+},
+{
+"k": "Солома",
+"v": "Straw"
+},
+{
+"k": "Золотой колос",
+"v": "Golden ear"
+},
+{
+"k": "Мясо",
+"v": "Meat"
+},
+{
+"k": "Молоко",
+"v": "Milk"
+},
+{
+"k": "Лом",
+"v": "Scrap"
+},
+{
+"k": "Пир",
+"v": "Feast"
+},
+{
+"k": "Лёгкий шаг",
+"v": "Light step"
+},
+{
+"k": "Все существа ходят по колонии на 10% быстрее за уровень.",
+"v": "All creatures walk around the colony 10% faster per level."
+},
+{
+"k": "Крепкие спины",
+"v": "Strong backs"
+},
+{
+"k": "Носильщики поднимают больше: +25% к выносливости за уровень, то есть лишняя единица груза каждые четыре ходки.",
+"v": "Carriers lift more: +25% stamina per level, which means one extra unit of cargo every four trips."
+},
+{
+"k": "Быстрые руки",
+"v": "Quick hands"
+},
+{
+"k": "Погрузка и выгрузка идут на 20% быстрее за уровень: меньше ожидания у дверей.",
+"v": "Loading and unloading are 20% faster per level: less waiting at the doors."
+},
+{
+"k": "Широкие двери",
+"v": "Wide doors"
+},
+{
+"k": "У двери каждого здания грузится на одного носильщика больше: очередь тает быстрее.",
+"v": "At every building's door, one more carrier loads at a time: the queue melts faster."
+},
+{
+"k": "Больше бойцов",
+"v": "More fighters"
+},
+{
+"k": "В бой идёт на одного бойца больше.",
+"v": "One more fighter goes into battle."
+},
+{
+"k": "Закалка",
+"v": "Toughening"
+},
+{
+"k": "Бойцы поселения выносливее: +15% здоровья за уровень.",
+"v": "The colony's fighters are hardier: +15% health per level."
+},
+{
+"k": "Оружейная выучка",
+"v": "Weapon training"
+},
+{
+"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
+"v": "Each hit by a colony fighter deals 1 more damage per level."
+},
+{
+"k": "Отдых",
+"v": "Rest"
+},
+{
+"k": "Арена восстанавливается после боя на 20% быстрее за уровень.",
+"v": "The arena recovers after a battle 20% faster per level."
+},
+{
+"k": "Слава арены",
+"v": "Arena glory"
+},
+{
+"k": "Победы на арене приносят на 15% больше золота за уровень.",
+"v": "Arena wins bring 15% more gold per level."
+},
+{
+"k": "Первый работник",
+"v": "First worker"
+},
+{
+"k": "Внизу, во вкладке «Существа», нажми на гоблина и кликни по свободной клетке на карте.",
+"v": "At the bottom, in the “Creatures” tab, click the goblin and then a free tile on the map."
+},
+{
+"k": "Своя шахта",
+"v": "Your own mine"
+},
+{
+"k": "Внизу, во вкладке «Здания», нажми на шахту. Кликни по свободному месту на карте или нажми «Поставить сам».",
+"v": "At the bottom, in the “Buildings” tab, click the mine. Click a free spot on the map or press “Place for me”."
+},
+{
+"k": "За работу!",
+"v": "Get to work!"
+},
+{
+"k": "Найми тролля. Кликни по нему → «Работа» (E) → шахта. Затем кликни по гоблину → «Перенос» (H) → шахта → выбери, что носить → склад.",
+"v": "Hire a troll. Click it → “Work” (E) → mine. Then click a goblin → “Carry” (H) → mine → choose what to carry → warehouse."
+},
+{
+"k": "Первая выручка",
+"v": "First income"
+},
+{
+"k": "Руда копится на складе. Найми ещё гоблина и дай ему «Перенос»: склад → рынок. Рынок платит за каждую доставленную руду.",
+"v": "Ore piles up in the warehouse. Hire another goblin and give it “Carry”: warehouse → market. The market pays for every ore delivered."
+},
+{
+"k": "Казна",
+"v": "Treasury"
+},
+{
+"k": "Золото приходит, только когда руду довозят до рынка. Найми ещё гоблинов и дай им перенос: шахта → рынок или склад → рынок.",
+"v": "Gold only comes in when ore is delivered to the market. Hire more goblins and give them a carry order: mine → market or warehouse → market."
+},
+{
+"k": "Бараки",
+"v": "Barracks"
+},
+{
+"k": "Внизу, во вкладке «Здания», нажми на бараки и поставь их на свободное место. Снятые с работы существа отдыхают у их дверей, а из бараков открывается дорога на арену.",
+"v": "At the bottom, in the “Buildings” tab, click the barracks and put them on a free spot. Creatures taken off work rest at their doors, and the road to the arena opens from the barracks."
+},
+{
+"k": "Нажми «В бой» справа. Поставь до 4 бойцов в левые клетки: тролля вперёд, гоблинов за ним. Бой идёт сам.",
+"v": "Click “To battle” on the right. Place up to 4 fighters on the left tiles: the troll in front, the goblins behind it. The battle plays out by itself."
+},
+{
+"k": "Урожай",
+"v": "Harvest"
+},
+{
+"k": "Поле растит пшеницу и солому без сырья и собирает их разом. Построй его поближе к складу и поставь трёх рабочих.",
+"v": "The field grows wheat and straw without raw materials and harvests them all at once. Build it close to the warehouse and put three workers on it."
+},
+{
+"k": "Хлеб на рынок",
+"v": "Bread to market"
+},
+{
+"k": "Дай носильщикам перенос с поля или со склада на рынок и продай пшеницу.",
+"v": "Give carriers a carry order from the field or the warehouse to the market and sell the wheat."
+},
+{
+"k": "Плавильня",
+"v": "Smelter"
+},
+{
+"k": "Плавильня делает из двух руд слиток, а с углём — два слитка. Построй её и дай ей двух рабочих.",
+"v": "The smelter turns two ores into an ingot, and with coal into two ingots. Build it and give it two workers."
+},
+{
+"k": "Железо в цене",
+"v": "Iron is worth more"
+},
+{
+"k": "Вози руду в плавильню, а слитки — на рынок: слиток стоит дороже двух руд.",
+"v": "Carry ore to the smelter and ingots to the market: an ingot is worth more than two ores."
+},
+{
+"k": "Новая земля",
+"v": "New land"
+},
+{
+"k": "Острову тесно. Нажми «Земля» справа сверху (L), выбери блок рядом с колонией и купи его. Потом расчисти: на дикой земле строить нельзя.",
+"v": "The island is cramped. Click “Land” at the top right (L), pick a block next to the colony and buy it. Then clear it: you can't build on wild land."
+},
+{
+"k": "Носильщики толпятся у дверей шахты? Гильдия их учит. Построй её из вкладки «Здания», нажми на неё на карте и купи в её карточке два улучшения: «Широкие двери» пускают к двери больше носильщиков, «Быстрые руки» ускоряют погрузку.",
+"v": "Carriers crowding at the mine's door? The guild trains them. Build it from the «Buildings» tab, click it on the map and buy two upgrades on its card: «Wide doors» let more carriers at a door, «Quick hands» speed up loading."
+},
+{
+"k": "Кузница",
+"v": "Forge"
+},
+{
+"k": "Кузница куёт мечи из слитков, а с кожей — броню; иногда портит работу в лом. Построй её и поставь двух рабочих.",
+"v": "The forge makes swords from ingots, and armor with leather; sometimes it spoils the work into scrap. Build it and put two workers on it."
+},
+{
+"k": "Богатый рынок",
+"v": "Rich market"
+},
+{
+"k": "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.",
+"v": "Select the market on the map and click “Upgrade”: each level raises the price of every good."
+},
+{
+"k": "Склад экипировки",
+"v": "Gear store"
+},
+{
+"k": "Построй склад экипировки и вози туда мечи из кузницы: перед боем их можно выдать бойцам.",
+"v": "Build a gear store and carry swords there from the forge: before a battle you can hand them out to fighters."
+},
+{
+"k": "Оружие для отряда",
+"v": "Arms for the squad"
+},
+{
+"k": "Пусть на складе экипировки будет пять предметов: мечи, броня, щиты.",
+"v": "Let the gear store hold five items: swords, armor, shields."
+},
+{
+"k": "Третий уровень арены",
+"v": "Third arena level"
+},
+{
+"k": "Каждая победа открывает следующий уровень арены. Дойди до третьего: там встретятся хоббиты, и после победы их можно нанимать.",
+"v": "Every win unlocks the next arena level. Get to the third: you'll meet halflings there, and after the win you can hire them."
+},
+{
+"k": "Ферма",
+"v": "Farm"
+},
+{
+"k": "Ферма кормит скот пшеницей и соломой и даёт шкуры, мясо и молоко. Построй её и дай ей двух рабочих.",
+"v": "The farm feeds livestock wheat and straw and gives hides, meat and milk. Build it and give it two workers."
+},
+{
+"k": "Растущее поселение",
+"v": "A growing colony"
+},
+{
+"k": "Больше рук — больше дел. Доведи население до 20 существ; каждое новое нанять чуть дороже.",
+"v": "More hands, more work. Grow the population to 20 creatures; each new one costs a bit more to hire."
+},
+{
+"k": "Кожевня",
+"v": "Tannery"
+},
+{
+"k": "Кожевня выделывает шкуры в кожу. Построй её и дай ей двух рабочих.",
+"v": "The tannery turns hides into leather. Build it and give it two workers."
+},
+{
+"k": "Кожа на продажу",
+"v": "Leather for sale"
+},
+{
+"k": "Кожа дорого стоит на рынке, а в кузнице из неё и слитков выходит броня.",
+"v": "Leather sells high at the market, and in the forge it makes armor together with ingots."
+},
+{
+"k": "Лесозаготовка",
+"v": "Lumber camp"
+},
+{
+"k": "Лесозаготовка валит брёвна без сырья. Построй её и поставь трёх рабочих.",
+"v": "The lumber camp fells logs without raw materials. Build it and put three workers on it."
+},
+{
+"k": "Торговый путь",
+"v": "Trade route"
+},
+{
+"k": "Налаженная торговля — основа казны. Заработай на рынке 3000 золота.",
+"v": "Well-run trade is the basis of the treasury. Earn 3000 gold at the market."
+},
+{
+"k": "Пилорама",
+"v": "Sawmill"
+},
+{
+"k": "Пилорама режет брёвна на доски. Построй её и дай ей двух рабочих.",
+"v": "The sawmill cuts logs into planks. Build it and give it two workers."
+},
+{
+"k": "Продай доски на рынке — или копи их для щитов.",
+"v": "Sell planks at the market — or save them for shields."
+},
+{
+"k": "Мастерская щитов",
+"v": "Shield workshop"
+},
+{
+"k": "Щиты из досок укрепляют отряд. Построй мастерскую и дай ей двух рабочих.",
+"v": "Shields made of planks strengthen the squad. Build the workshop and give it two workers."
+},
+{
+"k": "Отряд в железе",
+"v": "Squad in iron"
+},
+{
+"k": "Выдай снаряжение четырём бойцам: перед боем нажми на бойца и выбери предмет внизу.",
+"v": "Equip four fighters: before a battle, click a fighter and choose an item at the bottom."
+},
+{
+"k": "Пир на весь остров",
+"v": "A feast for the whole island"
+},
+{
+"k": "Таверна собирает пир из четырёх товаров: пшеницы, мяса, молока и брёвен. Построй её, дай ей двух рабочих, привези всё нужное и приготовь шесть пиров.",
+"v": "The tavern makes a feast from four goods: wheat, meat, milk and logs. Build it, give it two workers, bring everything it needs and cook six feasts."
+},
+{
+"k": "Глубокая шахта",
+"v": "Deep mine"
+},
+{
+"k": "Улучши шахту до третьего уровня и добудь 12 угля: со второго уровня в породе попадается уголь, с третьего — самородки. С углём плавильня даёт два слитка вместо одного.",
+"v": "Upgrade the mine to level three and dig up 12 coal: from level two the rock contains coal, from level three, nuggets. With coal the smelter gives two ingots instead of one."
+},
+{
+"k": "Зачарователь",
+"v": "Enchanter"
+},
+{
+"k": "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.",
+"v": "The enchanter combines a sword and a crystal into an enchanted sword. Build it and put a worker on it."
+},
+{
+"k": "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.",
+"v": "Reach arena level six. Barracks upgrades make the squad stronger."
+},
+{
+"k": "Торговля",
+"v": "Trade"
+},
+{
+"k": "Заработай на рынке золото. Задание повторяется, и цель растёт.",
+"v": "Earn gold at the market. The quest repeats and the goal grows."
+},
+{
+"k": "Выиграй бой. Повторные победы тоже приносят золото.",
+"v": "Win a battle. Repeat wins bring gold too."
+},
+{
+"k": "Оборот",
+"v": "Turnover"
+},
+{
+"k": "Продай на рынке товары любого вида.",
+"v": "Sell goods of any kind at the market."
+},
+{
+"k": "Праздник",
+"v": "Celebration"
+},
+{
+"k": "Приготовь в таверне пиры.",
+"v": "Cook feasts in the tavern."
+},
+{
+"k": "Гном",
+"v": "Dwarf"
+},
+{
+"k": "Упорный мастер: в шахте, плавильне и кузнице работает в полтора раза быстрее. Ходит медленно, в бою стоит стеной.",
+"v": "A stubborn craftsman: works 1.5 times faster in the mine, smelter and forge. Walks slowly, holds the line like a wall in battle."
+},
+{
+"k": "Рыжебородый гном",
+"v": "Redbeard dwarf"
+},
+{
+"k": "Мастер огня и металла: в кузнице, плавильне и у зачарователя работает на 60% быстрее.",
+"v": "A master of fire and metal: works 60% faster in the forge, smelter and at the enchanter."
+},
+{
+"k": "Эльф",
+"v": "Elf"
+},
+{
+"k": "Лёгкий и быстрый: на лесозаготовке, пилораме и у зачарователя работает в полтора раза быстрее. В бою бьёт издалека.",
+"v": "Light and quick: works 1.5 times faster at the lumber camp, sawmill and enchanter. Fights from a distance in battle."
+},
+{
+"k": "Хоббит",
+"v": "Halfling"
+},
+{
+"k": "Шустрый носильщик и хозяин: на поле, ферме и в таверне работает в полтора раза быстрее.",
+"v": "A nimble carrier and host: works 1.5 times faster in the field, farm and tavern."
+},
+{
+"k": "Человек",
+"v": "Human"
+},
+{
+"k": "Мастер на все руки: в кожевне, мастерской щитов и таверне работает на треть быстрее.",
+"v": "A jack of all trades: works a third faster in the tannery, shield workshop and tavern."
+},
+{
+"k": "Амазонка",
+"v": "Amazon"
+},
+{
+"k": "Воительница: сильна в бою, на лесозаготовке и в поле работает на треть быстрее.",
+"v": "A warrior: strong in battle, works a third faster at the lumber camp and in the field."
+},
+{
+"k": "Горожанин",
+"v": "Townsman"
+},
+{
+"k": "Дёшев и вынослив: носит больше гоблина, на поле и ферме работает на четверть быстрее. Не боец.",
+"v": "Cheap and hardy: carries more than a goblin, works a quarter faster in the field and farm. Not a fighter."
+},
+{
+"k": "Орк",
+"v": "Orc"
+},
+{
+"k": "Крепкий работяга: в шахте и плавильне работает на треть быстрее, в бою держит удар.",
+"v": "A sturdy worker: works a third faster in the mine and smelter, takes a hit in battle."
+},
+{
+"k": "Дикий орк",
+"v": "Wild orc"
+},
+{
+"k": "Свирепый боец; в шахте и на лесозаготовке работает на пятую часть быстрее.",
+"v": "A fierce fighter; works a fifth faster in the mine and at the lumber camp."
+},
+{
+"k": "Трасго",
+"v": "Trasgo"
+},
+{
+"k": "Вертлявый проказник: бьёт слабо, зато часто.",
+"v": "A fidgety prankster: hits weakly, but often."
+},
+{
+"k": "Летучая мышь",
+"v": "Bat"
+},
+{
+"k": "Быстрая и хрупкая; налетает стаей.",
+"v": "Fast and fragile; swoops in as a swarm."
+},
+{
+"k": "Волк",
+"v": "Wolf"
+},
+{
+"k": "Быстрый охотник: первым добегает до отряда.",
+"v": "A fast hunter: reaches the squad first."
+},
+{
+"k": "Варг",
+"v": "Warg"
+},
+{
+"k": "Огромный волк: быстрый и кусачий.",
+"v": "A huge wolf: fast and biting."
+},
+{
+"k": "Зелёная слизь",
+"v": "Green slime"
+},
+{
+"k": "Медленная и слабая; опасна числом.",
+"v": "Slow and weak; dangerous in numbers."
+},
+{
+"k": "Синяя слизь",
+"v": "Blue slime"
+},
+{
+"k": "Чуть крепче зелёной.",
+"v": "Slightly tougher than the green one."
+},
+{
+"k": "Мать зелёных слизней",
+"v": "Green slime mother"
+},
+{
+"k": "Большая и живучая слизь.",
+"v": "A big, hardy slime."
+},
+{
+"k": "Мать синих слизней",
+"v": "Blue slime mother"
+},
+{
+"k": "Самая крепкая из слизней.",
+"v": "The toughest of the slimes."
+},
+{
+"k": "Скелет",
+"v": "Skeleton"
+},
+{
+"k": "Неутомимый мертвец с мечом.",
+"v": "A tireless dead warrior with a sword."
+},
+{
+"k": "Зомби",
+"v": "Zombie"
+},
+{
+"k": "Медленный, но его трудно свалить.",
+"v": "Slow, but hard to knock down."
+},
+{
+"k": "Блуждающий огонь",
+"v": "Will-o'-the-wisp"
+},
+{
+"k": "Жжёт издалека; хрупок вблизи.",
+"v": "Burns from afar; fragile up close."
+},
+{
+"k": "Тыквенный ужас",
+"v": "Pumpkin horror"
+},
+{
+"k": "Ожившая тыква: крепкая и злая.",
+"v": "A living pumpkin: sturdy and mean."
+},
+{
+"k": "Кентавр",
+"v": "Centaur"
+},
+{
+"k": "Быстрый лучник: держите его подальше от слабых.",
+"v": "A fast archer: keep it away from the weak."
+},
+{
+"k": "Злой снеговик",
+"v": "Evil snowman"
+},
+{
+"k": "Стоит на месте и швыряет снежки.",
+"v": "Stands still and throws snowballs."
+},
+{
+"k": "Циклоп",
+"v": "Cyclops"
+},
+{
+"k": "Великан: бьёт редко, но страшно.",
+"v": "A giant: hits rarely, but hits hard."
+},
+{
+"k": "Йети",
+"v": "Yeti"
+},
+{
+"k": "Снежный великан в густой шерсти.",
+"v": "A snow giant in thick fur."
+},
+{
+"k": "Минотавр",
+"v": "Minotaur"
+},
+{
+"k": "Хозяин арены: сильнейший из её бойцов.",
+"v": "The master of the arena: the strongest of its fighters."
+},
+{
+"k": "Слизни на лугу",
+"v": "Slimes in the meadow"
+},
+{
+"k": "Хоббиты-забияки",
+"v": "Halfling brawlers"
+},
+{
+"k": "Ночная стая",
+"v": "Night pack"
+},
+{
+"k": "Люди с холмов",
+"v": "Hill folk"
+},
+{
+"k": "Волчья тропа",
+"v": "Wolf trail"
+},
+{
+"k": "Ярмарочная драка",
+"v": "Fairground brawl"
+},
+{
+"k": "Мать слизней",
+"v": "Slime mother"
+},
+{
+"k": "Лесные стрелки",
+"v": "Forest archers"
+},
+{
+"k": "Старое кладбище",
+"v": "Old graveyard"
+},
+{
+"k": "Гномья застава",
+"v": "Dwarf outpost"
+},
+{
+"k": "Варги",
+"v": "Wargs"
+},
+{
+"k": "Орочий набег",
+"v": "Orc raid"
+},
+{
+"k": "Синее болото",
+"v": "Blue swamp"
+},
+{
+"k": "Амазонки",
+"v": "Amazons"
+},
+{
+"k": "Мёртвые встают",
+"v": "The dead rise"
+},
+{
+"k": "Блуждающие огни",
+"v": "Wisps"
+},
+{
+"k": "Дикие орки",
+"v": "Wild orcs"
+},
+{
+"k": "Тыквенная ночь",
+"v": "Pumpkin night"
+},
+{
+"k": "Кентавры",
+"v": "Centaurs"
+},
+{
+"k": "Рыжебородые",
+"v": "The Redbeards"
+},
+{
+"k": "Снежная засада",
+"v": "Snow ambush"
+},
+{
+"k": "Циклоп и свита",
+"v": "Cyclops and retinue"
+},
+{
+"k": "Огонь и клыки",
+"v": "Fire and fangs"
+},
+{
+"k": "Два циклопа",
+"v": "Two cyclopes"
+},
+{
+"k": "Ледяная буря",
+"v": "Ice storm"
+},
+{
+"k": "Бойня",
+"v": "Bloodbath"
+},
+{
+"k": "Хозяева арены",
+"v": "Masters of the arena"
+},
+{
+"k": "ждёт в колонии",
+"v": "waiting in the colony"
+},
+{
+"k": "Противник",
+"v": "Enemy"
+},
+{
+"k": "найм откроется первой победой",
+"v": "hiring opens with the first win"
+},
+{
+"k": "Победа!",
+"v": "Victory!"
+},
+{
+"k": "Забрать золото",
+"v": "Collect the gold"
+},
+{
+"k": "Нанимать по",
+"v": "Hire for"
+},
+{
+"k": "Чит-меню",
+"v": "Cheat menu"
+},
+{
+"k": "Миссия 1 без ожидания открытия и перезарядки.",
+"v": "Mission 1 with no unlock wait and no cooldown."
+},
+{
+"k": "Открыть расстановку",
+"v": "Open lineup"
+},
+{
+"k": "Быстрый бой",
+"v": "Quick battle"
+},
+{
+"k": "Выполнить текущее задание",
+"v": "Complete the current quest"
+},
+{
+"k": "Купить всю землю",
+"v": "Buy all land"
+},
+{
+"k": "Расчистить всю землю",
+"v": "Clear all land"
+},
+{
+"k": "Открыть все постройки",
+"v": "Unlock all buildings"
+},
+{
+"k": "+1000 золота",
+"v": "+1000 gold"
+},
+{
+"k": "Если бойцов нет, быстрый бой наймёт 1 тролля и 3 гоблинов.",
+"v": "If there are no fighters, a quick battle hires 1 troll and 3 goblins."
+},
+{
+"k": "Отметьте один или несколько товаров или оставьте «Всё». Куда носить, укажете на карте.",
+"v": "Tick one or more goods or leave “All”. You'll pick where to carry on the map."
+},
+{
+"k": "Поверните устройство",
+"v": "Turn your device"
+},
+{
+"k": "Игра рассчитана на горизонтальный экран.",
+"v": "The game is made for a landscape screen."
+},
+{
+"k": "Колония стоит, пока открыто меню",
+"v": "The colony stands still while the menu is open"
+},
+{
+"k": "Забрать награду",
+"v": "Claim reward"
+},
+{
+"k": "Забрать",
+"v": "Claim"
+},
+{
+"k": "Техинфо",
+"v": "Tech info"
+},
+{
+"k": "Читы",
+"v": "Cheats"
+},
+{
+"k": "Отправить логи",
+"v": "Send logs"
+},
+{
+"k": "Игра отправляет анонимную статистику: до какого задания доходят игроки. Так мы находим, где играть трудно.",
+"v": "The game sends anonymous statistics: which quest players get to. That's how we find where it gets hard to play."
+},
+{
+"k": "Подробнее",
+"v": "Learn more"
+},
+{
+"k": "Не отправлять",
+"v": "Don't send"
+},
+{
+"k": "Хорошо",
+"v": "OK"
+},
+{
+"k": "Поле",
+"v": "Field"
+},
+{
+"k": "Рынок",
+"v": "Market"
+},
+{
+"k": "Шахта",
+"v": "Mine"
+},
+{
+"k": "Склад",
+"v": "Warehouse"
+},
+{
+"k": "Латаная броня",
+"v": "Patched armor"
+},
+{
+"k": "Ржавый меч",
+"v": "Rusty sword"
+},
+{
+"k": "2. Слизни на лугу",
+"v": "2. Slimes in the meadow"
+},
+{
+"k": "3. Хоббиты-забияки",
+"v": "3. Halfling brawlers"
+},
+{
+"k": "4. Ночная стая",
+"v": "4. Night pack"
+},
+{
+"k": "5. Люди с холмов",
+"v": "5. Hill folk"
+},
+{
+"k": "6. Волчья тропа",
+"v": "6. Wolf trail"
+},
+{
+"k": "7. Ярмарочная драка",
+"v": "7. Fairground brawl"
+},
+{
+"k": "8. Мать слизней",
+"v": "8. Slime mother"
+},
+{
+"k": "9. Лесные стрелки",
+"v": "9. Forest archers"
+},
+{
+"k": "10. Старое кладбище",
+"v": "10. Old graveyard"
+},
+{
+"k": "11. Гномья застава",
+"v": "11. Dwarf outpost"
+},
+{
+"k": "12. Варги",
+"v": "12. Wargs"
+},
+{
+"k": "13. Орочий набег",
+"v": "13. Orc raid"
+},
+{
+"k": "14. Синее болото",
+"v": "14. Blue swamp"
+},
+{
+"k": "15. Амазонки",
+"v": "15. Amazons"
+},
+{
+"k": "16. Мёртвые встают",
+"v": "16. The dead rise"
+},
+{
+"k": "17. Блуждающие огни",
+"v": "17. Wisps"
+},
+{
+"k": "18. Дикие орки",
+"v": "18. Wild orcs"
+},
+{
+"k": "19. Тыквенная ночь",
+"v": "19. Pumpkin night"
+},
+{
+"k": "20. Кентавры",
+"v": "20. Centaurs"
+},
+{
+"k": "21. Рыжебородые",
+"v": "21. The Redbeards"
+},
+{
+"k": "22. Снежная засада",
+"v": "22. Snow ambush"
+},
+{
+"k": "23. Циклоп и свита",
+"v": "23. Cyclops and retinue"
+},
+{
+"k": "24. Огонь и клыки",
+"v": "24. Fire and fangs"
+},
+{
+"k": "25. Йети",
+"v": "25. Yeti"
+},
+{
+"k": "26. Два циклопа",
+"v": "26. Two cyclopes"
+},
+{
+"k": "27. Минотавр",
+"v": "27. Minotaur"
+},
+{
+"k": "28. Ледяная буря",
+"v": "28. Ice storm"
+},
+{
+"k": "29. Бойня",
+"v": "29. Bloodbath"
+},
+{
+"k": "30. Хозяева арены",
+"v": "30. Masters of the arena"
+},
+{
+"k": "В гильдии учат носильщиков: быстрее ходить, больше поднимать, скорее грузиться. Построй её и купи в гильдии или бараках два уровня улучшений.",
+"v": "The guild trains carriers: walk faster, lift more, load sooner. Build it and buy two upgrade levels in the guild or the barracks."
+},
+{
+"k": "Гоблин",
+"v": "Goblin"
+},
+{
+"k": "Дешёвый и шустрый: быстро носит грузы, но работает медленнее тролля.",
+"v": "Cheap and nimble: carries loads fast, but works slower than a troll."
+},
+{
+"k": "Тролль",
+"v": "Troll"
+},
+{
+"k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
+"v": "Works faster than a goblin and carries more, but walks slowly. Strong in battle."
+}
+]
+}

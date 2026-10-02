@@ -1,4 +1,5 @@
 using System;
+using TrollStrategy.Presentation;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,14 +17,16 @@ namespace TrollStrategy.UI
 
         public static Label Text(string text, string classes = null)
         {
-            var label = new Label(text);
+            var label = new Label();
+            Localization.Apply(label, text);
             AddClasses(label, classes);
             return label;
         }
 
         public static Button TextButton(string text, string classes = null)
         {
-            var button = new Button { text = text };
+            var button = new Button();
+            Localization.Apply(button, text);
             AddClasses(button, classes);
             return button;
         }
@@ -103,13 +106,10 @@ namespace TrollStrategy.UI
         public static bool IsShown(VisualElement element) =>
             element != null && element.style.display.value != DisplayStyle.None;
 
-        public static void SetText(TextElement element, string text)
-        {
-            text ??= string.Empty;
-            if (element != null && element.text != text) element.text = text;
-        }
+        /// <summary>Shows a Russian source text in the current language (Localization).</summary>
+        public static void SetText(TextElement element, string text) => Localization.Apply(element, text);
 
-        public static string Gold(int amount) => amount + " зол.";
+        public static string Gold(int amount) => $"{amount} зол.";
 
         /// <summary>A named element the layout must contain; a renamed element fails loudly, not silently.</summary>
         public static T Require<T>(VisualElement root, string name) where T : VisualElement =>
