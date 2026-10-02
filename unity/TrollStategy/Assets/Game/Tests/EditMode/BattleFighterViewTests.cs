@@ -76,6 +76,46 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void Fighter_WearsGearAsTokensAtTheBar_FreeSlotsOnlyWhilePlaced()
+        {
+            var cameraObject = new GameObject("Camera", typeof(Camera));
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Units/Goblin.prefab")
+                .GetComponentInChildren<UnitView>(true);
+            var fighter = new GameObject("Fighter", typeof(BattleFighterView)).GetComponent<BattleFighterView>();
+            var icon = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), Vector2.one * .5f);
+            try
+            {
+                fighter.Init("unit-1", UnitKind.Goblin, false, new Cell(0, 1), Vector3.zero, prefab, 20,
+                    cameraObject.GetComponent<Camera>());
+                var slots = new[] { EquipmentSlot.Weapon, EquipmentSlot.Armor, EquipmentSlot.Helmet };
+                var sword = new WornItem(EquipmentSlot.Weapon, icon, enchanted: true);
+
+                fighter.SetGear(new[] { sword }, slots, showEmpty: true);
+                Assert.That(fighter.GearTokens, Is.EqualTo(new[]
+                {
+                    (EquipmentSlot.Weapon, false, true), (EquipmentSlot.Armor, true, false), (EquipmentSlot.Helmet, true, false)
+                }), "The sword with its enchanted rim, the free armour and helmet slots as hollows");
+
+                fighter.HideEmptyGear();
+                Assert.That(fighter.GearTokens, Is.EqualTo(new[] { (EquipmentSlot.Weapon, false, true) }),
+                    "In battle only what is worn shows");
+
+                fighter.SetGear(null, new[] { EquipmentSlot.Weapon, EquipmentSlot.Armor }, showEmpty: false);
+                Assert.That(fighter.GearTokens, Is.Empty, "Nothing worn, not placing: no tokens");
+
+                fighter.SetGear(new[] { new WornItem(EquipmentSlot.Helmet, icon, false) }, new[] { EquipmentSlot.Weapon }, true);
+                Assert.That(fighter.GearTokens, Is.EqualTo(new[] { (EquipmentSlot.Weapon, true, false) }),
+                    "Only the slots items of the game fit are shown");
+            }
+            finally
+            {
+                Object.DestroyImmediate(icon);
+                Object.DestroyImmediate(fighter.gameObject);
+                Object.DestroyImmediate(cameraObject);
+            }
+        }
+
+        [Test]
         public void Fighter_ShowsBlowsUntilDeathAndThenIgnoresClicks()
         {
             var cameraObject = new GameObject("Camera", typeof(Camera));

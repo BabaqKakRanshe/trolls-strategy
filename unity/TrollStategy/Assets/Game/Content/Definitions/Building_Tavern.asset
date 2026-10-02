@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a09b53d96beac6489c03d204e536d7d, type: 3}
+  m_Name: Building_Tavern
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.BuildingDefinition
+  _kind: 14
+  _displayName: "\u0422\u0430\u0432\u0435\u0440\u043D\u0430"
+  _price: 2000
+  _constructible: 1
+  _width: 3
+  _height: 3
+  _entrance: {x: 1.5, y: 0.12}
+  _crowdSpacing: 0.2
+  _capacity: 15
+  _maxWorkers: 4
+  _upgradeCosts: d0070000i
+  _capacityPerLevel: 10
+  _workersPerLevel: 2
+  _saleBonusPerLevel: 0
+  _recipes:
+  - _inputs:
+    - _resource: 15
+      _amount: 1
+    - _resource: 16
+      _amount: 1
+    - _resource: 17
+      _amount: 1
+    - _resource: 5
+      _amount: 1
+    _outputs:
+    - _resource: 19
+      _amount: 2
+    _work: 6
+    _minLevel: 2
+    _extras: []
+    _failChancePercent: 0
+    _failOutputs: []
+  - _inputs:
+    - _resource: 2
+      _amount: 2
+    - _resource: 16
+      _amount: 1
+    - _resource: 17
+      _amount: 1
+    - _resource: 5
+      _amount: 1
+    _outputs:
+    - _resource: 19
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 0
+    _failOutputs: []
+  _storageRole: 0
+  _storedResources: 
+  _slotStackSize: 0
+  _sprite: {fileID: 0}
+  _prefab: {fileID: 1858387845044042961, guid: 7c39590559b8f0c4aaf9a3d3129d2931, type: 3}
+  _icon: {fileID: -656329827, guid: 09bbd4ccc6c7bd240abbcc21ca5c3aa2, type: 3}

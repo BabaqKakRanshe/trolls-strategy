@@ -25,6 +25,13 @@ namespace TrollStrategy.Content
         [Tooltip("Выносливость в процентах: 100% = 1 единица груза за ходку, 150% = 1.5. Дробная часть копится между ходками.")]
         [SerializeField, Min(1)] private int _stamina = 100;
 
+        [Tooltip("Здания, где существо работает лучше других.")]
+        [SerializeField] private BuildingKind[] _favoredBuildings = System.Array.Empty<BuildingKind>();
+        [Tooltip("На сколько процентов больше работы оно даёт в любимых зданиях.")]
+        [SerializeField, Min(0)] private int _favoredWorkPercent;
+        [Tooltip("Можно ли нанять это существо в колонию (иначе оно встречается только на арене).")]
+        [SerializeField] private bool _hireable = true;
+
         [Header("Бой")]
         [SerializeField, Min(1)] private int _combatHealth = 20;
         [SerializeField, Min(1)] private int _combatDamage = 2;
@@ -50,6 +57,23 @@ namespace TrollStrategy.Content
         public int AttackIntervalMs => _attackIntervalMs;
         public int AttackRange => _attackRange;
         public string Description => _description;
+        public System.Collections.Generic.IReadOnlyList<BuildingKind> FavoredBuildings =>
+            _favoredBuildings ?? System.Array.Empty<BuildingKind>();
+        public int FavoredWorkPercent => _favoredWorkPercent;
+        public bool Hireable => _hireable;
+
+        public bool Favors(BuildingKind kind) => System.Array.IndexOf(_favoredBuildings ?? System.Array.Empty<BuildingKind>(), kind) >= 0;
+
+        public void SetWorkTraits(bool hireable, int favoredWorkPercent, params BuildingKind[] favoredBuildings)
+        {
+            _hireable = hireable;
+            _favoredWorkPercent = Mathf.Max(0, favoredWorkPercent);
+            _favoredBuildings = favoredBuildings ?? System.Array.Empty<BuildingKind>();
+        }
+
+        public void SetPrefab(GameObject prefab) => _prefab = prefab;
+        public void SetPortrait(Sprite portrait) => _portraitSprite = portrait;
+
         public IReadOnlyList<string> Names => _names;
         public IReadOnlyList<string> Epithets => _epithets;
         public Sprite PortraitSprite => _portraitSprite;

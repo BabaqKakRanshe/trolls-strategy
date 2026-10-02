@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: b9ce161d999d4dc45bab90a18f2d3fdb
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7631648747357755335
+    second: cyclops-idle_0
+  - first:
+      213: -354691992348143613
+    second: cyclops-idle_1
+  - first:
+      213: -8759673283207857408
+    second: cyclops-idle_2
+  - first:
+      213: -6885837669080283714
+    second: cyclops-idle_3
+  - first:
+      213: 453032129571767797
+    second: cyclops-idle_4
+  - first:
+      213: -4018283241037014912
+    second: cyclops-idle_5
+  - first:
+      213: -4470556737086121450
+    second: cyclops-idle_6
+  - first:
+      213: -933287257765712552
+    second: cyclops-idle_7
+  - first:
+      213: -3898904705361318467
+    second: cyclops-idle_8
+  - first:
+      213: -2644255776278621019
+    second: cyclops-idle_9
+  - first:
+      213: 4699019149339682591
+    second: cyclops-idle_10
+  - first:
+      213: 6150796816930995639
+    second: cyclops-idle_11
+  - first:
+      213: -2481389251597102742
+    second: cyclops-idle_12
+  - first:
+      213: -986315184703272449
+    second: cyclops-idle_13
+  - first:
+      213: -738256471595978613
+    second: cyclops-idle_14
+  - first:
+      213: 3931908334852472567
+    second: cyclops-idle_15
+  - first:
+      213: 1268869223357337425
+    second: cyclops-idle_16
+  - first:
+      213: -8950896921873718490
+    second: cyclops-idle_17
+  - first:
+      213: 6712611034709271426
+    second: cyclops-idle_18
+  - first:
+      213: -3767421091081917453
+    second: cyclops-idle_19
+  - first:
+      213: -2335031866717616189
+    second: cyclops-idle_20
+  - first:
+      213: -8706597415492650678
+    second: cyclops-idle_21
+  - first:
+      213: 6414683358541493884
+    second: cyclops-idle_22
+  - first:
+      213: -60059817372072704
+    second: cyclops-idle_23
+  - first:
+      213: 6388047372035260805
+    second: cyclops-idle_24
+  - first:
+      213: 133865738102506382
+    second: cyclops-idle_25
+  - first:
+      213: 5648421660809075701
+    second: cyclops-idle_26
+  - first:
+      213: -7727747241918333688
+    second: cyclops-idle_27
+  - first:
+      213: 2934457940438907325
+    second: cyclops-idle_28
+  - first:
+      213: -3502019400568986130
+    second: cyclops-idle_29
+  - first:
+      213: 1950495708928523864
+    second: cyclops-idle_30
+  - first:
+      213: 6061015340069407535
+    second: cyclops-idle_31
+  - first:
+      213: -2013938553627034399
+    second: cyclops-idle_32
+  - first:
+      213: 3459369212208472781
+    second: cyclops-idle_33
+  - first:
+      213: -505372046921824550
+    second: cyclops-idle_34
+  - first:
+      213: -5733321246457296211
+    second: cyclops-idle_35
+  - first:
+      213: -6808995306437777399
+    second: cyclops-idle_36
+  - first:
+      213: -4318650553234004171
+    second: cyclops-idle_37
+  - first:
+      213: -1050447674626031101
+    second: cyclops-idle_38
+  - first:
+      213: 8960153981256844957
+    second: cyclops-idle_39
+  - first:
+      213: -929368538137245194
+    second: cyclops-idle_40
+  - first:
+      213: 9083393519127583094
+    second: cyclops-idle_41
+  - first:
+      213: -7977843232903550182
+    second: cyclops-idle_42
+  - first:
+      213: 5800877174239902978
+    second: cyclops-idle_43
+  - first:
+      213: -7827065989682842063
+    second: cyclops-idle_44
+  - first:
+      213: -8343943402608726670
+    second: cyclops-idle_45
+  - first:
+      213: 7831136759666250308
+    second: cyclops-idle_46
+  - first:
+      213: -3591629559355166129
+    second: cyclops-idle_47
+  - first:
+      213: 4468850327447954653
+    second: cyclops-idle_48
+  - first:
+      213: -7616327864634933560
+    second: cyclops-idle_49
+  - first:
+      213: -1369507601097504364
+    second: cyclops-idle_50
+  - first:
+      213: -5877213235518601964
+    second: cyclops-idle_51
+  - first:
+      213: 4722238671469807939
+    second: cyclops-idle_52
+  - first:
+      213: -7896570052125438579
+    second: cyclops-idle_53
+  - first:
+      213: -6656658699731724051
+    second: cyclops-idle_54
+  - first:
+      213: -517360273812877148
+    second: cyclops-idle_55
+  - first:
+      213: 7797533922667667844
+    second: cyclops-idle_56
+  - first:
+      213: 7493900254139921693
+    second: cyclops-idle_57
+  - first:
+      213: -23858576436157233
+    second: cyclops-idle_58
+  - first:
+      213: 6866758164444070219
+    second: cyclops-idle_59
+  - first:
+      213: 2249028229558797193
+    second: cyclops-idle_60
+  - first:
+      213: -2760095330441085371
+    second: cyclops-idle_61
+  - first:
+      213: 3969882237364058607
+    second: cyclops-idle_62
+  - first:
+      213: 6965306536592015069
+    second: cyclops-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: cyclops_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a97c802d7280ae428bef89a9ae5b3c1
+      internalID: 222695487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78e19a05be972c348b4242c340b802ec
+      internalID: 147866284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec6d6eabee4b68844ba830ea50eebe79
+      internalID: 137820825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cfaf69f11c90a548a3324805b9d7afd
+      internalID: -1867957225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: badb00007d0749044b91f65ce2e1fe19
+      internalID: -1445346030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 969884091222d1f4c92f39643f15c947
+      internalID: 171431019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76eca941d795d8c47ba3f2ad43023e11
+      internalID: 1532456913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa9589a9f753dfa439cb0c45c003e446
+      internalID: -1007670226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4389953ad2f7af48b4c1f27bd730615
+      internalID: -1165471294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6dc7aa1f24ab81b4b9e76c68bb793b59
+      internalID: 321141552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1988118fcd22f33409c6be6e7c1dfdad
+      internalID: -1716240834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f67d52c062dae5244af46724a25221e8
+      internalID: -275677301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83a27ae7257c7c24a887b998f22ac389
+      internalID: -1648644665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84693e8841ff7cb48848d011784586ac
+      internalID: -155775053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ec46e8ee2c82aa46bd388f0c8a7f08b
+      internalID: -1368694836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cyclops_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ccafdefe75f2fe43bcf820623575dbd
+      internalID: -411876660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a929a203448140748b6006333a85258f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      cyclops_idle_0: 222695487
+      cyclops_idle_1: 147866284
+      cyclops_idle_10: -1716240834
+      cyclops_idle_11: -275677301
+      cyclops_idle_12: -1648644665
+      cyclops_idle_13: -155775053
+      cyclops_idle_14: -1368694836
+      cyclops_idle_15: -411876660
+      cyclops_idle_2: 137820825
+      cyclops_idle_3: -1867957225
+      cyclops_idle_4: -1445346030
+      cyclops_idle_5: 171431019
+      cyclops_idle_6: 1532456913
+      cyclops_idle_7: -1007670226
+      cyclops_idle_8: -1165471294
+      cyclops_idle_9: 321141552
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -16,6 +16,8 @@ namespace TrollStrategy.Content
         LumberCamp,
         LumberMill,
         ShieldWorkshop,
-        Enchanter
+        Enchanter,
+        Tavern,
+        HaulersGuild
     }
 }

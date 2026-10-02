@@ -85,17 +85,15 @@ namespace TrollStrategy.Application
         /// <summary>A fighter on the board, or null.</summary>
         public string SelectedUnitId { get; private set; }
         public string Message { get; private set; }
-        public int MaxUnits => Mission.MaxPlayerUnits;
+        public int MaxUnits => Session.SquadLimit(Mission);
         /// <summary>How many fighters this colony can bring: the mission's limit or the whole roster.</summary>
-        public int SquadLimit => Math.Min(Mission.MaxPlayerUnits, _roster.Count);
+        public int SquadLimit => Math.Min(MaxUnits, _roster.Count);
         public bool CanPlaceMore => _placements.Count < SquadLimit;
         public bool CanStart => _placements.Count > 0;
         /// <summary>No mission won yet: a victory brings the first win's gold.</summary>
-        public bool FirstWin => Session.FirstMissionWins == 0;
+        public bool FirstWin => Session.MissionWins(Mission.MissionId) == 0;
         /// <summary>The gold a victory here brings, as a range; the amount is rolled when it is won.</summary>
-        public (int Min, int Max) WinGold => FirstWin
-            ? (Mission.FirstWinGold, Mission.FirstWinGoldMax)
-            : (Mission.RepeatWinGold, Mission.RepeatWinGoldMax);
+        public (int Min, int Max) WinGold => Session.WinGold(Mission);
 
         public bool IsPlaced(string unitId) => _placements.Exists(p => p.UnitId == unitId);
 
@@ -157,8 +155,8 @@ namespace TrollStrategy.Application
             string standing = UnitAt(cell);
             if (standing != null) return Select(standing);
             if (!_board.CanPlace(cell)) return Refuse(PlaceRefusal(cell));
-            if (_placements.Count >= Mission.MaxPlayerUnits)
-                return Refuse($"В отряде не больше {Mission.MaxPlayerUnits} бойцов");
+            if (_placements.Count >= MaxUnits)
+                return Refuse($"В отряде не больше {MaxUnits} бойцов");
             if (PickedKind is not UnitKind kind) return Refuse("Все бойцы уже на поле");
             return Bring(kind, cell);
         }
@@ -179,8 +177,8 @@ namespace TrollStrategy.Application
                 return Commit(DeploymentResult.Selected);
             }
             if (ReserveOf(kind) == 0) return Refuse($"{DefinitionOf(kind).DisplayName}: все уже на поле");
-            if (standing == null && _placements.Count >= Mission.MaxPlayerUnits)
-                return Refuse($"В отряде не больше {Mission.MaxPlayerUnits} бойцов");
+            if (standing == null && _placements.Count >= MaxUnits)
+                return Refuse($"В отряде не больше {MaxUnits} бойцов");
             if (standing != null) TakeOff(standing);
             PickedKind = kind;
             return Bring(kind, cell);
@@ -240,7 +238,7 @@ namespace TrollStrategy.Application
         {
             foreach (var unit in _roster)
             {
-                if (_placements.Count >= Mission.MaxPlayerUnits) break;
+                if (_placements.Count >= MaxUnits) break;
                 if (IsPlaced(unit.Id)) continue;
                 foreach (var cell in Mission.PlayerDeployment)
                 {
@@ -303,7 +301,7 @@ namespace TrollStrategy.Application
             int nextUnit = 0;
             foreach (var cell in Mission.PlayerDeployment)
             {
-                if (nextUnit >= _roster.Count || _placements.Count >= Mission.MaxPlayerUnits) break;
+                if (nextUnit >= _roster.Count || _placements.Count >= MaxUnits) break;
                 if (!_board.CanPlace(cell) || _placements.Exists(p => p.Cell == cell)) continue;
                 _placements.Add(new BattlePlacement(_roster[nextUnit].Id, cell));
                 nextUnit++;

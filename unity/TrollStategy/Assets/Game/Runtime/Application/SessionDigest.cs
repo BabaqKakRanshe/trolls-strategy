@@ -20,7 +20,7 @@ namespace TrollStrategy.Application
                 text.AppendLine($"Режим: кампания, уровень {progress.Level}, задание «{progress.Quest.Title}» " +
                                 $"({progress.Quest.Id}){(progress.Quest.IsComplete ? ", выполнено" : string.Empty)}");
             text.AppendLine($"Золото: {snapshot.Gold}, продано товаров: {snapshot.SoldGoods}");
-            text.AppendLine($"Время колонии: {session.ActiveTimeMs / 1000} с, побед в первой миссии: {session.FirstMissionWins}");
+            text.AppendLine($"Время колонии: {session.ActiveTimeMs / 1000} с, побед на арене: {session.BattlesWon}, высший уровень: {session.HighestMissionLevel}");
             text.AppendLine(session.ActiveBattle != null ? "Бой: идёт" : "Бой: нет");
             text.AppendLine($"Постройки ({snapshot.Buildings.Count}): " +
                             Tally(snapshot.Buildings, building => $"{building.Kind} ур.{building.Level}"));

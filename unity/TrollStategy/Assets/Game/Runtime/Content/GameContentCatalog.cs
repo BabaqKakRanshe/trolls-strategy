@@ -13,6 +13,8 @@ namespace TrollStrategy.Content
         [SerializeField] private List<BattleMissionDefinition> _missions = new();
         [SerializeField] private List<EquipmentDefinition> _equipment = new();
         [SerializeField] private List<ResourceDefinition> _resources = new();
+        [Tooltip("Colony improvements bought in the haulers' guild and the barracks.")]
+        [SerializeField] private List<UpgradeDefinition> _upgrades = new();
         [Tooltip("Quest chain and starting unlocks; a campaign session plays it, a sandbox session ignores it.")]
         [SerializeField] private ProgressionDefinition _progression;
 
@@ -23,6 +25,7 @@ namespace TrollStrategy.Content
         public IReadOnlyList<BattleMissionDefinition> Missions => _missions;
         public IReadOnlyList<EquipmentDefinition> Equipment => _equipment;
         public IReadOnlyList<ResourceDefinition> Resources => _resources;
+        public IReadOnlyList<UpgradeDefinition> Upgrades => _upgrades ?? (IReadOnlyList<UpgradeDefinition>)Array.Empty<UpgradeDefinition>();
 
         public void SetContent(EconomyConfig economy, List<BuildingDefinition> buildings, List<UnitDefinition> units)
         {
@@ -48,6 +51,39 @@ namespace TrollStrategy.Content
             _resources = new List<ResourceDefinition>(resources);
 
         public void SetProgression(ProgressionDefinition progression) => _progression = progression;
+
+        public void SetUpgrades(IEnumerable<UpgradeDefinition> upgrades) =>
+            _upgrades = upgrades != null ? new List<UpgradeDefinition>(upgrades) : new List<UpgradeDefinition>();
+
+        public void SetMissions(IEnumerable<BattleMissionDefinition> missions) =>
+            _missions = missions != null ? new List<BattleMissionDefinition>(missions) : new List<BattleMissionDefinition>();
+
+        public void SetUnits(IEnumerable<UnitDefinition> units) => _units = new List<UnitDefinition>(units);
+
+        public void SetEquipment(IEnumerable<EquipmentDefinition> equipment) =>
+            _equipment = new List<EquipmentDefinition>(equipment);
+
+        public UpgradeDefinition TryGetUpgrade(string id)
+        {
+            if (_upgrades == null || id == null) return null;
+            foreach (var upgrade in _upgrades)
+                if (upgrade != null && upgrade.Id == id) return upgrade;
+            return null;
+        }
+
+        public UnitDefinition TryGetUnit(UnitKind kind)
+        {
+            for (int i = 0; i < _units.Count; i++)
+                if (_units[i] != null && _units[i].Kind == kind) return _units[i];
+            return null;
+        }
+
+        public BattleMissionDefinition TryGetMission(string id)
+        {
+            foreach (var mission in _missions)
+                if (mission != null && mission.MissionId == id) return mission;
+            return null;
+        }
 
         public BuildingDefinition GetBuilding(BuildingKind kind)
         {

@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: f991f4e9beccf1f4bb35b291da02a451
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3883341285510544702
+    second: dwarf-idle_0
+  - first:
+      213: -1470393960384228643
+    second: dwarf-idle_1
+  - first:
+      213: 1086078440850976871
+    second: dwarf-idle_2
+  - first:
+      213: 3699475869929801240
+    second: dwarf-idle_3
+  - first:
+      213: -6159037010261822186
+    second: dwarf-idle_4
+  - first:
+      213: 9145750164636815196
+    second: dwarf-idle_5
+  - first:
+      213: -7948247283216020575
+    second: dwarf-idle_6
+  - first:
+      213: 6128234303433929274
+    second: dwarf-idle_7
+  - first:
+      213: -5838920528077419080
+    second: dwarf-idle_8
+  - first:
+      213: -4336545583330761067
+    second: dwarf-idle_9
+  - first:
+      213: -2787531952404802318
+    second: dwarf-idle_10
+  - first:
+      213: -5779239326349504314
+    second: dwarf-idle_11
+  - first:
+      213: 6106409954361964893
+    second: dwarf-idle_12
+  - first:
+      213: 3098992744769776418
+    second: dwarf-idle_13
+  - first:
+      213: -6387916994638892498
+    second: dwarf-idle_14
+  - first:
+      213: -3546645225403680847
+    second: dwarf-idle_15
+  - first:
+      213: 6307465948475421088
+    second: dwarf-idle_16
+  - first:
+      213: 438694280710482412
+    second: dwarf-idle_17
+  - first:
+      213: 3791184228582853510
+    second: dwarf-idle_18
+  - first:
+      213: -8052096348004278854
+    second: dwarf-idle_19
+  - first:
+      213: 7063966842945672363
+    second: dwarf-idle_20
+  - first:
+      213: -3680852615280750059
+    second: dwarf-idle_21
+  - first:
+      213: -8411450139551322405
+    second: dwarf-idle_22
+  - first:
+      213: -6542929419001875380
+    second: dwarf-idle_23
+  - first:
+      213: 2612739971661000907
+    second: dwarf-idle_24
+  - first:
+      213: 1138750834361772188
+    second: dwarf-idle_25
+  - first:
+      213: -6507948858858187349
+    second: dwarf-idle_26
+  - first:
+      213: -6458302548963725669
+    second: dwarf-idle_27
+  - first:
+      213: 8080664242395810972
+    second: dwarf-idle_28
+  - first:
+      213: -7495502420447341204
+    second: dwarf-idle_29
+  - first:
+      213: 5717356769816558708
+    second: dwarf-idle_30
+  - first:
+      213: 2161052184325316239
+    second: dwarf-idle_31
+  - first:
+      213: -9013906990729228586
+    second: dwarf-idle_32
+  - first:
+      213: 3620862118400726402
+    second: dwarf-idle_33
+  - first:
+      213: -4414275280635516934
+    second: dwarf-idle_34
+  - first:
+      213: 871516633029902077
+    second: dwarf-idle_35
+  - first:
+      213: -9052875885148005589
+    second: dwarf-idle_36
+  - first:
+      213: -7966470673253261074
+    second: dwarf-idle_37
+  - first:
+      213: 4418310725908149124
+    second: dwarf-idle_38
+  - first:
+      213: -2093458162014795103
+    second: dwarf-idle_39
+  - first:
+      213: 787768338674527194
+    second: dwarf-idle_40
+  - first:
+      213: -427260692442181508
+    second: dwarf-idle_41
+  - first:
+      213: -2865665301967757526
+    second: dwarf-idle_42
+  - first:
+      213: -7143109203752441213
+    second: dwarf-idle_43
+  - first:
+      213: -4134767932403709510
+    second: dwarf-idle_44
+  - first:
+      213: 839951598391395664
+    second: dwarf-idle_45
+  - first:
+      213: 1328651408754430894
+    second: dwarf-idle_46
+  - first:
+      213: 3026196659638297035
+    second: dwarf-idle_47
+  - first:
+      213: 8505502883915689341
+    second: dwarf-idle_48
+  - first:
+      213: 2056303660224740010
+    second: dwarf-idle_49
+  - first:
+      213: 3537477077058949623
+    second: dwarf-idle_50
+  - first:
+      213: -1324330209595593216
+    second: dwarf-idle_51
+  - first:
+      213: -8515400973340580832
+    second: dwarf-idle_52
+  - first:
+      213: -7401968949037719825
+    second: dwarf-idle_53
+  - first:
+      213: -5273052061388199630
+    second: dwarf-idle_54
+  - first:
+      213: 1624554934899098820
+    second: dwarf-idle_55
+  - first:
+      213: -4014066869800493504
+    second: dwarf-idle_56
+  - first:
+      213: -8664265722054990470
+    second: dwarf-idle_57
+  - first:
+      213: -652861925824813812
+    second: dwarf-idle_58
+  - first:
+      213: 1302362490848053420
+    second: dwarf-idle_59
+  - first:
+      213: -1379075155575765826
+    second: dwarf-idle_60
+  - first:
+      213: 8483139032114446479
+    second: dwarf-idle_61
+  - first:
+      213: -3692689513673967605
+    second: dwarf-idle_62
+  - first:
+      213: 2178268492853248551
+    second: dwarf-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: dwarf_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f073493c49ad30d4283d1001822f6a69
+      internalID: -367815299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dace3e3561d71044e9efd4c868a5cc9d
+      internalID: -1326664337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3cd82dad8e4c424e9b85a099d5c36d4
+      internalID: 1788306187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63de8e114a714654da4300a08a154881
+      internalID: -1469537317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a799ea6e6c832f0438f2f65086ab5a38
+      internalID: -1681721517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 621b5f839452adc4abfbed786ff511ea
+      internalID: 1452590139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32d951f5f389e454cbdd25d3dedec218
+      internalID: -927130695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be8f4203207e1394084a4392a7aae4df
+      internalID: -1404276209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0afedf2b5fca5eb49813ce30bfbe75de
+      internalID: 1116555523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c29c17eb5c1ab142aebada481493bff
+      internalID: -1802948804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d38256709901b2b439027ff99924f81f
+      internalID: 1500343150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de7e2c7f4d6a40b40b00fe37deb2a119
+      internalID: -2103559272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cca3e7245cfabe4691ccfb5e010a6b9
+      internalID: 810317241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 094863e2a083e3b4faa79d92c8ff1527
+      internalID: 266395925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd642fadf5a803d4396aa21e566c5786
+      internalID: -1430939738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dwarf_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0a759ea863dea2438f3456c52632cfa
+      internalID: 1282658557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8aa7fa0b1ee62334eb9556772cd93ca7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      dwarf_idle_0: -367815299
+      dwarf_idle_1: -1326664337
+      dwarf_idle_10: 1500343150
+      dwarf_idle_11: -2103559272
+      dwarf_idle_12: 810317241
+      dwarf_idle_13: 266395925
+      dwarf_idle_14: -1430939738
+      dwarf_idle_15: 1282658557
+      dwarf_idle_2: 1788306187
+      dwarf_idle_3: -1469537317
+      dwarf_idle_4: -1681721517
+      dwarf_idle_5: 1452590139
+      dwarf_idle_6: -927130695
+      dwarf_idle_7: -1404276209
+      dwarf_idle_8: 1116555523
+      dwarf_idle_9: -1802948804
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

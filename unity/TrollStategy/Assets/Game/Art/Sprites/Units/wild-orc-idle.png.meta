@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: e141505022d8f3a459b99425643a22ee
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -995335090647424434
+    second: wild-orc-idle_0
+  - first:
+      213: -783952263390199138
+    second: wild-orc-idle_1
+  - first:
+      213: 6846221244282995492
+    second: wild-orc-idle_2
+  - first:
+      213: 8115154435862043274
+    second: wild-orc-idle_3
+  - first:
+      213: -6970402760825229912
+    second: wild-orc-idle_4
+  - first:
+      213: -3093791168964154962
+    second: wild-orc-idle_5
+  - first:
+      213: 8156803145136450810
+    second: wild-orc-idle_6
+  - first:
+      213: -2866914303334422129
+    second: wild-orc-idle_7
+  - first:
+      213: 5779587433761952164
+    second: wild-orc-idle_8
+  - first:
+      213: 6188907093055383360
+    second: wild-orc-idle_9
+  - first:
+      213: -5134223030216756832
+    second: wild-orc-idle_10
+  - first:
+      213: -1497001199860368281
+    second: wild-orc-idle_11
+  - first:
+      213: 4126928184963759338
+    second: wild-orc-idle_12
+  - first:
+      213: -1662075986775990494
+    second: wild-orc-idle_13
+  - first:
+      213: 8898786622828592512
+    second: wild-orc-idle_14
+  - first:
+      213: 3702565254132194382
+    second: wild-orc-idle_15
+  - first:
+      213: -2149299741187659447
+    second: wild-orc-idle_16
+  - first:
+      213: -4569527741311016509
+    second: wild-orc-idle_17
+  - first:
+      213: -5302675812220891418
+    second: wild-orc-idle_18
+  - first:
+      213: 5017101628964078454
+    second: wild-orc-idle_19
+  - first:
+      213: 177790073992952790
+    second: wild-orc-idle_20
+  - first:
+      213: 443364290959358115
+    second: wild-orc-idle_21
+  - first:
+      213: 5812409689045318085
+    second: wild-orc-idle_22
+  - first:
+      213: 3528557799188513426
+    second: wild-orc-idle_23
+  - first:
+      213: 2502116478034580854
+    second: wild-orc-idle_24
+  - first:
+      213: -8326111247659481995
+    second: wild-orc-idle_25
+  - first:
+      213: -6763677247731578000
+    second: wild-orc-idle_26
+  - first:
+      213: 232005680405982204
+    second: wild-orc-idle_27
+  - first:
+      213: 3827446564444677516
+    second: wild-orc-idle_28
+  - first:
+      213: 7475974468080638343
+    second: wild-orc-idle_29
+  - first:
+      213: -288263833171036455
+    second: wild-orc-idle_30
+  - first:
+      213: 7849558121610148460
+    second: wild-orc-idle_31
+  - first:
+      213: 5627156285542451570
+    second: wild-orc-idle_32
+  - first:
+      213: -4275158624876598234
+    second: wild-orc-idle_33
+  - first:
+      213: 135728506977912080
+    second: wild-orc-idle_34
+  - first:
+      213: 1672556160678596847
+    second: wild-orc-idle_35
+  - first:
+      213: 8587719965797480552
+    second: wild-orc-idle_36
+  - first:
+      213: -9179037293478895766
+    second: wild-orc-idle_37
+  - first:
+      213: 2380443175484287717
+    second: wild-orc-idle_38
+  - first:
+      213: -2010836214830957845
+    second: wild-orc-idle_39
+  - first:
+      213: -1755708319801083718
+    second: wild-orc-idle_40
+  - first:
+      213: 272980663063377433
+    second: wild-orc-idle_41
+  - first:
+      213: -2048643014415344073
+    second: wild-orc-idle_42
+  - first:
+      213: 4366863351176297533
+    second: wild-orc-idle_43
+  - first:
+      213: -1802106847653636785
+    second: wild-orc-idle_44
+  - first:
+      213: -4489637192808829296
+    second: wild-orc-idle_45
+  - first:
+      213: -7364587352372477123
+    second: wild-orc-idle_46
+  - first:
+      213: -3361131585826880178
+    second: wild-orc-idle_47
+  - first:
+      213: 8871983082195883956
+    second: wild-orc-idle_48
+  - first:
+      213: 1436167332759727717
+    second: wild-orc-idle_49
+  - first:
+      213: -525331496996748795
+    second: wild-orc-idle_50
+  - first:
+      213: -950744072608935867
+    second: wild-orc-idle_51
+  - first:
+      213: 3281627720438443457
+    second: wild-orc-idle_52
+  - first:
+      213: 3237827660131237597
+    second: wild-orc-idle_53
+  - first:
+      213: 6142113161623272135
+    second: wild-orc-idle_54
+  - first:
+      213: 626460079021839061
+    second: wild-orc-idle_55
+  - first:
+      213: -2565973049112090226
+    second: wild-orc-idle_56
+  - first:
+      213: 4944047621234571416
+    second: wild-orc-idle_57
+  - first:
+      213: -7656231244146018856
+    second: wild-orc-idle_58
+  - first:
+      213: -5180016485897139401
+    second: wild-orc-idle_59
+  - first:
+      213: 1272215335367663958
+    second: wild-orc-idle_60
+  - first:
+      213: 6858826580845554009
+    second: wild-orc-idle_61
+  - first:
+      213: -4101053734505697221
+    second: wild-orc-idle_62
+  - first:
+      213: 3339019011263411735
+    second: wild-orc-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: wild-orc_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d1dde8a29b7d2045913703255b247da
+      internalID: 866300476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e9552dc7fc297d4a92781d66f3b1445
+      internalID: 64399461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80ade4da6b568d6418b7a74c48c3cb02
+      internalID: -424244193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00f3d49d6c0b6164aa571f8af9a565f3
+      internalID: 1921399755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4425d19b5204774d9f95c4ae344f7ae
+      internalID: -1787984390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9910ae6b720ace34d9efb4d19ddc17cf
+      internalID: 523585378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 255fc59dbc8166a49b8428b957b3f1a7
+      internalID: 1860126001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0484aac1da44aba4587c5a13a4c9b76d
+      internalID: -2051285034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c39b11e2d00fab4478054cab171d2ab0
+      internalID: 865730547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33a007794ba42a244bd5973ebd046702
+      internalID: 1886863500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cd25f1096e91f44eaf733f95339a8b8
+      internalID: -1703276881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b45d9694f3df66b4d8220ec4cbd1652a
+      internalID: -1556528091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 257a0674ee3117345bfc18d0fbc57760
+      internalID: -1349947534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4baf321f46027344cae1203672f58b43
+      internalID: 32867547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e9f5a64d96eecb40a4c82bd49217c1b
+      internalID: -1397733941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: wild-orc_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0d9d1b8b017ce646869a5caab834801
+      internalID: 261140972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: b0b2c6b7c290d1249a20b3196f001972
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      wild-orc_idle_0: 866300476
+      wild-orc_idle_1: 64399461
+      wild-orc_idle_10: -1703276881
+      wild-orc_idle_11: -1556528091
+      wild-orc_idle_12: -1349947534
+      wild-orc_idle_13: 32867547
+      wild-orc_idle_14: -1397733941
+      wild-orc_idle_15: 261140972
+      wild-orc_idle_2: -424244193
+      wild-orc_idle_3: 1921399755
+      wild-orc_idle_4: -1787984390
+      wild-orc_idle_5: 523585378
+      wild-orc_idle_6: 1860126001
+      wild-orc_idle_7: -2051285034
+      wild-orc_idle_8: 865730547
+      wild-orc_idle_9: 1886863500
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

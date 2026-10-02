@@ -1,0 +1,554 @@
+fileFormatVersion: 2
+guid: 94192b70539eba54ca63a031a02ce81e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3410957143305178249
+    second: warg-idle_0
+  - first:
+      213: -3818521346627176558
+    second: warg-idle_1
+  - first:
+      213: 1527479199502220256
+    second: warg-idle_2
+  - first:
+      213: -872615767562916902
+    second: warg-idle_3
+  - first:
+      213: 3063273871391515829
+    second: warg-idle_4
+  - first:
+      213: 8927154714223415893
+    second: warg-idle_5
+  - first:
+      213: 826188208290789925
+    second: warg-idle_6
+  - first:
+      213: 668510550443714086
+    second: warg-idle_7
+  - first:
+      213: 3315493937937887262
+    second: warg-idle_8
+  - first:
+      213: 8004947735062311992
+    second: warg-idle_9
+  - first:
+      213: 8909501053776288301
+    second: warg-idle_10
+  - first:
+      213: 5788992908995079139
+    second: warg-idle_11
+  - first:
+      213: 8376844613711060257
+    second: warg-idle_12
+  - first:
+      213: -5999659556448374794
+    second: warg-idle_13
+  - first:
+      213: -5326938412311417319
+    second: warg-idle_14
+  - first:
+      213: -1103949986297579151
+    second: warg-idle_15
+  - first:
+      213: -4242872363558183428
+    second: warg-idle_16
+  - first:
+      213: -5553618987011764510
+    second: warg-idle_17
+  - first:
+      213: 4283166889996748789
+    second: warg-idle_18
+  - first:
+      213: -3913676633661218549
+    second: warg-idle_19
+  - first:
+      213: -6576256060967412986
+    second: warg-idle_20
+  - first:
+      213: -2861038439783872730
+    second: warg-idle_21
+  - first:
+      213: 4773734346980438421
+    second: warg-idle_22
+  - first:
+      213: -9080949085454050640
+    second: warg-idle_23
+  - first:
+      213: -2800381473021753037
+    second: warg-idle_24
+  - first:
+      213: 4317973178779669328
+    second: warg-idle_25
+  - first:
+      213: -2991449629317510176
+    second: warg-idle_26
+  - first:
+      213: 5316959010343300913
+    second: warg-idle_27
+  - first:
+      213: 5368618855133164379
+    second: warg-idle_28
+  - first:
+      213: -7195029353501135793
+    second: warg-idle_29
+  - first:
+      213: -1972474650531224590
+    second: warg-idle_30
+  - first:
+      213: 2655834657993232038
+    second: warg-idle_31
+  - first:
+      213: 265251836412770064
+    second: warg-idle_32
+  - first:
+      213: -3108446530535757832
+    second: warg-idle_33
+  - first:
+      213: -7087543640079991688
+    second: warg-idle_34
+  - first:
+      213: 8540086899414703546
+    second: warg-idle_35
+  - first:
+      213: -5186748556522010626
+    second: warg-idle_36
+  - first:
+      213: -6794184970688241843
+    second: warg-idle_37
+  - first:
+      213: 7382052076070761127
+    second: warg-idle_38
+  - first:
+      213: -7698506045145712486
+    second: warg-idle_39
+  - first:
+      213: 6968323493161536666
+    second: warg-idle_40
+  - first:
+      213: -6401576090597771685
+    second: warg-idle_41
+  - first:
+      213: -1381862134419875029
+    second: warg-idle_42
+  - first:
+      213: 467342288728444867
+    second: warg-idle_43
+  - first:
+      213: -6399900672189949226
+    second: warg-idle_44
+  - first:
+      213: 3184815264578303317
+    second: warg-idle_45
+  - first:
+      213: -4268914979983935420
+    second: warg-idle_46
+  - first:
+      213: -7403882162842355395
+    second: warg-idle_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: warg_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fced122d3bd02440b59dc684c3d81ed
+      internalID: -1631423655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15e2934eedac9cd4b95d35956895a12a
+      internalID: 1677442250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0b57bb3d9709be46920b40ba45ea29f
+      internalID: -969764305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3749ef40ea700841958665e9d563b81
+      internalID: -748949891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c481269fa6362241883345c1fe2c87e
+      internalID: -1559917119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecd3b2b6b5d255f47b9c6391aa52da79
+      internalID: -461892660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4410d71ff49d50549975c9a17ba40905
+      internalID: 2125755161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a37afa30f05d3734886c8fd88e3f7f8c
+      internalID: -1421080331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d665f53bd27238f44908b83d36246404
+      internalID: -1553396701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79cacf178e87b104a8e6eb2d0d943fab
+      internalID: -489977767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5daf020d8ce2a540bdee489a1ce6045
+      internalID: -1957383575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: warg_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0c0272b24754f0468d2c403fb714259
+      internalID: 307920560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8aaa7a3787254eb47bfb18ea5159bdfb
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      warg_idle_0: -1631423655
+      warg_idle_1: 1677442250
+      warg_idle_10: -1957383575
+      warg_idle_11: 307920560
+      warg_idle_2: -969764305
+      warg_idle_3: -748949891
+      warg_idle_4: -1559917119
+      warg_idle_5: -461892660
+      warg_idle_6: 2125755161
+      warg_idle_7: -1421080331
+      warg_idle_8: -1553396701
+      warg_idle_9: -489977767
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

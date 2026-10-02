@@ -114,6 +114,21 @@ namespace TrollStrategy.Presentation.Battle
             _origin + new Vector3((cell.X + ((cell.Y & 1) == 1 ? .5f : 0f)) * HexAcrossFlats,
                 0f, cell.Y * RowStep);
 
+        /// <summary>
+        /// The gear each placed fighter wears, as tokens at its HP bar; fighters missing from the map wear none.
+        /// While the squad is placed, the free <paramref name="slots"/> show too.
+        /// </summary>
+        public void ShowGear(IReadOnlyDictionary<string, List<WornItem>> gear, IReadOnlyList<EquipmentSlot> slots, bool deploying)
+        {
+            foreach (var pair in _allies)
+            {
+                if (pair.Value == null) continue;
+                List<WornItem> items = null;
+                if (gear != null) gear.TryGetValue(pair.Key, out items);
+                pair.Value.SetGear(items, slots, deploying);
+            }
+        }
+
         /// <summary>Shows the preparation line-up: new fighters drop in, moved ones hop, removed ones vanish.</summary>
         public void ShowPlayerPlacements(IReadOnlyList<BattlePlacement> placements,
             IReadOnlyDictionary<string, UnitKind> kinds)
@@ -180,7 +195,11 @@ namespace TrollStrategy.Presentation.Battle
             foreach (var fighter in report.Fighters)
             {
                 BattleFighterView view = null;
-                if (fighter.IsPlayer) _allies.TryGetValue(fighter.Id, out view);
+                if (fighter.IsPlayer)
+                {
+                    _allies.TryGetValue(fighter.Id, out view);
+                    if (view != null) view.HideEmptyGear();
+                }
                 else
                     foreach (var enemy in _enemies)
                         if (enemy != null && enemy.Cell == fighter.Cell && claimedEnemies.Add(enemy))

@@ -19,3 +19,4 @@ MonoBehaviour:
   _armorBonus: 3
   _startingQuantity: 0
   _icon: {fileID: 1562037474, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+  _enchanted: 0

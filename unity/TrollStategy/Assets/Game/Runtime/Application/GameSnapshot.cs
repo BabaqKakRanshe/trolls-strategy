@@ -129,14 +129,18 @@ namespace TrollStrategy.Application
         public BattleRewardSnapshot BattleReward { get; }
         /// <summary>The colony's land blocks; null when land limits nothing.</summary>
         public LandSnapshot Land { get; }
+        /// <summary>Every colony upgrade of the catalog with its level and next price, in catalog order.</summary>
+        public IReadOnlyList<UpgradeSnapshot> Upgrades { get; }
 
         public GameSnapshot(int revision, int gold, int soldGoods, int totalOre,
             IReadOnlyList<BuildingSnapshot> buildings, IReadOnlyList<UnitSnapshot> units,
             IReadOnlyList<EquipmentSnapshot> equipment = null, ProgressSnapshot progress = null,
-            BattleRewardSnapshot battleReward = null, LandSnapshot land = null)
+            BattleRewardSnapshot battleReward = null, LandSnapshot land = null,
+            IReadOnlyList<UpgradeSnapshot> upgrades = null)
         {
             BattleReward = battleReward;
             Land = land;
+            Upgrades = Copy(upgrades);
             Revision = revision;
             Gold = gold;
             SoldGoods = soldGoods;
@@ -157,6 +161,40 @@ namespace TrollStrategy.Application
                 copy[i] = source[i];
             return copy;
         }
+    }
+
+    /// <summary>A colony upgrade as its host building's panel shows it.</summary>
+    public sealed class UpgradeSnapshot
+    {
+        public UpgradeSnapshot(string id, string name, string description, BuildingKind host, UpgradeEffect effect,
+            int amountPerLevel, int level, int maxLevel, int nextCost, bool hostBuilt)
+        {
+            Id = id;
+            Name = name;
+            Description = description;
+            Host = host;
+            Effect = effect;
+            AmountPerLevel = amountPerLevel;
+            Level = level;
+            MaxLevel = maxLevel;
+            NextCost = nextCost;
+            HostBuilt = hostBuilt;
+        }
+
+        public string Id { get; }
+        public string Name { get; }
+        public string Description { get; }
+        public BuildingKind Host { get; }
+        public UpgradeEffect Effect { get; }
+        public int AmountPerLevel { get; }
+        public int Level { get; }
+        public int MaxLevel { get; }
+        /// <summary>Gold for the next level; -1 at the top.</summary>
+        public int NextCost { get; }
+        public bool HostBuilt { get; }
+        public bool IsMaxed => Level >= MaxLevel;
+        /// <summary>The whole effect bought so far, in the effect's own unit (percent or count).</summary>
+        public int Total => Level * AmountPerLevel;
     }
 
     /// <summary>

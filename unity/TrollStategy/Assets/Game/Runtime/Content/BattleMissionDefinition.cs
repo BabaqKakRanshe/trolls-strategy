@@ -17,6 +17,18 @@ namespace TrollStrategy.Content
     {
         [SerializeField] private string _missionId = "mission-1";
         [SerializeField] private string _displayName = "Первый бой";
+        [Tooltip("Place on the arena ladder, from 1; a win opens the mission one level higher.")]
+        [SerializeField, Min(1)] private int _level = 1;
+        [Header("Сила противников")]
+        [Tooltip("Здоровье врагов в процентах от их вида.")]
+        [SerializeField, Min(10)] private int _enemyHealthPercent = 100;
+        [Tooltip("Прибавка к урону каждого врага.")]
+        [SerializeField, Min(0)] private int _enemyDamageBonus;
+        [Tooltip("Прибавка к броне каждого врага.")]
+        [SerializeField, Min(0)] private int _enemyArmorBonus;
+        [Tooltip("Первая победа открывает найм этого существа в колонию.")]
+        [SerializeField] private bool _unlocksUnit;
+        [SerializeField] private UnitKind _unlockUnit;
         [SerializeField, Min(3)] private int _width = 9;
         [SerializeField, Min(3)] private int _height = 5;
         [SerializeField, Min(1)] private int _maxPlayerUnits = 4;
@@ -42,6 +54,12 @@ namespace TrollStrategy.Content
 
         public string MissionId => _missionId;
         public string DisplayName => _displayName;
+        public int Level => Math.Max(1, _level);
+        public int EnemyHealthPercent => Math.Max(10, _enemyHealthPercent);
+        public int EnemyDamageBonus => Math.Max(0, _enemyDamageBonus);
+        public int EnemyArmorBonus => Math.Max(0, _enemyArmorBonus);
+        /// <summary>The creature a first win here opens for hire, or null.</summary>
+        public UnitKind? UnlockUnit => _unlocksUnit ? _unlockUnit : (UnitKind?)null;
         public int Width => _width;
         public int Height => _height;
         public int MaxPlayerUnits => _maxPlayerUnits;
@@ -112,6 +130,20 @@ namespace TrollStrategy.Content
             _firstWinGoldMax = firstWinGold;
             _repeatWinGoldMax = repeatWinGold;
         }
+
+        /// <summary>The mission's place on the arena ladder, how strong its enemies are and whom its first win opens.</summary>
+        public void SetArena(int level, int enemyHealthPercent, int enemyDamageBonus, int enemyArmorBonus,
+            UnitKind? unlockUnit)
+        {
+            _level = Math.Max(1, level);
+            _enemyHealthPercent = Math.Max(10, enemyHealthPercent);
+            _enemyDamageBonus = Math.Max(0, enemyDamageBonus);
+            _enemyArmorBonus = Math.Max(0, enemyArmorBonus);
+            _unlocksUnit = unlockUnit.HasValue;
+            _unlockUnit = unlockUnit ?? default;
+        }
+
+        public void SetEnvironment(GameObject environmentPrefab) => _environmentPrefab = environmentPrefab;
 
         /// <summary>Lets a win pay a surprise amount between the minimum and these maximums.</summary>
         public void SetRewardRanges(int firstWinGoldMax, int repeatWinGoldMax)

@@ -28,11 +28,68 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c866dc197e91c814aa24a0f627b3e063, type: 2}
   - {fileID: 11400000, guid: d1b3cd2b703ab1840b889fb104da1474, type: 2}
   - {fileID: 11400000, guid: ec1ed47287c3c8645b402f2e6da5acb8, type: 2}
+  - {fileID: 11400000, guid: 375f51c19ba16bd4ab5f1272b4a7dfee, type: 2}
+  - {fileID: 11400000, guid: 52f011abba2f19a4ab90ae4a8d85e5c5, type: 2}
   _units:
   - {fileID: 11400000, guid: 00ed8c2edd1992b4a92287cf49f58038, type: 2}
   - {fileID: 11400000, guid: a64c4bf0d6855224cb929cc5081b6a7a, type: 2}
+  - {fileID: 11400000, guid: f34d76e005e418541bb6352a97129318, type: 2}
+  - {fileID: 11400000, guid: dedfdd1e682f89149b98749c3822d0a4, type: 2}
+  - {fileID: 11400000, guid: 508355bbb18dcd746a2fa5ef8d8ac2e3, type: 2}
+  - {fileID: 11400000, guid: ad15c60ee5ba3ad48b0f988634c37224, type: 2}
+  - {fileID: 11400000, guid: d9130982bb4577d4ab4cc9a96ea0d360, type: 2}
+  - {fileID: 11400000, guid: 5691385e57e59244793d2fe3096359a2, type: 2}
+  - {fileID: 11400000, guid: 2bf02f8570d028e4dbb97d4492069c57, type: 2}
+  - {fileID: 11400000, guid: 12c0580e86f76f945970d285b6fd7dcb, type: 2}
+  - {fileID: 11400000, guid: b83002df6eeb96a4180cb790f2696afe, type: 2}
+  - {fileID: 11400000, guid: d27a273399fe9ec409eb52f90fd9464c, type: 2}
+  - {fileID: 11400000, guid: c955a9394cffa9341a53d0c3e9ae1246, type: 2}
+  - {fileID: 11400000, guid: b032d1c72daadfe42ac02b743db26986, type: 2}
+  - {fileID: 11400000, guid: eb0288673d4093b4a9b9e52f77b8025f, type: 2}
+  - {fileID: 11400000, guid: 3e33714cc4e81974683f2e0788f3feba, type: 2}
+  - {fileID: 11400000, guid: 7b376f18e330fef47aadfe334ce810d4, type: 2}
+  - {fileID: 11400000, guid: c6fa50e4eab0c8346bdab875806fb9b3, type: 2}
+  - {fileID: 11400000, guid: 657a033ec39a13349a5c9dabb8282717, type: 2}
+  - {fileID: 11400000, guid: 573eb359759f508438aa11acb49713bc, type: 2}
+  - {fileID: 11400000, guid: 658aa76ba19070e4c8a478d12af05193, type: 2}
+  - {fileID: 11400000, guid: 97be98df3ea45a04f8818b51bc08ca08, type: 2}
+  - {fileID: 11400000, guid: 5d8eb0168c2369b439c8252b57bbe5e7, type: 2}
+  - {fileID: 11400000, guid: 7f377fd5c7c00f14e9e6b39660572937, type: 2}
+  - {fileID: 11400000, guid: 58affe99a14847047aa1b223e30e7d80, type: 2}
+  - {fileID: 11400000, guid: 090d46cfba1ce7146972820f77730720, type: 2}
+  - {fileID: 11400000, guid: a6578f1dfae96d84bb08eee6c61ede4a, type: 2}
+  - {fileID: 11400000, guid: e892b598267ea5f4f995917bd7e6ea0d, type: 2}
   _missions:
   - {fileID: 11400000, guid: 8c85ec55c6084ddca3c53e2b324f49db, type: 2}
+  - {fileID: 11400000, guid: 56c36459579d0064d9f6a6a8cbde6733, type: 2}
+  - {fileID: 11400000, guid: 0c1dde38571bfa040a96a95d9e6f1157, type: 2}
+  - {fileID: 11400000, guid: 118c7f1a507d4a94ca3e1cc64ec43f9b, type: 2}
+  - {fileID: 11400000, guid: 69ca3226f43da2a4dbc14bfcc46b08a2, type: 2}
+  - {fileID: 11400000, guid: 34b94817728bbc942a337d079f92ee6a, type: 2}
+  - {fileID: 11400000, guid: 7bea144cddc6c3c4d828621f6982cc3e, type: 2}
+  - {fileID: 11400000, guid: 932fed612d77ead40b09816a9bc74a06, type: 2}
+  - {fileID: 11400000, guid: bd2e2e05249ce264c868afc9a6db177f, type: 2}
+  - {fileID: 11400000, guid: 9a59a4a26e905654bafc33360ec2ab5a, type: 2}
+  - {fileID: 11400000, guid: d99ab552428fa314782c9ef2c35dc527, type: 2}
+  - {fileID: 11400000, guid: 7eaa66c5c216bcf468eb03143b0a9675, type: 2}
+  - {fileID: 11400000, guid: a6e688a9980f2514a871ec08b15b4b00, type: 2}
+  - {fileID: 11400000, guid: ea6c18e28530b384eb77489d47d60be6, type: 2}
+  - {fileID: 11400000, guid: 8e23e0fae095b684b9306c180261de5d, type: 2}
+  - {fileID: 11400000, guid: bd87d3d6d73b87f4daab9b6f0a6cd30c, type: 2}
+  - {fileID: 11400000, guid: 98ed0ddbb8d32294a959da1c9934c01c, type: 2}
+  - {fileID: 11400000, guid: 7d7782d7cb2d38d48ab77467768612ab, type: 2}
+  - {fileID: 11400000, guid: d10150fba45c0fe42947c4766f9a8193, type: 2}
+  - {fileID: 11400000, guid: 99a88971a21e2d9459900bd6ed624711, type: 2}
+  - {fileID: 11400000, guid: b75ddecfd4b142a4db13daf682bd5c50, type: 2}
+  - {fileID: 11400000, guid: 9760c5af01e4fa446bedb8ff99949865, type: 2}
+  - {fileID: 11400000, guid: 760da7562f1fc494aa12dc5681cca182, type: 2}
+  - {fileID: 11400000, guid: e847410963c15004cbbf2c1c6b044561, type: 2}
+  - {fileID: 11400000, guid: 36e5f8f9f10ac364d9c7c77ec7a47dc5, type: 2}
+  - {fileID: 11400000, guid: a8b31515f032dea4eb00e2eb9419fa34, type: 2}
+  - {fileID: 11400000, guid: a39494368c2ea3a42924ffd42ea15fa8, type: 2}
+  - {fileID: 11400000, guid: 277d9008382716645b7f65efb95c14f7, type: 2}
+  - {fileID: 11400000, guid: 1ed7206963ae4dd48b788a17ff001c6f, type: 2}
+  - {fileID: 11400000, guid: 58e22ba4838c1dd49a8b93c9166aa9ed, type: 2}
   _equipment:
   - {fileID: 11400000, guid: 7dd71cd8d30b4cf692b662b4dcdca91b, type: 2}
   - {fileID: 11400000, guid: 83186730ba60476e8b4d2fe0a0a47143, type: 2}
@@ -40,65 +97,217 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 28460ab137ea8664395f957a0d4520a9, type: 2}
   - {fileID: 11400000, guid: 645c395ad48e61c43819e1052aa5bfa5, type: 2}
   - {fileID: 11400000, guid: f39ef2e08ee2aaa4da2e616097775b13, type: 2}
+  - {fileID: 11400000, guid: 0f7a0dd42d87fa64e9f01442b6886257, type: 2}
   _resources:
   - _kind: 0
     _displayName: "\u0420\u0443\u0434\u0430"
     _sellPrice: 3
     _icon: {fileID: 104497840, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 4c8ca762fc3b77b46aa66e98e22289e6, type: 3}
+    _pileModel: {fileID: 919132149155446097, guid: 7e51a357ecc6d994fb0de279890d3871, type: 3}
   - _kind: 1
     _displayName: "\u0421\u043B\u0438\u0442\u043E\u043A"
     _sellPrice: 13
     _icon: {fileID: -255195324, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: f9c5c3fef6efc4b429574b793610bd7c, type: 3}
+    _pileModel: {fileID: 919132149155446097, guid: a796a8e5ca6ed734bb593dc4b0d8389f, type: 3}
   - _kind: 2
     _displayName: "\u041F\u0448\u0435\u043D\u0438\u0446\u0430"
     _sellPrice: 3
     _icon: {fileID: -250620656, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 875b7302b0f0a7c40afa359b55020c79, type: 3}
+    _pileModel: {fileID: 0}
   - _kind: 3
     _displayName: "\u0428\u043A\u0443\u0440\u0430"
-    _sellPrice: 18
+    _sellPrice: 14
     _icon: {fileID: -711378300, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: aaf9fd89f3ed63e4c93fb2f955ccb9b4, type: 3}
+    _pileModel: {fileID: 0}
   - _kind: 4
     _displayName: "\u041A\u043E\u0436\u0430"
     _sellPrice: 32
     _icon: {fileID: 1084967311, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: be11bff0f917db643a59a53d5988fcff, type: 3}
+    _pileModel: {fileID: 0}
   - _kind: 5
     _displayName: "\u0411\u0440\u0451\u0432\u043D\u0430"
     _sellPrice: 3
     _icon: {fileID: 1284599114, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 2413490846e449d44aed41ffdf67f478, type: 3}
+    _pileModel: {fileID: 919132149155446097, guid: 14447def951cb3f48b97302a3faafb42, type: 3}
   - _kind: 6
     _displayName: "\u0414\u043E\u0441\u043A\u0438"
     _sellPrice: 8
     _icon: {fileID: 1067552197, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: cc4c3c4abaa2c964f9ace6c4a389e3e7, type: 3}
+    _pileModel: {fileID: 0}
   - _kind: 7
     _displayName: "\u0416\u0435\u043B\u0435\u0437\u043D\u044B\u0439 \u043C\u0435\u0447"
     _sellPrice: 45
     _icon: {fileID: 1512361336, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: iron-sword
+    _model: {fileID: 919132149155446097, guid: 871b63250c0f3f74ca0650423a750bf6, type: 3}
+    _pileModel: {fileID: 0}
   - _kind: 8
     _displayName: "\u0423\u0441\u0438\u043B\u0435\u043D\u043D\u0430\u044F \u0431\u0440\u043E\u043D\u044F"
     _sellPrice: 90
     _icon: {fileID: 1562037474, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: iron-armor
+    _model: {fileID: 919132149155446097, guid: a4b1557805b651849961f3f6e45d2f24, type: 3}
+    _pileModel: {fileID: 0}
   - _kind: 9
     _displayName: "\u0414\u0435\u0440\u0435\u0432\u044F\u043D\u043D\u044B\u0439 \u0449\u0438\u0442"
     _sellPrice: 40
     _icon: {fileID: 1574400780, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: wooden-shield
+    _model: {fileID: 919132149155446097, guid: 145dc2b34fadce646aaf3b96942d5ab1, type: 3}
+    _pileModel: {fileID: 0}
   - _kind: 10
     _displayName: "\u041A\u0440\u0438\u0441\u0442\u0430\u043B\u043B"
     _sellPrice: 30
     _icon: {fileID: 534537650, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 37c9acfff7e19a74eac51d1d5f8ffaf8, type: 3}
+    _pileModel: {fileID: 0}
   - _kind: 11
     _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043C\u0435\u0447"
     _sellPrice: 130
     _icon: {fileID: 1465269554, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: enchanted-sword
+    _model: {fileID: 919132149155446097, guid: 5be70b6f35f84a848a0b4e31b36a5006, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 12
+    _displayName: "\u0423\u0433\u043E\u043B\u044C"
+    _sellPrice: 4
+    _icon: {fileID: -2049394506, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 2ed15012b05c39e4387d64e741b6fd1d, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 13
+    _displayName: "\u0421\u0430\u043C\u043E\u0440\u043E\u0434\u043E\u043A"
+    _sellPrice: 60
+    _icon: {fileID: 598382384, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 283c98785974e594787f38d084168dcd, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 14
+    _displayName: "\u0421\u043E\u043B\u043E\u043C\u0430"
+    _sellPrice: 1
+    _icon: {fileID: -1930775912, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 1f5f9e5f8777b6943981765eb0aa06d0, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 15
+    _displayName: "\u0417\u043E\u043B\u043E\u0442\u043E\u0439 \u043A\u043E\u043B\u043E\u0441"
+    _sellPrice: 25
+    _icon: {fileID: 1998128125, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 0aaea3a4d381b9448b08b1be1620c798, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 16
+    _displayName: "\u041C\u044F\u0441\u043E"
+    _sellPrice: 8
+    _icon: {fileID: 1121322568, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: a1fe76521823e204c9c1d8c526639edb, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 17
+    _displayName: "\u041C\u043E\u043B\u043E\u043A\u043E"
+    _sellPrice: 6
+    _icon: {fileID: 1865495490, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 8d6317ed2394cd54ead85cea3893bf93, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 18
+    _displayName: "\u041B\u043E\u043C"
+    _sellPrice: 5
+    _icon: {fileID: -789947134, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 6e6b7019e701a7645b0fd8314e28ac07, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 19
+    _displayName: "\u041F\u0438\u0440"
+    _sellPrice: 50
+    _icon: {fileID: -2063385165, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: e33d5008a957c9646902efd35c4604b2, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 20
+    _displayName: "\u0411\u043E\u0435\u0432\u043E\u0439 \u0442\u043E\u043F\u043E\u0440"
+    _sellPrice: 85
+    _icon: {fileID: -362982171, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: battle-axe
+    _model: {fileID: 919132149155446097, guid: 22d24128947e7fb4e80b0ac9f284e415, type: 3}
+    _pileModel: {fileID: 0}
+  _upgrades:
+  - _id: guild-step
+    _displayName: "\u041B\u0451\u0433\u043A\u0438\u0439 \u0448\u0430\u0433"
+    _description: "\u0412\u0441\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0430 \u0445\u043E\u0434\u044F\u0442 \u043F\u043E \u043A\u043E\u043B\u043E\u043D\u0438\u0438 \u043D\u0430 10% \u0431\u044B\u0441\u0442\u0440\u0435\u0435 \u0437\u0430 \u0443\u0440\u043E\u0432\u0435\u043D\u044C."
+    _host: 15
+    _effect: 0
+    _amountPerLevel: 10
+    _costs: 2c010000f401000020030000b004000008070000i
+  - _id: guild-backs
+    _displayName: "\u041A\u0440\u0435\u043F\u043A\u0438\u0435 \u0441\u043F\u0438\u043D\u044B"
+    _description: "\u041D\u043E\u0441\u0438\u043B\u044C\u0449\u0438\u043A\u0438 \u043F\u043E\u0434\u043D\u0438\u043C\u0430\u044E\u0442 \u0431\u043E\u043B\u044C\u0448\u0435: +25% \u043A \u0432\u044B\u043D\u043E\u0441\u043B\u0438\u0432\u043E\u0441\u0442\u0438 \u0437\u0430 \u0443\u0440\u043E\u0432\u0435\u043D\u044C, \u0442\u043E \u0435\u0441\u0442\u044C \u043B\u0438\u0448\u043D\u044F\u044F \u0435\u0434\u0438\u043D\u0438\u0446\u0430 \u0433\u0440\u0443\u0437\u0430 \u043A\u0430\u0436\u0434\u044B\u0435 \u0447\u0435\u0442\u044B\u0440\u0435 \u0445\u043E\u0434\u043A\u0438."
+    _host: 15
+    _effect: 1
+    _amountPerLevel: 25
+    _costs: 90010000bc0200004c04000040060000i
+  - _id: guild-hands
+    _displayName: "\u0411\u044B\u0441\u0442\u0440\u044B\u0435 \u0440\u0443\u043A\u0438"
+    _description: "\u041F\u043E\u0433\u0440\u0443\u0437\u043A\u0430 \u0438 \u0432\u044B\u0433\u0440\u0443\u0437\u043A\u0430 \u0438\u0434\u0443\u0442 \u043D\u0430 20% \u0431\u044B\u0441\u0442\u0440\u0435\u0435 \u0437\u0430 \u0443\u0440\u043E\u0432\u0435\u043D\u044C: \u043C\u0435\u043D\u044C\u0448\u0435 \u043E\u0436\u0438\u0434\u0430\u043D\u0438\u044F \u0443 \u0434\u0432\u0435\u0440\u0435\u0439."
+    _host: 15
+    _effect: 2
+    _amountPerLevel: 20
+    _costs: 2c01000058020000e8030000i
+  - _id: guild-doors
+    _displayName: "\u0428\u0438\u0440\u043E\u043A\u0438\u0435 \u0434\u0432\u0435\u0440\u0438"
+    _description: "\u0423 \u0434\u0432\u0435\u0440\u0438 \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u0437\u0434\u0430\u043D\u0438\u044F \u0433\u0440\u0443\u0437\u0438\u0442\u0441\u044F \u043D\u0430 \u043E\u0434\u043D\u043E\u0433\u043E \u043D\u043E\u0441\u0438\u043B\u044C\u0449\u0438\u043A\u0430 \u0431\u043E\u043B\u044C\u0448\u0435: \u043E\u0447\u0435\u0440\u0435\u0434\u044C \u0442\u0430\u0435\u0442 \u0431\u044B\u0441\u0442\u0440\u0435\u0435."
+    _host: 15
+    _effect: 3
+    _amountPerLevel: 1
+    _costs: fa000000c2010000bc020000e8030000i
+  - _id: barracks-squad
+    _displayName: "\u0411\u043E\u043B\u044C\u0448\u0435 \u0431\u043E\u0439\u0446\u043E\u0432"
+    _description: "\u0412 \u0431\u043E\u0439 \u0438\u0434\u0451\u0442 \u043D\u0430 \u043E\u0434\u043D\u043E\u0433\u043E \u0431\u043E\u0439\u0446\u0430 \u0431\u043E\u043B\u044C\u0448\u0435."
+    _host: 3
+    _effect: 4
+    _amountPerLevel: 1
+    _costs: 2003000040060000b80b0000i
+  - _id: barracks-health
+    _displayName: "\u0417\u0430\u043A\u0430\u043B\u043A\u0430"
+    _description: "\u0411\u043E\u0439\u0446\u044B \u043F\u043E\u0441\u0435\u043B\u0435\u043D\u0438\u044F \u0432\u044B\u043D\u043E\u0441\u043B\u0438\u0432\u0435\u0435: +15% \u0437\u0434\u043E\u0440\u043E\u0432\u044C\u044F \u0437\u0430 \u0443\u0440\u043E\u0432\u0435\u043D\u044C."
+    _host: 3
+    _effect: 5
+    _amountPerLevel: 15
+    _costs: f40100008403000078050000d0070000i
+  - _id: barracks-damage
+    _displayName: "\u041E\u0440\u0443\u0436\u0435\u0439\u043D\u0430\u044F \u0432\u044B\u0443\u0447\u043A\u0430"
+    _description: "\u041A\u0430\u0436\u0434\u044B\u0439 \u0443\u0434\u0430\u0440 \u0431\u043E\u0439\u0446\u0430 \u043F\u043E\u0441\u0435\u043B\u0435\u043D\u0438\u044F \u043D\u0430\u043D\u043E\u0441\u0438\u0442 \u043D\u0430 1 \u0443\u0440\u043E\u043D\u0430 \u0431\u043E\u043B\u044C\u0448\u0435 \u0437\u0430 \u0443\u0440\u043E\u0432\u0435\u043D\u044C."
+    _host: 3
+    _effect: 6
+    _amountPerLevel: 1
+    _costs: 58020000b0040000d0070000i
+  - _id: barracks-rest
+    _displayName: "\u041E\u0442\u0434\u044B\u0445"
+    _description: "\u0410\u0440\u0435\u043D\u0430 \u0432\u043E\u0441\u0441\u0442\u0430\u043D\u0430\u0432\u043B\u0438\u0432\u0430\u0435\u0442\u0441\u044F \u043F\u043E\u0441\u043B\u0435 \u0431\u043E\u044F \u043D\u0430 20% \u0431\u044B\u0441\u0442\u0440\u0435\u0435 \u0437\u0430 \u0443\u0440\u043E\u0432\u0435\u043D\u044C."
+    _host: 3
+    _effect: 7
+    _amountPerLevel: 20
+    _costs: 9001000020030000b0040000i
+  - _id: barracks-glory
+    _displayName: "\u0421\u043B\u0430\u0432\u0430 \u0430\u0440\u0435\u043D\u044B"
+    _description: "\u041F\u043E\u0431\u0435\u0434\u044B \u043D\u0430 \u0430\u0440\u0435\u043D\u0435 \u043F\u0440\u0438\u043D\u043E\u0441\u044F\u0442 \u043D\u0430 15% \u0431\u043E\u043B\u044C\u0448\u0435 \u0437\u043E\u043B\u043E\u0442\u0430 \u0437\u0430 \u0443\u0440\u043E\u0432\u0435\u043D\u044C."
+    _host: 3
+    _effect: 8
+    _amountPerLevel: 15
+    _costs: bc0200007805000060090000i
   _progression: {fileID: 11400000, guid: 8504a9561112c174fb55a882fd091451, type: 2}

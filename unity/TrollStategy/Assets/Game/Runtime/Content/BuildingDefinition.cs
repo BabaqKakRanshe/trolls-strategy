@@ -91,11 +91,7 @@ namespace TrollStrategy.Content
         {
             if (_recipes == null) return false;
             foreach (var recipe in _recipes)
-            {
-                foreach (var output in recipe.Outputs)
-                    if (output.Resource == resource) return true;
-                if (recipe.HasBonus && recipe.BonusOutput.Resource == resource) return true;
-            }
+                if (recipe.CanYield(resource)) return true;
             return false;
         }
 

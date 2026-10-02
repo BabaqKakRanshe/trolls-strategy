@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: dc64d1a806578b84ca8cbc00f675c4de
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7623930466310783587
+    second: yellow-beard-dwarf-idle_0
+  - first:
+      213: -914750511681480668
+    second: yellow-beard-dwarf-idle_1
+  - first:
+      213: 7384262388304477689
+    second: yellow-beard-dwarf-idle_2
+  - first:
+      213: -6737452882614961593
+    second: yellow-beard-dwarf-idle_3
+  - first:
+      213: -79628204836196939
+    second: yellow-beard-dwarf-idle_4
+  - first:
+      213: 7391091435950544228
+    second: yellow-beard-dwarf-idle_5
+  - first:
+      213: 1223736135793731423
+    second: yellow-beard-dwarf-idle_6
+  - first:
+      213: -8943583481554881475
+    second: yellow-beard-dwarf-idle_7
+  - first:
+      213: -1807294872637358864
+    second: yellow-beard-dwarf-idle_8
+  - first:
+      213: -5547906710273154977
+    second: yellow-beard-dwarf-idle_9
+  - first:
+      213: -8436347050746479519
+    second: yellow-beard-dwarf-idle_10
+  - first:
+      213: 7063422488022484202
+    second: yellow-beard-dwarf-idle_11
+  - first:
+      213: -7320022617920558993
+    second: yellow-beard-dwarf-idle_12
+  - first:
+      213: -7403151406561571703
+    second: yellow-beard-dwarf-idle_13
+  - first:
+      213: -9076606617648585579
+    second: yellow-beard-dwarf-idle_14
+  - first:
+      213: -7228668264580884317
+    second: yellow-beard-dwarf-idle_15
+  - first:
+      213: 4873806187347512695
+    second: yellow-beard-dwarf-idle_16
+  - first:
+      213: 4040723561837819052
+    second: yellow-beard-dwarf-idle_17
+  - first:
+      213: -4662193579939295365
+    second: yellow-beard-dwarf-idle_18
+  - first:
+      213: -3823970201823624511
+    second: yellow-beard-dwarf-idle_19
+  - first:
+      213: 4328615109956598402
+    second: yellow-beard-dwarf-idle_20
+  - first:
+      213: -2025608157350832611
+    second: yellow-beard-dwarf-idle_21
+  - first:
+      213: -2114376237960503741
+    second: yellow-beard-dwarf-idle_22
+  - first:
+      213: 6466405721525132257
+    second: yellow-beard-dwarf-idle_23
+  - first:
+      213: -8557832355669188584
+    second: yellow-beard-dwarf-idle_24
+  - first:
+      213: -361737883444866744
+    second: yellow-beard-dwarf-idle_25
+  - first:
+      213: -1344504075165782104
+    second: yellow-beard-dwarf-idle_26
+  - first:
+      213: 1103934508141660199
+    second: yellow-beard-dwarf-idle_27
+  - first:
+      213: 6630749758046392767
+    second: yellow-beard-dwarf-idle_28
+  - first:
+      213: -7446815976812799644
+    second: yellow-beard-dwarf-idle_29
+  - first:
+      213: -5804316686875369514
+    second: yellow-beard-dwarf-idle_30
+  - first:
+      213: 1959248096220412008
+    second: yellow-beard-dwarf-idle_31
+  - first:
+      213: 5967272743249174438
+    second: yellow-beard-dwarf-idle_32
+  - first:
+      213: 5868055653579924996
+    second: yellow-beard-dwarf-idle_33
+  - first:
+      213: -6264195210848069308
+    second: yellow-beard-dwarf-idle_34
+  - first:
+      213: -1584546155899699904
+    second: yellow-beard-dwarf-idle_35
+  - first:
+      213: 7103167452313657548
+    second: yellow-beard-dwarf-idle_36
+  - first:
+      213: -8554036984983611268
+    second: yellow-beard-dwarf-idle_37
+  - first:
+      213: -2986582491080722331
+    second: yellow-beard-dwarf-idle_38
+  - first:
+      213: -5375751867888699948
+    second: yellow-beard-dwarf-idle_39
+  - first:
+      213: 5059620173002533700
+    second: yellow-beard-dwarf-idle_40
+  - first:
+      213: -4394043699666211448
+    second: yellow-beard-dwarf-idle_41
+  - first:
+      213: 1005507849461653831
+    second: yellow-beard-dwarf-idle_42
+  - first:
+      213: 8926231001327035174
+    second: yellow-beard-dwarf-idle_43
+  - first:
+      213: 3783683858360685966
+    second: yellow-beard-dwarf-idle_44
+  - first:
+      213: 5133581640388436401
+    second: yellow-beard-dwarf-idle_45
+  - first:
+      213: -1106911122698878279
+    second: yellow-beard-dwarf-idle_46
+  - first:
+      213: -5411563021851610288
+    second: yellow-beard-dwarf-idle_47
+  - first:
+      213: 1735740009958147073
+    second: yellow-beard-dwarf-idle_48
+  - first:
+      213: 369201274660527338
+    second: yellow-beard-dwarf-idle_49
+  - first:
+      213: 558991094558950765
+    second: yellow-beard-dwarf-idle_50
+  - first:
+      213: 3673667526577651581
+    second: yellow-beard-dwarf-idle_51
+  - first:
+      213: -7680070655749935498
+    second: yellow-beard-dwarf-idle_52
+  - first:
+      213: -3772671787885463896
+    second: yellow-beard-dwarf-idle_53
+  - first:
+      213: 5539275736989512209
+    second: yellow-beard-dwarf-idle_54
+  - first:
+      213: -3872494530961719671
+    second: yellow-beard-dwarf-idle_55
+  - first:
+      213: 2621342661985693696
+    second: yellow-beard-dwarf-idle_56
+  - first:
+      213: 6693110758063623496
+    second: yellow-beard-dwarf-idle_57
+  - first:
+      213: -2084865194523230539
+    second: yellow-beard-dwarf-idle_58
+  - first:
+      213: -4983198103831722619
+    second: yellow-beard-dwarf-idle_59
+  - first:
+      213: -2100991315399090995
+    second: yellow-beard-dwarf-idle_60
+  - first:
+      213: -8389032019478402500
+    second: yellow-beard-dwarf-idle_61
+  - first:
+      213: 4722984179275516162
+    second: yellow-beard-dwarf-idle_62
+  - first:
+      213: 6359800079893402572
+    second: yellow-beard-dwarf-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c011624e15f3769438cee8ec00593f21
+      internalID: 2124661858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75160d6af5a8ccf41be382118399d51b
+      internalID: -363522007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d133296d7ab79a4ebbae743b350b2c7
+      internalID: -960941712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bb5fc5874cfd7e4a80c77fa057ddeef
+      internalID: 1633797043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f36c1ff07c9cc7409b647f4465a81f4
+      internalID: 317223197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c9d6e79449707140acd6138d1c63d7f
+      internalID: 1912104396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eddc538a5a7a9fc44a0030ade0fa8a09
+      internalID: -240771639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de071a031ef976d42bad30ed94dc7c6c
+      internalID: -1488973829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9a345dcb7b3b2f4ba4b47f3f5522679
+      internalID: 327720664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f8508c28c69ed147afeb6e4314fbaa7
+      internalID: 197755096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a5a6222777c720489c8bf58d9ad46ab
+      internalID: -1880470425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2983a6b0f59ea0e44b659779cbadbf62
+      internalID: 167443453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 801fe5c8be644bc41b05b5cd1bdf8c8a
+      internalID: 1120129839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04a7d4e379732874dae7d31919902d39
+      internalID: -1470213729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 205c7644cc2743b46b5eedc59add212a
+      internalID: -706871071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yellow-beard-dwarf_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec1a9b02f7f5206408ba048a3c57200f
+      internalID: 1347390898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 08a52286aba26a447a4fe77cc51614df
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      yellow-beard-dwarf_idle_0: 2124661858
+      yellow-beard-dwarf_idle_1: -363522007
+      yellow-beard-dwarf_idle_10: -1880470425
+      yellow-beard-dwarf_idle_11: 167443453
+      yellow-beard-dwarf_idle_12: 1120129839
+      yellow-beard-dwarf_idle_13: -1470213729
+      yellow-beard-dwarf_idle_14: -706871071
+      yellow-beard-dwarf_idle_15: 1347390898
+      yellow-beard-dwarf_idle_2: -960941712
+      yellow-beard-dwarf_idle_3: 1633797043
+      yellow-beard-dwarf_idle_4: 317223197
+      yellow-beard-dwarf_idle_5: 1912104396
+      yellow-beard-dwarf_idle_6: -240771639
+      yellow-beard-dwarf_idle_7: -1488973829
+      yellow-beard-dwarf_idle_8: 327720664
+      yellow-beard-dwarf_idle_9: 197755096
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

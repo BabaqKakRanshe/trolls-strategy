@@ -29,8 +29,11 @@ namespace TrollStrategy.Tests
             mine.Init(BuildingKind.Mine, "Шахта", 200, 3, 3, 100, 5, null);
             mine.SetUpgrades(new[] { 150, 250, 350 }, 50, 2, 0);
             mine.SetConstructible(true);
-            mine.SetRecipes(new ProductionRecipe(1f, null, Amounts(ResourceKind.IronOre, 1),
-                4, new ResourceAmount(ResourceKind.VioletCrystal, 1)));
+            mine.SetRecipes(new ProductionRecipe(1f, null, Amounts(ResourceKind.IronOre, 1), 1, new[]
+            {
+                new RecipeExtra(new ResourceAmount(ResourceKind.VioletCrystal, 1), 25),
+                new RecipeExtra(new ResourceAmount(ResourceKind.Coal, 1), 100, 2)
+            }));
             var warehouse = Create<BuildingDefinition>();
             warehouse.Init(BuildingKind.Warehouse, "Склад", 0, 3, 3, 500, 0, null);
             warehouse.SetUpgrades(new[] { 120, 200, 280 }, 250, 0, 0);
@@ -793,18 +796,126 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void Mine_AddsCrystalOnEveryFourthCycle()
+        public void Mine_RollsCrystalsOnTheProductionDice_TheSameWayEveryGame()
+        {
+            int[] Crystals()
+            {
+                var state = StateWithMineAndHauler(HaulPhase.ToSource, carried: 0);
+                state.Units.Single().Assignment = Assignment.Work("mine-1");
+                var mine = state.Buildings.Single(b => b.Id == "mine-1");
+                var seen = new List<int>();
+                // A goblin adds 0.3 ore/s: forty cycles need a little over 133 s.
+                for (int i = 0; i < 535; i++)
+                {
+                    ColonySimulation.TickColony(state, 0.25f, _catalog);
+                    seen.Add(mine.GetStock(ResourceKind.VioletCrystal));
+                }
+                Assert.That(mine.Ore, Is.EqualTo(40));
+                Assert.That(state.ProducedOf(ResourceKind.IronOre), Is.EqualTo(40));
+                Assert.That(state.RewardRoll, Is.EqualTo(RewardDice.Seed), "Production never touches the battle dice");
+                return seen.ToArray();
+            }
+
+            var first = Crystals();
+            Assert.That(first.Last(), Is.InRange(2, 20), "About a quarter of the cycles, not every one and not none");
+            Assert.That(Crystals(), Is.EqualTo(first), "Same game, same crystals");
+        }
+
+        [Test]
+        public void Mine_ByProductsAndRecipesWaitForTheirLevel()
         {
             var state = StateWithMineAndHauler(HaulPhase.ToSource, carried: 0);
             state.Units.Single().Assignment = Assignment.Work("mine-1");
             var mine = state.Buildings.Single(b => b.Id == "mine-1");
+            for (int i = 0; i < 14; i++) ColonySimulation.TickColony(state, 0.25f, _catalog);
+            Assert.That(mine.GetStock(ResourceKind.Coal), Is.Zero, "No coal below level 2");
 
-            // A goblin adds 0.3 ore/s: eight cycles need a little under 27 s.
-            for (int i = 0; i < 108; i++)
-                ColonySimulation.TickColony(state, 0.25f, _catalog);
+            mine.Level = 2;
+            int ore = mine.Ore;
+            for (int i = 0; i < 14; i++) ColonySimulation.TickColony(state, 0.25f, _catalog);
+            Assert.That(mine.GetStock(ResourceKind.Coal), Is.EqualTo(mine.Ore - ore), "Every level-2 cycle gives coal");
+        }
 
-            Assert.That(mine.Ore, Is.EqualTo(8));
-            Assert.That(mine.GetStock(ResourceKind.VioletCrystal), Is.EqualTo(2));
+        [Test]
+        public void SpoiledCycle_SpendsTheInputsAndGivesItsFailOutputs()
+        {
+            var smeltery = _catalog.GetBuilding(BuildingKind.Smeltery);
+            smeltery.SetRecipes(
+                new ProductionRecipe(1f, Amounts(ResourceKind.IronOre, 2), Amounts(ResourceKind.IronIngot, 1), 1, null,
+                    100, Amounts(ResourceKind.Scrap, 1)),
+                new ProductionRecipe(1f, Amounts(ResourceKind.IronIngot, 1), Amounts(ResourceKind.IronSword, 1), 2));
+            var state = TestColony.NewState(_catalog);
+            var building = new BuildingState { Id = "smeltery-1", Kind = BuildingKind.Smeltery, Cell = new Cell(1, 1) };
+            building.SetStock(ResourceKind.IronOre, 4);
+            building.SetStock(ResourceKind.IronIngot, 3);
+            state.Buildings.Add(building);
+            state.Units.Add(new UnitState
+            {
+                Id = "unit-1", Kind = UnitKind.Troll, Position = new WorldPosition(2.5f, 1.35f),
+                Assignment = Assignment.Work("smeltery-1")
+            });
+
+            for (int i = 0; i < 20; i++) ColonySimulation.TickColony(state, 0.25f, _catalog);
+
+            Assert.That(building.GetStock(ResourceKind.IronOre), Is.Zero);
+            Assert.That(building.GetStock(ResourceKind.Scrap), Is.EqualTo(2));
+            Assert.That(building.GetStock(ResourceKind.IronIngot), Is.EqualTo(3), "Spoilage makes no ingots; the level-2 sword waits");
+            Assert.That(state.ProducedOf(ResourceKind.Scrap), Is.EqualTo(2));
+            Assert.That(ColonySimulation.DescribeProduction(state, building, _catalog), Is.EqualTo(ProductionState.MissingInputs));
+        }
+
+        [Test]
+        public void BuyUpgrade_NeedsItsHostAndGold_AndWidensEveryDoor()
+        {
+            _catalog.SetUpgrades(new[]
+            {
+                new UpgradeDefinition("doors", "Широкие двери", "", BuildingKind.Barracks, UpgradeEffect.LoadersPerDoor, 2,
+                    new[] { 100, 300 }),
+                new UpgradeDefinition("step", "Лёгкий шаг", "", BuildingKind.Barracks, UpgradeEffect.WalkSpeedPercent, 50,
+                    new[] { 100 })
+            });
+            var state = TestColony.NewState(_catalog);
+            Assert.That(ColonySimulation.ApplyCommand(state, new BuyUpgradeCommand("doors"), _catalog).Error,
+                Is.EqualTo("Сначала постройте: бараки"));
+            Assert.That(ColonySimulation.ApplyCommand(state, new BuyUpgradeCommand("nothing"), _catalog).Ok, Is.False);
+
+            Assert.That(ColonySimulation.PlaceStartingBuilding(state, BuildingKind.Barracks, new Cell(1, 1), _catalog, out _).Ok,
+                Is.True);
+            int doors = ColonySimulation.LoadersPerDoor(state, _catalog);
+            float speed = ColonySimulation.UnitMovementSpeed(state, _catalog.GetUnit(UnitKind.Goblin), _catalog);
+            int gold = state.Gold;
+
+            Assert.That(ColonySimulation.ApplyCommand(state, new BuyUpgradeCommand("doors"), _catalog).Ok, Is.True);
+            Assert.That(ColonySimulation.ApplyCommand(state, new BuyUpgradeCommand("step"), _catalog).Ok, Is.True);
+            Assert.That(state.UpgradeLevel("doors"), Is.EqualTo(1));
+            Assert.That(state.Gold, Is.EqualTo(gold - 200));
+            Assert.That(ColonySimulation.LoadersPerDoor(state, _catalog), Is.EqualTo(doors + 2));
+            Assert.That(ColonySimulation.UnitMovementSpeed(state, _catalog.GetUnit(UnitKind.Goblin), _catalog),
+                Is.EqualTo(speed * 1.5f).Within(0.0001f));
+            Assert.That(ColonySimulation.ApplyCommand(state, new BuyUpgradeCommand("step"), _catalog).Error,
+                Is.EqualTo("Достигнут максимальный уровень"));
+            Assert.That(state.Clone().UpgradeLevel("doors"), Is.EqualTo(1), "Upgrades are part of the saved state");
+        }
+
+        [Test]
+        public void FavoredBuilding_GetsMoreWorkFromItsCreature()
+        {
+            var state = StateWithMineAndHauler(HaulPhase.Loading, carried: 0);
+            state.Units.Single().Assignment = Assignment.Work("mine-1");
+            _catalog.GetUnit(UnitKind.Goblin).SetWorkTraits(true, 50, BuildingKind.Mine);
+
+            Assert.That(ColonySimulation.ProductionPerSecond(state, "mine-1", _catalog), Is.EqualTo(0.45f).Within(0.0001f));
+        }
+
+        [Test]
+        public void UnhireableCreature_IsRefused()
+        {
+            _catalog.GetUnit(UnitKind.Troll).SetWorkTraits(false, 0);
+            var session = TestColony.NewSession(_catalog);
+
+            var refused = session.CanBuyUnits(UnitKind.Troll, 1, session.FindSpawnCell());
+            Assert.That(refused.Ok, Is.False);
+            Assert.That(refused.Error, Does.Contain("не нанимается"));
         }
 
         [Test]

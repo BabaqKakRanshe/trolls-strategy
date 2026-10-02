@@ -20,13 +20,26 @@ MonoBehaviour:
   _height: 3
   _entrance: {x: 1.5, y: 0.12}
   _crowdSpacing: 0.2
-  _capacity: 50
+  _capacity: 25
   _maxWorkers: 4
-  _upgradeCosts: 
-  _capacityPerLevel: 0
-  _workersPerLevel: 0
+  _upgradeCosts: 84030000dc050000i
+  _capacityPerLevel: 15
+  _workersPerLevel: 2
   _saleBonusPerLevel: 0
   _recipes:
+  - _inputs:
+    - _resource: 0
+      _amount: 2
+    - _resource: 12
+      _amount: 1
+    _outputs:
+    - _resource: 1
+      _amount: 2
+    _work: 3
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 0
+    _failOutputs: []
   - _inputs:
     - _resource: 0
       _amount: 2
@@ -34,10 +47,21 @@ MonoBehaviour:
     - _resource: 1
       _amount: 1
     _work: 2
-    _bonusEveryCycles: 0
-    _bonusOutput:
-      _resource: 0
-      _amount: 0
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 0
+    _failOutputs: []
+  - _inputs:
+    - _resource: 18
+      _amount: 2
+    _outputs:
+    - _resource: 1
+      _amount: 1
+    _work: 1
+    _minLevel: 2
+    _extras: []
+    _failChancePercent: 0
+    _failOutputs: []
   _storageRole: 0
   _storedResources: 
   _slotStackSize: 0

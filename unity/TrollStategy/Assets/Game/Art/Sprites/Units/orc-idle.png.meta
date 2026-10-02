@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: 72da277364b3e4141bcbc967a977f6a2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8181370358278191268
+    second: orc-idle_0
+  - first:
+      213: 8341276107705745047
+    second: orc-idle_1
+  - first:
+      213: -7618960364419844459
+    second: orc-idle_2
+  - first:
+      213: -2746502135253211102
+    second: orc-idle_3
+  - first:
+      213: 1457603398682913677
+    second: orc-idle_4
+  - first:
+      213: 4771932932615883798
+    second: orc-idle_5
+  - first:
+      213: -4975853652230555737
+    second: orc-idle_6
+  - first:
+      213: 4636083356218353700
+    second: orc-idle_7
+  - first:
+      213: 5977109206319229728
+    second: orc-idle_8
+  - first:
+      213: -1802351589781482280
+    second: orc-idle_9
+  - first:
+      213: -8149568144259026635
+    second: orc-idle_10
+  - first:
+      213: 5246045244755648400
+    second: orc-idle_11
+  - first:
+      213: 6823051750837080534
+    second: orc-idle_12
+  - first:
+      213: -2180174244792578085
+    second: orc-idle_13
+  - first:
+      213: 3805798209778456537
+    second: orc-idle_14
+  - first:
+      213: 2098733681326230431
+    second: orc-idle_15
+  - first:
+      213: -7262321413599399544
+    second: orc-idle_16
+  - first:
+      213: -2890013519124852922
+    second: orc-idle_17
+  - first:
+      213: 5489476671195810356
+    second: orc-idle_18
+  - first:
+      213: 8641016779069871271
+    second: orc-idle_19
+  - first:
+      213: -267724248061599048
+    second: orc-idle_20
+  - first:
+      213: 6031844389555781376
+    second: orc-idle_21
+  - first:
+      213: 3926800049608330989
+    second: orc-idle_22
+  - first:
+      213: 5261020275263950839
+    second: orc-idle_23
+  - first:
+      213: 6742939533502974131
+    second: orc-idle_24
+  - first:
+      213: 2119189544963965087
+    second: orc-idle_25
+  - first:
+      213: -6747697950238171191
+    second: orc-idle_26
+  - first:
+      213: 8358746305769690400
+    second: orc-idle_27
+  - first:
+      213: -2735366213885266795
+    second: orc-idle_28
+  - first:
+      213: -9145416821071218862
+    second: orc-idle_29
+  - first:
+      213: -3292936563592234922
+    second: orc-idle_30
+  - first:
+      213: 789278727675697322
+    second: orc-idle_31
+  - first:
+      213: 6040225239709104174
+    second: orc-idle_32
+  - first:
+      213: -2377832852010732412
+    second: orc-idle_33
+  - first:
+      213: -4233402887519447969
+    second: orc-idle_34
+  - first:
+      213: -4289120989105922645
+    second: orc-idle_35
+  - first:
+      213: 1033442511195542160
+    second: orc-idle_36
+  - first:
+      213: 49942478160671566
+    second: orc-idle_37
+  - first:
+      213: -4401312518408517373
+    second: orc-idle_38
+  - first:
+      213: -4443031033715445606
+    second: orc-idle_39
+  - first:
+      213: 5574750852576530351
+    second: orc-idle_40
+  - first:
+      213: -6039541127739338112
+    second: orc-idle_41
+  - first:
+      213: -6536813496624370767
+    second: orc-idle_42
+  - first:
+      213: -2761313021209649921
+    second: orc-idle_43
+  - first:
+      213: -1652588087317355740
+    second: orc-idle_44
+  - first:
+      213: -495975689615334175
+    second: orc-idle_45
+  - first:
+      213: -4676654208367211528
+    second: orc-idle_46
+  - first:
+      213: -8554594152525348976
+    second: orc-idle_47
+  - first:
+      213: 2956301964300876901
+    second: orc-idle_48
+  - first:
+      213: 8136339198251590499
+    second: orc-idle_49
+  - first:
+      213: -8443084841644083507
+    second: orc-idle_50
+  - first:
+      213: -7320749874574310107
+    second: orc-idle_51
+  - first:
+      213: -5706236704704944273
+    second: orc-idle_52
+  - first:
+      213: 53473089481419271
+    second: orc-idle_53
+  - first:
+      213: -35383177036812777
+    second: orc-idle_54
+  - first:
+      213: 8933960557912060443
+    second: orc-idle_55
+  - first:
+      213: 1526179405582533261
+    second: orc-idle_56
+  - first:
+      213: -7465611618795105988
+    second: orc-idle_57
+  - first:
+      213: 3991869995278353072
+    second: orc-idle_58
+  - first:
+      213: -8926626918217288479
+    second: orc-idle_59
+  - first:
+      213: -3918337931634183092
+    second: orc-idle_60
+  - first:
+      213: -4058185360383736196
+    second: orc-idle_61
+  - first:
+      213: 9024146893582745735
+    second: orc-idle_62
+  - first:
+      213: 4693599638204008075
+    second: orc-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: orc_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5359a14d04bca7f4fa4951472296bbc7
+      internalID: 496615496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0aa03c91f519f441b33b2980b041399
+      internalID: -632422680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46c382fcf4bacbe41968226d6fd6a7bc
+      internalID: -369601856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b4177ce62b56f34d8c233c03a15830d
+      internalID: -1914003252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 447f53185bad63248aba0067a3b37e90
+      internalID: 707083803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f01573415264e54e935ac3fe1df9561
+      internalID: -357019215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 762bb8738427a1440b8bffc48d669913
+      internalID: 1812489315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0a69b7bc854e704580c81e75225d1e0
+      internalID: -1245731278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b30314954e86ec04899ab85d8e7f8d12
+      internalID: 1576815987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ad54b904bba154428fda786d9bab8fb
+      internalID: 1164978558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 409778fefb95aa84ca8f856dc0aa77ba
+      internalID: 2089488715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ab0a91f5743d6f41bb66198fc1c5671
+      internalID: 1434257699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e913687423d38bf4a8e45c8af040c3f4
+      internalID: -235977639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 887ff32d38c74bf4aad3ccf682ed60d1
+      internalID: 451301417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 663a57c0b587123408874d0e9d5e5e94
+      internalID: -1367034268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: orc_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5360cf6123af8a44982b57edc11456e8
+      internalID: 1760582218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e47b1e65cf050ec4fb76cbc913b6dcb7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      orc_idle_0: 496615496
+      orc_idle_1: -632422680
+      orc_idle_10: 2089488715
+      orc_idle_11: 1434257699
+      orc_idle_12: -235977639
+      orc_idle_13: 451301417
+      orc_idle_14: -1367034268
+      orc_idle_15: 1760582218
+      orc_idle_2: -369601856
+      orc_idle_3: -1914003252
+      orc_idle_4: 707083803
+      orc_idle_5: -357019215
+      orc_idle_6: 1812489315
+      orc_idle_7: -1245731278
+      orc_idle_8: 1576815987
+      orc_idle_9: 1164978558
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

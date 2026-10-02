@@ -26,7 +26,19 @@ namespace TrollStrategy.Content
         /// <summary>Win Amount battles after the quest begins.</summary>
         WinBattles,
         /// <summary>Raise a Building to level Amount.</summary>
-        UpgradeBuilding
+        UpgradeBuilding,
+        /// <summary>Win the arena up to level Amount.</summary>
+        ReachArenaLevel,
+        /// <summary>Buy Amount blocks of land.</summary>
+        OwnLand,
+        /// <summary>Make Amount of Resource after the quest begins (by-products and spoilage count).</summary>
+        ProduceResource,
+        /// <summary>Hold Amount levels of colony upgrades in all (guild and barracks).</summary>
+        BuyUpgrades,
+        /// <summary>Have Amount creatures wearing equipment.</summary>
+        EquipFighters,
+        /// <summary>Have Amount items in the armory, worn or not.</summary>
+        OwnEquipment
     }
 
     // Values are serialized by index: append new kinds, never reorder.
@@ -76,7 +88,8 @@ namespace TrollStrategy.Content
 
         /// <summary>True for goals counted from the moment the quest begins rather than from the colony as it is.</summary>
         public bool IsCumulative => _kind == QuestGoalKind.EarnGold || _kind == QuestGoalKind.SellGoods ||
-                                    _kind == QuestGoalKind.SellResource || _kind == QuestGoalKind.WinBattles;
+                                    _kind == QuestGoalKind.SellResource || _kind == QuestGoalKind.WinBattles ||
+                                    _kind == QuestGoalKind.ProduceResource;
 
         public bool CountsUnit(UnitKind kind) => _anyUnit || _unit == kind;
 
@@ -107,6 +120,13 @@ namespace TrollStrategy.Content
         public static QuestGoal WinBattles(int amount = 1) => new(QuestGoalKind.WinBattles, amount);
         public static QuestGoal UpgradeBuilding(BuildingKind building, int level) =>
             new(QuestGoalKind.UpgradeBuilding, level, building: building);
+        public static QuestGoal ReachArenaLevel(int level) => new(QuestGoalKind.ReachArenaLevel, level);
+        public static QuestGoal OwnLand(int blocks) => new(QuestGoalKind.OwnLand, blocks);
+        public static QuestGoal ProduceResource(ResourceKind resource, int amount) =>
+            new(QuestGoalKind.ProduceResource, amount, resource: resource);
+        public static QuestGoal BuyUpgrades(int levels) => new(QuestGoalKind.BuyUpgrades, levels);
+        public static QuestGoal EquipFighters(int fighters) => new(QuestGoalKind.EquipFighters, fighters);
+        public static QuestGoal OwnEquipment(int items) => new(QuestGoalKind.OwnEquipment, items);
     }
 
     /// <summary>What claiming a finished quest gives: gold or the right to build, hire or fight.</summary>

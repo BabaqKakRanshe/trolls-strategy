@@ -77,7 +77,11 @@ namespace TrollStrategy.Application
         public GameContentCatalog Catalog => _catalog;
         public BattleRunState ActiveBattle => _state.ActiveBattle;
         public int ActiveTimeMs => _state.ActiveTimeMs;
-        public int FirstMissionWins => _state.FirstMissionWins;
+        /// <summary>Wins at one arena mission so far.</summary>
+        public int MissionWins(string missionId) => _state.WinsOf(missionId);
+        /// <summary>Highest arena level the colony has won.</summary>
+        public int HighestMissionLevel => _state.HighestMissionLevel;
+        public int BattlesWon => _state.BattlesWon;
         public bool IsCampaign => _state.Progress != null;
 
         public bool IsBuildingUnlocked(BuildingKind kind) => Progression.IsBuildingUnlocked(_state, kind);
@@ -169,6 +173,42 @@ namespace TrollStrategy.Application
             return CommandResult.Fail("Миссия не найдена");
         }
 
+        /// <summary>Fighters the colony may send to this mission now.</summary>
+        public int SquadLimit(BattleMissionDefinition mission) => BattleApplication.SquadLimit(_state, mission, _catalog);
+
+        /// <summary>A win's gold range at this mission now, first or repeat win, with the barracks' glory.</summary>
+        public (int Min, int Max) WinGold(BattleMissionDefinition mission) =>
+            BattleApplication.WinGold(_state, mission, _catalog);
+
+        /// <summary>Whether the mission is open on the ladder (not counting the time it rests).</summary>
+        public bool IsMissionUnlocked(string missionId) => Progression.IsMissionUnlocked(_state, missionId);
+
+        /// <summary>The arena ladder in level order: the missions of the catalog sorted by level.</summary>
+        public IReadOnlyList<BattleMissionDefinition> ArenaLadder()
+        {
+            var ladder = new List<BattleMissionDefinition>();
+            foreach (var mission in _catalog.Missions) if (mission != null) ladder.Add(mission);
+            ladder.Sort((a, b) => a.Level.CompareTo(b.Level));
+            return ladder;
+        }
+
+        /// <summary>
+        /// The mission the battle button should lead to: the highest open level that is ready, else the highest
+        /// open level, else the first level.
+        /// </summary>
+        public BattleMissionDefinition SuggestedMission()
+        {
+            BattleMissionDefinition open = null, ready = null;
+            foreach (var mission in ArenaLadder())
+            {
+                if (!IsMissionUnlocked(mission.MissionId)) continue;
+                open = mission;
+                if (CanEnterMission(mission.MissionId).Ok) ready = mission;
+            }
+            var ladder = ArenaLadder();
+            return ready ?? open ?? (ladder.Count > 0 ? ladder[0] : null);
+        }
+
         /// <summary>Active colony time left before the mission opens or recovers; 0 when time does not hold it back.</summary>
         public int MissionWaitMs(string missionId)
         {
@@ -254,7 +294,9 @@ namespace TrollStrategy.Application
             // south-west of the middle of the start land (of the grid without land)
             var center = LandRules.StartCenter(_catalog.Economy);
             var home = new Cell(center.X - 4, center.Y - 4);
-            for (int r = 0; r < 6; r++)
+            // rings out from home over the whole grid, so a grown colony still finds a free cell for a hire
+            int reach = Math.Max(_catalog.Economy.GridWidth, _catalog.Economy.GridHeight);
+            for (int r = 0; r < reach; r++)
             {
                 for (int dy = -r; dy <= r; dy++)
                 {
@@ -367,7 +409,7 @@ namespace TrollStrategy.Application
                     u.Position,
                     u.Assignment,
                     FormatAssignmentStatus(u.Assignment, u.Position, buildingSnapshots),
-                    ColonySimulation.UnitMovementSpeed(def, _catalog)));
+                    ColonySimulation.UnitMovementSpeed(_state, def, _catalog)));
             }
 
             var equipmentSnapshots = new List<EquipmentSnapshot>(_state.Equipment.Count);
@@ -385,8 +427,26 @@ namespace TrollStrategy.Application
                 equipmentSnapshots,
                 CreateProgressSnapshot(),
                 CreateBattleRewardSnapshot(),
-                CreateLandSnapshot());
+                CreateLandSnapshot(),
+                CreateUpgradeSnapshots());
         }
+
+        private List<UpgradeSnapshot> CreateUpgradeSnapshots()
+        {
+            var upgrades = new List<UpgradeSnapshot>(_catalog.Upgrades.Count);
+            foreach (var upgrade in _catalog.Upgrades)
+            {
+                if (upgrade == null) continue;
+                int level = _state.UpgradeLevel(upgrade.Id);
+                upgrades.Add(new UpgradeSnapshot(upgrade.Id, upgrade.DisplayName, upgrade.Description, upgrade.Host,
+                    upgrade.Effect, upgrade.AmountPerLevel, level, upgrade.MaxLevel, upgrade.CostFrom(level),
+                    _state.Buildings.Exists(b => b.Kind == upgrade.Host)));
+            }
+            return upgrades;
+        }
+
+        /// <summary>Whether the colony may raise this upgrade now, and why not.</summary>
+        public CommandResult CanBuyUpgrade(string upgradeId) => UpgradeRules.Validate(_state, upgradeId, _catalog);
 
         private LandSnapshot CreateLandSnapshot()
         {
@@ -508,6 +568,18 @@ namespace TrollStrategy.Application
                     return "Победы в бою";
                 case QuestGoalKind.UpgradeBuilding:
                     return $"Уровень: {BuildingName(goal.Building)}";
+                case QuestGoalKind.ReachArenaLevel:
+                    return "Уровень арены";
+                case QuestGoalKind.OwnLand:
+                    return "Куплено земли, блоков";
+                case QuestGoalKind.ProduceResource:
+                    return $"Сделано: {ResourceName(goal.Resource).ToLowerInvariant()}";
+                case QuestGoalKind.BuyUpgrades:
+                    return "Улучшения гильдии и бараков, уровней";
+                case QuestGoalKind.EquipFighters:
+                    return "Бойцов в снаряжении";
+                case QuestGoalKind.OwnEquipment:
+                    return "Предметов на складе экипировки";
                 default:
                     return goal.Kind.ToString();
             }
@@ -555,7 +627,28 @@ namespace TrollStrategy.Application
         public static string GoldRange(int min, int max) => max > min ? $"от {min} до {max}" : min.ToString();
 
         /// <summary>A building as the catalog and rewards describe it: size, staff, role and recipes.</summary>
-        public string DescribeBuilding(BuildingDefinition building)
+        /// <summary>
+        /// The recipe a building is known by: the simplest one it runs from the first level. The catalog and the
+        /// quest reward name only this one; the building's card lists them all.
+        /// </summary>
+        public static ProductionRecipe MainRecipe(BuildingDefinition definition)
+        {
+            if (definition == null || definition.Recipes.Count == 0) return null;
+            ProductionRecipe main = null;
+            foreach (var recipe in definition.Recipes)
+                if (recipe.MinLevel <= 1 && (main == null || recipe.Inputs.Length < main.Inputs.Length)) main = recipe;
+            return main ?? definition.Recipes[0];
+        }
+
+        /// <summary>The main recipe in words, "2 руда → 1 слиток"; empty for a building without recipes.</summary>
+        public string DescribeMainRecipe(BuildingDefinition definition)
+        {
+            var recipe = MainRecipe(definition);
+            if (recipe == null) return string.Empty;
+            return (recipe.Inputs.Length > 0 ? FormatAmounts(recipe.Inputs) + " → " : "") + FormatAmounts(recipe.Outputs);
+        }
+
+        public string DescribeBuilding(BuildingDefinition building, bool recipes = true)
         {
             string text = $"{building.Width}×{building.Height}";
             if (building.MaxWorkers > 0) text += $", до {building.MaxWorkers} рабочих";
@@ -571,8 +664,8 @@ namespace TrollStrategy.Application
                     text += ", снаряжение отряда";
                     break;
             }
-            string recipes = DescribeRecipes(building);
-            return string.IsNullOrEmpty(recipes) ? text : text + "\n" + recipes;
+            string list = recipes ? DescribeRecipes(building) : string.Empty;
+            return string.IsNullOrEmpty(list) ? text : text + "\n" + list;
         }
 
         private string UnitName(UnitKind kind) => (TryUnit(kind)?.DisplayName ?? kind.ToString()).ToLowerInvariant();
@@ -613,16 +706,26 @@ namespace TrollStrategy.Application
             return stock;
         }
 
-        /// <summary>The building's recipes as the player reads them, one per line; empty for non-producers.</summary>
+        /// <summary>
+        /// The building's recipes as the player reads them, one per line; empty for non-producers. A recipe or
+        /// by-product that needs a higher level says so; chances are given in percent.
+        /// </summary>
         public string DescribeRecipes(BuildingDefinition definition)
         {
             var lines = new List<string>();
             foreach (var recipe in definition.Recipes)
             {
-                string line = (recipe.Inputs.Length > 0 ? FormatAmounts(recipe.Inputs) + " → " : "") +
+                string line = (recipe.MinLevel > 1 ? $"С {recipe.MinLevel} уровня: " : "") +
+                    (recipe.Inputs.Length > 0 ? FormatAmounts(recipe.Inputs) + " → " : "") +
                     FormatAmounts(recipe.Outputs);
-                if (recipe.HasBonus)
-                    line += $" (+{recipe.BonusOutput.Amount} {ResourceName(recipe.BonusOutput.Resource)} каждые {recipe.BonusEveryCycles} циклов)";
+                var notes = new List<string>();
+                foreach (var extra in recipe.Extras)
+                    notes.Add($"{extra.ChancePercent}%: +{extra.Output.Amount} {ResourceName(extra.Output.Resource)}" +
+                              (extra.MinLevel > recipe.MinLevel ? $" с {extra.MinLevel} уровня" : ""));
+                if (recipe.FailChancePercent > 0)
+                    notes.Add($"брак {recipe.FailChancePercent}%" +
+                              (recipe.FailOutputs.Length > 0 ? $" → {FormatAmounts(recipe.FailOutputs)}" : ""));
+                if (notes.Count > 0) line += " (" + string.Join("; ", notes) + ")";
                 lines.Add(line);
             }
             return string.Join("\n", lines);
@@ -669,7 +772,21 @@ namespace TrollStrategy.Application
             }
             var source = buildings.Find(b => b.Id == assignment.SourceId)?.Name ?? "источник";
             var dest = buildings.Find(b => b.Id == assignment.DestinationId)?.Name ?? "цель";
-            return $"Несёт: {source} -> {dest} · {DescribeCargo(assignment)}";
+            if (assignment.Carried > 0)
+                return $"Несёт {assignment.Carried} {ResourceName(assignment.CarriedResource).ToLowerInvariant()} " +
+                       $"на {CargoValue(assignment)} зол.: {source} → {dest}";
+            return $"Возит {DescribeCargo(assignment)}: {source} → {dest}";
+        }
+
+        /// <summary>What the load a hauler carries now fetches at the colony's best market.</summary>
+        public int CargoValue(Assignment assignment)
+        {
+            if (assignment == null || assignment.Kind != AssignmentKind.Haul || assignment.Carried <= 0) return 0;
+            int level = 1;
+            foreach (var building in _state.Buildings)
+                if (building.Kind == BuildingKind.Market) level = Math.Max(level, building.Level);
+            if (_catalog.TryGetResource(assignment.CarriedResource) == null) return 0;
+            return assignment.Carried * ColonySimulation.SalePrice(_catalog, assignment.CarriedResource, level);
         }
 
         /// <summary>What a hauler is allowed to take: "всё" or the chosen goods.</summary>

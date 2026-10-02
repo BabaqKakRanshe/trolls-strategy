@@ -1,0 +1,530 @@
+fileFormatVersion: 2
+guid: c28269108ea4ae84399281a2f1499a9d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 16077135100372679
+    second: evil-snowman-attack_0
+  - first:
+      213: 8642727602785703356
+    second: evil-snowman-attack_1
+  - first:
+      213: -7029606410194394638
+    second: evil-snowman-attack_2
+  - first:
+      213: 8439816075023745343
+    second: evil-snowman-attack_3
+  - first:
+      213: -7089265171297930593
+    second: evil-snowman-attack_4
+  - first:
+      213: -6928524122082511172
+    second: evil-snowman-attack_5
+  - first:
+      213: -3243418612734291850
+    second: evil-snowman-attack_6
+  - first:
+      213: -9095881661481292215
+    second: evil-snowman-attack_7
+  - first:
+      213: -4521681566268000138
+    second: evil-snowman-attack_8
+  - first:
+      213: -7498892775766516485
+    second: evil-snowman-attack_9
+  - first:
+      213: -1760573622332986866
+    second: evil-snowman-attack_10
+  - first:
+      213: -7127570844855239253
+    second: evil-snowman-attack_11
+  - first:
+      213: 8316536922777118082
+    second: evil-snowman-attack_12
+  - first:
+      213: 1769795442772032497
+    second: evil-snowman-attack_13
+  - first:
+      213: -8375369674388827310
+    second: evil-snowman-attack_14
+  - first:
+      213: 8093608567826700439
+    second: evil-snowman-attack_15
+  - first:
+      213: 4269602406950711727
+    second: evil-snowman-attack_16
+  - first:
+      213: 8303299497830359785
+    second: evil-snowman-attack_17
+  - first:
+      213: 1503689490665027410
+    second: evil-snowman-attack_18
+  - first:
+      213: 8553902717164975533
+    second: evil-snowman-attack_19
+  - first:
+      213: 754588194294305551
+    second: evil-snowman-attack_20
+  - first:
+      213: -3124635456407023867
+    second: evil-snowman-attack_21
+  - first:
+      213: -323995053722300956
+    second: evil-snowman-attack_22
+  - first:
+      213: 8351978965767086371
+    second: evil-snowman-attack_23
+  - first:
+      213: -2079893404048473011
+    second: evil-snowman-attack_24
+  - first:
+      213: 1856474749751422788
+    second: evil-snowman-attack_25
+  - first:
+      213: 2727934480503978411
+    second: evil-snowman-attack_26
+  - first:
+      213: 107991764633276223
+    second: evil-snowman-attack_27
+  - first:
+      213: -865112824988513498
+    second: evil-snowman-attack_28
+  - first:
+      213: -1272015474859383379
+    second: evil-snowman-attack_29
+  - first:
+      213: 1612559136910805857
+    second: evil-snowman-attack_30
+  - first:
+      213: -2939559489851968102
+    second: evil-snowman-attack_31
+  - first:
+      213: 3206733973028927810
+    second: evil-snowman-attack_32
+  - first:
+      213: 6495756981705819716
+    second: evil-snowman-attack_33
+  - first:
+      213: -6622110960931901518
+    second: evil-snowman-attack_34
+  - first:
+      213: -6810302872962912589
+    second: evil-snowman-attack_35
+  - first:
+      213: -2357457694624001548
+    second: evil-snowman-attack_36
+  - first:
+      213: -2943955941733992259
+    second: evil-snowman-attack_37
+  - first:
+      213: -4954819557037886544
+    second: evil-snowman-attack_38
+  - first:
+      213: 4353946333455801956
+    second: evil-snowman-attack_39
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: evil-snowman_attack_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80b1ad6b099294f44a293f4176a906ea
+      internalID: -869982357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6fcc52a36529af4b9bbea32450eaf83
+      internalID: 79484431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45481ddb10f889b47af2646f598951a4
+      internalID: 1060990203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97290a52075172642ad959b1ea382cfe
+      internalID: -419598215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0fb74222929d824bb7c1284811a0c79
+      internalID: -1258167946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 871a243286178014c8748f16ade3a4c3
+      internalID: 1490896854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96a0c3803dd1cad40a9270f9b9dd08b2
+      internalID: -2089660019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d20244cccaa97a14eb62efb5b97cbb92
+      internalID: 428376712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa9d4233ee9108e4992e2062c968d6dc
+      internalID: -1974390292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 537a052bae8dde24c93891f45d4a8f3f
+      internalID: 824810354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b15c8302caab4b14c94cbf8cc09feeca
+      internalID: -1093914173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: evil-snowman_attack_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 872048a68e470be4d9406fa93a889bcb
+      internalID: -836512534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c087bf38ff02b76469dc086766346a26
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      evil-snowman_attack_0: -869982357
+      evil-snowman_attack_1: 79484431
+      evil-snowman_attack_10: -1093914173
+      evil-snowman_attack_11: -836512534
+      evil-snowman_attack_2: 1060990203
+      evil-snowman_attack_3: -419598215
+      evil-snowman_attack_4: -1258167946
+      evil-snowman_attack_5: 1490896854
+      evil-snowman_attack_6: -2089660019
+      evil-snowman_attack_7: 428376712
+      evil-snowman_attack_8: -1974390292
+      evil-snowman_attack_9: 824810354
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

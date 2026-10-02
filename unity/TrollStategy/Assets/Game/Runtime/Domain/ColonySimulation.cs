@@ -33,6 +33,7 @@ namespace TrollStrategy.Domain
                 ClaimQuestRewardCommand => Progression.Claim(state, catalog),
                 BuyLandCommand c => LandRules.Buy(state, c.BlockX, c.BlockY, catalog),
                 ClearLandCommand c => LandRules.Clear(state, c.BlockX, c.BlockY, catalog),
+                BuyUpgradeCommand c => UpgradeRules.Buy(state, c.UpgradeId, catalog),
                 _ => CommandResult.Fail("Неизвестная команда")
             };
         }
@@ -94,6 +95,8 @@ namespace TrollStrategy.Domain
             var economy = catalog.Economy;
             var unitDef = catalog.GetUnit(kind);
 
+            if (!unitDef.Hireable)
+                return CommandResult.Fail($"Существо «{unitDef.DisplayName}» не нанимается в поселение");
             if (!Progression.IsUnitUnlocked(state, kind))
                 return CommandResult.Fail($"Существо «{unitDef.DisplayName}» ещё не открыто: выполняйте задания");
 
@@ -562,7 +565,7 @@ namespace TrollStrategy.Domain
                 b.ProductionProgress += WorkPerSecond(state, b.Id, catalog) * deltaSeconds;
                 while (recipe != null && b.ProductionProgress >= recipe.Work)
                 {
-                    RunCycle(b, recipe);
+                    RunCycle(state, b, recipe);
                     b.ProductionProgress -= recipe.Work;
                     recipe = NextRecipe(b, def, catalog);
                 }
@@ -573,9 +576,19 @@ namespace TrollStrategy.Domain
         private static ProductionRecipe NextRecipe(BuildingState building, BuildingDefinition definition, GameContentCatalog catalog)
         {
             foreach (var recipe in definition.Recipes)
-                if (HasInputs(building, recipe) && HasOutputRoom(building, recipe, catalog))
+                if (recipe.MinLevel <= building.Level && HasInputs(building, recipe) &&
+                    HasOutputRoom(building, recipe, catalog))
                     return recipe;
             return null;
+        }
+
+        /// <summary>The recipes a building runs at its level, in priority order.</summary>
+        public static List<ProductionRecipe> ActiveRecipes(BuildingState building, GameContentCatalog catalog)
+        {
+            var active = new List<ProductionRecipe>();
+            foreach (var recipe in catalog.GetBuilding(building.Kind).Recipes)
+                if (recipe.MinLevel <= building.Level) active.Add(recipe);
+            return active;
         }
 
         private static bool HasInputs(BuildingState building, ProductionRecipe recipe)
@@ -585,43 +598,67 @@ namespace TrollStrategy.Domain
             return true;
         }
 
+        // Room for every outcome the cycle may have: the product, each by-product open at this level, spoilage.
         private static bool HasOutputRoom(BuildingState building, ProductionRecipe recipe, GameContentCatalog catalog)
         {
             int capacity = catalog.GetBuilding(building.Kind).Capacity(building.Level);
             foreach (var output in recipe.Outputs)
                 if (building.GetStock(output.Resource) + output.Amount > capacity) return false;
-            if (IsBonusCycle(building, recipe) &&
-                building.GetStock(recipe.BonusOutput.Resource) + recipe.BonusOutput.Amount > capacity)
-                return false;
+            foreach (var extra in recipe.Extras)
+                if (extra.MinLevel <= building.Level &&
+                    building.GetStock(extra.Output.Resource) + extra.Output.Amount > capacity)
+                    return false;
+            if (recipe.FailChancePercent > 0)
+                foreach (var output in recipe.FailOutputs)
+                    if (building.GetStock(output.Resource) + output.Amount > capacity) return false;
             return true;
         }
 
-        private static bool IsBonusCycle(BuildingState building, ProductionRecipe recipe) =>
-            recipe.HasBonus && (building.CompletedCycles + 1) % recipe.BonusEveryCycles == 0;
-
-        // Inputs are consumed and outputs released together, so a cycle never half-completes.
-        private static void RunCycle(BuildingState building, ProductionRecipe recipe)
+        // Inputs are consumed and outputs released together, so a cycle never half-completes. A spoiled cycle
+        // gives its fail outputs instead of the product and no by-products; chances roll on the production dice.
+        private static void RunCycle(GameState state, BuildingState building, ProductionRecipe recipe)
         {
-            bool bonus = IsBonusCycle(building, recipe);
             foreach (var input in recipe.Inputs)
                 building.AddStock(input.Resource, -input.Amount);
-            foreach (var output in recipe.Outputs)
-                building.AddStock(output.Resource, output.Amount);
-            if (bonus)
-                building.AddStock(recipe.BonusOutput.Resource, recipe.BonusOutput.Amount);
+            bool spoiled = recipe.FailChancePercent > 0 && ProductionDice.Chance(state, recipe.FailChancePercent);
+            if (spoiled)
+            {
+                foreach (var output in recipe.FailOutputs)
+                    Yield(state, building, output);
+            }
+            else
+            {
+                foreach (var output in recipe.Outputs)
+                    Yield(state, building, output);
+                foreach (var extra in recipe.Extras)
+                    if (extra.MinLevel <= building.Level && ProductionDice.Chance(state, extra.ChancePercent))
+                        Yield(state, building, extra.Output);
+            }
             building.CompletedCycles++;
         }
 
+        private static void Yield(GameState state, BuildingState building, ResourceAmount output)
+        {
+            building.AddStock(output.Resource, output.Amount);
+            state.ProducedByResource[output.Resource] = state.ProducedOf(output.Resource) + output.Amount;
+        }
+
+        // Work the building's present workers add per second; a creature in one of its favoured buildings adds more.
         private static float WorkPerSecond(GameState state, string buildingId, GameContentCatalog catalog)
         {
             float total = 0f;
+            BuildingKind? kind = null;
             for (int i = 0; i < state.Units.Count; i++)
             {
                 var u = state.Units[i];
                 if (u.Assignment.Kind == AssignmentKind.Work && u.Assignment.BuildingId == buildingId)
                 {
                     var uDef = catalog.GetUnit(u.Kind);
-                    total += uDef.Strength * catalog.Economy.WorkPerStrengthSecond;
+                    float work = uDef.Strength * catalog.Economy.WorkPerStrengthSecond;
+                    kind ??= state.Buildings.Find(b => b.Id == buildingId)?.Kind;
+                    if (kind.HasValue && uDef.Favors(kind.Value))
+                        work = UpgradeRules.Raise(work, uDef.FavoredWorkPercent);
+                    total += work;
                 }
             }
             return total;
@@ -634,7 +671,7 @@ namespace TrollStrategy.Domain
             if (NextRecipe(building, def, catalog) == null)
             {
                 foreach (var recipe in def.Recipes)
-                    if (HasInputs(building, recipe)) return ProductionState.OutputFull;
+                    if (recipe.MinLevel <= building.Level && HasInputs(building, recipe)) return ProductionState.OutputFull;
                 return ProductionState.MissingInputs;
             }
             return WorkPerSecond(state, building.Id, catalog) > 0f ? ProductionState.Working : ProductionState.NoWorkers;
@@ -647,7 +684,7 @@ namespace TrollStrategy.Domain
 
             var targetPos = BuildingEntrancePosition(building, catalog);
             var unitDef = catalog.GetUnit(unit.Kind);
-            float speedInWorldUnits = UnitMovementSpeed(unitDef, catalog);
+            float speedInWorldUnits = UnitMovementSpeed(state, unitDef, catalog);
 
             if (Travel(state, unit, targetPos, building, speedInWorldUnits, deltaSeconds, catalog))
             {
@@ -676,7 +713,7 @@ namespace TrollStrategy.Domain
                 spot = ColonyNavigation.CrowdSlotPosition(place, unit.Assignment.CrowdSlot, catalog);
             }
             if (unit.Position.Equals(spot)) return;
-            Travel(state, unit, spot, null, UnitMovementSpeed(catalog.GetUnit(unit.Kind), catalog), deltaSeconds, catalog);
+            Travel(state, unit, spot, null, UnitMovementSpeed(state, catalog.GetUnit(unit.Kind), catalog), deltaSeconds, catalog);
         }
 
         private static void TickHauler(GameState state, UnitState unit, float deltaSeconds, GameContentCatalog catalog)
@@ -686,7 +723,7 @@ namespace TrollStrategy.Domain
             if (source == null || destination == null) return;
 
             var unitDef = catalog.GetUnit(unit.Kind);
-            float speedInWorldUnits = UnitMovementSpeed(unitDef, catalog);
+            float speedInWorldUnits = UnitMovementSpeed(state, unitDef, catalog);
             var assignment = unit.Assignment;
 
             switch (assignment.Phase)
@@ -745,7 +782,7 @@ namespace TrollStrategy.Domain
                         assignment.Phase = HaulPhase.Unloading;
                         assignment.PhaseElapsedSeconds = 0f;
                         // with no unloading time the goods change hands on arrival
-                        if (catalog.Economy.UnloadSeconds <= 0f) TryUnload(state, destination, assignment, catalog);
+                        if (UnloadSeconds(state, catalog) <= 0f) TryUnload(state, destination, assignment, catalog);
                     }
                     break;
                 }
@@ -764,7 +801,7 @@ namespace TrollStrategy.Domain
         {
             unit.Assignment.Phase = HaulPhase.Loading;
             unit.Assignment.PhaseElapsedSeconds = 0f;
-            if (catalog.Economy.LoadSeconds <= 0f) TryLoad(state, unit, source, destination, unitDef, catalog);
+            if (LoadSeconds(state, catalog) <= 0f) TryLoad(state, unit, source, destination, unitDef, catalog);
         }
 
         // Once EconomyConfig.LoadSeconds have passed, takes as much of the first good it may carry as it can
@@ -774,7 +811,7 @@ namespace TrollStrategy.Domain
             UnitDefinition unitDef, GameContentCatalog catalog)
         {
             var assignment = unit.Assignment;
-            float loadTime = catalog.Economy.LoadSeconds;
+            float loadTime = LoadSeconds(state, catalog);
             if (assignment.PhaseElapsedSeconds < loadTime) return;
             if (!TryPickCargo(source, destination, assignment, catalog, out var resource, out int destinationRoom))
             {
@@ -789,7 +826,7 @@ namespace TrollStrategy.Domain
                 assignment.PhaseElapsedSeconds = loadTime;
                 return;
             }
-            int carryBudget = assignment.CarryCreditPercent + unitDef.Stamina;
+            int carryBudget = assignment.CarryCreditPercent + HaulStamina(state, unitDef, catalog);
             int capacity = TripCarryCapacity(carryBudget);
             int taken = Math.Min(source.GetStock(resource), Math.Min(capacity, destinationRoom));
 
@@ -808,7 +845,7 @@ namespace TrollStrategy.Domain
         private static void TryUnload(GameState state, BuildingState destination, Assignment assignment,
             GameContentCatalog catalog)
         {
-            float unloadTime = catalog.Economy.UnloadSeconds;
+            float unloadTime = UnloadSeconds(state, catalog);
             if (assignment.PhaseElapsedSeconds < unloadTime) return;
             Unload(state, destination, assignment, catalog);
             if (assignment.Carried == 0)
@@ -823,25 +860,28 @@ namespace TrollStrategy.Domain
             }
         }
 
-        // The first good in ResourceKind order that the hauler may take, the source holds and the destination
-        // still has room for.
+        // Of the goods the hauler may take, the source holds and the destination still has room for, the one the
+        // source holds most of (ties in ResourceKind order): a mine's crystals leave as surely as its ore, so a
+        // by-product never fills the building up behind the main good.
         private static bool TryPickCargo(BuildingState source, BuildingState destination, Assignment assignment,
             GameContentCatalog catalog, out ResourceKind resource, out int destinationRoom)
         {
             var sourceDef = catalog.GetBuilding(source.Kind);
+            resource = default;
+            destinationRoom = 0;
+            int most = 0;
             foreach (var candidate in AllResources)
             {
-                if (!assignment.MayCarry(candidate) || source.GetStock(candidate) <= 0 || !Provides(sourceDef, candidate))
+                int held = source.GetStock(candidate);
+                if (held <= most || !assignment.MayCarry(candidate) || !Provides(sourceDef, candidate))
                     continue;
                 int room = Room(destination, candidate, catalog);
                 if (room <= 0) continue;
                 resource = candidate;
                 destinationRoom = room;
-                return true;
+                most = held;
             }
-            resource = default;
-            destinationRoom = 0;
-            return false;
+            return most > 0;
         }
 
         // Anything that does not fit stays with the hauler, who retries next step instead of dropping it.
@@ -934,8 +974,26 @@ namespace TrollStrategy.Domain
                     (a.Phase == HaulPhase.ToDock || a.Phase == HaulPhase.Loading))
                     busy++;
             }
-            return Math.Max(0, catalog.Economy.LoadersPerDoor - busy);
+            return Math.Max(0, LoadersPerDoor(state, catalog) - busy);
         }
+
+        /// <summary>Haulers loading at one door at once: the economy's number plus the guild's widened doors.</summary>
+        public static int LoadersPerDoor(GameState state, GameContentCatalog catalog) =>
+            catalog.Economy.LoadersPerDoor + UpgradeRules.Total(state, catalog, UpgradeEffect.LoadersPerDoor);
+
+        /// <summary>Seconds a hauler takes to load at a door, after the guild's quick hands.</summary>
+        public static float LoadSeconds(GameState state, GameContentCatalog catalog) =>
+            UpgradeRules.Shorten(catalog.Economy.LoadSeconds,
+                UpgradeRules.Total(state, catalog, UpgradeEffect.HandlingTimePercent));
+
+        /// <summary>Seconds a hauler takes to hand its load over, after the guild's quick hands.</summary>
+        public static float UnloadSeconds(GameState state, GameContentCatalog catalog) =>
+            UpgradeRules.Shorten(catalog.Economy.UnloadSeconds,
+                UpgradeRules.Total(state, catalog, UpgradeEffect.HandlingTimePercent));
+
+        /// <summary>A hauler's stamina for carrying, in percent, with the guild's strong backs.</summary>
+        public static int HaulStamina(GameState state, UnitDefinition definition, GameContentCatalog catalog) =>
+            definition.Stamina + UpgradeRules.Total(state, catalog, UpgradeEffect.CarryPercent);
 
         private static bool HasSourceQueue(GameState state, string sourceId)
         {
@@ -1144,7 +1202,7 @@ namespace TrollStrategy.Domain
         {
             var building = state.Buildings.Find(b => b.Id == buildingId);
             if (building == null) return 0f;
-            var recipes = catalog.GetBuilding(building.Kind).Recipes;
+            var recipes = ActiveRecipes(building, catalog);
             return recipes.Count > 0 ? WorkPerSecond(state, buildingId, catalog) / recipes[0].Work : 0f;
         }
 
@@ -1177,8 +1235,13 @@ namespace TrollStrategy.Domain
         public static float UnitMovementSpeed(UnitDefinition unitDefinition, GameContentCatalog catalog)
         {
             if (unitDefinition == null || catalog == null) return 0f;
-            return (120f + unitDefinition.Speed * 12f) / 48f * catalog.Economy.CellSize;
+            return (120f + unitDefinition.Speed * 12f) / 48f * catalog.Economy.CellSize * catalog.Economy.WalkSpeedScale;
         }
+
+        /// <summary>A creature's walking speed in the colony, with the guild's light step.</summary>
+        public static float UnitMovementSpeed(GameState state, UnitDefinition unitDefinition, GameContentCatalog catalog) =>
+            UpgradeRules.Raise(UnitMovementSpeed(unitDefinition, catalog),
+                UpgradeRules.Total(state, catalog, UpgradeEffect.WalkSpeedPercent));
 
         public static Cell? FindFirstValidBuildingCell(GameState state, BuildingKind kind, GameContentCatalog catalog)
         {

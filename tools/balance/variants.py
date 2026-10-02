@@ -1,4 +1,4 @@
-"""Balance configs for campaign.py: the catalog before the 2026-10-01 pass and after it."""
+"""Balance configs for campaign.py: the catalog before the 2026-10-01 pass, after it, and the 2026-10-02 pass."""
 import copy
 
 M = "market"
@@ -177,4 +177,24 @@ def shipped():
     return make(c, rewards, goals)
 
 
-VARIANTS["shipped"] = shipped
+VARIANTS["pass1"] = shipped
+
+
+def shipped2():
+    """The 2026-10-02 pass (playtest backlog items 1, 4, 5, 19): slower work and walking, smaller buffers,
+    twice the goods to sell. What the content assets hold after it."""
+    cfg = shipped()
+    cfg["work_per_strength"] = 0.06   # EconomyConfig._workPerStrengthSecond, was 0.1
+    cfg["walk_scale"] = 0.8           # EconomyConfig._walkSpeedScale, was 1
+    b = cfg["buildings"]
+    for kind in ("mine", "field", "lumber", "smeltery", "farm", "tannery", "mill", "forge", "shields", "enchanter"):
+        b[kind]["cap"] //= 2
+    b["mine"]["cap_per_level"] = 25
+    doubled = {"Хлеб на рынок", "Железо в цене", "Кожа на продажу", "Доски", "Торговый путь"}
+    for q in cfg["quests"]:
+        if q["title"] in doubled:
+            q["goals"] = [(g[0], g[1], g[2] * 2) if g[0] == "sell" else (g[0], g[1] * 2) for g in q["goals"]]
+    return cfg
+
+
+VARIANTS["shipped"] = shipped2

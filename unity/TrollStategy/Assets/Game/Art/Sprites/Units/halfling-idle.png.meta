@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: 47e3b1361efb7394fafafa4b073bfd21
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7455640773535303843
+    second: halfling-idle_0
+  - first:
+      213: 371324963197219803
+    second: halfling-idle_1
+  - first:
+      213: 1558946513160833977
+    second: halfling-idle_2
+  - first:
+      213: -7958940387561966068
+    second: halfling-idle_3
+  - first:
+      213: -7291070816065286710
+    second: halfling-idle_4
+  - first:
+      213: 1831373820943499729
+    second: halfling-idle_5
+  - first:
+      213: -1009140201676825260
+    second: halfling-idle_6
+  - first:
+      213: 2921443940952433317
+    second: halfling-idle_7
+  - first:
+      213: -374134680993189218
+    second: halfling-idle_8
+  - first:
+      213: -6229728292954672409
+    second: halfling-idle_9
+  - first:
+      213: -2930925291753560628
+    second: halfling-idle_10
+  - first:
+      213: 3705967108354087290
+    second: halfling-idle_11
+  - first:
+      213: 948882406017043854
+    second: halfling-idle_12
+  - first:
+      213: 2252101420084101701
+    second: halfling-idle_13
+  - first:
+      213: 8245978425883402504
+    second: halfling-idle_14
+  - first:
+      213: 997934514595641500
+    second: halfling-idle_15
+  - first:
+      213: -3523557517220848976
+    second: halfling-idle_16
+  - first:
+      213: -411150933769357710
+    second: halfling-idle_17
+  - first:
+      213: -2836467279988821685
+    second: halfling-idle_18
+  - first:
+      213: 6455984506691099329
+    second: halfling-idle_19
+  - first:
+      213: 5229049352904747744
+    second: halfling-idle_20
+  - first:
+      213: 8868852267419341611
+    second: halfling-idle_21
+  - first:
+      213: -4614630930781530982
+    second: halfling-idle_22
+  - first:
+      213: 3206334330236261546
+    second: halfling-idle_23
+  - first:
+      213: 6479679052154773792
+    second: halfling-idle_24
+  - first:
+      213: -8089870694860084453
+    second: halfling-idle_25
+  - first:
+      213: -4104834049572973279
+    second: halfling-idle_26
+  - first:
+      213: -4096238243904835156
+    second: halfling-idle_27
+  - first:
+      213: 3120082831838280399
+    second: halfling-idle_28
+  - first:
+      213: -2731497680262353461
+    second: halfling-idle_29
+  - first:
+      213: -4637862232886364892
+    second: halfling-idle_30
+  - first:
+      213: 7108460637133458159
+    second: halfling-idle_31
+  - first:
+      213: -4178011101036663816
+    second: halfling-idle_32
+  - first:
+      213: -2094714820179687102
+    second: halfling-idle_33
+  - first:
+      213: -7756144130107879490
+    second: halfling-idle_34
+  - first:
+      213: -7706743785365930980
+    second: halfling-idle_35
+  - first:
+      213: 4342478498160759828
+    second: halfling-idle_36
+  - first:
+      213: 958659266963803449
+    second: halfling-idle_37
+  - first:
+      213: -202547112875793353
+    second: halfling-idle_38
+  - first:
+      213: 1859689756665514758
+    second: halfling-idle_39
+  - first:
+      213: 922013928662945745
+    second: halfling-idle_40
+  - first:
+      213: -3514390045690020850
+    second: halfling-idle_41
+  - first:
+      213: -7691895007498805114
+    second: halfling-idle_42
+  - first:
+      213: -1037855446004510663
+    second: halfling-idle_43
+  - first:
+      213: -4781385346778857708
+    second: halfling-idle_44
+  - first:
+      213: 3881222945604763884
+    second: halfling-idle_45
+  - first:
+      213: -1708204974586585896
+    second: halfling-idle_46
+  - first:
+      213: 4963909908140915002
+    second: halfling-idle_47
+  - first:
+      213: 5209882408725464222
+    second: halfling-idle_48
+  - first:
+      213: -5912236761125741315
+    second: halfling-idle_49
+  - first:
+      213: -8741672715593460651
+    second: halfling-idle_50
+  - first:
+      213: 4162380615744809453
+    second: halfling-idle_51
+  - first:
+      213: -7339724968623435527
+    second: halfling-idle_52
+  - first:
+      213: 5758877389609733374
+    second: halfling-idle_53
+  - first:
+      213: -2828823492709985261
+    second: halfling-idle_54
+  - first:
+      213: -2620173498211725835
+    second: halfling-idle_55
+  - first:
+      213: -3809794127021026687
+    second: halfling-idle_56
+  - first:
+      213: -482602151996128442
+    second: halfling-idle_57
+  - first:
+      213: 5980211420411683041
+    second: halfling-idle_58
+  - first:
+      213: 4700214211894710289
+    second: halfling-idle_59
+  - first:
+      213: 8336164335412204090
+    second: halfling-idle_60
+  - first:
+      213: -8706861607623245242
+    second: halfling-idle_61
+  - first:
+      213: 7732139935461050189
+    second: halfling-idle_62
+  - first:
+      213: 1010119595210453968
+    second: halfling-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: halfling_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa009e8956054634eae77022aa6ecf1d
+      internalID: 1390107035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de542d7296ca3a64991bc7880d7f4811
+      internalID: 160479221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e9827e7e8007cb4b8c0e108693a4d9d
+      internalID: -742905803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dce8acdd9995f1e469be58272c0f3631
+      internalID: 206569004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a7bb9414f96d1c4b80d8062b22e9af7
+      internalID: 279351673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 647033b9ba7705040b68c5342bc47dce
+      internalID: -819631185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1aa73b490ea9124ea25710e3db5dc91
+      internalID: -476505899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1b1ceba4207ece4a9703e2f2fce72de
+      internalID: 1158174584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cf63d7c49f55bd4aaef2cd70dc719f7
+      internalID: 1322265865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa57dea0f8bae934d8e1c8047a83600f
+      internalID: -172598317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e7c8e94eead00e4d9d01d4401c69cff
+      internalID: 1489256726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b4dc10442164a04eb123e342a49a2e2
+      internalID: -676509436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b41829bc49882c439b6a3743de87c48
+      internalID: -505627316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 084c4ff54ed40514787b5d3529f2edc0
+      internalID: -262705307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b8bbe606820eb9418c561c1d344b941
+      internalID: -1925946241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halfling_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e12492171651e942bd319e350b82818
+      internalID: 1165930990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 402e44f66763463478c3c954342ca61d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      halfling_idle_0: 1390107035
+      halfling_idle_1: 160479221
+      halfling_idle_10: 1489256726
+      halfling_idle_11: -676509436
+      halfling_idle_12: -505627316
+      halfling_idle_13: -262705307
+      halfling_idle_14: -1925946241
+      halfling_idle_15: 1165930990
+      halfling_idle_2: -742905803
+      halfling_idle_3: 206569004
+      halfling_idle_4: 279351673
+      halfling_idle_5: -819631185
+      halfling_idle_6: -476505899
+      halfling_idle_7: 1158174584
+      halfling_idle_8: 1322265865
+      halfling_idle_9: -172598317
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

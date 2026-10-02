@@ -26,7 +26,7 @@ namespace TrollStrategy.Tests
             _catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath);
             Assert.That(_catalog, Is.Not.Null, CatalogPath);
             _progression = _catalog.Progression;
-            Assert.That(_progression, Is.Not.Null, "The catalog must link Progression.asset (TrollStrategy/Setup Progression Content)");
+            Assert.That(_progression, Is.Not.Null, "The catalog must link Progression.asset (TrollStrategy/Dev/Setup Progression Content)");
         }
 
         [Test]
@@ -65,9 +65,14 @@ namespace TrollStrategy.Tests
             foreach (var building in _catalog.Buildings.Where(b => b != null && b.Constructible))
                 Assert.That(unlocks.Count(r => r.Kind == QuestRewardKind.UnlockBuilding && r.Building == building.Kind),
                     Is.EqualTo(1), building.DisplayName);
-            foreach (var unit in _catalog.Units.Where(u => u != null && !_progression.StartingUnits.Contains(u.Kind)))
-                Assert.That(unlocks.Count(r => r.Kind == QuestRewardKind.UnlockUnit && r.Unit == unit.Kind),
+            // a creature that joins the colony is opened once: by a quest, or by its first defeat on the arena
+            foreach (var unit in _catalog.Units.Where(u => u != null && u.Hireable && !_progression.StartingUnits.Contains(u.Kind)))
+                Assert.That(unlocks.Count(r => r.Kind == QuestRewardKind.UnlockUnit && r.Unit == unit.Kind) +
+                            _catalog.Missions.Count(m => m != null && m.UnlockUnit == unit.Kind),
                     Is.EqualTo(1), unit.DisplayName);
+            foreach (var unit in _catalog.Units.Where(u => u != null && !u.Hireable))
+                Assert.That(unlocks.Any(r => r.Kind == QuestRewardKind.UnlockUnit && r.Unit == unit.Kind), Is.False,
+                    $"{unit.DisplayName} lives on the arena only");
             Assert.That(unlocks.Count(r => r.Kind == QuestRewardKind.UnlockMission && r.MissionId == FirstMission),
                 Is.EqualTo(1));
         }

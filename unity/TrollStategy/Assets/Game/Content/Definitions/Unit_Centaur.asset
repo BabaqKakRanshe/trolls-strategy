@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1d37bae44e2a7d44bc62b78f5fb508b, type: 3}
+  m_Name: Unit_Centaur
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.UnitDefinition
+  _kind: 23
+  _displayName: "\u041A\u0435\u043D\u0442\u0430\u0432\u0440"
+  _description: "\u0411\u044B\u0441\u0442\u0440\u044B\u0439 \u043B\u0443\u0447\u043D\u0438\u043A: \u0434\u0435\u0440\u0436\u0438\u0442\u0435 \u0435\u0433\u043E \u043F\u043E\u0434\u0430\u043B\u044C\u0448\u0435 \u043E\u0442 \u0441\u043B\u0430\u0431\u044B\u0445."
+  _names: []
+  _epithets: []
+  _price: 0
+  _strength: 1
+  _speed: 7
+  _stamina: 100
+  _favoredBuildings: 
+  _favoredWorkPercent: 0
+  _hireable: 0
+  _combatHealth: 60
+  _combatDamage: 7
+  _combatArmor: 2
+  _attackIntervalMs: 2000
+  _attackRange: 4
+  _portraitSprite: {fileID: 1742029463, guid: c386ef002a49d914cbffef22011d5493, type: 3}
+  _prefab: {fileID: 4637954571884214035, guid: 8da023c20bcf5104d9d0a2e4c87a9c93, type: 3}

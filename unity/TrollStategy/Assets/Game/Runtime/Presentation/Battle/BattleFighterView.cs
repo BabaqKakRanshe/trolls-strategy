@@ -23,6 +23,8 @@ namespace TrollStrategy.Presentation.Battle
         // how high a fighter the player drags floats over the ground
         private const float CarryLift = .3f;
         private const float BarHeight = .13f / 1.6f;
+        // the gear row pads the 14 px bar by 11 px above and below (WorldUi.uss .hp-bar__row)
+        private const float GearPadding = BarHeight * 11f / 14f;
         private const float IdleFrame = .2f;
         private const float WalkFrame = .1f;
         private const float ActionFrame = .1f;
@@ -159,8 +161,10 @@ namespace TrollStrategy.Presentation.Battle
             _lungeDirection = flat.sqrMagnitude > .0001f ? flat.normalized : Vector3.right;
             _melee = melee;
             SetPose(Pose.Attack);
-            // release on the third frame of the swing
-            return melee ? .22f : .2f;
+            // release on the third frame of the swing; the weapon's token flashes as the blow leaves
+            float release = melee ? .22f : .2f;
+            _gearPunchIn = release;
+            return release;
         }
 
         /// <summary>Shows a landed blow: flash, knockback, hurt pose, HP bar; the pose holds for <paramref name="freeze"/> s.</summary>
@@ -267,6 +271,8 @@ namespace TrollStrategy.Presentation.Battle
             _poseTime += dt;
             _knockTime += dt;
             _barPunch = Mathf.MoveTowards(_barPunch, 0f, dt / .25f);
+            if (_gearPunchIn > 0f && (_gearPunchIn -= dt) <= 0f) _gearPunch = 1f;
+            _gearPunch = Mathf.MoveTowards(_gearPunch, 0f, dt / .3f);
             if (_chipDelay > 0f) _chipDelay -= dt;
             else _chipHp = Mathf.MoveTowards(_chipHp, _hp, dt * _maxHp * 1.1f);
 
@@ -305,7 +311,7 @@ namespace TrollStrategy.Presentation.Battle
             float scale = _spriteScale > 0f ? _sprite.transform.localScale.y / _spriteScale : 1f;
             _sprite.transform.position = transform.position + Vector3.up * GroundLift + BodyUp * (_feet * scale);
             // the bar's document hangs from its bottom edge: the bar itself stays centred where it always was
-            _bar.transform.position = AboveHead - BodyUp * (BarHeight * .5f + .03f);
+            _bar.transform.position = AboveHead - BodyUp * (BarHeight * .5f + .03f + GearPadding);
             // the hitbox leans with the billboard, so a click on the head still means this fighter
             _hitbox.rotation = Quaternion.FromToRotation(Vector3.up, BodyUp);
             _hitbox.position = transform.position + Vector3.up * GroundLift;
@@ -370,6 +376,7 @@ namespace TrollStrategy.Presentation.Battle
             SetBarSegment(_barChip, _chipHp / _maxHp);
             SetBarSegment(_barFill, (float)_hp / _maxHp);
             _barFill.style.backgroundColor = Color.Lerp(Color.white, _enemy ? EnemyFill : PlayerFill, 1f - _barPunch * .7f);
+            if (_weaponToken != null) _weaponToken.style.scale = new Scale(Vector3.one * (1f + Ease.OutCubic(_gearPunch) * .35f));
         }
 
         private static float LungeOffset(float t, bool melee)
@@ -417,6 +424,79 @@ namespace TrollStrategy.Presentation.Battle
             _height = Mathf.Max(.4f, (max - min) * _spriteScale);
         }
 
+        private VisualElement _gearLeft, _gearRight, _weaponToken;
+        private float _gearPunch, _gearPunchIn;
+        private readonly List<(EquipmentSlot Slot, bool Empty, bool Enchanted)> _gearShown = new();
+
+        /// <summary>The tokens at the HP bar, weapon first: slot, a free slot shown as a hollow, enchanted.</summary>
+        public IReadOnlyList<(EquipmentSlot Slot, bool Empty, bool Enchanted)> GearTokens => _gearShown;
+
+        /// <summary>
+        /// Shows what the fighter wears as tokens at the sides of its HP bar: the weapon on the left, armour and
+        /// helmet on the right, in <paramref name="slots"/> order. While the squad is placed (<paramref name="showEmpty"/>)
+        /// a free slot shows as a hollow with its pictogram; only slots some item of the game fits are offered.
+        /// </summary>
+        public void SetGear(IReadOnlyList<WornItem> worn, IReadOnlyList<EquipmentSlot> slots, bool showEmpty)
+        {
+            if (_gearLeft == null) return;
+            _gearLeft.Clear();
+            _gearRight.Clear();
+            _gearShown.Clear();
+            _weaponToken = null;
+            if (slots == null) return;
+            foreach (var slot in slots)
+            {
+                WornItem? item = null;
+                if (worn != null)
+                    foreach (var candidate in worn)
+                        if (candidate.Slot == slot && candidate.Icon != null)
+                        {
+                            item = candidate;
+                            break;
+                        }
+                if (item == null && !showEmpty) continue;
+                var token = item is WornItem it ? GearToken(it) : EmptyGearToken(slot);
+                (slot == EquipmentSlot.Weapon ? _gearLeft : _gearRight).Add(token);
+                if (slot == EquipmentSlot.Weapon && item != null) _weaponToken = token;
+                _gearShown.Add((slot, item == null, item?.Enchanted ?? false));
+            }
+        }
+
+        /// <summary>The battle starts: free slots stop asking for items.</summary>
+        public void HideEmptyGear()
+        {
+            foreach (var side in new[] { _gearLeft, _gearRight })
+            {
+                if (side == null) continue;
+                var empty = new List<VisualElement>();
+                foreach (var child in side.Children())
+                    if (child.ClassListContains("hp-gear--empty")) empty.Add(child);
+                foreach (var child in empty) child.RemoveFromHierarchy();
+            }
+            _gearShown.RemoveAll(token => token.Empty);
+        }
+
+        private static VisualElement GearToken(WornItem item)
+        {
+            var token = new VisualElement { pickingMode = PickingMode.Ignore };
+            token.AddToClassList("hp-gear");
+            var art = new Image { sprite = item.Icon, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+            art.AddToClassList("hp-gear__art");
+            token.Add(art);
+            if (item.Enchanted) BarPart(token, "hp-gear__rim");
+            return token;
+        }
+
+        private static VisualElement EmptyGearToken(EquipmentSlot slot)
+        {
+            var token = new VisualElement { pickingMode = PickingMode.Ignore };
+            token.AddToClassList("hp-gear");
+            token.AddToClassList("hp-gear--empty");
+            var glyph = BarPart(token, "glyph");
+            glyph.AddToClassList(slot == EquipmentSlot.Weapon ? "glyph--damage" : slot == EquipmentSlot.Helmet ? "glyph--helmet" : "glyph--armor");
+            return token;
+        }
+
         private void Build()
         {
             _sprite = Child<SpriteRenderer>("Sprite");
@@ -438,7 +518,13 @@ namespace TrollStrategy.Presentation.Battle
             _bar = WorldPanel.Create("HpBar", transform, 33, Pivot.BottomCenter, "hp-bar");
             _bar.KeepReadable = false;      // the battle camera does not zoom; the bar scales with the fighter
             _barLabel = _bar.AddLabel("world-label hp-bar__label");
-            var track = BarPart(_bar.Content, "hp-bar__track");
+            // the gear hangs at the bar's sides, so the bar stays centred over the fighter however much it wears
+            var row = BarPart(_bar.Content, "hp-bar__row");
+            var track = BarPart(row, "hp-bar__track");
+            _gearLeft = BarPart(row, "hp-bar__gear");
+            _gearLeft.AddToClassList("hp-bar__gear--left");
+            _gearRight = BarPart(row, "hp-bar__gear");
+            _gearRight.AddToClassList("hp-bar__gear--right");
             var inside = BarPart(track, "hp-bar__inside");
             _barChip = BarPart(inside, "hp-bar__chip");
             _barFill = BarPart(inside, "hp-bar__fill");

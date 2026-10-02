@@ -15,7 +15,7 @@ namespace TrollStrategy.Editor.Tools
         private GameContentCatalog _catalog;
         private Vector2 _scroll;
 
-        [MenuItem("TrollStrategy/Tools/Creature Size Tool")]
+        [MenuItem("TrollStrategy/Dev/Tools/Creature Size Tool")]
         private static void Open()
         {
             var window = GetWindow<CreatureSizeToolWindow>();

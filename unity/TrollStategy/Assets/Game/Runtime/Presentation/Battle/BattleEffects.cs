@@ -47,7 +47,7 @@ namespace TrollStrategy.Presentation.Battle
         {
             var panel = TakeText();
             var label = (Label)panel.Content[0];
-            label.text = text;
+            label.text = Localization.T(text);
             label.style.color = color;
             label.style.fontSize = size * FontPixels;
             panel.transform.position = position;

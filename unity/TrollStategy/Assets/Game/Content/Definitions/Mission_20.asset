@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f770e7998848b8b16dfc39b01af5c8, type: 3}
+  m_Name: Mission_20
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.BattleMissionDefinition
+  _missionId: mission-20
+  _displayName: "20. \u041A\u0435\u043D\u0442\u0430\u0432\u0440\u044B"
+  _level: 20
+  _enemyHealthPercent: 176
+  _enemyDamageBonus: 2
+  _enemyArmorBonus: 1
+  _unlocksUnit: 0
+  _unlockUnit: 0
+  _width: 9
+  _height: 5
+  _maxPlayerUnits: 6
+  _playerDeployment:
+  - X: 0
+    Y: 0
+  - X: 1
+    Y: 0
+  - X: 0
+    Y: 1
+  - X: 1
+    Y: 1
+  - X: 0
+    Y: 2
+  - X: 1
+    Y: 2
+  - X: 0
+    Y: 3
+  - X: 1
+    Y: 3
+  - X: 0
+    Y: 4
+  - X: 1
+    Y: 4
+  _enemyDeployment:
+  - X: 7
+    Y: 0
+  - X: 8
+    Y: 0
+  - X: 7
+    Y: 1
+  - X: 8
+    Y: 1
+  - X: 7
+    Y: 2
+  - X: 8
+    Y: 2
+  - X: 7
+    Y: 3
+  - X: 8
+    Y: 3
+  - X: 7
+    Y: 4
+  - X: 8
+    Y: 4
+  _blockedCells: []
+  _enemies:
+  - Kind: 23
+    Cell:
+      X: 8
+      Y: 0
+  - Kind: 23
+    Cell:
+      X: 8
+      Y: 1
+  - Kind: 23
+    Cell:
+      X: 8
+      Y: 2
+  - Kind: 4
+    Cell:
+      X: 8
+      Y: 3
+  - Kind: 4
+    Cell:
+      X: 8
+      Y: 4
+  _firstWinGold: 1390
+  _firstWinGoldMax: 2220
+  _repeatWinGold: 830
+  _repeatWinGoldMax: 1330
+  _unlockAfterActiveSeconds: 0
+  _cooldownActiveSeconds: 120
+  _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}
+  _obstaclePrefab: {fileID: 0}

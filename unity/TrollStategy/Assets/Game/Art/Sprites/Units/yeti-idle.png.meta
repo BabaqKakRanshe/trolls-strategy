@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: 21a5bd1af65a34a49844c8536463cca6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1090934706097597379
+    second: yeti-idle_0
+  - first:
+      213: 226011703523840883
+    second: yeti-idle_1
+  - first:
+      213: -863447093071158954
+    second: yeti-idle_2
+  - first:
+      213: 4043369872986103362
+    second: yeti-idle_3
+  - first:
+      213: 6949540286651130774
+    second: yeti-idle_4
+  - first:
+      213: -8116124670209810970
+    second: yeti-idle_5
+  - first:
+      213: -4529372297439261935
+    second: yeti-idle_6
+  - first:
+      213: 2166287869891937065
+    second: yeti-idle_7
+  - first:
+      213: -3757035986359395686
+    second: yeti-idle_8
+  - first:
+      213: 9158089878768503708
+    second: yeti-idle_9
+  - first:
+      213: -2956619562188644965
+    second: yeti-idle_10
+  - first:
+      213: 7852859897499191863
+    second: yeti-idle_11
+  - first:
+      213: -4460973477309833778
+    second: yeti-idle_12
+  - first:
+      213: -3420200720044645196
+    second: yeti-idle_13
+  - first:
+      213: -8973605700874958846
+    second: yeti-idle_14
+  - first:
+      213: 9109832606143159329
+    second: yeti-idle_15
+  - first:
+      213: 4755816396153465150
+    second: yeti-idle_16
+  - first:
+      213: 379188590832393712
+    second: yeti-idle_17
+  - first:
+      213: -1577166340406931693
+    second: yeti-idle_18
+  - first:
+      213: 8062186370681407791
+    second: yeti-idle_19
+  - first:
+      213: -4942167147027307144
+    second: yeti-idle_20
+  - first:
+      213: 8508447089098667769
+    second: yeti-idle_21
+  - first:
+      213: 3704461530238706000
+    second: yeti-idle_22
+  - first:
+      213: 1995462961995951429
+    second: yeti-idle_23
+  - first:
+      213: 4759311288305781736
+    second: yeti-idle_24
+  - first:
+      213: -3472715228859319914
+    second: yeti-idle_25
+  - first:
+      213: 3071149410366731211
+    second: yeti-idle_26
+  - first:
+      213: 1498279519508224113
+    second: yeti-idle_27
+  - first:
+      213: 1824339561897209338
+    second: yeti-idle_28
+  - first:
+      213: -4679839862412846271
+    second: yeti-idle_29
+  - first:
+      213: -9046079687058777069
+    second: yeti-idle_30
+  - first:
+      213: -4787524589210043931
+    second: yeti-idle_31
+  - first:
+      213: 5720997159287817654
+    second: yeti-idle_32
+  - first:
+      213: 6165535896877827392
+    second: yeti-idle_33
+  - first:
+      213: -182573029874892538
+    second: yeti-idle_34
+  - first:
+      213: -5186234069098615953
+    second: yeti-idle_35
+  - first:
+      213: -4098435330897848216
+    second: yeti-idle_36
+  - first:
+      213: -8533258227151987293
+    second: yeti-idle_37
+  - first:
+      213: 9033999993476285425
+    second: yeti-idle_38
+  - first:
+      213: 771658738734271276
+    second: yeti-idle_39
+  - first:
+      213: 7502082776414629767
+    second: yeti-idle_40
+  - first:
+      213: -6119586863968686424
+    second: yeti-idle_41
+  - first:
+      213: -7323473300064423539
+    second: yeti-idle_42
+  - first:
+      213: 154697280494835499
+    second: yeti-idle_43
+  - first:
+      213: 8275888237987538981
+    second: yeti-idle_44
+  - first:
+      213: -1609317234192631053
+    second: yeti-idle_45
+  - first:
+      213: 2331050752108850359
+    second: yeti-idle_46
+  - first:
+      213: -8329969573331624164
+    second: yeti-idle_47
+  - first:
+      213: -43102321824570040
+    second: yeti-idle_48
+  - first:
+      213: -6491157516337203987
+    second: yeti-idle_49
+  - first:
+      213: 7300089219971698189
+    second: yeti-idle_50
+  - first:
+      213: -4004681451691478450
+    second: yeti-idle_51
+  - first:
+      213: -1523944436754101579
+    second: yeti-idle_52
+  - first:
+      213: -7493453536121279727
+    second: yeti-idle_53
+  - first:
+      213: 7691016820764228499
+    second: yeti-idle_54
+  - first:
+      213: -5937949298565527637
+    second: yeti-idle_55
+  - first:
+      213: -4744496917509598939
+    second: yeti-idle_56
+  - first:
+      213: 9047552242690400142
+    second: yeti-idle_57
+  - first:
+      213: 4985776824377308325
+    second: yeti-idle_58
+  - first:
+      213: 5416444644041146578
+    second: yeti-idle_59
+  - first:
+      213: 5903906791741178534
+    second: yeti-idle_60
+  - first:
+      213: 5470432165266541141
+    second: yeti-idle_61
+  - first:
+      213: 2959882282128414923
+    second: yeti-idle_62
+  - first:
+      213: 8262543682519981226
+    second: yeti-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: yeti_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c92d052a7fb2b6847a5d7ae33b5874aa
+      internalID: -1155427413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74fdf58f1bd4c4f4b953332b372de11b
+      internalID: 484516886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fb01672e520b9c4998bd8f9f02a68bc
+      internalID: 1463234825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51bed7f1232ea484fa26f977668fab38
+      internalID: -1865374674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3c646c7dac7dec4e8a4c705b89e62a3
+      internalID: 2108766514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73a7f30373acafc42b06a980075af31e
+      internalID: -18015338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f796a0d190854c04c906cb8960627d1d
+      internalID: -567996080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b9257005b436cf4a8e355f1d1ab30f7
+      internalID: 1494879224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e89514e179f7454181f354842fc3b5b
+      internalID: -1108839175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a5b6e21a4119574b8386d48ec024ae9
+      internalID: 144498663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a24f70da8984e84094ecc0fdb07b705
+      internalID: -1696689842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49c0456b047ae2e43be59e26562895fc
+      internalID: -863381634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 164dd81eff925d748b1857359a5d1b48
+      internalID: -1047771133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6803cc93d50e34041b87bde3bb21fd9d
+      internalID: 1236267061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5eff22526dd09946abe0cc47e1e0b24
+      internalID: -747444222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: yeti_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 684396396baf71848ac9e9370e9eb2fe
+      internalID: 1490636304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0547e48aac0a61341aae0ad5349e5cf6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      yeti_idle_0: -1155427413
+      yeti_idle_1: 484516886
+      yeti_idle_10: -1696689842
+      yeti_idle_11: -863381634
+      yeti_idle_12: -1047771133
+      yeti_idle_13: 1236267061
+      yeti_idle_14: -747444222
+      yeti_idle_15: 1490636304
+      yeti_idle_2: 1463234825
+      yeti_idle_3: -1865374674
+      yeti_idle_4: 2108766514
+      yeti_idle_5: -18015338
+      yeti_idle_6: -567996080
+      yeti_idle_7: 1494879224
+      yeti_idle_8: -1108839175
+      yeti_idle_9: 144498663
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

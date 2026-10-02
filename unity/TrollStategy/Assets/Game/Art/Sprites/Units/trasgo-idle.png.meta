@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: d00be1787f09c97458a9b8a10c8305f6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5980998659355531253
+    second: trasgo-idle_0
+  - first:
+      213: -2068652999060250348
+    second: trasgo-idle_1
+  - first:
+      213: -3135992933435101493
+    second: trasgo-idle_2
+  - first:
+      213: -5957116674958502756
+    second: trasgo-idle_3
+  - first:
+      213: 4195577670349855220
+    second: trasgo-idle_4
+  - first:
+      213: -1603951749544130164
+    second: trasgo-idle_5
+  - first:
+      213: -3392357562528189879
+    second: trasgo-idle_6
+  - first:
+      213: 8424482972043714343
+    second: trasgo-idle_7
+  - first:
+      213: -7525091746292643071
+    second: trasgo-idle_8
+  - first:
+      213: -1270307715885720574
+    second: trasgo-idle_9
+  - first:
+      213: 8319097203218272649
+    second: trasgo-idle_10
+  - first:
+      213: 4758799497232364366
+    second: trasgo-idle_11
+  - first:
+      213: 4635420723910655910
+    second: trasgo-idle_12
+  - first:
+      213: 8273091464503797503
+    second: trasgo-idle_13
+  - first:
+      213: -8571796971554623392
+    second: trasgo-idle_14
+  - first:
+      213: -9219863145447730838
+    second: trasgo-idle_15
+  - first:
+      213: -6556623715699276720
+    second: trasgo-idle_16
+  - first:
+      213: 3843353243602798423
+    second: trasgo-idle_17
+  - first:
+      213: 2713313592169793372
+    second: trasgo-idle_18
+  - first:
+      213: -3423909783231001530
+    second: trasgo-idle_19
+  - first:
+      213: -6692135969982357000
+    second: trasgo-idle_20
+  - first:
+      213: 6577082552513155745
+    second: trasgo-idle_21
+  - first:
+      213: -8637990590148683690
+    second: trasgo-idle_22
+  - first:
+      213: 4400926811416793062
+    second: trasgo-idle_23
+  - first:
+      213: -5658693628448153115
+    second: trasgo-idle_24
+  - first:
+      213: -2164834753634350497
+    second: trasgo-idle_25
+  - first:
+      213: -196463203845972540
+    second: trasgo-idle_26
+  - first:
+      213: -1132886904358139477
+    second: trasgo-idle_27
+  - first:
+      213: 1589406697613946762
+    second: trasgo-idle_28
+  - first:
+      213: 4511374259315471953
+    second: trasgo-idle_29
+  - first:
+      213: -3414978308373026410
+    second: trasgo-idle_30
+  - first:
+      213: 3832642978512957289
+    second: trasgo-idle_31
+  - first:
+      213: -4851878048694240682
+    second: trasgo-idle_32
+  - first:
+      213: -6293506392987642491
+    second: trasgo-idle_33
+  - first:
+      213: 3456960263388040044
+    second: trasgo-idle_34
+  - first:
+      213: -1874687538241733780
+    second: trasgo-idle_35
+  - first:
+      213: 6716337878389622456
+    second: trasgo-idle_36
+  - first:
+      213: 683709713556173581
+    second: trasgo-idle_37
+  - first:
+      213: 8618692438602119863
+    second: trasgo-idle_38
+  - first:
+      213: 549343247651284453
+    second: trasgo-idle_39
+  - first:
+      213: -8910130427588207150
+    second: trasgo-idle_40
+  - first:
+      213: 7148904538656924443
+    second: trasgo-idle_41
+  - first:
+      213: 4873605083877141301
+    second: trasgo-idle_42
+  - first:
+      213: -2147883408036308159
+    second: trasgo-idle_43
+  - first:
+      213: 6523295448123754548
+    second: trasgo-idle_44
+  - first:
+      213: -6819361797837760396
+    second: trasgo-idle_45
+  - first:
+      213: -5888680108391365769
+    second: trasgo-idle_46
+  - first:
+      213: -4697947378564353003
+    second: trasgo-idle_47
+  - first:
+      213: 4720788878665798338
+    second: trasgo-idle_48
+  - first:
+      213: -6687849327291055593
+    second: trasgo-idle_49
+  - first:
+      213: -7766992869214034363
+    second: trasgo-idle_50
+  - first:
+      213: 1483579402422636368
+    second: trasgo-idle_51
+  - first:
+      213: 3159955770056362384
+    second: trasgo-idle_52
+  - first:
+      213: -9058953819322136050
+    second: trasgo-idle_53
+  - first:
+      213: -8718940719570857884
+    second: trasgo-idle_54
+  - first:
+      213: 1894866171487978638
+    second: trasgo-idle_55
+  - first:
+      213: -3296658481564843767
+    second: trasgo-idle_56
+  - first:
+      213: -525035253461494289
+    second: trasgo-idle_57
+  - first:
+      213: 4844544163245166995
+    second: trasgo-idle_58
+  - first:
+      213: -4988665289791908921
+    second: trasgo-idle_59
+  - first:
+      213: -5775384404127894429
+    second: trasgo-idle_60
+  - first:
+      213: -6779620262460098071
+    second: trasgo-idle_61
+  - first:
+      213: -2370249843832074175
+    second: trasgo-idle_62
+  - first:
+      213: 166508287018119984
+    second: trasgo-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: trasgo_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14df0f231ae535f4e9b5219aa34bd33c
+      internalID: 2131491648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1899dd105286284081ef7f5563d09ee
+      internalID: 1643701411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a97fd4e7f141f7049afa5f459c183ad2
+      internalID: -1583695479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e859a498829671f419785994590663f2
+      internalID: 2061607998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 308befe3240b02947803e64a07f64ba4
+      internalID: 1947290398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e490711819beea4faf12943cdabb48f
+      internalID: 309026123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88f22655da4e0354d959ff7fae2635cd
+      internalID: -616232954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11ba545f6c631e54fbde72e41c5d30de
+      internalID: 1636680865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b1349f8b9fb3304bb20bf134f131111
+      internalID: -156576179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 307ab0f3793340b4298fd03efc23a96a
+      internalID: -389474635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e5a0fa1c7786ac468dd3234be8e98d5
+      internalID: 1966162205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee56f373574d8834bbbb7a239b63c272
+      internalID: 638779317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff29e5be88168d34986a816fe184ae57
+      internalID: 1609970976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1505f04112d25b447a5241be9fad8727
+      internalID: -424039850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 278431070a9ea4f4e94ef7409e13d182
+      internalID: -697879003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: trasgo_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca2a089a63fc6924d974c2126c48e5ac
+      internalID: 848114773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f6c823302ae1cd04493677c8b74c789d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      trasgo_idle_0: 2131491648
+      trasgo_idle_1: 1643701411
+      trasgo_idle_10: 1966162205
+      trasgo_idle_11: 638779317
+      trasgo_idle_12: 1609970976
+      trasgo_idle_13: -424039850
+      trasgo_idle_14: -697879003
+      trasgo_idle_15: 848114773
+      trasgo_idle_2: -1583695479
+      trasgo_idle_3: 2061607998
+      trasgo_idle_4: 1947290398
+      trasgo_idle_5: 309026123
+      trasgo_idle_6: -616232954
+      trasgo_idle_7: 1636680865
+      trasgo_idle_8: -156576179
+      trasgo_idle_9: -389474635
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

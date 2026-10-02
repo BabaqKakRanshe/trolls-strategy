@@ -20,7 +20,7 @@ namespace TrollStrategy.Editor.Setup
             ("Assets/Game/Prefabs/Units/Goblin.prefab", "goblin"),
         };
 
-        [MenuItem("TrollStrategy/Units/Setup Combat Animations")]
+        [MenuItem("TrollStrategy/Dev/Units/Setup Combat Animations")]
         public static void Setup()
         {
             AssetSlicer.SliceUnits();

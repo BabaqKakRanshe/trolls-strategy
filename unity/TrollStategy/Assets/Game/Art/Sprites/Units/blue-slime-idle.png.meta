@@ -1,0 +1,414 @@
+fileFormatVersion: 2
+guid: 5871385e52b5dbd44a5622cb9fcdd96d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2181870496628499804
+    second: blue-slime-idle_0
+  - first:
+      213: -8797009276308713547
+    second: blue-slime-idle_1
+  - first:
+      213: 7813908681969011683
+    second: blue-slime-idle_2
+  - first:
+      213: 3868938660779609117
+    second: blue-slime-idle_3
+  - first:
+      213: 4852568847576169920
+    second: blue-slime-idle_4
+  - first:
+      213: 2707855656279371391
+    second: blue-slime-idle_5
+  - first:
+      213: 1597853808177194046
+    second: blue-slime-idle_6
+  - first:
+      213: -5339408815103824576
+    second: blue-slime-idle_7
+  - first:
+      213: 531821934487287843
+    second: blue-slime-idle_8
+  - first:
+      213: 551148170551520786
+    second: blue-slime-idle_9
+  - first:
+      213: 7712750954331284242
+    second: blue-slime-idle_10
+  - first:
+      213: 1056500768024915561
+    second: blue-slime-idle_11
+  - first:
+      213: -2065588245735035947
+    second: blue-slime-idle_12
+  - first:
+      213: -3190568547924830476
+    second: blue-slime-idle_13
+  - first:
+      213: 8871748286985994015
+    second: blue-slime-idle_14
+  - first:
+      213: 8338458136306699520
+    second: blue-slime-idle_15
+  - first:
+      213: 8112246991613728756
+    second: blue-slime-idle_16
+  - first:
+      213: -4057019094022173242
+    second: blue-slime-idle_17
+  - first:
+      213: -5483743373193336180
+    second: blue-slime-idle_18
+  - first:
+      213: -6523286739179649593
+    second: blue-slime-idle_19
+  - first:
+      213: 3048065306218015155
+    second: blue-slime-idle_20
+  - first:
+      213: 4206334736993524270
+    second: blue-slime-idle_21
+  - first:
+      213: -6924684507380682880
+    second: blue-slime-idle_22
+  - first:
+      213: -5795166605981551111
+    second: blue-slime-idle_23
+  - first:
+      213: -5714350308463746260
+    second: blue-slime-idle_24
+  - first:
+      213: -458125332682211835
+    second: blue-slime-idle_25
+  - first:
+      213: 503931359400043511
+    second: blue-slime-idle_26
+  - first:
+      213: 3012104470290605928
+    second: blue-slime-idle_27
+  - first:
+      213: -7674518634997757707
+    second: blue-slime-idle_28
+  - first:
+      213: 7717938730486368831
+    second: blue-slime-idle_29
+  - first:
+      213: 3904168849166502533
+    second: blue-slime-idle_30
+  - first:
+      213: -8592209264674044469
+    second: blue-slime-idle_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: blue-slime_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a783bbc0a3db3514bb1a39f4a5ac391a
+      internalID: 2013672045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-slime_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 216ddd68efa19324bad4e2f0b3b3f2cb
+      internalID: 641647960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-slime_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abb2eb85356be7046bdeaea05d276582
+      internalID: 750343050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-slime_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b1d94b9aa112734cbacefd299b07393
+      internalID: -1772679103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-slime_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5538245e42f122c41bf5a3c93d48b0e6
+      internalID: -1497481581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-slime_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03f8a339a1fed7c4296df4721a87c767
+      internalID: -502340463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-slime_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5d25be829c545f43a1d32a5a2e1e3ae
+      internalID: 1172827409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-slime_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47cd5d3b40d62204cb4172f47c3a2b55
+      internalID: 1282683371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 7a636985950e9a345abf1b11d166198d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      blue-slime_idle_0: 2013672045
+      blue-slime_idle_1: 641647960
+      blue-slime_idle_2: 750343050
+      blue-slime_idle_3: -1772679103
+      blue-slime_idle_4: -1497481581
+      blue-slime_idle_5: -502340463
+      blue-slime_idle_6: 1172827409
+      blue-slime_idle_7: 1282683371
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

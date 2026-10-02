@@ -2,7 +2,8 @@ using UnityEngine;
 
 namespace TrollStrategy.Content
 {
-    public enum EquipmentSlot { Weapon, Armor }
+    // Serialized by index: append new slots. A fighter wears one item per slot.
+    public enum EquipmentSlot { Weapon, Armor, Helmet }
 
     [CreateAssetMenu(fileName = "Equipment", menuName = "TrollStrategy/Content/Equipment")]
     public sealed class EquipmentDefinition : ScriptableObject
@@ -15,6 +16,8 @@ namespace TrollStrategy.Content
         [SerializeField, Min(0)] private int _startingQuantity;
         [Tooltip("Inventory picture; the resources-icons frame named by the item id (ResourceAtlasImporter).")]
         [SerializeField] private Sprite _icon;
+        [Tooltip("Made by the enchanter: its token on a fighter wears the violet rim.")]
+        [SerializeField] private bool _enchanted;
 
         public string ItemId => _itemId;
         public string DisplayName => _displayName;
@@ -23,6 +26,7 @@ namespace TrollStrategy.Content
         public int ArmorBonus => _armorBonus;
         public int StartingQuantity => _startingQuantity;
         public Sprite Icon => _icon;
+        public bool Enchanted => _enchanted;
 
         public void Init(string itemId, string displayName, EquipmentSlot slot,
             int damageBonus, int armorBonus, int startingQuantity)
@@ -34,5 +38,7 @@ namespace TrollStrategy.Content
             _armorBonus = armorBonus;
             _startingQuantity = startingQuantity;
         }
+
+        public void SetEnchanted(bool enchanted) => _enchanted = enchanted;
     }
 }

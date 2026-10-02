@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1d37bae44e2a7d44bc62b78f5fb508b, type: 3}
+  m_Name: Unit_Wolf
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.UnitDefinition
+  _kind: 13
+  _displayName: "\u0412\u043E\u043B\u043A"
+  _description: "\u0411\u044B\u0441\u0442\u0440\u044B\u0439 \u043E\u0445\u043E\u0442\u043D\u0438\u043A: \u043F\u0435\u0440\u0432\u044B\u043C \u0434\u043E\u0431\u0435\u0433\u0430\u0435\u0442 \u0434\u043E \u043E\u0442\u0440\u044F\u0434\u0430."
+  _names: []
+  _epithets: []
+  _price: 0
+  _strength: 1
+  _speed: 7
+  _stamina: 100
+  _favoredBuildings: 
+  _favoredWorkPercent: 0
+  _hireable: 0
+  _combatHealth: 30
+  _combatDamage: 4
+  _combatArmor: 1
+  _attackIntervalMs: 1600
+  _attackRange: 1
+  _portraitSprite: {fileID: 1711535819, guid: 090b28ed80767d647934638dd7e514dd, type: 3}
+  _prefab: {fileID: 4637954571884214035, guid: 308a842367c63ed40a8f0b9f37b4e120, type: 3}

@@ -18,7 +18,7 @@ namespace TrollStrategy.Editor.Setup
         private const string ProgressionPath = DefinitionFolder + "Progression.asset";
         private const string FirstMission = "mission-1";
 
-        [MenuItem("TrollStrategy/Setup Progression Content")]
+        [MenuItem("TrollStrategy/Dev/Setup Progression Content")]
         public static void Apply()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath)
@@ -67,27 +67,38 @@ namespace TrollStrategy.Editor.Setup
                         Goals(QuestGoal.WinBattles()),
                         Rewards(QuestReward.UnlockBuilding(BuildingKind.Field))),
 
-                    // Quests alternate a short "build it and staff it" with a longer "use it" that asks for goods.
-                    // The "use it" quest opens the next building and pays about 40% of its price; the colony earns
-                    // the rest. Sizes are from docs/economy-balance.md.
+                    // Quests alternate a short "build it and staff it" with a longer "use it" that asks for goods,
+                    // and since 2026-10-02 with other kinds of goals: land, the armory, the guild's upgrades, the
+                    // arena ladder, a dressed squad, a feast, coal from a deep mine. A "use it" quest opens the next
+                    // building and pays about 40% of its price; the colony earns the rest. Sizes are from
+                    // docs/economy-balance.md; goods targets doubled on 2026-10-02.
                     Quest("field-build", "Урожай",
-                        "Поле растит пшеницу без сырья и собирает её разом. Построй его поближе к складу и поставь трёх рабочих.",
+                        "Поле растит пшеницу и солому без сырья и собирает их разом. Построй его поближе к складу и поставь трёх рабочих.",
                         Goals(QuestGoal.OwnBuildings(BuildingKind.Field), QuestGoal.AnyWorkAt(BuildingKind.Field, 3)),
                         Rewards(QuestReward.Coins(100))),
                     Quest("wheat-sell", "Хлеб на рынок",
                         "Дай носильщикам перенос с поля или со склада на рынок и продай пшеницу.",
-                        Goals(QuestGoal.SellResource(ResourceKind.Wheat, 40)),
+                        Goals(QuestGoal.SellResource(ResourceKind.Wheat, 60)),
                         Rewards(QuestReward.Coins(300), QuestReward.UnlockBuilding(BuildingKind.Smeltery))),
                     Quest("smeltery-build", "Плавильня",
-                        "Плавильня делает из двух руд слиток. Построй её и дай ей двух рабочих.",
+                        "Плавильня делает из двух руд слиток, а с углём — два слитка. Построй её и дай ей двух рабочих.",
                         Goals(QuestGoal.OwnBuildings(BuildingKind.Smeltery), QuestGoal.AnyWorkAt(BuildingKind.Smeltery, 2)),
                         Rewards(QuestReward.Coins(100))),
                     Quest("ingot-sell", "Железо в цене",
                         "Вози руду в плавильню, а слитки — на рынок: слиток стоит дороже двух руд.",
-                        Goals(QuestGoal.SellResource(ResourceKind.IronIngot, 30)),
+                        Goals(QuestGoal.SellResource(ResourceKind.IronIngot, 45)),
                         Rewards(QuestReward.Coins(600), QuestReward.UnlockBuilding(BuildingKind.Forge))),
+                    Quest("land-buy", "Новая земля",
+                        "Острову тесно. Нажми «Земля» справа сверху (L), выбери блок рядом с колонией и купи его. Потом расчисти: на дикой земле строить нельзя.",
+                        Goals(QuestGoal.OwnLand(1)),
+                        Rewards(QuestReward.Coins(250), QuestReward.UnlockBuilding(BuildingKind.HaulersGuild))),
+                    // the guild comes as soon as the haulers queue at the mine's door, not after the armory
+                    Quest("guild-build", "Гильдия носильщиков",
+                        "Носильщики толпятся у дверей шахты? Гильдия их учит. Построй её из вкладки «Здания», нажми на неё на карте и купи в её карточке два улучшения: «Широкие двери» пускают к двери больше носильщиков, «Быстрые руки» ускоряют погрузку.",
+                        Goals(QuestGoal.OwnBuildings(BuildingKind.HaulersGuild), QuestGoal.BuyUpgrades(2)),
+                        Rewards(QuestReward.Coins(350))),
                     Quest("forge-build", "Кузница",
-                        "Кузница куёт мечи из слитков. Построй её и поставь двух рабочих.",
+                        "Кузница куёт мечи из слитков, а с кожей — броню; иногда портит работу в лом. Построй её и поставь двух рабочих.",
                         Goals(QuestGoal.OwnBuildings(BuildingKind.Forge), QuestGoal.AnyWorkAt(BuildingKind.Forge, 2)),
                         Rewards(QuestReward.Coins(150))),
                     Quest("market-upgrade", "Богатый рынок",
@@ -99,12 +110,16 @@ namespace TrollStrategy.Editor.Setup
                         Goals(QuestGoal.OwnBuildings(BuildingKind.Armory),
                             QuestGoal.AnyHaulRoute(BuildingKind.Forge, BuildingKind.Armory)),
                         Rewards(QuestReward.Coins(150))),
-                    Quest("battle-veteran", "Боевой опыт",
-                        "Выиграй ещё один бой. Снаряжение со склада экипировки делает бойцов сильнее.",
-                        Goals(QuestGoal.WinBattles()),
-                        Rewards(QuestReward.Coins(250), QuestReward.UnlockBuilding(BuildingKind.Farm))),
+                    Quest("armory-stock", "Оружие для отряда",
+                        "Пусть на складе экипировки будет пять предметов: мечи, броня, щиты.",
+                        Goals(QuestGoal.OwnEquipment(5)),
+                        Rewards(QuestReward.Coins(200))),
+                    Quest("battle-veteran", "Третий уровень арены",
+                        "Каждая победа открывает следующий уровень арены. Дойди до третьего: там встретятся хоббиты, и после победы их можно нанимать.",
+                        Goals(QuestGoal.ReachArenaLevel(3)),
+                        Rewards(QuestReward.Coins(300), QuestReward.UnlockBuilding(BuildingKind.Farm))),
                     Quest("farm-build", "Ферма",
-                        "Ферма растит скот на пшенице и даёт шкуры. Построй её и дай ей двух рабочих.",
+                        "Ферма кормит скот пшеницей и соломой и даёт шкуры, мясо и молоко. Построй её и дай ей двух рабочих.",
                         Goals(QuestGoal.OwnBuildings(BuildingKind.Farm), QuestGoal.AnyWorkAt(BuildingKind.Farm, 2)),
                         Rewards(QuestReward.Coins(150))),
                     Quest("population", "Растущее поселение",
@@ -117,15 +132,15 @@ namespace TrollStrategy.Editor.Setup
                         Rewards(QuestReward.Coins(150))),
                     Quest("leather-sell", "Кожа на продажу",
                         "Кожа дорого стоит на рынке, а в кузнице из неё и слитков выходит броня.",
-                        Goals(QuestGoal.SellResource(ResourceKind.Leather, 15)),
+                        Goals(QuestGoal.SellResource(ResourceKind.Leather, 20)),
                         Rewards(QuestReward.Coins(200), QuestReward.UnlockBuilding(BuildingKind.LumberCamp))),
                     Quest("lumber-build", "Лесозаготовка",
                         "Лесозаготовка валит брёвна без сырья. Построй её и поставь трёх рабочих.",
                         Goals(QuestGoal.OwnBuildings(BuildingKind.LumberCamp), QuestGoal.AnyWorkAt(BuildingKind.LumberCamp, 3)),
                         Rewards(QuestReward.Coins(150))),
                     Quest("trade-route", "Торговый путь",
-                        "Налаженная торговля — основа казны. Заработай на рынке 2000 золота.",
-                        Goals(QuestGoal.EarnGold(2000)),
+                        "Налаженная торговля — основа казны. Заработай на рынке 3000 золота.",
+                        Goals(QuestGoal.EarnGold(3000)),
                         Rewards(QuestReward.Coins(400), QuestReward.UnlockBuilding(BuildingKind.LumberMill))),
                     Quest("mill-build", "Пилорама",
                         "Пилорама режет брёвна на доски. Построй её и дай ей двух рабочих.",
@@ -133,28 +148,41 @@ namespace TrollStrategy.Editor.Setup
                         Rewards(QuestReward.Coins(150))),
                     Quest("planks-sell", "Доски",
                         "Продай доски на рынке — или копи их для щитов.",
-                        Goals(QuestGoal.SellResource(ResourceKind.Planks, 60)),
+                        Goals(QuestGoal.SellResource(ResourceKind.Planks, 90)),
                         Rewards(QuestReward.Coins(500), QuestReward.UnlockBuilding(BuildingKind.ShieldWorkshop))),
                     Quest("shields-build", "Мастерская щитов",
                         "Щиты из досок укрепляют отряд. Построй мастерскую и дай ей двух рабочих.",
                         Goals(QuestGoal.OwnBuildings(BuildingKind.ShieldWorkshop),
                             QuestGoal.AnyWorkAt(BuildingKind.ShieldWorkshop, 2)),
                         Rewards(QuestReward.Coins(200))),
+                    Quest("squad-dressed", "Отряд в железе",
+                        "Выдай снаряжение четырём бойцам: перед боем нажми на бойца и выбери предмет внизу.",
+                        Goals(QuestGoal.EquipFighters(4)),
+                        Rewards(QuestReward.Coins(300), QuestReward.UnlockBuilding(BuildingKind.Tavern))),
+                    Quest("tavern-build", "Пир на весь остров",
+                        "Таверна собирает пир из четырёх товаров: пшеницы, мяса, молока и брёвен. Построй её, дай ей двух рабочих, привези всё нужное и приготовь шесть пиров.",
+                        Goals(QuestGoal.OwnBuildings(BuildingKind.Tavern), QuestGoal.AnyWorkAt(BuildingKind.Tavern, 2),
+                            QuestGoal.ProduceResource(ResourceKind.Feast, 6)),
+                        Rewards(QuestReward.Coins(700))),
                     Quest("mine-upgrade", "Глубокая шахта",
-                        "Улучши шахту до третьего уровня: больше мест для рабочих и руды. В породе иногда попадаются кристаллы.",
-                        Goals(QuestGoal.UpgradeBuilding(BuildingKind.Mine, 3)),
-                        Rewards(QuestReward.Coins(1200), QuestReward.UnlockBuilding(BuildingKind.Enchanter))),
+                        "Улучши шахту до третьего уровня и добудь 12 угля: со второго уровня в породе попадается уголь, с третьего — самородки. С углём плавильня даёт два слитка вместо одного.",
+                        Goals(QuestGoal.UpgradeBuilding(BuildingKind.Mine, 3), QuestGoal.ProduceResource(ResourceKind.Coal, 12)),
+                        Rewards(QuestReward.Coins(1500), QuestReward.UnlockBuilding(BuildingKind.Enchanter))),
                     Quest("enchanter-build", "Зачарователь",
                         "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.",
                         Goals(QuestGoal.OwnBuildings(BuildingKind.Enchanter), QuestGoal.AnyWorkAt(BuildingKind.Enchanter, 1)),
-                        Rewards(QuestReward.Coins(400)))
+                        Rewards(QuestReward.Coins(400))),
+                    Quest("arena-six", "Слава арены",
+                        "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.",
+                        Goals(QuestGoal.ReachArenaLevel(6)),
+                        Rewards(QuestReward.Coins(800)))
                 },
                 new[]
                 {
                     // After the chain: gold only, targets and rewards grow every cycle.
                     Quest("repeat-trade", "Торговля",
                         "Заработай на рынке золото. Задание повторяется, и цель растёт.",
-                        Goals(QuestGoal.EarnGold(2000)),
+                        Goals(QuestGoal.EarnGold(4000)),
                         Rewards(QuestReward.Coins(500))),
                     Quest("repeat-battle", "Арена",
                         "Выиграй бой. Повторные победы тоже приносят золото.",
@@ -162,8 +190,12 @@ namespace TrollStrategy.Editor.Setup
                         Rewards(QuestReward.Coins(400))),
                     Quest("repeat-goods", "Оборот",
                         "Продай на рынке товары любого вида.",
-                        Goals(QuestGoal.SellGoods(200)),
-                        Rewards(QuestReward.Coins(400)))
+                        Goals(QuestGoal.SellGoods(400)),
+                        Rewards(QuestReward.Coins(400))),
+                    Quest("repeat-feast", "Праздник",
+                        "Приготовь в таверне пиры.",
+                        Goals(QuestGoal.ProduceResource(ResourceKind.Feast, 10)),
+                        Rewards(QuestReward.Coins(500)))
                 },
                 repeatGrowthPercent: 25);
             EditorUtility.SetDirty(progression);

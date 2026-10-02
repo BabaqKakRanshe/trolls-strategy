@@ -17,11 +17,12 @@ MonoBehaviour:
   _cellSize: 1
   _maxUnitsPerCell: 20
   _stepTimeSeconds: 0.25
-  _loadSeconds: 0.08
-  _unloadSeconds: 0.1
-  _loadersPerDoor: 5
+  _loadSeconds: 0.5
+  _unloadSeconds: 0.25
+  _loadersPerDoor: 3
   _startingGold: 1000
-  _workPerStrengthSecond: 0.1
+  _workPerStrengthSecond: 0.06
+  _walkSpeedScale: 0.8
   _buildingCopyPriceGrowth: 1.12
   _hirePricePercentPerCreature: 3
   _landEnabled: 1

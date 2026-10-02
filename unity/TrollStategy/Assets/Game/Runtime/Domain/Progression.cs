@@ -142,6 +142,27 @@ namespace TrollStrategy.Domain
                     return state.SoldOf(goal.Resource);
                 case QuestGoalKind.WinBattles:
                     return state.BattlesWon;
+                case QuestGoalKind.ReachArenaLevel:
+                    return state.HighestMissionLevel;
+                case QuestGoalKind.OwnLand:
+                    return state.Land?.Purchases ?? 0;
+                case QuestGoalKind.ProduceResource:
+                    return state.ProducedOf(goal.Resource);
+                case QuestGoalKind.BuyUpgrades:
+                {
+                    int levels = 0;
+                    foreach (var level in state.Upgrades.Values) levels += level;
+                    return levels;
+                }
+                case QuestGoalKind.EquipFighters:
+                {
+                    var owners = new HashSet<string>(StringComparer.Ordinal);
+                    foreach (var item in state.Equipment)
+                        if (item.OwnerUnitId != null) owners.Add(item.OwnerUnitId);
+                    return owners.Count;
+                }
+                case QuestGoalKind.OwnEquipment:
+                    return state.Equipment.Count;
                 case QuestGoalKind.UpgradeBuilding:
                 {
                     int level = 0;

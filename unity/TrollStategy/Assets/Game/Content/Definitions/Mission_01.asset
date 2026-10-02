@@ -14,6 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.BattleMissionDefinition
   _missionId: mission-1
   _displayName: "\u041F\u0435\u0440\u0432\u044B\u0439 \u0431\u043E\u0439"
+  _level: 1
+  _enemyHealthPercent: 100
+  _enemyDamageBonus: 0
+  _enemyArmorBonus: 0
+  _unlocksUnit: 0
+  _unlockUnit: 0
   _width: 9
   _height: 5
   _maxPlayerUnits: 4
@@ -80,7 +86,7 @@ MonoBehaviour:
   _firstWinGold: 250
   _firstWinGoldMax: 400
   _repeatWinGold: 150
-  _repeatWinGoldMax: 250
+  _repeatWinGoldMax: 240
   _unlockAfterActiveSeconds: 120
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

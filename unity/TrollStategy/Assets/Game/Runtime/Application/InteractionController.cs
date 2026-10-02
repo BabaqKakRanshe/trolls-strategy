@@ -86,6 +86,9 @@ namespace TrollStrategy.Application
         public event Action OnInteractionChanged;
         /// <summary>The player's intent was refused before reaching the session (no selection, wrong target…).</summary>
         public event Action<string> OnRefused;
+        /// <summary>The player asked to see a place on the map (the next idle creature); the camera goes there.</summary>
+        public event Action<WorldPosition> FocusRequested;
+        private string _lastIdleId;
 
         public InteractionController(GameSession session)
         {
@@ -272,20 +275,27 @@ namespace TrollStrategy.Application
             Select(ids, false, "Свободных существ нет.", "Выбрано свободных: {0}");
         }
 
+        /// <summary>
+        /// Selects the idle creature after the one picked last time (the first again after the last) and asks the
+        /// camera to go to it.
+        /// </summary>
         public void SelectNextIdle()
         {
             var units = _session.CurrentSnapshot.Units;
-            string foundId = null;
-            for (int i = 0; i < units.Count; i++)
+            var idle = new List<UnitSnapshot>();
+            foreach (var unit in units)
+                if (unit.Assignment.Kind == AssignmentKind.Idle) idle.Add(unit);
+            UnitSnapshot found = null;
+            if (idle.Count > 0)
             {
-                if (units[i].Assignment.Kind == AssignmentKind.Idle)
-                {
-                    foundId = units[i].Id;
-                    break;
-                }
+                int last = idle.FindIndex(unit => unit.Id == _lastIdleId);
+                found = idle[(last + 1) % idle.Count];
             }
-            Select(foundId != null ? new[] { foundId } : Array.Empty<string>(), false,
-                "Свободных существ нет.", "Выбрано свободное существо.");
+            _lastIdleId = found?.Id;
+            Select(found != null ? new[] { found.Id } : Array.Empty<string>(), false,
+                "Свободных существ нет.",
+                idle.Count > 1 ? $"Свободное существо: {found?.Name}. Ещё раз — следующее." : $"Свободное существо: {found?.Name}.");
+            if (found != null) FocusRequested?.Invoke(found.Position);
         }
 
         public void BeginUnitPlacement(UnitKind kind, int amount)
@@ -568,6 +578,14 @@ namespace TrollStrategy.Application
             if (string.IsNullOrEmpty(_inspectedBuildingId)) return;
             var result = _session.Dispatch(new UpgradeBuildingCommand(_inspectedBuildingId));
             _message = result.Ok ? "Постройка улучшена." : result.Error;
+            Emit();
+        }
+
+        /// <summary>Raises a colony upgrade one level (the guild's and the barracks' panels).</summary>
+        public void BuyUpgrade(string upgradeId)
+        {
+            var result = _session.Dispatch(new BuyUpgradeCommand(upgradeId));
+            _message = result.Ok ? "Улучшение куплено." : result.Error;
             Emit();
         }
 

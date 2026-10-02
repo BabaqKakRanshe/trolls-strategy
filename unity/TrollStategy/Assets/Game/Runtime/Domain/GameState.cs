@@ -22,13 +22,23 @@ namespace TrollStrategy.Domain
         // Bumped whenever a footprint appears, moves or disappears; stale unit routes are replanned.
         public int LayoutVersion { get; set; }
         public int ActiveTimeMs { get; set; }
-        public int FirstMissionWins { get; set; }
-        public int FirstMissionNextReadyAtMs { get; set; }
+        // Wins and the active time each arena mission is ready again at, by mission id.
+        public Dictionary<string, int> MissionWins { get; set; } = new(StringComparer.Ordinal);
+        public Dictionary<string, int> MissionReadyAtMs { get; set; } = new(StringComparer.Ordinal);
+        // Highest arena level won so far; quests count from it.
+        public int HighestMissionLevel { get; set; }
         public BattleRunState ActiveBattle { get; set; }
         // Gold a won battle rolled and the player has not taken yet; null when there is none.
         public PendingBattleReward PendingBattleReward { get; set; }
         // State of the reward dice: every roll reads and advances it, so the same game rolls the same amounts.
         public uint RewardRoll { get; set; } = RewardDice.Seed;
+        // State of the production dice (by-products, spoilage); separate from the reward dice so a change in
+        // the economy never shifts what battles pay.
+        public uint ProductionRoll { get; set; } = ProductionDice.Seed;
+        // Goods the colony's buildings have made over the whole game, by kind; quests count from them.
+        public Dictionary<ResourceKind, int> ProducedByResource { get; set; } = new();
+        // Levels of the colony improvements bought in the guild and the barracks, by upgrade id.
+        public Dictionary<string, int> Upgrades { get; set; } = new(StringComparer.Ordinal);
         // Quest chain and unlocks; null in a sandbox game, where everything is open.
         public ProgressState Progress { get; set; }
         // The colony's land blocks; null when land limits nothing (the whole grid is open).
@@ -51,6 +61,18 @@ namespace TrollStrategy.Domain
 
         public int SoldOf(ResourceKind resource) => SoldByResource.TryGetValue(resource, out int amount) ? amount : 0;
 
+        public int WinsOf(string missionId) =>
+            missionId != null && MissionWins.TryGetValue(missionId, out int wins) ? wins : 0;
+
+        public int ReadyAtOf(string missionId) =>
+            missionId != null && MissionReadyAtMs.TryGetValue(missionId, out int at) ? at : 0;
+
+        public int ProducedOf(ResourceKind resource) =>
+            ProducedByResource.TryGetValue(resource, out int amount) ? amount : 0;
+
+        public int UpgradeLevel(string upgradeId) =>
+            upgradeId != null && Upgrades.TryGetValue(upgradeId, out int level) ? level : 0;
+
         public GameState Clone()
         {
             var clone = new GameState
@@ -65,11 +87,15 @@ namespace TrollStrategy.Domain
                 NextHaulQueueTicket = NextHaulQueueTicket,
                 LayoutVersion = LayoutVersion,
                 ActiveTimeMs = ActiveTimeMs,
-                FirstMissionWins = FirstMissionWins,
-                FirstMissionNextReadyAtMs = FirstMissionNextReadyAtMs,
+                MissionWins = new Dictionary<string, int>(MissionWins, StringComparer.Ordinal),
+                MissionReadyAtMs = new Dictionary<string, int>(MissionReadyAtMs, StringComparer.Ordinal),
+                HighestMissionLevel = HighestMissionLevel,
                 ActiveBattle = ActiveBattle,
                 PendingBattleReward = PendingBattleReward?.Clone(),
                 RewardRoll = RewardRoll,
+                ProductionRoll = ProductionRoll,
+                ProducedByResource = new Dictionary<ResourceKind, int>(ProducedByResource),
+                Upgrades = new Dictionary<string, int>(Upgrades, StringComparer.Ordinal),
                 Progress = Progress?.Clone(),
                 Land = Land?.Clone(),
                 Buildings = new List<BuildingState>(Buildings.Count),
@@ -112,12 +138,32 @@ namespace TrollStrategy.Domain
         public static int Roll(GameState state, int min, int max)
         {
             if (max <= min) return min;
-            uint x = state.RewardRoll == 0 ? Seed : state.RewardRoll;
+            uint x = Next(state.RewardRoll == 0 ? Seed : state.RewardRoll);
+            state.RewardRoll = x;
+            return min + (int)(x % (uint)(max - min + 1));
+        }
+
+        internal static uint Next(uint x)
+        {
             x ^= x << 13;
             x ^= x >> 17;
             x ^= x << 5;
-            state.RewardRoll = x;
-            return min + (int)(x % (uint)(max - min + 1));
+            return x;
+        }
+    }
+
+    /// <summary>Repeatable dice for production chances (by-products, spoilage): xorshift over a state kept in the game.</summary>
+    public static class ProductionDice
+    {
+        public const uint Seed = 0x85EBCA6Bu;
+
+        /// <summary>True with the given chance in percent; every roll advances the state.</summary>
+        public static bool Chance(GameState state, int percent)
+        {
+            if (percent <= 0) return false;
+            uint x = RewardDice.Next(state.ProductionRoll == 0 ? Seed : state.ProductionRoll);
+            state.ProductionRoll = x;
+            return percent >= 100 || x % 100u < (uint)percent;
         }
     }
 }

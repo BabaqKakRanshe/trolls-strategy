@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
@@ -81,7 +82,7 @@ namespace TrollStrategy.Tests
             Assert.That(session.ActiveBattle.Report.Fighters[0].StepIntervalMs, Is.EqualTo(500));
             Assert.That(session.ActiveBattle.Report.Fighters[1].StepIntervalMs, Is.EqualTo(200));
             Assert.That(session.CurrentSnapshot.Equipment[0].OwnerUnitId, Is.EqualTo(unitId));
-            Assert.That(session.FirstMissionWins, Is.EqualTo(1));
+            Assert.That(session.MissionWins("mission-1"), Is.EqualTo(1));
             Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(beforeGold), "The prize waits to be taken");
             Assert.That(session.CurrentSnapshot.BattleReward.Gold, Is.EqualTo(250));
             Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 1, session.FindSpawnCell())).Ok,
@@ -95,6 +96,80 @@ namespace TrollStrategy.Tests
             Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(beforeGold + 250));
             Assert.That(session.CurrentSnapshot.BattleReward, Is.Null);
             Assert.That(session.CanEnterMission("mission-1").Ok, Is.False, "Cooldown uses active time");
+        }
+
+        [Test]
+        public void ArenaLadder_AWinOpensTheNextLevelAndTheCreatureMetThere_EachLevelRestsOnItsOwn()
+        {
+            var economy = Create<EconomyConfig>();
+            economy.Init(14, 14, 1f, 5000, 20, .25f, .1f, .5f);
+            var troll = Create<UnitDefinition>();
+            troll.Init(UnitKind.Troll, "Тролль", 170, 9, 2f, 150);
+            troll.SetCombatStats(55, 7, 3, 2600, 1);
+            var goblin = Create<UnitDefinition>();
+            goblin.Init(UnitKind.Goblin, "Гоблин", 40, 3, 5f, 100);
+            goblin.SetCombatStats(20, 2, 1, 2000, 3);
+            var warehouse = Create<BuildingDefinition>();
+            warehouse.Init(BuildingKind.Warehouse, "Склад", 0, 3, 3, 500, 0, null);
+            var market = Create<BuildingDefinition>();
+            market.Init(BuildingKind.Market, "Рынок", 0, 3, 2, 0, 0, null);
+            var barracks = Create<BuildingDefinition>();
+            barracks.Init(BuildingKind.Barracks, "Бараки", 0, 3, 3, 0, 0, null);
+            BattleMissionDefinition Level(int level, int healthPercent)
+            {
+                var mission = Create<BattleMissionDefinition>();
+                mission.SetDesign($"mission-{level}", $"Уровень {level}", 3, 3, 1,
+                    new[] { new Cell(0, 0), new Cell(0, 1) }, new Cell[0],
+                    new[] { new BattleEnemyStart { Kind = UnitKind.Goblin, Cell = new Cell(2, 0) } });
+                mission.SetTimingAndRewards(0f, 100f, 100 * level, 50 * level);
+                mission.SetArena(level, healthPercent, 0, 0, level == 1 ? UnitKind.Goblin : (UnitKind?)null);
+                return mission;
+            }
+            var first = Level(1, 100);
+            var second = Level(2, 300);
+            var catalog = Create<GameContentCatalog>();
+            catalog.Init(economy, new[] { troll, goblin }, new[] { warehouse, market, barracks }, new[] { second, first });
+            catalog.SetUpgrades(new[]
+            {
+                new UpgradeDefinition("squad", "Больше бойцов", "", BuildingKind.Barracks, UpgradeEffect.SquadSize, 1,
+                    new[] { 10 }),
+                new UpgradeDefinition("rest", "Отдых", "", BuildingKind.Barracks, UpgradeEffect.BattleCooldownPercent, 50,
+                    new[] { 10 }),
+                new UpgradeDefinition("glory", "Слава", "", BuildingKind.Barracks, UpgradeEffect.BattleRewardPercent, 50,
+                    new[] { 10 })
+            });
+            catalog.SetProgression(Create<ProgressionDefinition>());
+            catalog.Progression.Init(new[] { UnitKind.Troll }, null, new[] { "mission-1" }, null, null, 0);
+            var session = new GameSession(catalog, TestColony.LayoutFor(catalog,
+                new StartingBuilding(BuildingKind.Warehouse, new Cell(10, 8)),
+                new StartingBuilding(BuildingKind.Market, new Cell(10, 2)),
+                new StartingBuilding(BuildingKind.Barracks, new Cell(2, 9))), campaign: true);
+
+            Assert.That(session.ArenaLadder().Select(m => m.Level), Is.EqualTo(new[] { 1, 2 }));
+            Assert.That(session.CanEnterMission("mission-2").Error, Is.EqualTo("Сначала победите на предыдущем уровне арены"));
+            Assert.That(session.SquadLimit(first), Is.EqualTo(1));
+            foreach (var id in new[] { "squad", "rest", "glory" })
+                Assert.That(session.Dispatch(new BuyUpgradeCommand(id)).Ok, Is.True, id);
+            Assert.That(session.SquadLimit(first), Is.EqualTo(2), "The barracks add a fighter, as the board allows");
+            Assert.That(session.WinGold(first), Is.EqualTo((150, 150)));
+
+            Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Troll, 2, session.FindSpawnCell())).Ok, Is.True);
+            var ids = session.CurrentSnapshot.Units.Select(u => u.Id).ToArray();
+            Assert.That(session.Dispatch(new StartBattleCommand("mission-1", new[]
+            {
+                new BattlePlacement(ids[0], new Cell(0, 0)), new BattlePlacement(ids[1], new Cell(0, 1))
+            })).Ok, Is.True);
+            Assert.That(session.ActiveBattle.Report.Outcome, Is.EqualTo(BattleOutcome.PlayerVictory));
+            Assert.That(session.Dispatch(new AcknowledgeBattleCommand()).Ok, Is.True);
+
+            Assert.That(session.MissionWins("mission-1"), Is.EqualTo(1));
+            Assert.That(session.HighestMissionLevel, Is.EqualTo(1));
+            Assert.That(session.IsUnitUnlocked(UnitKind.Goblin), Is.True, "The first win opens the creature met there");
+            Assert.That(session.CanEnterMission("mission-1").Ok, Is.False, "The won level rests");
+            Assert.That(session.MissionWaitMs("mission-1"), Is.EqualTo(50000), "Half the rest after the barracks' upgrade");
+            Assert.That(session.CanEnterMission("mission-2").Ok, Is.True, "The next level is open and rested");
+            Assert.That(session.SuggestedMission(), Is.SameAs(second));
+            Assert.That(session.WinGold(first), Is.EqualTo((75, 75)), "Repeat wins pay the repeat range");
         }
 
         [Test]
@@ -222,7 +297,7 @@ namespace TrollStrategy.Tests
             Assert.That(session.ActiveTimeMs, Is.Zero);
 
             var state = GameState.CreateInitialState();
-            state.FirstMissionNextReadyAtMs = 120000;
+            state.MissionReadyAtMs["mission-1"] = 120000;
             Assert.That(BattleApplication.ValidateAvailability(state, mission).Ok, Is.False);
             Assert.That(BattleApplication.ValidateAvailability(state, mission, true).Ok, Is.True);
         }

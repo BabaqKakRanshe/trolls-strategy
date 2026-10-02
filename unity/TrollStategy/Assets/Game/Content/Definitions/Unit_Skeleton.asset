@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1d37bae44e2a7d44bc62b78f5fb508b, type: 3}
+  m_Name: Unit_Skeleton
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.UnitDefinition
+  _kind: 19
+  _displayName: "\u0421\u043A\u0435\u043B\u0435\u0442"
+  _description: "\u041D\u0435\u0443\u0442\u043E\u043C\u0438\u043C\u044B\u0439 \u043C\u0435\u0440\u0442\u0432\u0435\u0446 \u0441 \u043C\u0435\u0447\u043E\u043C."
+  _names: []
+  _epithets: []
+  _price: 0
+  _strength: 1
+  _speed: 4
+  _stamina: 100
+  _favoredBuildings: 
+  _favoredWorkPercent: 0
+  _hireable: 0
+  _combatHealth: 30
+  _combatDamage: 4
+  _combatArmor: 1
+  _attackIntervalMs: 2000
+  _attackRange: 1
+  _portraitSprite: {fileID: -638420568, guid: 31656e8805f817f41a98c39380dae323, type: 3}
+  _prefab: {fileID: 4637954571884214035, guid: 6ef8557340601f84dbee1a95a2b96b6b, type: 3}

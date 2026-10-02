@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TrollStrategy.Application;
 using TrollStrategy.Bootstrap;
 using TrollStrategy.Content;
@@ -70,7 +71,7 @@ namespace TrollStrategy.Presentation.Battle
             if (s_active != null || colony == null || colony.Session == null || mission == null) return null;
             if (colony.BattleScreen == null)
             {
-                Debug.LogError("The colony has no battle screen; run TrollStrategy/Setup UI.", colony);
+                Debug.LogError("The colony has no battle screen; run TrollStrategy/Dev/Setup UI.", colony);
                 return null;
             }
             var availability = colony.Session.CanEnterMission(mission.MissionId);
@@ -182,10 +183,40 @@ namespace TrollStrategy.Presentation.Battle
             ShowDeployment();
         }
 
+        // who wears what in the deployment, as the item pictures of the catalog
+        private Dictionary<string, List<WornItem>> WornGear()
+        {
+            var worn = new Dictionary<string, List<WornItem>>(StringComparer.Ordinal);
+            var catalog = _deployment.Session.Catalog;
+            foreach (var item in _deployment.Equipment)
+            {
+                string owner = _deployment.OwnerOf(item.Id);
+                if (owner == null) continue;
+                EquipmentDefinition definition = null;
+                foreach (var candidate in catalog.Equipment)
+                    if (candidate != null && candidate.ItemId == item.DefinitionId) definition = candidate;
+                if (definition == null) continue;
+                if (!worn.TryGetValue(owner, out var gear)) worn[owner] = gear = new List<WornItem>();
+                gear.Add(new WornItem(definition.Slot, definition.Icon, definition.Enchanted));
+            }
+            return worn;
+        }
+
+        // the slots some item of the game fits, in slot order: a free slot nothing could fill is not offered
+        private List<EquipmentSlot> GearSlots()
+        {
+            var slots = new List<EquipmentSlot>();
+            foreach (var definition in _deployment.Session.Catalog.Equipment)
+                if (definition != null && !slots.Contains(definition.Slot)) slots.Add(definition.Slot);
+            slots.Sort();
+            return slots;
+        }
+
         /// <summary>The board shows the deployment: placed fighters, the selection, the hover ring and dragging.</summary>
         private void ShowDeployment()
         {
             _boardView.ShowPlayerPlacements(_deployment.Placements, _deployment.UnitKinds);
+            _boardView.ShowGear(WornGear(), GearSlots(), _report == null);
             _boardView.ShowSelection(_deployment.SelectedUnitId);
             _boardView.Deploying = _report == null;
         }

@@ -151,6 +151,13 @@ namespace TrollStrategy.Domain
         public ClearLandCommand(int blockX, int blockY) { BlockX = blockX; BlockY = blockY; }
     }
 
+    /// <summary>Raises a colony improvement one level in its host building (UpgradeRules).</summary>
+    public sealed class BuyUpgradeCommand : IGameCommand
+    {
+        public string UpgradeId { get; }
+        public BuyUpgradeCommand(string upgradeId) => UpgradeId = upgradeId;
+    }
+
     /// <summary>Takes the rewards of the finished current quest and begins the next one.</summary>
     public sealed class ClaimQuestRewardCommand : IGameCommand
     {

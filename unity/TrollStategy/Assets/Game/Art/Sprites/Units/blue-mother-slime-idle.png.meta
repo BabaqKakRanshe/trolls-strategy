@@ -1,0 +1,414 @@
+fileFormatVersion: 2
+guid: b50717d5e4e96754aa72146b95e9ea73
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8524178340089061309
+    second: blue-mother-slime-idle_0
+  - first:
+      213: -2539211018741269077
+    second: blue-mother-slime-idle_1
+  - first:
+      213: 6081334931915860936
+    second: blue-mother-slime-idle_2
+  - first:
+      213: -19955901735496881
+    second: blue-mother-slime-idle_3
+  - first:
+      213: -5038157589968165145
+    second: blue-mother-slime-idle_4
+  - first:
+      213: 8371241073697439864
+    second: blue-mother-slime-idle_5
+  - first:
+      213: 2190989553673619522
+    second: blue-mother-slime-idle_6
+  - first:
+      213: -6450566941343377969
+    second: blue-mother-slime-idle_7
+  - first:
+      213: -2818655082537553859
+    second: blue-mother-slime-idle_8
+  - first:
+      213: 3641794368338972491
+    second: blue-mother-slime-idle_9
+  - first:
+      213: -3977048570535287520
+    second: blue-mother-slime-idle_10
+  - first:
+      213: 5186323599363314360
+    second: blue-mother-slime-idle_11
+  - first:
+      213: 8895233408317097482
+    second: blue-mother-slime-idle_12
+  - first:
+      213: 3260969100749996092
+    second: blue-mother-slime-idle_13
+  - first:
+      213: 4948428477662456682
+    second: blue-mother-slime-idle_14
+  - first:
+      213: -4651155299749050651
+    second: blue-mother-slime-idle_15
+  - first:
+      213: 906220623706062067
+    second: blue-mother-slime-idle_16
+  - first:
+      213: 4151958138846095062
+    second: blue-mother-slime-idle_17
+  - first:
+      213: 642235149592741485
+    second: blue-mother-slime-idle_18
+  - first:
+      213: -9160557196915248119
+    second: blue-mother-slime-idle_19
+  - first:
+      213: -1923194323049145319
+    second: blue-mother-slime-idle_20
+  - first:
+      213: -1096042554961351128
+    second: blue-mother-slime-idle_21
+  - first:
+      213: 4130778504166681
+    second: blue-mother-slime-idle_22
+  - first:
+      213: 8095747904958356807
+    second: blue-mother-slime-idle_23
+  - first:
+      213: -7535457815389296902
+    second: blue-mother-slime-idle_24
+  - first:
+      213: 4313604081411117511
+    second: blue-mother-slime-idle_25
+  - first:
+      213: -602287356062475579
+    second: blue-mother-slime-idle_26
+  - first:
+      213: 1695950083842817455
+    second: blue-mother-slime-idle_27
+  - first:
+      213: 4281880289515018342
+    second: blue-mother-slime-idle_28
+  - first:
+      213: 435939465187479304
+    second: blue-mother-slime-idle_29
+  - first:
+      213: -3019058973873095208
+    second: blue-mother-slime-idle_30
+  - first:
+      213: -4345434689722592160
+    second: blue-mother-slime-idle_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: blue-mother-slime_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 590cad0faabbc2a4aaa7fb464f7cf2db
+      internalID: -1018607323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-mother-slime_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff8c60afaa2d9534489f3103179d4b0f
+      internalID: 709733628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-mother-slime_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18e2111c2be398e49a6b49ba5919ff8f
+      internalID: -1232485049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-mother-slime_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d319b223c35ef641ade4827eeb7cacc
+      internalID: 871913436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-mother-slime_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f179f9987d9b00c4f875db92000f9572
+      internalID: -1231924033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-mother-slime_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b04f6410bf1a69e439deba29c070eeea
+      internalID: 426356999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-mother-slime_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea0eb9d72f0738241854db0a674f8d95
+      internalID: -388693849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: blue-mother-slime_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0dce03667ce21342855068fa53cf2ce
+      internalID: 610455796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: dd431aea575bd9c439eca6a28290db12
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      blue-mother-slime_idle_0: -1018607323
+      blue-mother-slime_idle_1: 709733628
+      blue-mother-slime_idle_2: -1232485049
+      blue-mother-slime_idle_3: 871913436
+      blue-mother-slime_idle_4: -1231924033
+      blue-mother-slime_idle_5: 426356999
+      blue-mother-slime_idle_6: -388693849
+      blue-mother-slime_idle_7: 610455796
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -12,13 +12,14 @@ namespace TrollStrategy.Application
         {
             if (state == null || mission == null) return CommandResult.Fail("Миссия не найдена");
             if (state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
-            if (mission.MissionId != "mission-1") return CommandResult.Fail("Эта миссия пока недоступна");
             if (debugBypassTime) return CommandResult.Success();
             if (!Progression.IsMissionUnlocked(state, mission.MissionId))
-                return CommandResult.Fail("Бой откроется по заданию");
+                return CommandResult.Fail(mission.Level > 1
+                    ? "Сначала победите на предыдущем уровне арены"
+                    : "Бой откроется по заданию");
             if (state.ActiveTimeMs < UnlockAtMs(mission)) return CommandResult.Fail("Миссия ещё не открыта");
-            if (state.ActiveTimeMs < state.FirstMissionNextReadyAtMs)
-                return CommandResult.Fail("Миссия восстанавливается");
+            if (state.ActiveTimeMs < state.ReadyAtOf(mission.MissionId))
+                return CommandResult.Fail("Арена восстанавливается после боя");
             return CommandResult.Success();
         }
 
@@ -26,8 +27,40 @@ namespace TrollStrategy.Application
         public static int WaitMs(GameState state, BattleMissionDefinition mission)
         {
             if (state == null || mission == null) return 0;
-            int readyAt = Math.Max(UnlockAtMs(mission), state.FirstMissionNextReadyAtMs);
+            int readyAt = Math.Max(UnlockAtMs(mission), state.ReadyAtOf(mission.MissionId));
             return Math.Max(0, readyAt - state.ActiveTimeMs);
+        }
+
+        /// <summary>Fighters the colony may send: the mission's number plus the barracks' upgrades, as the board allows.</summary>
+        public static int SquadLimit(GameState state, BattleMissionDefinition mission, GameContentCatalog catalog)
+        {
+            if (mission == null) return 0;
+            int limit = mission.MaxPlayerUnits + UpgradeRules.Total(state, catalog, UpgradeEffect.SquadSize);
+            return Math.Max(1, Math.Min(limit, mission.PlayerDeployment.Count > 0 ? mission.PlayerDeployment.Count : limit));
+        }
+
+        /// <summary>A win's gold range at this mission now: first or repeat win, with the barracks' glory.</summary>
+        public static (int Min, int Max) WinGold(GameState state, BattleMissionDefinition mission, GameContentCatalog catalog)
+        {
+            bool first = state.WinsOf(mission.MissionId) == 0;
+            int percent = UpgradeRules.Total(state, catalog, UpgradeEffect.BattleRewardPercent);
+            int min = first ? mission.FirstWinGold : mission.RepeatWinGold;
+            int max = first ? mission.FirstWinGoldMax : mission.RepeatWinGoldMax;
+            return ((int)Math.Round(UpgradeRules.Raise(min, percent)), (int)Math.Round(UpgradeRules.Raise(max, percent)));
+        }
+
+        /// <summary>Active seconds the mission rests after a run, after the barracks' rest.</summary>
+        public static float CooldownSeconds(GameState state, BattleMissionDefinition mission, GameContentCatalog catalog) =>
+            UpgradeRules.Shorten(mission.CooldownActiveSeconds,
+                UpgradeRules.Total(state, catalog, UpgradeEffect.BattleCooldownPercent));
+
+        /// <summary>The mission one level above this one on the arena ladder, or null at the top.</summary>
+        public static BattleMissionDefinition NextMission(BattleMissionDefinition mission, GameContentCatalog catalog)
+        {
+            if (mission == null) return null;
+            foreach (var candidate in catalog.Missions)
+                if (candidate != null && candidate.Level == mission.Level + 1) return candidate;
+            return null;
         }
 
         private static int UnlockAtMs(BattleMissionDefinition mission) =>
@@ -49,8 +82,9 @@ namespace TrollStrategy.Application
             try { board = mission.CreateBoard(); }
             catch (Exception) { return CommandResult.Fail("Данные миссии некорректны"); }
             var placements = command.Placements;
-            if (placements == null || placements.Count < 1 || placements.Count > mission.MaxPlayerUnits)
-                return CommandResult.Fail($"Нужно выбрать от 1 до {mission.MaxPlayerUnits} бойцов");
+            int squad = SquadLimit(state, mission, catalog);
+            if (placements == null || placements.Count < 1 || placements.Count > squad)
+                return CommandResult.Fail($"Нужно выбрать от 1 до {squad} бойцов");
 
             var selectedIds = new HashSet<string>(StringComparer.Ordinal);
             var selectedCells = new HashSet<Cell>();
@@ -98,12 +132,15 @@ namespace TrollStrategy.Application
             }
 
             var fighters = new List<BattleFighterInput>(placements.Count + mission.Enemies.Count);
+            int healthPercent = UpgradeRules.Total(state, catalog, UpgradeEffect.FighterHealthPercent);
+            int damageBonus = UpgradeRules.Total(state, catalog, UpgradeEffect.FighterDamage);
             for (int i = 0; i < placements.Count; i++)
                 fighters.Add(FighterInput(selectedUnits[i].Id, selectedUnits[i].Kind, true,
-                    placements[i].Cell, catalog, state.Equipment));
+                    placements[i].Cell, catalog, state.Equipment, 100 + healthPercent, damageBonus, 0));
             for (int i = 0; i < mission.Enemies.Count; i++)
                 fighters.Add(FighterInput($"enemy-{i:D3}", mission.Enemies[i].Kind, false,
-                    mission.Enemies[i].Cell, catalog, state.Equipment));
+                    mission.Enemies[i].Cell, catalog, state.Equipment, mission.EnemyHealthPercent,
+                    mission.EnemyDamageBonus, mission.EnemyArmorBonus));
 
             BattleReport report;
             try { report = BattleSimulation.Run(board, fighters, 1); }
@@ -128,9 +165,8 @@ namespace TrollStrategy.Application
             if (report.Outcome == BattleOutcome.PlayerVictory)
             {
                 // a surprise within the mission's range; the colony gets it when the player takes it
-                bool first = state.FirstMissionWins == 0;
-                int min = first ? mission.FirstWinGold : mission.RepeatWinGold;
-                int max = first ? mission.FirstWinGoldMax : mission.RepeatWinGoldMax;
+                bool first = state.WinsOf(mission.MissionId) == 0;
+                var (min, max) = WinGold(state, mission, catalog);
                 reward = RewardDice.Roll(state, min, max);
                 var pending = state.PendingBattleReward;
                 state.PendingBattleReward = new PendingBattleReward
@@ -142,11 +178,19 @@ namespace TrollStrategy.Application
                     MaxGold = max + (pending?.Gold ?? 0),
                     FirstWin = first
                 };
-                state.FirstMissionWins++;
+                state.MissionWins[mission.MissionId] = state.WinsOf(mission.MissionId) + 1;
                 state.BattlesWon++;
+                state.HighestMissionLevel = Math.Max(state.HighestMissionLevel, mission.Level);
+                // a win opens the next level of the ladder, and a first win the creature met here
+                var next = NextMission(mission, catalog);
+                if (state.Progress != null)
+                {
+                    if (next != null) state.Progress.UnlockedMissions.Add(next.MissionId);
+                    if (first && mission.UnlockUnit.HasValue) state.Progress.UnlockedUnits.Add(mission.UnlockUnit.Value);
+                }
             }
-            state.FirstMissionNextReadyAtMs = state.ActiveTimeMs +
-                (int)Math.Ceiling(mission.CooldownActiveSeconds * 1000f);
+            state.MissionReadyAtMs[mission.MissionId] = state.ActiveTimeMs +
+                (int)Math.Ceiling(CooldownSeconds(state, mission, catalog) * 1000f);
             state.ActiveBattle = new BattleRunState(mission.MissionId, report, reward, fallen);
             return CommandResult.Success();
         }
@@ -169,10 +213,11 @@ namespace TrollStrategy.Application
         }
 
         private static BattleFighterInput FighterInput(string id, UnitKind kind, bool isPlayer,
-            Cell cell, GameContentCatalog catalog, IReadOnlyList<EquipmentState> equipment)
+            Cell cell, GameContentCatalog catalog, IReadOnlyList<EquipmentState> equipment, int healthPercent,
+            int extraDamage, int extraArmor)
         {
             var definition = catalog.GetUnit(kind);
-            int damageBonus = 0, armorBonus = 0;
+            int damageBonus = extraDamage, armorBonus = extraArmor;
             if (isPlayer)
                 foreach (var item in equipment)
                 {
@@ -184,8 +229,9 @@ namespace TrollStrategy.Application
             int stepMs = Math.Max(BattleSimulation.StepMs,
                 (int)Math.Ceiling(1000f / Math.Max(.1f, definition.Speed) /
                     BattleSimulation.StepMs) * BattleSimulation.StepMs);
+            int health = Math.Max(1, (int)Math.Round(definition.CombatHealth * Math.Max(10, healthPercent) / 100f));
             return new BattleFighterInput(id, kind, isPlayer, cell,
-                definition.CombatHealth, definition.CombatDamage + damageBonus,
+                health, definition.CombatDamage + damageBonus,
                 definition.CombatArmor + armorBonus,
                 definition.AttackIntervalMs, definition.AttackRange, stepMs);
         }

@@ -15,6 +15,15 @@ namespace TrollStrategy.Content
         IronArmor,
         WoodenShield,
         VioletCrystal,
-        EnchantedSword
+        EnchantedSword,
+        Coal,
+        GoldNugget,
+        Straw,
+        GoldenWheat,
+        Meat,
+        Milk,
+        Scrap,
+        Feast,
+        BattleAxe
     }
 }

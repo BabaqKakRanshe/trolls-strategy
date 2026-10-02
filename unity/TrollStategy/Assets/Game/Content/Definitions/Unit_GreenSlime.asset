@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1d37bae44e2a7d44bc62b78f5fb508b, type: 3}
+  m_Name: Unit_GreenSlime
+  m_EditorClassIdentifier: TrollStrategy.Runtime::TrollStrategy.Content.UnitDefinition
+  _kind: 15
+  _displayName: "\u0417\u0435\u043B\u0451\u043D\u0430\u044F \u0441\u043B\u0438\u0437\u044C"
+  _description: "\u041C\u0435\u0434\u043B\u0435\u043D\u043D\u0430\u044F \u0438 \u0441\u043B\u0430\u0431\u0430\u044F; \u043E\u043F\u0430\u0441\u043D\u0430 \u0447\u0438\u0441\u043B\u043E\u043C."
+  _names: []
+  _epithets: []
+  _price: 0
+  _strength: 1
+  _speed: 2
+  _stamina: 100
+  _favoredBuildings: 
+  _favoredWorkPercent: 0
+  _hireable: 0
+  _combatHealth: 14
+  _combatDamage: 2
+  _combatArmor: 0
+  _attackIntervalMs: 2200
+  _attackRange: 1
+  _portraitSprite: {fileID: 533856742, guid: 881e72684ea61ba43ad0adf0f6a126ca, type: 3}
+  _prefab: {fileID: 4637954571884214035, guid: 0564818433ef0f3478e078eb4b588d3a, type: 3}

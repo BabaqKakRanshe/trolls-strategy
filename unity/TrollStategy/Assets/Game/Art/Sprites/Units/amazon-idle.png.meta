@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: bc3355d6ce569944fb40a35ca8ba26c5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2472753360785414810
+    second: amazon-idle_0
+  - first:
+      213: 7929477712763223235
+    second: amazon-idle_1
+  - first:
+      213: 218718648082666590
+    second: amazon-idle_2
+  - first:
+      213: -5082086710757899969
+    second: amazon-idle_3
+  - first:
+      213: 6507287442427913506
+    second: amazon-idle_4
+  - first:
+      213: 7420288689271836299
+    second: amazon-idle_5
+  - first:
+      213: 6237002491673989978
+    second: amazon-idle_6
+  - first:
+      213: 5108394164721340793
+    second: amazon-idle_7
+  - first:
+      213: -6247369870567651951
+    second: amazon-idle_8
+  - first:
+      213: -7998017368519905237
+    second: amazon-idle_9
+  - first:
+      213: 6691733596116727994
+    second: amazon-idle_10
+  - first:
+      213: 2940689829342759636
+    second: amazon-idle_11
+  - first:
+      213: -9183016705946199864
+    second: amazon-idle_12
+  - first:
+      213: 8645534106363321838
+    second: amazon-idle_13
+  - first:
+      213: 902565595939014723
+    second: amazon-idle_14
+  - first:
+      213: 2501182990833794149
+    second: amazon-idle_15
+  - first:
+      213: -456513080578248244
+    second: amazon-idle_16
+  - first:
+      213: 360214010687898873
+    second: amazon-idle_17
+  - first:
+      213: -2587421315899611940
+    second: amazon-idle_18
+  - first:
+      213: 694152242287757024
+    second: amazon-idle_19
+  - first:
+      213: -8288842526467205224
+    second: amazon-idle_20
+  - first:
+      213: 3184218957217954670
+    second: amazon-idle_21
+  - first:
+      213: -6400650933041750162
+    second: amazon-idle_22
+  - first:
+      213: -6832791036815137065
+    second: amazon-idle_23
+  - first:
+      213: 2871612919543144907
+    second: amazon-idle_24
+  - first:
+      213: -6949169697735664951
+    second: amazon-idle_25
+  - first:
+      213: -1771745770234532074
+    second: amazon-idle_26
+  - first:
+      213: 69808094460584145
+    second: amazon-idle_27
+  - first:
+      213: 6510348586172002377
+    second: amazon-idle_28
+  - first:
+      213: -5280849425629693866
+    second: amazon-idle_29
+  - first:
+      213: -4740946989643563148
+    second: amazon-idle_30
+  - first:
+      213: 731311835845819005
+    second: amazon-idle_31
+  - first:
+      213: -6407934258454142996
+    second: amazon-idle_32
+  - first:
+      213: -6321860855363258733
+    second: amazon-idle_33
+  - first:
+      213: -4567931269029710295
+    second: amazon-idle_34
+  - first:
+      213: 3977583412696978613
+    second: amazon-idle_35
+  - first:
+      213: 937563199225170122
+    second: amazon-idle_36
+  - first:
+      213: 8473151016775113380
+    second: amazon-idle_37
+  - first:
+      213: -5078378901939164181
+    second: amazon-idle_38
+  - first:
+      213: -8434709693375228742
+    second: amazon-idle_39
+  - first:
+      213: 7207539904491813739
+    second: amazon-idle_40
+  - first:
+      213: -6948439589154476022
+    second: amazon-idle_41
+  - first:
+      213: 6862563493582214704
+    second: amazon-idle_42
+  - first:
+      213: 3434921845299134354
+    second: amazon-idle_43
+  - first:
+      213: -6168167736891081761
+    second: amazon-idle_44
+  - first:
+      213: -6557201126890897941
+    second: amazon-idle_45
+  - first:
+      213: 7872551709699735000
+    second: amazon-idle_46
+  - first:
+      213: 6968249034319367674
+    second: amazon-idle_47
+  - first:
+      213: -6288184751453869604
+    second: amazon-idle_48
+  - first:
+      213: 74199176749151333
+    second: amazon-idle_49
+  - first:
+      213: 3083473576095017995
+    second: amazon-idle_50
+  - first:
+      213: -2030518638468787716
+    second: amazon-idle_51
+  - first:
+      213: -5732071112504824916
+    second: amazon-idle_52
+  - first:
+      213: -4887858635366969111
+    second: amazon-idle_53
+  - first:
+      213: -4953937800499889287
+    second: amazon-idle_54
+  - first:
+      213: 7111354544399654816
+    second: amazon-idle_55
+  - first:
+      213: -1058378014454912166
+    second: amazon-idle_56
+  - first:
+      213: 1363145712340722006
+    second: amazon-idle_57
+  - first:
+      213: 5062350779448315513
+    second: amazon-idle_58
+  - first:
+      213: -2333480045037826227
+    second: amazon-idle_59
+  - first:
+      213: 1253358948146222368
+    second: amazon-idle_60
+  - first:
+      213: 6648789694253129443
+    second: amazon-idle_61
+  - first:
+      213: 6763677833791233988
+    second: amazon-idle_62
+  - first:
+      213: 7946753033244773217
+    second: amazon-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: amazon_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97891e9ad07084f4b940f9e00dc53554
+      internalID: -1099479641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eeb23b8871c23c54f9f434e03069c77e
+      internalID: -2126097431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b53fb60ad00c18e40b9bd8f8b2f9a8c7
+      internalID: 353957561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f01f2d7e123832418a179972e6411a6
+      internalID: -1356078778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 990c6b901e59ef74a91c4fa633ab2eca
+      internalID: 1246974021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 374b4b105463a714f9d6500f0d5c7467
+      internalID: -1314122079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50e2934dfd4ee7044983c9f9fb992318
+      internalID: 203510613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1ce3604bd960e54fa3347ce29e62bb5
+      internalID: 1908237261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23620bc8bd5a6c54e82ff339bf5fb267
+      internalID: 1649913740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e32cd539863c62c4eb06dc756d784349
+      internalID: -805351554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 842ff75920c41cf408bebb30f26692dd
+      internalID: -1195061867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7495496380d6aa4087c1423fca0de6d
+      internalID: 91890786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcc1bf501011eef429e70625f4e87eb1
+      internalID: 456742621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbb5af7153e580a4fb8b37ec9f3b3afb
+      internalID: -730677180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf6d4c69fac515245a50104945be3b91
+      internalID: -2146307090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: amazon_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0ec9d9d17fbe0f42bfd96b43b0284fc
+      internalID: 1991264241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8104fc24c7bd1db4a8455ba38d3b921b
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      amazon_idle_0: -1099479641
+      amazon_idle_1: -2126097431
+      amazon_idle_10: -1195061867
+      amazon_idle_11: 91890786
+      amazon_idle_12: 456742621
+      amazon_idle_13: -730677180
+      amazon_idle_14: -2146307090
+      amazon_idle_15: 1991264241
+      amazon_idle_2: 353957561
+      amazon_idle_3: -1356078778
+      amazon_idle_4: 1246974021
+      amazon_idle_5: -1314122079
+      amazon_idle_6: 203510613
+      amazon_idle_7: 1908237261
+      amazon_idle_8: 1649913740
+      amazon_idle_9: -805351554
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

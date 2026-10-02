@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: c386ef002a49d914cbffef22011d5493
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -828947646296379464
+    second: centaur-idle_0
+  - first:
+      213: -2576703812517527665
+    second: centaur-idle_1
+  - first:
+      213: 6433123625486678523
+    second: centaur-idle_2
+  - first:
+      213: -2968208372707756840
+    second: centaur-idle_3
+  - first:
+      213: -5391955890885688739
+    second: centaur-idle_4
+  - first:
+      213: 5564310515634455820
+    second: centaur-idle_5
+  - first:
+      213: 2296858379194164968
+    second: centaur-idle_6
+  - first:
+      213: 230367139364607026
+    second: centaur-idle_7
+  - first:
+      213: 552994040849698674
+    second: centaur-idle_8
+  - first:
+      213: 1773422385924460463
+    second: centaur-idle_9
+  - first:
+      213: 844213357324185926
+    second: centaur-idle_10
+  - first:
+      213: -8266733562289853143
+    second: centaur-idle_11
+  - first:
+      213: 6265863499981049467
+    second: centaur-idle_12
+  - first:
+      213: 6830131027406480767
+    second: centaur-idle_13
+  - first:
+      213: 600776527531860916
+    second: centaur-idle_14
+  - first:
+      213: 8126571639395893183
+    second: centaur-idle_15
+  - first:
+      213: -6756687059409219742
+    second: centaur-idle_16
+  - first:
+      213: 1622503201555529127
+    second: centaur-idle_17
+  - first:
+      213: 1598332231135293957
+    second: centaur-idle_18
+  - first:
+      213: -7447463258134986256
+    second: centaur-idle_19
+  - first:
+      213: -3917678972422698777
+    second: centaur-idle_20
+  - first:
+      213: 6078723870426900282
+    second: centaur-idle_21
+  - first:
+      213: -7931202374338738725
+    second: centaur-idle_22
+  - first:
+      213: -7002880254399861538
+    second: centaur-idle_23
+  - first:
+      213: 7183193979613593291
+    second: centaur-idle_24
+  - first:
+      213: 205265415024632018
+    second: centaur-idle_25
+  - first:
+      213: 5061814590377637487
+    second: centaur-idle_26
+  - first:
+      213: -5872070950790609652
+    second: centaur-idle_27
+  - first:
+      213: -6378313329047297779
+    second: centaur-idle_28
+  - first:
+      213: 7569171321497995378
+    second: centaur-idle_29
+  - first:
+      213: -5044053248948640093
+    second: centaur-idle_30
+  - first:
+      213: -8835623471752623741
+    second: centaur-idle_31
+  - first:
+      213: 3451115869891140143
+    second: centaur-idle_32
+  - first:
+      213: 3831140754090871574
+    second: centaur-idle_33
+  - first:
+      213: -5150012094635892097
+    second: centaur-idle_34
+  - first:
+      213: -1822495550988725503
+    second: centaur-idle_35
+  - first:
+      213: -7745604726050618384
+    second: centaur-idle_36
+  - first:
+      213: -5924682104223531303
+    second: centaur-idle_37
+  - first:
+      213: 7689219201463868436
+    second: centaur-idle_38
+  - first:
+      213: -8054523482410082685
+    second: centaur-idle_39
+  - first:
+      213: 8536227838257680390
+    second: centaur-idle_40
+  - first:
+      213: -4430746523476619829
+    second: centaur-idle_41
+  - first:
+      213: 7646806352934849349
+    second: centaur-idle_42
+  - first:
+      213: -9069197219466397332
+    second: centaur-idle_43
+  - first:
+      213: 9080988128368664404
+    second: centaur-idle_44
+  - first:
+      213: 8102509284071342090
+    second: centaur-idle_45
+  - first:
+      213: 2617915252395565310
+    second: centaur-idle_46
+  - first:
+      213: 9144474170878969394
+    second: centaur-idle_47
+  - first:
+      213: -6161601665859014427
+    second: centaur-idle_48
+  - first:
+      213: 5064557299091706691
+    second: centaur-idle_49
+  - first:
+      213: -2933711066025293423
+    second: centaur-idle_50
+  - first:
+      213: -5917938385089580427
+    second: centaur-idle_51
+  - first:
+      213: 5884884863977097603
+    second: centaur-idle_52
+  - first:
+      213: 8918213036333222587
+    second: centaur-idle_53
+  - first:
+      213: 4409979632508202788
+    second: centaur-idle_54
+  - first:
+      213: 7505504664472462616
+    second: centaur-idle_55
+  - first:
+      213: 4908802927749505166
+    second: centaur-idle_56
+  - first:
+      213: -4512922371944109403
+    second: centaur-idle_57
+  - first:
+      213: 6890466366517460041
+    second: centaur-idle_58
+  - first:
+      213: -8494726012967087996
+    second: centaur-idle_59
+  - first:
+      213: 3522334302105100690
+    second: centaur-idle_60
+  - first:
+      213: 352815550937298859
+    second: centaur-idle_61
+  - first:
+      213: -5707647199941201724
+    second: centaur-idle_62
+  - first:
+      213: -2595210495651029606
+    second: centaur-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: centaur_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0089c4a808badaf4dae09ac1e5e11317
+      internalID: 1742029463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a2ce64080cbc91458912ead141f2456
+      internalID: 1641498833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4573dda29a0e4448bedcfdefc215b04
+      internalID: 660227187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc662ed3b6bb9e9478f7b01ae92b3aaf
+      internalID: -2035558462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3980262bb4b6914ebc630270655f1a0
+      internalID: -874347013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a390d3ed7cd28243b821fe890c56e22
+      internalID: 1677024385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f9aa38b66cda3845bd22de06e9ad3f0
+      internalID: 1713476485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddfbb7dba6fd0af409db58fce07db563
+      internalID: 2064575989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03a5bcdda833f824598e7eba2f355804
+      internalID: -1350770295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7113c5f1eafbdc14385986f07fd98de5
+      internalID: 1480733869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4ffbbafa05787d49afa9a666e113bfe
+      internalID: -959165205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4dec162b46560347a0fc3d03abcb66d
+      internalID: -1324369729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09c150c14ab581742bda087e0be946a4
+      internalID: 965875822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f6678b8376bfcc458319b7b35795cb7
+      internalID: -1324667387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01b6f9f0d08ad564083a43ca9eb64714
+      internalID: -846413428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: centaur_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 522522038e1fa874d9d9941a4ddc907d
+      internalID: -1709382884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e00dcf16043989a44bad95a36b2d4126
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      centaur_idle_0: 1742029463
+      centaur_idle_1: 1641498833
+      centaur_idle_10: -959165205
+      centaur_idle_11: -1324369729
+      centaur_idle_12: 965875822
+      centaur_idle_13: -1324667387
+      centaur_idle_14: -846413428
+      centaur_idle_15: -1709382884
+      centaur_idle_2: 660227187
+      centaur_idle_3: -2035558462
+      centaur_idle_4: -874347013
+      centaur_idle_5: 1677024385
+      centaur_idle_6: 1713476485
+      centaur_idle_7: 2064575989
+      centaur_idle_8: -1350770295
+      centaur_idle_9: 1480733869
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

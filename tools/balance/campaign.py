@@ -53,7 +53,8 @@ class Sim:
 
     def ustats(self, kind):
         u = self.cfg["units"][kind]
-        return 0.1 * u["strength"], (120 + u["speed"] * 12) / 48, u["stamina"] / 100
+        return (self.cfg.get("work_per_strength", 0.1) * u["strength"],
+                (120 + u["speed"] * 12) / 48 * self.cfg.get("walk_scale", 1.0), u["stamina"] / 100)
 
     def workers(self, b):
         return [u for u in self.units if u["job"] == ("work", b["id"])]

@@ -29,6 +29,8 @@ namespace TrollStrategy.Content
         [Tooltip("Работы в секунду за одно очко Силы работника. Рецепт с Work = 1 даёт одну единицу за такую работу.")]
         [FormerlySerializedAs("_orePerStrengthSecond")]
         [SerializeField] private float _workPerStrengthSecond = 0.1f;
+        [Tooltip("Множитель скорости ходьбы существ в колонии: 1 — как задают их характеристики. Бой не затрагивает.")]
+        [SerializeField, Min(0.1f)] private float _walkSpeedScale = 1f;
 
         [Header("Рост цен")]
         [Tooltip("Во сколько раз дороже каждая следующая постройка того же вида, считая стоящие. 1 — цена не растёт.")]
@@ -63,6 +65,7 @@ namespace TrollStrategy.Content
         public int LoadersPerDoor => Mathf.Max(1, _loadersPerDoor);
         public int StartingGold => _startingGold;
         public float WorkPerStrengthSecond => _workPerStrengthSecond;
+        public float WalkSpeedScale => Mathf.Max(0.1f, _walkSpeedScale);
         public float BuildingCopyPriceGrowth => Mathf.Max(1f, _buildingCopyPriceGrowth);
         public float HirePricePercentPerCreature => Mathf.Max(0f, _hirePricePercentPerCreature);
         public bool LandEnabled => _landEnabled;

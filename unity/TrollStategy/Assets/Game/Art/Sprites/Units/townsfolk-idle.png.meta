@@ -1,0 +1,694 @@
+fileFormatVersion: 2
+guid: d131ed07ca934414c86e368e4a94e281
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4887050808122835553
+    second: townsfolk-idle_0
+  - first:
+      213: 5718924537906105910
+    second: townsfolk-idle_1
+  - first:
+      213: -4161651103689177854
+    second: townsfolk-idle_2
+  - first:
+      213: -2501263669545766172
+    second: townsfolk-idle_3
+  - first:
+      213: 6061360680850072479
+    second: townsfolk-idle_4
+  - first:
+      213: -4727396098210145622
+    second: townsfolk-idle_5
+  - first:
+      213: 9038039619160515862
+    second: townsfolk-idle_6
+  - first:
+      213: -7484432304949488336
+    second: townsfolk-idle_7
+  - first:
+      213: 2077524696384384021
+    second: townsfolk-idle_8
+  - first:
+      213: -9007245958105086639
+    second: townsfolk-idle_9
+  - first:
+      213: 3882182792895940129
+    second: townsfolk-idle_10
+  - first:
+      213: 1689706084238562936
+    second: townsfolk-idle_11
+  - first:
+      213: -4747283177601935896
+    second: townsfolk-idle_12
+  - first:
+      213: -7747932672395261242
+    second: townsfolk-idle_13
+  - first:
+      213: 7783056901876724414
+    second: townsfolk-idle_14
+  - first:
+      213: 1374630802430072155
+    second: townsfolk-idle_15
+  - first:
+      213: -7864988513803142582
+    second: townsfolk-idle_16
+  - first:
+      213: 2321751733803707525
+    second: townsfolk-idle_17
+  - first:
+      213: -1656372218429022412
+    second: townsfolk-idle_18
+  - first:
+      213: 3620124701851032794
+    second: townsfolk-idle_19
+  - first:
+      213: 5202494134478125432
+    second: townsfolk-idle_20
+  - first:
+      213: 4394313995026873359
+    second: townsfolk-idle_21
+  - first:
+      213: 7404159398930684196
+    second: townsfolk-idle_22
+  - first:
+      213: 6872949630536030310
+    second: townsfolk-idle_23
+  - first:
+      213: 1256237662431695909
+    second: townsfolk-idle_24
+  - first:
+      213: 6468544701472666326
+    second: townsfolk-idle_25
+  - first:
+      213: 1507339536124916252
+    second: townsfolk-idle_26
+  - first:
+      213: 9047611553529564520
+    second: townsfolk-idle_27
+  - first:
+      213: 2462189214489653739
+    second: townsfolk-idle_28
+  - first:
+      213: -2380427866402797590
+    second: townsfolk-idle_29
+  - first:
+      213: 6211428303752275459
+    second: townsfolk-idle_30
+  - first:
+      213: 1286150420657536306
+    second: townsfolk-idle_31
+  - first:
+      213: 1610870263874930149
+    second: townsfolk-idle_32
+  - first:
+      213: 3771557860964420590
+    second: townsfolk-idle_33
+  - first:
+      213: 140500816037600700
+    second: townsfolk-idle_34
+  - first:
+      213: 3399311107085008351
+    second: townsfolk-idle_35
+  - first:
+      213: 326874232210261045
+    second: townsfolk-idle_36
+  - first:
+      213: 2828325181350351467
+    second: townsfolk-idle_37
+  - first:
+      213: 3339393869339490539
+    second: townsfolk-idle_38
+  - first:
+      213: -1420946279255465844
+    second: townsfolk-idle_39
+  - first:
+      213: 5512315946803427929
+    second: townsfolk-idle_40
+  - first:
+      213: 3928745631428555317
+    second: townsfolk-idle_41
+  - first:
+      213: 503082287562861090
+    second: townsfolk-idle_42
+  - first:
+      213: -2297372106134304462
+    second: townsfolk-idle_43
+  - first:
+      213: 2614752821113468266
+    second: townsfolk-idle_44
+  - first:
+      213: -6701212073805659094
+    second: townsfolk-idle_45
+  - first:
+      213: 7631933590183600824
+    second: townsfolk-idle_46
+  - first:
+      213: 7298752091571001312
+    second: townsfolk-idle_47
+  - first:
+      213: 1897249185961829148
+    second: townsfolk-idle_48
+  - first:
+      213: 1191443350946679375
+    second: townsfolk-idle_49
+  - first:
+      213: -3173267504308993892
+    second: townsfolk-idle_50
+  - first:
+      213: 3185444511887648012
+    second: townsfolk-idle_51
+  - first:
+      213: 6788658929381634129
+    second: townsfolk-idle_52
+  - first:
+      213: -2627491894430915841
+    second: townsfolk-idle_53
+  - first:
+      213: 4477794978028170591
+    second: townsfolk-idle_54
+  - first:
+      213: 7096719915551706394
+    second: townsfolk-idle_55
+  - first:
+      213: 347879609554390991
+    second: townsfolk-idle_56
+  - first:
+      213: -6002401079861125682
+    second: townsfolk-idle_57
+  - first:
+      213: 3419876742291210557
+    second: townsfolk-idle_58
+  - first:
+      213: 7931048394722446364
+    second: townsfolk-idle_59
+  - first:
+      213: 3952834687520282253
+    second: townsfolk-idle_60
+  - first:
+      213: -2249507793851655113
+    second: townsfolk-idle_61
+  - first:
+      213: -8743117040983740062
+    second: townsfolk-idle_62
+  - first:
+      213: -5360166770005017108
+    second: townsfolk-idle_63
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: townsfolk_idle_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4bc869f688378e408b880287215a08f
+      internalID: 1660266583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b62afc3c7fa6e5e43902b94c5f439d16
+      internalID: -459492390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42cced97b50a4944b86b31aecb3854ea
+      internalID: -2021045740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f32a763c8e040ef4982efec8bf495897
+      internalID: -1292055963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3c295c827f0db84d848c5dc1f0b1a68
+      internalID: 1329993381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd3fc57e5972c8e4e8868055d88e67a3
+      internalID: 646008418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b8b37c58b52e764aa3142e885b700e8
+      internalID: 75715585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_7
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 880baef648ae00c4b872e2fd829d6393
+      internalID: 1097186851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_8
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a0761ac0c8c4e148870ea67d877ff08
+      internalID: -373099137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_9
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 067d23479bda9ef48b3c02c5a10053a7
+      internalID: 365932547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37804f4c78b69674e9aebebcbe32fb50
+      internalID: 1194394973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_11
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06fd97ba6434d3949983b37b38f41d88
+      internalID: 1507280776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_12
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5c3fcefff85ccb4ea365d26208c6612
+      internalID: 1593983943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_13
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b06cf2dc59abd644f8fb94f5a3358280
+      internalID: 117707523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_14
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84d7ebc3c772ac342b2c0c01ff6b202d
+      internalID: -293372671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: townsfolk_idle_15
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 026edfc6fc636294ab093f987c8138b6
+      internalID: -1521429886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 17ae68b4bb1dfa24793d4df85d29b676
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+    nameFileIdTable:
+      townsfolk_idle_0: 1660266583
+      townsfolk_idle_1: -459492390
+      townsfolk_idle_10: 1194394973
+      townsfolk_idle_11: 1507280776
+      townsfolk_idle_12: 1593983943
+      townsfolk_idle_13: 117707523
+      townsfolk_idle_14: -293372671
+      townsfolk_idle_15: -1521429886
+      townsfolk_idle_2: -2021045740
+      townsfolk_idle_3: -1292055963
+      townsfolk_idle_4: 1329993381
+      townsfolk_idle_5: 646008418
+      townsfolk_idle_6: 75715585
+      townsfolk_idle_7: 1097186851
+      townsfolk_idle_8: -373099137
+      townsfolk_idle_9: 365932547
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
