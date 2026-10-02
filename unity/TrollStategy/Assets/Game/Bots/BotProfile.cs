@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TrollStrategy.Content;
 
@@ -12,7 +13,9 @@ namespace TrollStrategy.Bots
     {
         public BotProfile(string id, string title, string description, float thinkSeconds, bool grows,
             UnitKind workerKind = UnitKind.Goblin, int maxHaulersPerRoute = 6, int maxRawProducers = 3,
-            float growthGoldFactor = 2f, float reserveShare = 1f, int squadTrolls = 2, bool fightsForGold = false)
+            float growthGoldFactor = 2f, float reserveShare = 1f, int squadTrolls = 2, bool fightsForGold = false,
+            float actionSeconds = 0f, float questReadSeconds = 0f, float roleHiring = 0f,
+            BuildingKind[] upgradeHosts = null)
         {
             Id = id;
             Title = title;
@@ -26,6 +29,10 @@ namespace TrollStrategy.Bots
             ReserveShare = reserveShare;
             SquadTrolls = squadTrolls;
             FightsForGold = fightsForGold;
+            ActionSeconds = actionSeconds;
+            QuestReadSeconds = questReadSeconds;
+            RoleHiring = roleHiring;
+            UpgradeHosts = upgradeHosts ?? Array.Empty<BuildingKind>();
         }
 
         public string Id { get; }
@@ -33,14 +40,14 @@ namespace TrollStrategy.Bots
         public string Description { get; }
         /// <summary>Colony seconds between two looks at the colony; quests are claimed only on a look.</summary>
         public float ThinkSeconds { get; }
-        /// <summary>Spends spare gold on more workers, haulers and raw producers while a quest waits.</summary>
+        /// <summary>Spends spare gold on more workers, haulers, raw producers and upgrades while a quest waits.</summary>
         public bool Grows { get; }
-        /// <summary>Who works where a quest asks for any creature, and whom growth hires as workers.</summary>
+        /// <summary>Who works where a quest asks for any creature while <see cref="RoleHiring"/> is 0.</summary>
         public UnitKind WorkerKind { get; }
         public int MaxHaulersPerRoute { get; }
         /// <summary>Mines, fields and lumber camps growth may own in all.</summary>
         public int MaxRawProducers { get; }
-        /// <summary>A new raw producer is built once spare gold covers its set-up this many times.</summary>
+        /// <summary>A new raw producer or upgrade is bought once spare gold covers it this many times.</summary>
         public float GrowthGoldFactor { get; }
         /// <summary>Share of the gold a waiting quest step needs that growth leaves untouched (1 saves it all).</summary>
         public float ReserveShare { get; }
@@ -48,24 +55,47 @@ namespace TrollStrategy.Bots
         public int SquadTrolls { get; }
         /// <summary>Fights whenever the mission is ready, for its gold, not only when a quest asks.</summary>
         public bool FightsForGold { get; }
+        /// <summary>
+        /// Player time one command costs at the HUD (finding the button, placing, selecting creatures). The colony
+        /// runs on meanwhile and the next look comes that much later; 0 acts instantly.
+        /// </summary>
+        public float ActionSeconds { get; }
+        /// <summary>Player time spent reading a quest when it begins.</summary>
+        public float QuestReadSeconds { get; }
+        /// <summary>
+        /// Hires for the job: of the creatures the colony may hire whose work (or carrying) per gold is at least
+        /// this share of the best, the one that does most per head; 0 hires <see cref="WorkerKind"/> to work and
+        /// goblins to carry.
+        /// </summary>
+        public float RoleHiring { get; }
+        /// <summary>Buildings whose upgrades growth buys, in this order; empty buys none beyond the quests.</summary>
+        public IReadOnlyList<BuildingKind> UpgradeHosts { get; }
+
+        private static readonly BuildingKind[] Guild = { BuildingKind.HaulersGuild };
+
+        public static readonly BotProfile Human = new("human", "Живой игрок",
+            "Как обычный, но с ценой интерфейса: команда стоит 8 секунд, чтение задания 30, носильщиков на маршруте не больше трёх.",
+            thinkSeconds: 15f, grows: true, maxHaulersPerRoute: 3, actionSeconds: 8f, questReadSeconds: 30f,
+            roleHiring: 0.9f, upgradeHosts: Guild);
 
         public static readonly BotProfile Passive = new("passive", "Пассивный",
-            "Делает только то, что просят задания, и заглядывает в колонию раз в минуту.",
+            "Делает только то, что просят задания, нанимает гоблинов и заглядывает в колонию раз в минуту.",
             thinkSeconds: 60f, grows: false);
 
         public static readonly BotProfile Typical = new("typical", "Обычный",
-            "Задания плюс умеренный рост: дозаполняет добычу и носильщиков, смотрит раз в 20 секунд.",
-            thinkSeconds: 20f, grows: true);
+            "Задания плюс умеренный рост: дозаполняет добычу и носильщиков, ставит жителей на их ремесло, копит на гильдию носильщиков; смотрит раз в 20 секунд.",
+            thinkSeconds: 20f, grows: true, roleHiring: 0.9f, upgradeHosts: Guild);
 
         public static readonly BotProfile Active = new("active", "Активный",
-            "Смотрит каждые 5 секунд и вкладывает свободное золото в добычу, даже когда копит на задание.",
+            "Смотрит каждые 5 секунд и вкладывает свободное золото в добычу, мастеров и гильдию носильщиков, даже когда копит на задание.",
             thinkSeconds: 5f, grows: true, maxHaulersPerRoute: 10, maxRawProducers: 5, growthGoldFactor: 1.2f,
-            reserveShare: 0.5f);
+            reserveShare: 0.5f, roleHiring: 0.9f, upgradeHosts: Guild);
 
         public static readonly BotProfile Warlord = new("warlord", "Воитель",
-            "Ставит на работу троллей и ходит в бой при каждой возможности ради золота.",
-            thinkSeconds: 10f, grows: true, workerKind: UnitKind.Troll, squadTrolls: 3, fightsForGold: true);
+            "Нанимает самых сильных, а не самых выгодных, ходит на арену при каждой возможности ради золота и вкладывается в казарму.",
+            thinkSeconds: 10f, grows: true, workerKind: UnitKind.Troll, squadTrolls: 3, fightsForGold: true,
+            roleHiring: 0.65f, upgradeHosts: new[] { BuildingKind.Barracks, BuildingKind.HaulersGuild });
 
-        public static IReadOnlyList<BotProfile> All { get; } = new[] { Passive, Typical, Active, Warlord };
+        public static IReadOnlyList<BotProfile> All { get; } = new[] { Human, Passive, Typical, Active, Warlord };
     }
 }

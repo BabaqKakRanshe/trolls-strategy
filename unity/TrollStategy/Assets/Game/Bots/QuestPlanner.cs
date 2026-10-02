@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
@@ -75,10 +76,51 @@ namespace TrollStrategy.Bots
                 case QuestGoalKind.UpgradeBuilding:
                     Upgrade(goal, wait);
                     break;
+                case QuestGoalKind.ReachArenaLevel:
+                    // a lost climb asks for a stronger squad first: the barracks' cheapest upgrade
+                    if (_battles.LostLast) _hands.BuyUpgrade(wait, "отряд сильнее", BuildingKind.Barracks);
+                    _battles.TryFight(wait, hire: true);
+                    break;
+                case QuestGoalKind.OwnLand:
+                    _hands.BuyLandBlock(wait, "земля по заданию");
+                    break;
+                case QuestGoalKind.ProduceResource:
+                    EnsureChain(goal.Resource, _hands.First(BuildingKind.Market), wait, 0);
+                    break;
+                case QuestGoalKind.BuyUpgrades:
+                    _hands.BuyUpgrade(wait, "улучшение по заданию");
+                    break;
+                case QuestGoalKind.OwnEquipment:
+                    EnsureEquipment(goal.Amount, wait);
+                    break;
+                case QuestGoalKind.EquipFighters:
+                    // gear is dealt as the squad marches out: enough items, then a battle
+                    if (EnsureEquipment(goal.Amount, wait)) _battles.TryFight(wait, hire: true);
+                    break;
             }
         }
 
-        private UnitKind WorkerFor(QuestGoal goal) => goal.AnyUnit ? _hands.Hireable(_profile.WorkerKind) : goal.Unit;
+        /// <summary>Swords on their way to the armory until it holds <paramref name="items"/>; true once it does.</summary>
+        private bool EnsureEquipment(int items, BotWait wait)
+        {
+            if (_hands.Snapshot.Equipment.Count >= items) return true;
+            var armory = _hands.First(BuildingKind.Armory) ?? _hands.Build(BuildingKind.Armory, wait, "склад экипировки");
+            if (armory == null) return false;
+            EnsureChain(ResourceKind.IronSword, armory, wait, 0);
+            // the forge's swords go to the armory, not to the market, until it holds enough
+            var market = _hands.First(BuildingKind.Market);
+            foreach (var forge in _hands.BuildingsOf(BuildingKind.Forge))
+            {
+                var ids = _hands.Snapshot.Units
+                    .Where(u => u.Assignment.Kind == AssignmentKind.Haul && u.Assignment.SourceId == forge.Id &&
+                                market != null && u.Assignment.DestinationId == market.Id && u.Assignment.CarriesAnything)
+                    .Select(u => u.Id).ToList();
+                if (ids.Count > 0) _hands.Dispatch(new AssignHaulCommand(ids, forge.Id, armory.Id));
+            }
+            return false;
+        }
+
+        private UnitKind WorkerFor(QuestGoal goal) => goal.AnyUnit ? _hands.WorkerFor(goal.Building) : goal.Unit;
 
         private void WorkAt(QuestGoal goal, BotWait wait)
         {
@@ -109,7 +151,7 @@ namespace TrollStrategy.Bots
                 have += _hands.Haulers(s.Id, d.Id, counted);
             if (have < goal.Amount)
                 _hands.Haul(source, destination, goal.Amount - have, wait, "носильщики по заданию",
-                    kind: goal.AnyUnit ? UnitKind.Goblin : goal.Unit);
+                    kind: goal.AnyUnit ? null : goal.Unit);
         }
 
         private void Upgrade(QuestGoal goal, BotWait wait)
@@ -161,8 +203,17 @@ namespace TrollStrategy.Bots
                 if (producer == null) return;
             }
 
+            // a by-product or recipe that opens at a higher level asks for the upgrade first
+            int level = _hands.MinLevelFor(producer.Kind, resource);
+            if (producer.Level < level)
+            {
+                _hands.Upgrade(producer, wait, $"уровень {level}: {producer.Name}");
+                producer = _hands.Building(producer.Id);
+                if (producer == null || producer.Level < level) return;
+            }
+
             if (producer.WorkerCount < ChainWorkers)
-                _hands.Staff(producer, _hands.Hireable(_profile.WorkerKind), ChainWorkers - producer.WorkerCount, wait,
+                _hands.Staff(producer, _hands.WorkerFor(producer.Kind), ChainWorkers - producer.WorkerCount, wait,
                     $"рабочие: {producer.Name}");
             var recipe = _hands.RecipeFor(producer.Kind, resource);
             if (recipe != null)
@@ -171,7 +222,11 @@ namespace TrollStrategy.Bots
             var current = _hands.Building(producer.Id);
             if (recipe != null && current?.ProductionState == ProductionState.MissingInputs)
                 foreach (var input in recipe.Inputs)
-                    Redirect(input.Resource, current);
+                    if (_hands.StockOf(current, input.Resource) < input.Amount)
+                        Redirect(input.Resource, current);
+            // a by-product (meat and milk at the farm, scrap at the forge) that nobody takes fills the building up
+            if (current?.ProductionState == ProductionState.OutputFull)
+                ClearSurplus(current, resource, wait);
 
             producer = _hands.Building(producer.Id);
             if (producer != null && _hands.Haulers(producer.Id, destination.Id) == 0)
@@ -180,7 +235,8 @@ namespace TrollStrategy.Bots
 
         /// <summary>
         /// The chain's workshop stands idle while the building that holds its input sells that input: half of
-        /// the haulers taking goods from there to the market carry to the workshop instead.
+        /// the haulers taking goods from there to the market carry to the workshop instead, while its route has
+        /// room for them.
         /// </summary>
         private void Redirect(ResourceKind resource, BuildingSnapshot consumer)
         {
@@ -193,13 +249,36 @@ namespace TrollStrategy.Bots
                     (!_hands.Makes(source.Kind, resource) && _hands.StockOf(source, resource) == 0) ||
                     !ColonySimulation.Provides(_hands.Def(source.Kind), resource) || !_hands.CanHaul(source, consumer))
                     continue;
+                int room = _profile.MaxHaulersPerRoute - _hands.Haulers(source.Id, consumer.Id);
+                if (room <= 0) continue;
+                // a hauler sent with chosen goods (a by-product clearing) stays on its own errand
                 var ids = _hands.Snapshot.Units
                     .Where(u => u.Assignment.Kind == AssignmentKind.Haul && u.Assignment.SourceId == source.Id &&
-                                u.Assignment.DestinationId == market.Id)
+                                u.Assignment.DestinationId == market.Id && u.Assignment.MayCarry(resource))
                     .Select(u => u.Id).ToList();
-                int move = (ids.Count + 1) / 2;
+                int move = Math.Min(room, (ids.Count + 1) / 2);
                 if (move > 0) _hands.Dispatch(new AssignHaulCommand(ids.Take(move).ToList(), source.Id, consumer.Id));
             }
+        }
+
+        /// <summary>One hauler takes the producer's other goods to the market, so its by-products never block it.</summary>
+        private void ClearSurplus(BuildingSnapshot producer, ResourceKind kept, BotWait wait)
+        {
+            var market = _hands.First(BuildingKind.Market);
+            if (market == null || producer.Id == market.Id) return;
+            var surplus = ColonySimulation.ProvidedResources(producer.Kind, _hands.Catalog)
+                .Where(r => r != kept && _hands.StockOf(producer, r) > 0).ToList();
+            if (surplus.Count == 0) return;
+            bool taken = _hands.Snapshot.Units.Any(u => u.Assignment.Kind == AssignmentKind.Haul &&
+                u.Assignment.SourceId == producer.Id && u.Assignment.DestinationId == market.Id &&
+                !u.Assignment.CarriesAnything && surplus.All(u.Assignment.MayCarry));
+            if (taken) return;
+            // one of the haulers already queuing at the producer takes the surplus; a new one only if none waits
+            var spare = _hands.Snapshot.Units
+                .Where(u => u.Assignment.Kind == AssignmentKind.Haul && u.Assignment.SourceId == producer.Id)
+                .OrderByDescending(u => u.Assignment.Phase == HaulPhase.QueuedAtSource).Select(u => u.Id).FirstOrDefault();
+            if (spare != null) _hands.Dispatch(new AssignHaulCommand(new[] { spare }, producer.Id, market.Id, surplus));
+            else _hands.Haul(producer, market, 1, wait, $"лишнее на рынок: {producer.Name}", surplus);
         }
 
         /// <summary>A route into the consumer from a building that hands out the resource, or a new chain.</summary>
@@ -210,7 +289,12 @@ namespace TrollStrategy.Bots
             {
                 if (route.Destination != consumer.Id) continue;
                 var source = _hands.Building(route.Source);
-                if (source != null && ColonySimulation.Provides(_hands.Def(source.Kind), resource)) return;
+                if (source == null || !ColonySimulation.Provides(_hands.Def(source.Kind), resource)) continue;
+                // a producer whose workers fell in battle or left supplies nothing: the chain staffs it again
+                if (source.IsWorkplace && source.WorkerCount == 0 && _hands.Makes(source.Kind, resource)) break;
+                // the supplier makes other goods too; when they fill it up it stops supplying this one
+                if (source.ProductionState == ProductionState.OutputFull) ClearSurplus(source, resource, wait);
+                return;
             }
             EnsureChain(resource, consumer, wait, depth);
         }

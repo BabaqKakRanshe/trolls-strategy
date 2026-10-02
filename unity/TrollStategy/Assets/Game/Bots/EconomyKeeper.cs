@@ -10,13 +10,14 @@ namespace TrollStrategy.Bots
     /// <summary>
     /// Keeps goods moving the way any attentive player would: everything made has somewhere to go, a workshop
     /// short of inputs gets them brought, a building whose goods pile up gets another hauler. Growth, for the
-    /// profiles that grow, puts spare gold into more workers and more raw producers.
+    /// profiles that grow, puts spare gold into more workers, more raw producers and the upgrades it favours.
     /// </summary>
     internal sealed class EconomyKeeper
     {
         private const int MaxHiresPerLook = 3;
         private const int MaxGrowthStaffPerLook = 2;
         private const int StockpileBacklog = 30;
+        private const int RestaffWorkers = 2;
 
         private readonly BotHands _hands;
         private readonly BattlePlanner _battles;
@@ -39,6 +40,7 @@ namespace TrollStrategy.Bots
             // a producer with nowhere to send its goods stalls and earns nothing: these may use all gold
             _hands.SpendLimit = int.MaxValue;
             EmployIdle();
+            Restaff();
             foreach (var id in _hands.Snapshot.Buildings.Select(b => b.Id).ToList())
                 OpenOutlet(_hands.Building(id));
             foreach (var id in _hands.Snapshot.Buildings.Select(b => b.Id).ToList())
@@ -67,9 +69,14 @@ namespace TrollStrategy.Bots
                 var current = _hands.Building(building.Id);
                 if (current == null || current.WorkerCount == 0 || current.WorkerCount >= current.MaxWorkers) continue;
                 if (current.ProductionState != ProductionState.Working || !HasOutlet(current)) continue;
-                staffed += _hands.Staff(current, _hands.Hireable(_profile.WorkerKind), 1, null, "рост: рабочий");
+                staffed += _hands.Staff(current, _hands.WorkerFor(current.Kind), 1, null, "рост: рабочий");
             }
+            GrowRaw();
+            GrowUpgrades();
+        }
 
+        private void GrowRaw()
+        {
             var raws = Producers().Where(b => _hands.IsRaw(b.Kind)).ToList();
             if (raws.Count == 0 || raws.Count >= _profile.MaxRawProducers) return;
             if (raws.Any(b => b.WorkerCount < b.MaxWorkers || b.ProductionState != ProductionState.Working)) return;
@@ -78,13 +85,30 @@ namespace TrollStrategy.Bots
                 .OrderBy(d => _hands.Session.BuildingPrice(d.Kind))
                 .Select(d => (BuildingKind?)d.Kind).FirstOrDefault();
             if (kind == null) return;
-            int setUp = _hands.Session.BuildingPrice(kind.Value) + _hands.Session.HirePrice(UnitKind.Goblin, 4);
+            int setUp = _hands.Session.BuildingPrice(kind.Value) +
+                        _hands.Session.HirePrice(_hands.WorkerFor(kind.Value), 2) +
+                        _hands.Session.HirePrice(_hands.HaulerKind(), 2);
             if (_hands.SpendLimit < setUp * _profile.GrowthGoldFactor) return;
             var built = _hands.Build(kind.Value, null, "рост: добыча");
             var market = _hands.First(BuildingKind.Market);
             if (built == null || market == null) return;
-            _hands.Staff(built, _hands.Hireable(_profile.WorkerKind), 2, null, "рост: рабочие");
+            _hands.Staff(built, _hands.WorkerFor(built.Kind), 2, null, "рост: рабочие");
             _hands.Haul(_hands.Building(built.Id), market, 2, null, "рост: носильщики");
+        }
+
+        // The cheapest upgrade of each building the profile invests in, once spare gold covers it (and the
+        // building, while the colony has none) the growth factor times.
+        private void GrowUpgrades()
+        {
+            foreach (var host in _profile.UpgradeHosts)
+            {
+                var next = _hands.Snapshot.Upgrades.Where(u => u.Host == host && !u.IsMaxed)
+                    .OrderBy(u => u.NextCost).FirstOrDefault();
+                if (next == null || (!next.HostBuilt && !_hands.IsUnlocked(host))) continue;
+                int cost = next.NextCost + (next.HostBuilt ? 0 : _hands.Session.BuildingPrice(host));
+                if (_hands.SpendLimit < cost * _profile.GrowthGoldFactor) continue;
+                _hands.BuyUpgrade(null, "рост", host);
+            }
         }
 
         public void FightForGold(BotWait wait)
@@ -108,21 +132,38 @@ namespace TrollStrategy.Bots
             return total;
         }
 
-        // Idle creatures take free places in producers that already work and have an outlet, raw ones first.
+        // Idle creatures take free places in producers that already work and have an outlet: a creature its
+        // favourite building first, then raw producers. One order per building, as a player selects a group.
         private void EmployIdle()
         {
-            foreach (var kind in new[] { UnitKind.Troll, UnitKind.Goblin })
+            var idle = _hands.Snapshot.Units.Where(u => u.Assignment.Kind == AssignmentKind.Idle).ToList();
+            if (idle.Count == 0) return;
+            var places = Producers().Where(b => b.WorkerCount > 0 && b.WorkerCount < b.MaxWorkers && HasOutlet(b))
+                .ToList();
+            var free = places.ToDictionary(b => b.Id, b => b.MaxWorkers - b.WorkerCount);
+            var orders = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+            foreach (var unit in idle)
             {
-                foreach (var building in Producers().OrderByDescending(b => _hands.IsRaw(b.Kind)).ToList())
-                {
-                    if (_hands.Idle(kind).Count == 0) break;
-                    var current = _hands.Building(building.Id);
-                    if (current == null || current.WorkerCount == 0 || !HasOutlet(current)) continue;
-                    int free = current.MaxWorkers - current.WorkerCount;
-                    var ids = _hands.Idle(kind).Take(free).Select(u => u.Id).ToList();
-                    if (ids.Count > 0) _hands.Dispatch(new AssignWorkCommand(ids, current.Id));
-                }
+                var def = _hands.Catalog.GetUnit(unit.UnitKind);
+                var place = places.Where(b => free[b.Id] > 0)
+                    .OrderByDescending(b => def.Favors(b.Kind)).ThenByDescending(b => _hands.IsRaw(b.Kind))
+                    .FirstOrDefault();
+                if (place == null) break;
+                free[place.Id]--;
+                if (!orders.TryGetValue(place.Id, out var ids)) orders[place.Id] = ids = new List<string>();
+                ids.Add(unit.Id);
             }
+            foreach (var place in places)
+                if (orders.TryGetValue(place.Id, out var ids))
+                    _hands.Dispatch(new AssignWorkCommand(ids, place.Id));
+        }
+
+        // A producer with an outlet whose workers all fell in battle gets its chain's workers back.
+        private void Restaff()
+        {
+            foreach (var building in Producers().Where(b => b.WorkerCount == 0 && HasOutlet(b)).ToList())
+                _hands.Staff(building, _hands.WorkerFor(building.Kind), RestaffWorkers, null,
+                    $"на место павших: {building.Name}");
         }
 
         private void OpenOutlet(BuildingSnapshot building)

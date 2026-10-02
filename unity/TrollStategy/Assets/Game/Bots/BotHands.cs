@@ -41,13 +41,15 @@ namespace TrollStrategy.Bots
     internal sealed class BotHands
     {
         private readonly BotRun _run;
+        private readonly BotProfile _profile;
 
-        public BotHands(GameSession session, BotRun run)
+        public BotHands(GameSession session, BotRun run, BotProfile profile)
         {
             Session = session;
             Catalog = session.Catalog;
             Economy = session.Catalog.Economy;
             _run = run;
+            _profile = profile;
             Refresh();
         }
 
@@ -98,6 +100,23 @@ namespace TrollStrategy.Bots
         /// <summary>The kind asked for when it can be hired, else the goblin every colony starts with.</summary>
         public UnitKind Hireable(UnitKind kind) => IsUnlocked(kind) ? kind : UnitKind.Goblin;
 
+        /// <summary>The highest arena level the colony has won; 0 before its first win.</summary>
+        public int ArenaLevel() => Session.ArenaLadder()
+            .Where(m => Session.MissionWins(m.MissionId) > 0).Select(m => m.Level).DefaultIfEmpty(0).Max();
+
+        // ---------- whom to hire
+
+        /// <summary>Who to hire to work at the building: see <see cref="BotProfile.RoleHiring"/>.</summary>
+        public UnitKind WorkerFor(BuildingKind building) =>
+            _profile.RoleHiring > 0f ? Best(unit => BotHiring.Work(unit, building)) : Hireable(_profile.WorkerKind);
+
+        /// <summary>Who to hire to carry goods: see <see cref="BotProfile.RoleHiring"/>.</summary>
+        public UnitKind HaulerKind() => _profile.RoleHiring > 0f ? Best(BotHiring.Carry) : UnitKind.Goblin;
+
+        private UnitKind Best(Func<UnitDefinition, float> value) =>
+            BotHiring.Best(Catalog.Units.Where(u => u != null && u.Hireable && IsUnlocked(u.Kind)),
+                u => Session.HirePrice(u.Kind), value, _profile.RoleHiring)?.Kind ?? UnitKind.Goblin;
+
         public int CountUnits(UnitKind? kind) => Snapshot.Units.Count(u => kind == null || u.UnitKind == kind);
 
         public List<UnitSnapshot> Idle(UnitKind kind) =>
@@ -138,17 +157,29 @@ namespace TrollStrategy.Bots
         public bool Makes(BuildingKind kind, ResourceKind resource)
         {
             foreach (var recipe in Def(kind).Recipes)
-            {
-                if (recipe.Outputs.Any(o => o.Resource == resource)) return true;
-                if (recipe.HasBonus && recipe.BonusOutput.Resource == resource) return true;
-            }
+                if (recipe.CanYield(resource)) return true;
             return false;
         }
 
         /// <summary>The recipe of a building that makes the resource, with its inputs; null when it makes none.</summary>
         public ProductionRecipe RecipeFor(BuildingKind kind, ResourceKind resource) =>
-            Def(kind).Recipes.FirstOrDefault(r => r.Outputs.Any(o => o.Resource == resource) ||
-                                                  (r.HasBonus && r.BonusOutput.Resource == resource));
+            Def(kind).Recipes.Where(r => r.Outputs.Any(o => o.Resource == resource))
+                .OrderBy(r => r.MinLevel).ThenBy(r => r.Inputs.Length).FirstOrDefault() ??
+            Def(kind).Recipes.Where(r => r.CanYield(resource)).OrderBy(r => r.MinLevel).FirstOrDefault();
+
+        /// <summary>The building level from which the kind can yield the resource at all (a product or a by-product).</summary>
+        public int MinLevelFor(BuildingKind kind, ResourceKind resource)
+        {
+            int best = int.MaxValue;
+            foreach (var recipe in Def(kind).Recipes)
+            {
+                if (recipe.Outputs.Any(o => o.Resource == resource) || recipe.FailOutputs.Any(o => o.Resource == resource))
+                    best = Math.Min(best, recipe.MinLevel);
+                foreach (var extra in recipe.Extras)
+                    if (extra.Output.Resource == resource) best = Math.Min(best, Math.Max(recipe.MinLevel, extra.MinLevel));
+            }
+            return best == int.MaxValue ? 1 : best;
+        }
 
         /// <summary>Raw producers: workplaces whose recipes need nothing brought in.</summary>
         public bool IsRaw(BuildingKind kind)
@@ -226,10 +257,10 @@ namespace TrollStrategy.Bots
         }
 
         public int Haul(BuildingSnapshot source, BuildingSnapshot destination, int amount, BotWait wait, string why,
-            IReadOnlyList<ResourceKind> cargo = null, UnitKind kind = UnitKind.Goblin)
+            IReadOnlyList<ResourceKind> cargo = null, UnitKind? kind = null)
         {
             if (amount <= 0 || !CanHaul(source, destination)) return 0;
-            var ids = Obtain(kind, amount, wait, why);
+            var ids = Obtain(kind ?? HaulerKind(), amount, wait, why);
             if (ids.Count == 0) return 0;
             return Dispatch(new AssignHaulCommand(ids, source.Id, destination.Id, cargo)) ? ids.Count : 0;
         }
@@ -330,6 +361,56 @@ namespace TrollStrategy.Bots
                 if (!land.BlockOf(new Cell(cx, cy), out int bx, out int by) || !land.Block(bx, by).Cleared)
                     return false;
             }
+            return true;
+        }
+
+        /// <summary>Raises the cheapest colony upgrade not at its top, building its host first when the colony has none.</summary>
+        public bool BuyUpgrade(BotWait wait, string why, BuildingKind? host = null)
+        {
+            var next = Snapshot.Upgrades.Where(u => !u.IsMaxed && (host == null || u.Host == host))
+                .OrderBy(u => u.NextCost).FirstOrDefault();
+            if (next == null)
+            {
+                wait?.Note("все улучшения куплены");
+                return false;
+            }
+            if (!next.HostBuilt)
+            {
+                Build(next.Host, wait, $"{Def(next.Host).DisplayName} для улучшений");
+                return false;
+            }
+            if (!Affordable(next.NextCost, wait, $"{why}: {next.Name}")) return false;
+            if (!Dispatch(new BuyUpgradeCommand(next.Id))) return false;
+            Spent(next.NextCost);
+            return true;
+        }
+
+        /// <summary>Buys one more block of land next to the colony's own, nearest the core.</summary>
+        public bool BuyLandBlock(BotWait wait, string why)
+        {
+            var land = Snapshot.Land;
+            if (land == null)
+            {
+                wait?.Note($"земля не покупается: {why}");
+                return false;
+            }
+            var core = Core();
+            var buyable = land.Blocks.Where(b => b.CanBuy)
+                .OrderBy(b =>
+                {
+                    float dx = (b.X + 0.5f) * land.BlockSize - core.X, dy = (b.Y + 0.5f) * land.BlockSize - core.Y;
+                    return dx * dx + dy * dy;
+                }).ThenBy(b => b.Y).ThenBy(b => b.X).ToList();
+            if (buyable.Count == 0)
+            {
+                wait?.Note($"остров застроен: {why}");
+                return false;
+            }
+            int price = land.NextPrice;
+            if (!Affordable(price, wait, why)) return false;
+            if (!Dispatch(new BuyLandCommand(buyable[0].X, buyable[0].Y))) return false;
+            Spent(price);
+            _run.LandBought++;
             return true;
         }
 

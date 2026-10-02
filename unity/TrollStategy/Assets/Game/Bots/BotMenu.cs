@@ -15,14 +15,17 @@ namespace TrollStrategy.Bots
 {
     /// <summary>
     /// Runs every bot profile on the shipped catalog and the colony scene's starting buildings and writes the
-    /// reports to Builds/Bots (git-ignored): summary.md, one Markdown and one CSV per profile.
+    /// reports to Builds/Bots (git-ignored): summary.md, one Markdown and one CSV per profile, and the report page
+    /// (index.html with bots-data.js; history.jsonl keeps the earlier runs it compares against).
     /// Batch: -executeMethod TrollStrategy.Bots.BotMenu.RunAllBatch -quit.
     /// </summary>
     public static class BotMenu
     {
         public const string CatalogPath = "Assets/Game/Content/Definitions/GameContentCatalog.asset";
         public const string ColonyScenePath = "Assets/Game/Scenes/MainColonyScene.unity";
+        public const string PageTemplatePath = "Assets/Game/Bots/Dashboard/BotsDashboard.html";
         private const string Folder = "Builds/Bots";
+        private const int HistoryLength = 50;
 
         [MenuItem("TrollStrategy/Bots/Run Campaign Bots")]
         public static void RunAll()
@@ -31,7 +34,7 @@ namespace TrollStrategy.Bots
             {
                 var runs = RunProfiles(BotProfile.All, (i, profile) =>
                     EditorUtility.DisplayProgressBar("Боты играют кампанию", profile.Title, i / (float)BotProfile.All.Count));
-                Debug.Log($"[Bots] reports in {Path.GetFullPath(Folder)}\n{BotReport.Summary(runs)}");
+                Debug.Log($"[Bots] report page {PagePath(Folder)}\n{BotReport.Summary(runs)}");
             }
             finally
             {
@@ -39,12 +42,20 @@ namespace TrollStrategy.Bots
             }
         }
 
+        [MenuItem("TrollStrategy/Bots/Open Report Page")]
+        public static void OpenPage()
+        {
+            string page = PagePath(Folder);
+            if (File.Exists(page)) UnityEngine.Application.OpenURL(new Uri(page).AbsoluteUri);
+            else Debug.LogWarning($"[Bots] no report page yet: run TrollStrategy/Bots/Run Campaign Bots ({page})");
+        }
+
         public static void RunAllBatch()
         {
             int code = 0;
             try
             {
-                Debug.Log($"[Bots] reports in {Path.GetFullPath(Folder)}\n{Run(null, 0, Folder)}");
+                Debug.Log($"[Bots] report page {PagePath(Folder)}\n{Run(null, 0, Folder)}");
             }
             catch (Exception exception)
             {
@@ -88,8 +99,68 @@ namespace TrollStrategy.Bots
                 File.WriteAllText(Path.Combine(folder, $"{run.Profile.Id}.csv"), BotReport.Csv(run));
             }
             File.WriteAllText(Path.Combine(folder, "summary.md"), BotReport.Summary(runs));
+
+            var (commit, branch) = GitHead();
+            var info = new BotReportInfo(DateTime.Now, commit, branch,
+                string.Join(", ", layout.Select(b => $"{b.Kind} ({b.Cell.X}, {b.Cell.Y})")),
+                catalog.Progression.Quests.Count, stopAfterLevel);
+            WritePage(runs, info, folder);
             return runs;
         }
+
+        /// <summary>
+        /// The report page: the latest runs in bots-data.js with the run history (one line per set of runs in
+        /// history.jsonl, the newest <see cref="HistoryLength"/> kept), and the page itself from its template.
+        /// An open page reloads the data on its own when a new run writes it.
+        /// </summary>
+        public static void WritePage(IReadOnlyList<BotRun> runs, BotReportInfo info, string folder)
+        {
+            Directory.CreateDirectory(folder);
+            string historyPath = Path.Combine(folder, "history.jsonl");
+            var history = File.Exists(historyPath)
+                ? File.ReadAllLines(historyPath).Where(line => line.Trim().Length > 0).ToList()
+                : new List<string>();
+            history.Add(BotReportData.HistoryLine(runs, info));
+            if (history.Count > HistoryLength) history.RemoveRange(0, history.Count - HistoryLength);
+            File.WriteAllLines(historyPath, history);
+            File.WriteAllText(Path.Combine(folder, "bots-data.js"), BotReportData.Script(runs, info, history));
+            if (File.Exists(PageTemplatePath)) File.Copy(PageTemplatePath, PagePath(folder), true);
+            else Debug.LogWarning($"[Bots] no page template at {PageTemplatePath}");
+        }
+
+        private static string PagePath(string folder) => Path.GetFullPath(Path.Combine(folder, "index.html"));
+
+        // The commit and branch the project is checked out at, read from .git; nulls outside a repository.
+        private static (string Commit, string Branch) GitHead()
+        {
+            try
+            {
+                var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+                while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, ".git"))) dir = dir.Parent;
+                if (dir == null) return (null, null);
+                string git = Path.Combine(dir.FullName, ".git");
+                string head = File.ReadAllText(Path.Combine(git, "HEAD")).Trim();
+                if (!head.StartsWith("ref: ", StringComparison.Ordinal)) return (Short(head), null);
+                string reference = head.Substring(5);
+                string branch = reference.StartsWith("refs/heads/", StringComparison.Ordinal)
+                    ? reference.Substring(11)
+                    : reference;
+                string loose = Path.Combine(git, reference.Replace('/', Path.DirectorySeparatorChar));
+                if (File.Exists(loose)) return (Short(File.ReadAllText(loose).Trim()), branch);
+                string packed = Path.Combine(git, "packed-refs");
+                if (File.Exists(packed))
+                    foreach (string line in File.ReadLines(packed))
+                        if (line.EndsWith(" " + reference, StringComparison.Ordinal))
+                            return (Short(line.Substring(0, line.IndexOf(' '))), branch);
+                return (null, branch);
+            }
+            catch (IOException)
+            {
+                return (null, null);
+            }
+        }
+
+        private static string Short(string hash) => hash.Length > 7 ? hash.Substring(0, 7) : hash;
 
         /// <summary>
         /// The starting buildings as the colony scene places them. The scene is read where it is loaded, or opened

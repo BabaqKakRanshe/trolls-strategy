@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TrollStrategy.Application;
+using TrollStrategy.Content;
 using TrollStrategy.Domain;
 
 namespace TrollStrategy.Bots
@@ -39,13 +41,14 @@ namespace TrollStrategy.Bots
             int chain = _session.Catalog.Progression.Quests.Count;
             int goal = StopAfterLevel > 0 ? Math.Min(StopAfterLevel, chain) : chain;
             var run = new BotRun(_profile, goal);
-            var hands = new BotHands(_session, run);
+            var hands = new BotHands(_session, run, _profile);
             var battles = new BattlePlanner(hands, run, _profile);
             var planner = new QuestPlanner(hands, battles, _profile);
             var keeper = new EconomyKeeper(hands, battles, _profile);
             int thinkMs = (int)Math.Round(_profile.ThinkSeconds * 1000f);
 
             var record = StartRecord(hands);
+            var hireable = Hireable(hands);
             string progressKey = null;
             int progressAt = 0, bestGold = 0, nextSampleMs = 0;
 
@@ -53,6 +56,7 @@ namespace TrollStrategy.Bots
             {
                 hands.Refresh();
                 run.Decisions++;
+                int commandsAtLook = run.CommandsAccepted, questsAtLook = run.Quests.Count;
                 Settle(hands);
                 int now = _session.ActiveTimeMs;
 
@@ -67,6 +71,7 @@ namespace TrollStrategy.Bots
                     record = StartRecord(hands);
                 }
 
+                NoteUnlocks(run, hands, hireable);
                 if (now >= nextSampleMs)
                 {
                     Sample(run, hands);
@@ -115,7 +120,11 @@ namespace TrollStrategy.Bots
                 }
 
                 Settle(hands);
-                _session.Advance(_profile.ThinkSeconds);
+                // the player's clicks take time: the colony runs on and the next look comes later
+                float busySeconds = (run.CommandsAccepted - commandsAtLook) * _profile.ActionSeconds +
+                                    (run.Quests.Count - questsAtLook) * _profile.QuestReadSeconds;
+                record.BusyMs += (int)Math.Round(busySeconds * 1000f);
+                _session.Advance(_profile.ThinkSeconds + busySeconds);
                 if (_session.ActiveTimeMs == now)
                     throw new InvalidOperationException($"Колония не идёт: {SessionDigest.Describe(_session)}");
             }
@@ -125,8 +134,32 @@ namespace TrollStrategy.Bots
             run.FinalGold = hands.Gold;
             run.FinalPopulation = hands.Snapshot.Units.Count;
             run.FinalBuildings = hands.Snapshot.Buildings.Count;
+            run.ArenaLevel = hands.ArenaLevel();
+            foreach (var group in hands.Snapshot.Units.GroupBy(u => u.UnitKind))
+                run.Units[hands.Catalog.GetUnit(group.Key).DisplayName] = group.Count();
+            foreach (var upgrade in hands.Snapshot.Upgrades.Where(u => u.Level > 0))
+                run.Upgrades[upgrade.Name] = upgrade.Level;
             Sample(run, hands);
             return run;
+        }
+
+        private static List<UnitKind> Hireable(BotHands hands) => hands.Catalog.Units
+            .Where(u => u != null && u.Hireable && hands.IsUnlocked(u.Kind)).Select(u => u.Kind).ToList();
+
+        // Creatures that became hireable since the last look: the folk join after their arena level is won.
+        private void NoteUnlocks(BotRun run, BotHands hands, List<UnitKind> known)
+        {
+            foreach (var kind in Hireable(hands))
+            {
+                if (known.Contains(kind)) continue;
+                known.Add(kind);
+                run.Unlocks.Add(new UnlockRecord
+                {
+                    Name = hands.Catalog.GetUnit(kind).DisplayName,
+                    AtMs = _session.ActiveTimeMs,
+                    QuestLevel = hands.Snapshot.Progress.Level
+                });
+            }
         }
 
         private QuestRecord StartRecord(BotHands hands)
@@ -159,7 +192,8 @@ namespace TrollStrategy.Bots
                 SoldGoods = hands.Snapshot.SoldGoods,
                 Population = hands.Snapshot.Units.Count,
                 Buildings = hands.Snapshot.Buildings.Count,
-                LandBlocks = land?.Blocks.Count(b => b.Owned) ?? 0
+                LandBlocks = land?.Blocks.Count(b => b.Owned) ?? 0,
+                ArenaLevel = hands.ArenaLevel()
             });
         }
     }

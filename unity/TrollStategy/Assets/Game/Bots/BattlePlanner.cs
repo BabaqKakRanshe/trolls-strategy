@@ -17,6 +17,12 @@ namespace TrollStrategy.Bots
         private readonly BotHands _hands;
         private readonly BotRun _run;
         private int _squadTrolls;
+        // the highest arena level worth trying: a loss brings it under the lost level, eight wins in a row lift it
+        private int _ceiling = int.MaxValue;
+        private int _winsInRow;
+
+        /// <summary>The last battle was lost: the squad needs to grow stronger before it climbs on.</summary>
+        public bool LostLast { get; private set; }
 
         public BattlePlanner(BotHands hands, BotRun run, BotProfile profile)
         {
@@ -25,13 +31,18 @@ namespace TrollStrategy.Bots
             _squadTrolls = Math.Max(1, profile.SquadTrolls);
         }
 
-        /// <summary>The first mission the colony may enter; null while none is open.</summary>
+        /// <summary>The highest arena level the colony may enter, ready ones first; null while none is open.</summary>
         public BattleMissionDefinition OpenMission()
         {
-            foreach (var mission in _hands.Catalog.Missions)
-                if (mission != null && _hands.Snapshot.Progress.IsMissionUnlocked(mission.MissionId))
-                    return mission;
-            return null;
+            var session = _hands.Session;
+            BattleMissionDefinition ready = null, open = null;
+            foreach (var mission in session.ArenaLadder())
+            {
+                if (!session.IsMissionUnlocked(mission.MissionId) || mission.Level > _ceiling) continue;
+                open = mission;
+                if (session.CanEnterMission(mission.MissionId).Ok) ready = mission;
+            }
+            return ready ?? open;
         }
 
         /// <summary>
@@ -53,7 +64,8 @@ namespace TrollStrategy.Bots
                 return false;
             }
 
-            int need = Math.Min(_squadTrolls, mission.MaxPlayerUnits);
+            int limit = _hands.Session.SquadLimit(mission);
+            int need = Math.Min(_squadTrolls, limit);
             int trolls = _hands.CountUnits(UnitKind.Troll);
             if (trolls < need)
             {
@@ -71,9 +83,13 @@ namespace TrollStrategy.Bots
         private bool Fight(BattleMissionDefinition mission)
         {
             var board = mission.CreateBoard();
+            // the strongest creatures; of equal ones the free first, haulers next, workers last (a fallen worker
+            // stops a building)
             var squad = _hands.Snapshot.Units
-                .Where(u => u.UnitKind == UnitKind.Troll)
-                .Take(mission.MaxPlayerUnits)
+                .OrderByDescending(u => Strength(u.UnitKind))
+                .ThenBy(u => u.Assignment.Kind == AssignmentKind.Idle ? 0 : u.Assignment.Kind == AssignmentKind.Haul ? 1 : 2)
+                .ThenBy(u => u.Id)
+                .Take(_hands.Session.SquadLimit(mission))
                 .ToList();
             if (squad.Count == 0) return false;
 
@@ -94,17 +110,35 @@ namespace TrollStrategy.Bots
             {
                 AtMs = _hands.Session.ActiveTimeMs,
                 QuestLevel = _hands.Snapshot.Progress.Level,
-                Squad = string.Join(", ", squad.GroupBy(u => u.UnitKind).Select(g => $"{g.Key}×{g.Count()}")),
+                ArenaLevel = mission.Level,
+                Squad = string.Join(", ", squad.GroupBy(u => u.UnitKind)
+                    .Select(g => $"{_hands.Catalog.GetUnit(g.Key).DisplayName}×{g.Count()}")),
                 Outcome = battle?.Report.Outcome ?? BattleOutcome.Draw,
                 Fallen = battle?.FallenUnitIds.Count ?? 0,
                 Gold = battle?.AwardedGold ?? 0
             };
             _run.Battles.Add(record);
+            LostLast = record.Outcome != BattleOutcome.PlayerVictory;
             if (record.Outcome != BattleOutcome.PlayerVictory)
-                _squadTrolls = Math.Min(mission.MaxPlayerUnits, _squadTrolls + 1);
+            {
+                _squadTrolls = Math.Min(_hands.Session.SquadLimit(mission), _squadTrolls + 1);
+                _ceiling = Math.Max(1, mission.Level - 1);
+                _winsInRow = 0;
+            }
+            else if (++_winsInRow >= 8 && _ceiling != int.MaxValue)
+            {
+                _ceiling++;
+                _winsInRow = 0;
+            }
             _hands.Dispatch(new AcknowledgeBattleCommand());
             if (_hands.Snapshot.BattleReward != null) _hands.Dispatch(new ClaimBattleRewardCommand());
             return true;
+        }
+
+        private int Strength(UnitKind kind)
+        {
+            var unit = _hands.Catalog.GetUnit(kind);
+            return unit.CombatHealth * unit.CombatDamage;
         }
 
         // The best free item per slot to each fighter in squad order; items the squad wore before are re-dealt.

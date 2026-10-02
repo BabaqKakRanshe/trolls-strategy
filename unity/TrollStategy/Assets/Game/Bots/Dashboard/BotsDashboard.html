@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Боты: прохождение кампании</title>
+<!-- Written by TrollStrategy/Bots/Run Campaign Bots from Assets/Game/Bots/Dashboard/BotsDashboard.html.
+     Data comes from bots-data.js next to this page; the page reloads it on its own after a new run. -->
+<script src="bots-data.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --hover: rgba(11, 11, 11, 0.05);
+    --accent: #2a78d6;
+    --critical: #d03b3b;
+    --good: #006300;
+    /* profiles: categorical slots 1-5, validated (adjacent CVD dE 9.1 light / 8.4 dark) */
+    --s-passive: #2a78d6;
+    --s-typical: #eb6834;
+    --s-active: #1baf7a;
+    --s-warlord: #eda100;
+    --s-human: #e87ba4;
+    /* where a quest's time went: slots 8, 6, 7 (validated) around a neutral gray for plain flow */
+    --w-busy: #e34948;
+    --w-flow: #8f8d86;
+    --w-gold: #008300;
+    --w-time: #4a3aa7;
+    /* sequential blue, near zero lightest */
+    --q1: #cde2fb; --q2: #9ec5f4; --q3: #6da7ec; --q4: #3987e5; --q5: #256abf; --q6: #184f95; --q7: #0d366b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+      --accent: #3987e5; --good: #0ca30c;
+      --s-passive: #3987e5; --s-typical: #d95926; --s-active: #199e70; --s-warlord: #c98500; --s-human: #d55181;
+      --w-busy: #e66767; --w-flow: #6f6d68; --w-gold: #008300; --w-time: #9085e9;
+      /* near zero recedes into the dark surface */
+      --q1: #0d366b; --q2: #104281; --q3: #184f95; --q4: #256abf; --q5: #3987e5; --q6: #6da7ec; --q7: #b7d3f6;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+    --accent: #3987e5; --good: #0ca30c;
+    --s-passive: #3987e5; --s-typical: #d95926; --s-active: #199e70; --s-warlord: #c98500; --s-human: #d55181;
+    --w-busy: #e66767; --w-flow: #6f6d68; --w-gold: #008300; --w-time: #9085e9;
+    --q1: #0d366b; --q2: #104281; --q3: #184f95; --q4: #256abf; --q5: #3987e5; --q6: #6da7ec; --q7: #b7d3f6;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 1240px; margin: 0 auto; padding: 24px 16px 48px; }
+  header.top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+  h1 { font-size: 24px; font-weight: 650; margin: 0 0 4px; }
+  h2 { font-size: 15px; font-weight: 600; margin: 0; }
+  .meta { color: var(--ink-2); margin: 0; }
+  .meta span + span::before { content: "  ·  "; color: var(--muted); }
+  .controls { display: flex; gap: 12px; align-items: center; color: var(--ink-2); font-size: 13px; }
+  .live { display: inline-flex; gap: 6px; align-items: center; }
+  .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
+  .live.stale::before { background: var(--muted); }
+
+  button, select {
+    font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 10px; cursor: pointer;
+  }
+  button:hover { background: var(--hover); }
+  button[aria-pressed="true"] { border-color: var(--ink-2); font-weight: 600; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .tile { padding: 14px 16px; }
+  .tile .who { display: flex; align-items: center; gap: 8px; color: var(--ink-2); font-weight: 600; }
+  .key { display: inline-block; width: 16px; height: 3px; border-radius: 2px; flex: none; }
+  .key.box { width: 10px; height: 10px; border-radius: 3px; }
+  .tile .value { font-size: 30px; font-weight: 650; margin: 6px 0 2px; }
+  .tile .value small { font-size: 15px; font-weight: 500; color: var(--ink-2); margin-left: 4px; }
+  .tile .line { color: var(--ink-2); font-size: 13px; }
+  .tile .delta { font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+  .tile .bad { color: var(--critical); font-weight: 600; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); gap: 16px; margin-bottom: 16px; }
+  .card { padding: 16px; margin-bottom: 16px; min-width: 0; }
+  .grid2 .card { margin-bottom: 0; }
+  .card header { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 4px; }
+  .card .sub { color: var(--ink-2); margin: 2px 0 12px; font-size: 13px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 8px; color: var(--ink-2); font-size: 13px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .chart { position: relative; width: 100%; }
+  .chart svg { display: block; width: 100%; overflow: visible; }
+  .axis text, .tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .endlabel { fill: var(--ink); font-size: 12px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+  .empty { color: var(--ink-2); padding: 24px 0; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--ink-2); font-weight: 600; white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tablewrap { overflow-x: auto; margin-top: 12px; }
+  .hidden { display: none; }
+
+  .heat td.cell { text-align: center; font-variant-numeric: tabular-nums; border: 2px solid var(--surface); border-radius: 6px; min-width: 64px; }
+  .heat td.cell:hover, .heat td.cell:focus { outline: 2px solid var(--ink); outline-offset: -2px; }
+  .heat th.quest { font-weight: 500; color: var(--ink); white-space: normal; }
+  .heat th.quest small { color: var(--muted); margin-right: 6px; }
+  .scale { display: flex; align-items: center; gap: 2px; margin-top: 10px; color: var(--muted); font-size: 12px; }
+  .scale i { display: inline-block; width: 28px; height: 10px; border-radius: 3px; }
+  .scale b { font-weight: 400; margin: 0 6px; }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+  .detail p { margin: 4px 0 10px; color: var(--ink-2); }
+  .facts { display: flex; flex-wrap: wrap; gap: 4px 20px; color: var(--ink-2); margin-bottom: 12px; }
+  .facts b { color: var(--ink); font-weight: 600; }
+
+  #tooltip {
+    position: fixed; z-index: 10; pointer-events: none; background: var(--surface); color: var(--ink);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); min-width: 140px; max-width: 280px;
+  }
+  #tooltip .title { color: var(--ink-2); margin-bottom: 4px; }
+  #tooltip .row { display: flex; align-items: center; gap: 8px; }
+  #tooltip .row strong { font-variant-numeric: tabular-nums; }
+  #tooltip .row span { color: var(--ink-2); }
+  footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+  footer code { color: var(--ink-2); }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <h1>Боты: прохождение кампании</h1>
+      <p class="meta" id="meta"></p>
+    </div>
+    <div class="controls">
+      <span class="live" id="live">обновляется само</span>
+      <button type="button" id="theme" title="Тема страницы">Тема: авто</button>
+    </div>
+  </header>
+
+  <div id="app"></div>
+
+  <footer>
+    Страницу пишет <code>TrollStrategy → Bots → Run Campaign Bots</code> (или <code>tools/bots/run-bots.ps1</code>):
+    данные в <code>bots-data.js</code>, история прогонов в <code>history.jsonl</code>. Открытая страница сама
+    подхватывает новый прогон. Время — минуты колонии, без пауз на чтение и клики.
+  </footer>
+</main>
+<div id="tooltip" class="hidden" role="status"></div>
+
+<script>
+"use strict";
+
+const PROFILE_COLORS = { passive: "--s-passive", typical: "--s-typical", active: "--s-active", warlord: "--s-warlord", human: "--s-human" };
+const WAITS = [
+  { key: "busyMs", label: "действия игрока", color: "--w-busy" },
+  { key: "flowWaitMs", label: "поток товаров", color: "--w-flow" },
+  { key: "goldWaitMs", label: "золото", color: "--w-gold" },
+  { key: "timeWaitMs", label: "таймер", color: "--w-time" }
+];
+const nf1 = new Intl.NumberFormat("ru-RU", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const nf0 = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
+const min = ms => ms / 60000;
+const fmtMin = ms => nf1.format(min(ms));
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const colorOf = id => css(PROFILE_COLORS[id] || "--muted");
+const SVG = "http://www.w3.org/2000/svg";
+
+function el(tag, attrs, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null) continue;
+    if (k === "class") node.className = v;
+    else if (k === "style") node.style.cssText = v;
+    else if (k.startsWith("on")) node.addEventListener(k.slice(2), v);
+    else node.setAttribute(k, v);
+  }
+  for (const child of children.flat()) {
+    if (child == null) continue;
+    node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+  }
+  return node;
+}
+
+// replaceChildren would print a skipped (null) child as the text "null"
+function put(node, ...children) {
+  node.replaceChildren(...children.flat().filter(c => c != null));
+}
+
+function svg(tag, attrs, parent) {
+  const node = document.createElementNS(SVG, tag);
+  for (const [k, v] of Object.entries(attrs || {})) if (v != null) node.setAttribute(k, v);
+  if (parent) parent.appendChild(node);
+  return node;
+}
+
+/* ---------- tooltip: values lead, names follow, line keys ---------- */
+const tooltip = document.getElementById("tooltip");
+function showTip(event, title, rows) {
+  put(tooltip, 
+    el("div", { class: "title" }, title),
+    ...rows.map(r => el("div", { class: "row" },
+      el("i", { class: r.box ? "key box" : "key", style: `background:${r.color}` }),
+      el("strong", {}, r.value), el("span", {}, r.label))));
+  tooltip.classList.remove("hidden");
+  const pad = 14, rect = tooltip.getBoundingClientRect();
+  let x = event.clientX + pad, y = event.clientY + pad;
+  if (x + rect.width > window.innerWidth - 8) x = event.clientX - rect.width - pad;
+  if (y + rect.height > window.innerHeight - 8) y = event.clientY - rect.height - pad;
+  tooltip.style.left = Math.max(8, x) + "px";
+  tooltip.style.top = Math.max(8, y) + "px";
+}
+function hideTip() { tooltip.classList.add("hidden"); }
+
+/* ---------- scales ---------- */
+function niceTicks(maxValue, count) {
+  if (!(maxValue > 0)) return [0, 1];
+  const raw = maxValue / count, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw);
+  const ticks = [];
+  for (let v = 0; v <= maxValue + step * 0.001; v += step) ticks.push(+v.toFixed(6));
+  if (ticks[ticks.length - 1] < maxValue) ticks.push(+(ticks[ticks.length - 1] + step).toFixed(6));
+  return ticks;
+}
+
+/* ---------- card with a table-view twin ---------- */
+function card(title, subtitle, body, table) {
+  const tableBox = el("div", { class: "tablewrap hidden" }, table);
+  const toggle = el("button", { type: "button", "aria-pressed": "false" }, "Таблица");
+  toggle.addEventListener("click", () => {
+    const show = tableBox.classList.toggle("hidden") === false;
+    toggle.setAttribute("aria-pressed", String(show));
+  });
+  return el("section", { class: "card" },
+    el("header", {}, el("div", {}, el("h2", {}, title), subtitle ? el("p", { class: "sub" }, subtitle) : null),
+      table ? toggle : null),
+    body, tableBox);
+}
+
+function makeTable(columns, rows) {
+  return el("table", {},
+    el("thead", {}, el("tr", {}, columns.map(c => el("th", { class: c.num ? "num" : null }, c.label)))),
+    el("tbody", {}, rows.map(r => el("tr", {}, columns.map(c => el("td", { class: c.num ? "num" : null }, c.value(r)))))));
+}
+
+function legend(items, box) {
+  return el("div", { class: "legend" }, items.map(i =>
+    el("span", {}, el("i", { class: box ? "key box" : "key", style: `background:${i.color}` }), i.label)));
+}
+
+/* ---------- line chart: one axis, 2px lines, end dots with a surface ring, crosshair ---------- */
+function lineChart(series, opts) {
+  const box = el("div", { class: "chart" });
+  const draw = () => {
+    box.replaceChildren();
+    const width = Math.max(280, box.clientWidth || 600), height = opts.height || 260;
+    const m = { left: 52, right: opts.endLabels ? 84 : 16, top: 10, bottom: 30 };
+    const xs = series.flatMap(s => s.points.map(p => p.x));
+    const maxX = opts.maxX ?? Math.max(...xs, 1), maxY = opts.maxY ?? Math.max(...series.flatMap(s => s.points.map(p => p.y)), 1);
+    const yTicks = opts.yTicks || niceTicks(maxY, 5), yTop = yTicks[yTicks.length - 1];
+    const xTicks = opts.xTicks || niceTicks(maxX, 8), xRight = opts.xTicks ? maxX : xTicks[xTicks.length - 1];
+    const sx = v => m.left + (v / (xRight || 1)) * (width - m.left - m.right);
+    const sy = v => m.top + (1 - v / (yTop || 1)) * (height - m.top - m.bottom);
+    const root = svg("svg", { viewBox: `0 0 ${width} ${height}`, height, role: "img", "aria-label": opts.label });
+    const axis = svg("g", { class: "axis" }, root);
+    for (const t of yTicks) {
+      svg("line", { x1: m.left, x2: width - m.right, y1: sy(t), y2: sy(t), stroke: css(t === 0 ? "--axis" : "--grid"), "stroke-width": 1 }, axis);
+      svg("text", { x: m.left - 8, y: sy(t) + 4, "text-anchor": "end" }, axis).textContent = (opts.yFormat || nf0.format)(t);
+    }
+    for (const t of xTicks) {
+      svg("text", { x: sx(t), y: height - 8, "text-anchor": "middle" }, axis).textContent = (opts.xFormat || nf0.format)(t);
+    }
+
+    const at = (s, x) => {
+      // the value a series holds at x: the last point at or before it (steps), or the nearest (lines)
+      let best = null;
+      for (const p of s.points) { if (p.x <= x + 1e-9) best = p; else break; }
+      return best;
+    };
+    for (const s of series) {
+      if (!s.points.length) continue;
+      let d = "";
+      s.points.forEach((p, i) => {
+        if (i === 0) d += `M${sx(p.x)},${sy(p.y)}`;
+        else if (opts.step) d += `H${sx(p.x)}V${sy(p.y)}`;
+        else d += `L${sx(p.x)},${sy(p.y)}`;
+      });
+      if (opts.step && opts.extendTo != null) d += `H${sx(Math.min(opts.extendTo(s), xRight))}`;
+      svg("path", { d, fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, root);
+    }
+
+    // end dots and labels: each label sits beside its dot, right or else left of it, on the nearest row that
+    // covers no other label and no dot; a label moved off its dot's row keeps a short leader to it
+    if (opts.endLabels) {
+      box.appendChild(root); // in the document so labels can be measured
+      const ends = series.filter(s => s.points.length).map(s => {
+        const last = s.points[s.points.length - 1];
+        const lx = opts.step && opts.extendTo != null ? Math.min(opts.extendTo(s), xRight) : last.x;
+        return { s, x: sx(lx), y: sy(last.y) };
+      }).sort((a, b) => a.x - b.x || a.y - b.y);
+      const blocked = ends.map(e => ({ x1: e.x - 6, x2: e.x + 6, y1: e.y - 6, y2: e.y + 6 }));
+      const overlaps = (a, b) => !(a.x2 < b.x1 || a.x1 > b.x2 || a.y2 < b.y1 || a.y1 > b.y2);
+      for (const e of ends)
+        svg("circle", { cx: e.x, cy: e.y, r: 4, fill: e.s.color, stroke: css("--surface"), "stroke-width": 2 }, root);
+      for (const e of ends) {
+        const text = svg("text", { x: e.x + 9, y: e.y + 4, class: "endlabel" }, root);
+        text.textContent = e.s.label;
+        const w = text.getComputedTextLength();
+        let spot = null;
+        for (const side of [1, -1]) {
+          for (const shift of [0, -15, 15, -30, 30, -45, 45]) {
+            const x1 = side > 0 ? e.x + 9 : e.x - 9 - w, ly = e.y + shift;
+            const rect = { x1: x1 - 2, x2: x1 + w + 2, y1: ly - 9, y2: ly + 5 };
+            if (rect.y1 < 0 || rect.y2 > height - m.bottom || rect.x1 < m.left || rect.x2 > width) continue;
+            if (blocked.some(r => overlaps(r, rect))) continue;
+            spot = { x1, ly, rect, side };
+            break;
+          }
+          if (spot) break;
+        }
+        if (!spot) spot = { x1: e.x + 9, ly: e.y, rect: { x1: e.x + 7, x2: e.x + 11 + w, y1: e.y - 9, y2: e.y + 5 }, side: 1 };
+        text.setAttribute("x", spot.x1);
+        text.setAttribute("y", spot.ly + 4);
+        blocked.push(spot.rect);
+        if (Math.abs(spot.ly - e.y) > 2) {
+          const lx = spot.side > 0 ? spot.x1 - 2 : spot.x1 + w + 2;
+          svg("polyline", { points: `${e.x},${e.y} ${lx},${spot.ly}`, fill: "none", stroke: css("--axis"), "stroke-width": 1 }, root);
+        }
+      }
+    }
+
+    // crosshair: snaps to the nearest x any series has, lists every series there
+    const allX = [...new Set(xs)].sort((a, b) => a - b);
+    const cross = svg("line", { y1: m.top, y2: height - m.bottom, stroke: css("--axis"), "stroke-width": 1, visibility: "hidden" }, root);
+    const hit = svg("rect", { x: m.left, y: m.top, width: width - m.left - m.right, height: height - m.top - m.bottom, fill: "transparent", tabindex: 0 }, root);
+    const move = event => {
+      const r = root.getBoundingClientRect();
+      const px = (event.clientX - r.left) * (width / r.width);
+      const x = (px - m.left) / (width - m.left - m.right) * xRight;
+      let near = allX[0];
+      for (const v of allX) if (Math.abs(v - x) < Math.abs(near - x)) near = v;
+      cross.setAttribute("x1", sx(near)); cross.setAttribute("x2", sx(near)); cross.setAttribute("visibility", "visible");
+      showTip(event, opts.tipTitle(near), series.map(s => {
+        const p = at(s, near);
+        return { color: s.color, label: s.label, value: p ? (opts.tipValue || nf0.format)(p.y) : "—" };
+      }));
+    };
+    hit.addEventListener("pointermove", move);
+    hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+    box.appendChild(root);
+  };
+  requestAnimationFrame(draw);
+  box.redraw = draw;
+  charts.push(box);
+  return box;
+}
+
+/* ---------- horizontal stacked bars: 2px surface gaps, 4px rounded data-end ---------- */
+function stackedBars(rows, parts, opts) {
+  const box = el("div", { class: "chart" });
+  const draw = () => {
+    box.replaceChildren();
+    const width = Math.max(280, box.clientWidth || 600), barH = 20, rowH = 40;
+    const m = { left: 104, right: 70, top: 4, bottom: 26 };
+    const height = m.top + rows.length * rowH + m.bottom;
+    const total = r => parts.reduce((a, p) => a + r.values[p.key], 0);
+    const ticks = niceTicks(Math.max(...rows.map(total), 1), 5), maxV = ticks[ticks.length - 1];
+    const sx = v => (v / maxV) * (width - m.left - m.right);
+    const root = svg("svg", { viewBox: `0 0 ${width} ${height}`, height, role: "img", "aria-label": opts.label });
+    const axis = svg("g", { class: "axis" }, root);
+    for (const t of ticks) {
+      svg("line", { x1: m.left + sx(t), x2: m.left + sx(t), y1: m.top, y2: height - m.bottom, stroke: css(t === 0 ? "--axis" : "--grid"), "stroke-width": 1 }, axis);
+      svg("text", { x: m.left + sx(t), y: height - 8, "text-anchor": "middle" }, axis).textContent = (opts.format || nf0.format)(t);
+    }
+    rows.forEach((r, i) => {
+      const y = m.top + i * rowH + (rowH - barH) / 2;
+      svg("text", { x: m.left - 10, y: y + barH / 2 + 4, "text-anchor": "end", class: "endlabel" }, root).textContent = r.label;
+      const visible = parts.filter(p => r.values[p.key] > 0);
+      let x = m.left;
+      visible.forEach((p, j) => {
+        const w = sx(r.values[p.key]);
+        const last = j === visible.length - 1;
+        const gap = last ? 0 : 2;
+        const segW = Math.max(0, w - gap);
+        const color = css(p.color);
+        const rx = last ? Math.min(4, segW / 2) : 0;
+        // square at the baseline, rounded only at the data end
+        const path = last
+          ? `M${x},${y}H${x + segW - rx}A${rx},${rx} 0 0 1 ${x + segW},${y + rx}V${y + barH - rx}A${rx},${rx} 0 0 1 ${x + segW - rx},${y + barH}H${x}Z`
+          : `M${x},${y}H${x + segW}V${y + barH}H${x}Z`;
+        const seg = svg("path", { d: path, fill: color, tabindex: 0 }, root);
+        const tip = event => showTip(event, r.label, parts.map(q => ({ color: css(q.color), box: true, label: q.label, value: (opts.format || nf0.format)(r.values[q.key]) + (opts.unit || "") })));
+        seg.addEventListener("pointermove", tip);
+        seg.addEventListener("pointerleave", hideTip);
+        seg.addEventListener("focus", e => { const b = seg.getBoundingClientRect(); tip({ clientX: b.right, clientY: b.top }); });
+        seg.addEventListener("blur", hideTip);
+        x += w;
+      });
+      svg("text", { x: m.left + sx(total(r)) + 8, y: y + barH / 2 + 4, class: "tick" }, root).textContent =
+        (opts.format || nf0.format)(total(r)) + (opts.unit || "");
+    });
+    box.appendChild(root);
+  };
+  requestAnimationFrame(draw);
+  box.redraw = draw;
+  charts.push(box);
+  return box;
+}
+
+/* ---------- heatmap of quest durations: one hue, seven steps, scale legend ---------- */
+function heatmap(runs) {
+  const levels = Math.max(...runs.map(r => r.quests.length));
+  const durations = runs.flatMap(r => r.quests.map(q => q.doneMs - q.startMs));
+  const maxD = Math.max(...durations, 1);
+  const steps = ["--q1", "--q2", "--q3", "--q4", "--q5", "--q6", "--q7"];
+  const stepOf = d => Math.min(steps.length - 1, Math.floor(d / maxD * steps.length));
+  const inkOn = hex => {
+    const c = parseInt(hex.slice(1), 16), r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255;
+    const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    return lum > 0.55 ? "#0b0b0b" : "#ffffff";
+  };
+  const head = el("tr", {}, el("th", {}, "Задание"),
+    runs.map(r => el("th", { class: "num" }, el("i", { class: "key", style: `background:${colorOf(r.id)};margin-right:6px;vertical-align:middle` }), r.title)));
+  const body = [];
+  for (let i = 0; i < levels; i++) {
+    const any = runs.map(r => r.quests[i]).find(q => q);
+    const cells = runs.map(r => {
+      const q = r.quests[i];
+      if (!q) return el("td", { class: "cell" }, "—");
+      const d = q.doneMs - q.startMs, bg = css(steps[stepOf(d)]);
+      const td = el("td", { class: "cell", tabindex: 0, style: `background:${bg};color:${inkOn(bg)}` }, nf1.format(min(d)));
+      const tip = event => showTip(event, `${q.level}. ${q.title} — ${r.title}`, [
+        { color: bg, box: true, label: "мин заняло", value: nf1.format(min(d)) },
+        ...WAITS.map(w => ({ color: css(w.color), label: w.label, value: nf1.format(min(q[w.key] || 0)) })),
+        { color: "transparent", label: "золото после", value: nf0.format(q.goldAfterClaim) }]);
+      td.addEventListener("pointermove", tip);
+      td.addEventListener("pointerleave", hideTip);
+      td.addEventListener("focus", () => { const b = td.getBoundingClientRect(); tip({ clientX: b.right, clientY: b.top }); });
+      td.addEventListener("blur", hideTip);
+      return td;
+    });
+    body.push(el("tr", {}, el("th", { class: "quest" }, el("small", {}, any.level), any.title), cells));
+  }
+  const scale = el("div", { class: "scale" }, el("b", {}, "0 мин"),
+    steps.map(s => el("i", { style: `background:${css(s)}` })), el("b", {}, nf1.format(min(maxD)) + " мин"));
+  return el("div", {}, el("div", { class: "tablewrap", style: "margin-top:0" }, el("table", { class: "heat" }, el("thead", {}, head), el("tbody", {}, body))), scale);
+}
+
+/* ---------- page ---------- */
+let charts = [];
+let shownAt = null;
+
+function render() {
+  charts = [];
+  const app = document.getElementById("app");
+  const data = window.BOT_DATA;
+  if (!data || !data.latest || !data.latest.runs.length) {
+    put(app, el("section", { class: "card" }, el("p", { class: "empty" },
+      "Данных ещё нет: запустите TrollStrategy → Bots → Run Campaign Bots в редакторе.")));
+    return;
+  }
+  const { info, runs } = data.latest;
+  shownAt = info.generatedAt;
+  const when = new Date(info.generatedAt);
+  const meta = document.getElementById("meta");
+  put(meta, 
+    el("span", {}, "Прогон " + when.toLocaleString("ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })),
+    info.commit ? el("span", {}, `коммит ${info.commit}${info.branch ? " (" + info.branch + ")" : ""}`) : null,
+    el("span", {}, info.stopAfterLevel > 0 ? `задания 1–${info.stopAfterLevel} из ${info.chainLength}` : `${info.chainLength} заданий`),
+    el("span", {}, "старт: " + info.layout));
+
+  // the previous comparable set of runs, for the deltas
+  const history = (data.history || []).filter(h => h.info.chainLength === info.chainLength && h.info.stopAfterLevel === info.stopAfterLevel);
+  const previous = history.length >= 2 ? history[history.length - 2] : null;
+
+  const kpis = el("div", { class: "kpis" }, runs.map(r => {
+    const before = previous && previous.profiles.find(p => p.id === r.id);
+    const delta = before ? r.endMs - before.endMs : null;
+    const done = r.outcome === "Completed";
+    return el("div", { class: "tile" },
+      el("div", { class: "who" }, el("i", { class: "key", style: `background:${colorOf(r.id)}` }), r.title),
+      el("div", { class: "value" }, fmtMin(r.endMs), el("small", {}, "мин")),
+      el("div", { class: "line" }, done ? "пройдена, " : el("span", { class: "bad" }, r.outcomeText + ", "),
+        `${r.quests.length} из ${r.chainLength} заданий`),
+      el("div", { class: "line" }, (r.actionSeconds > 0 ? `действия ${fmtMin(r.quests.reduce((a, q) => a + (q.busyMs || 0), 0))} мин, ` : "") +
+        `ждал золота ${fmtMin(r.quests.reduce((a, q) => a + q.goldWaitMs, 0))} мин, существ ${nf0.format(r.finalPopulation)}` +
+        (r.arenaLevel != null ? `, арена ${r.arenaLevel}` : "")),
+      el("div", { class: "delta" }, delta == null ? "сравнение появится после следующего прогона"
+        : delta === 0 ? "как в прошлом прогоне"
+        : `${delta < 0 ? "−" : "+"}${fmtMin(Math.abs(delta))} мин к прошлому прогону`));
+  }));
+
+  const profileSeries = (pick, opts) => runs.map(r => ({ id: r.id, label: r.title, color: colorOf(r.id), points: pick(r) }));
+
+  // pace: completed quests over colony minutes
+  const pace = profileSeries(r => [{ x: 0, y: 0 }, ...r.quests.map(q => ({ x: min(q.doneMs), y: q.level }))]);
+  const maxMinutes = Math.max(...runs.map(r => min(r.endMs)));
+  const paceChart = lineChart(pace, {
+    label: "Пройдено заданий по минутам колонии", step: true, endLabels: true, maxY: info.stopAfterLevel || info.chainLength,
+    extendTo: s => min(runs.find(r => r.id === s.id).endMs), maxX: maxMinutes,
+    tipTitle: x => `${nf1.format(x)} мин колонии`, tipValue: v => nf0.format(v) + " зад."
+  });
+  const paceTable = makeTable(
+    [{ label: "#" , value: q => q.level }, { label: "Задание", value: q => q.title },
+     ...runs.map(r => ({ label: r.title, num: true, value: q => { const x = r.quests.find(o => o.level === q.level); return x ? fmtMin(x.doneMs) : "—"; } }))],
+    runs[0].quests);
+
+  // where the time went
+  const waitRows = runs.map(r => ({ label: r.title, values: Object.fromEntries(WAITS.map(w => [w.key, min(r.quests.reduce((a, q) => a + (q[w.key] || 0), 0))])) }));
+  const waitChart = stackedBars(waitRows, WAITS, { label: "На что ушло время кампании", format: v => nf1.format(v), unit: " мин" });
+  const waitTable = makeTable([{ label: "Профиль", value: r => r.label }, ...WAITS.map(w => ({ label: w.label, num: true, value: r => nf1.format(r.values[w.key]) }))], waitRows);
+
+  // battles
+  const battleRows = runs.map(r => ({
+    label: r.title, fought: r.battles.length, won: r.battles.filter(b => b.outcome === "PlayerVictory").length,
+    fallen: r.battles.reduce((a, b) => a + b.fallen, 0), gold: r.battles.reduce((a, b) => a + b.gold, 0),
+    arena: r.arenaLevel ?? "—", upgrades: (r.upgrades || []).reduce((a, u) => a + u.level, 0)
+  }));
+  const battleTable = makeTable([
+    { label: "Профиль", value: r => r.label }, { label: "Уровень арены", num: true, value: r => r.arena },
+    { label: "Боёв", num: true, value: r => r.fought },
+    { label: "Побед", num: true, value: r => r.won }, { label: "Погибло", num: true, value: r => r.fallen },
+    { label: "Золото с боёв", num: true, value: r => nf0.format(r.gold) },
+    { label: "Улучшений", num: true, value: r => r.upgrades }], battleRows);
+
+  // gold and population over time
+  const goldChart = lineChart(profileSeries(r => r.samples.map(s => ({ x: min(s.atMs), y: s.gold }))), {
+    label: "Золото в казне", endLabels: true, maxX: maxMinutes, tipTitle: x => `${nf1.format(x)} мин колонии`, height: 240 });
+  const popChart = lineChart(profileSeries(r => r.samples.map(s => ({ x: min(s.atMs), y: s.population }))), {
+    label: "Существ в колонии", endLabels: true, maxX: maxMinutes, tipTitle: x => `${nf1.format(x)} мин колонии`, height: 240 });
+  const sampleTable = pick => makeTable(
+    [{ label: "Минута", num: true, value: s => nf1.format(s.m) }, ...runs.map(r => ({ label: r.title, num: true, value: s => s[r.id] ?? "—" }))],
+    [...new Set(runs.flatMap(r => r.samples.map(s => s.atMs)))].sort((a, b) => a - b).map(atMs => {
+      const row = { m: min(atMs) };
+      for (const r of runs) { const s = r.samples.find(o => o.atMs === atMs); if (s) row[r.id] = nf0.format(pick(s)); }
+      return row;
+    }));
+
+  // history of campaign time across runs
+  let historyBody;
+  if (history.length < 2) {
+    historyBody = el("p", { class: "empty" }, "Здесь появится время кампании по прогонам, когда их будет хотя бы два.");
+  } else {
+    const ids = runs.map(r => r.id);
+    const hs = ids.map(id => ({
+      id, label: runs.find(r => r.id === id).title, color: colorOf(id),
+      points: history.map((h, i) => { const p = h.profiles.find(o => o.id === id); return p ? { x: i, y: min(p.endMs) } : null; }).filter(Boolean)
+    }));
+    const label = i => { const h = history[i]; if (!h) return ""; const d = new Date(h.info.generatedAt); return d.toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); };
+    historyBody = lineChart(hs, {
+      label: "Время кампании по прогонам", endLabels: true, maxX: history.length - 1,
+      xTicks: history.length <= 8 ? history.map((_, i) => i) : niceTicks(history.length - 1, 6),
+      xFormat: i => Number.isInteger(i) ? label(i).split(",")[0] : "",
+      tipTitle: i => { const h = history[i]; return `${label(i)}${h.info.commit ? ", " + h.info.commit : ""}`; }, tipValue: v => nf1.format(v) + " мин" });
+  }
+  const historyTable = makeTable(
+    [{ label: "Прогон", value: h => new Date(h.info.generatedAt).toLocaleString("ru-RU") }, { label: "Коммит", value: h => h.info.commit || "—" },
+     ...runs.map(r => ({ label: r.title, num: true, value: h => { const p = h.profiles.find(o => o.id === r.id); return p ? fmtMin(p.endMs) + (p.outcome === "Completed" ? "" : " (" + p.levels + "/" + p.chainLength + ")") : "—"; } }))],
+    history.slice().reverse());
+
+  // per-profile details
+  const detailBox = el("div", { class: "detail" });
+  const tabButtons = runs.map(r => el("button", { type: "button", "aria-pressed": "false" },
+    el("i", { class: "key", style: `background:${colorOf(r.id)};margin-right:8px;vertical-align:middle` }), r.title));
+  const showDetail = i => {
+    tabButtons.forEach((b, j) => b.setAttribute("aria-pressed", String(i === j)));
+    const r = runs[i];
+    put(detailBox, 
+      el("p", {}, r.description),
+      el("div", { class: "facts" },
+        el("span", {}, "итог ", el("b", {}, r.outcomeText + (r.stopReason ? ": " + r.stopReason : ""))),
+        el("span", {}, "золото в конце ", el("b", {}, nf0.format(r.finalGold))),
+        el("span", {}, "нанято ", el("b", {}, nf0.format(r.hired))),
+        el("span", {}, "построек ", el("b", {}, r.finalBuildings)),
+        el("span", {}, "земли куплено ", el("b", {}, r.landBought)),
+        r.arenaLevel != null ? el("span", {}, "арена ", el("b", {}, r.arenaLevel)) : null,
+        r.battleGold != null ? el("span", {}, "золото с арены ", el("b", {}, nf0.format(r.battleGold))) : null,
+        el("span", {}, "взглядов ", el("b", {}, r.decisions)),
+        el("span", {}, "команд ", el("b", {}, nf0.format(r.commandsAccepted))),
+        el("span", {}, "отказов ", el("b", {}, r.refusals.reduce((a, x) => a + x.count, 0)))),
+      r.units ? el("div", { class: "facts" },
+        el("span", {}, "существа: ", el("b", {}, r.units.length ? r.units.map(u => `${u.name} ${u.count}`).join(", ") : "—")),
+        el("span", {}, "улучшения: ", el("b", {}, r.upgrades.length ? r.upgrades.map(u => `${u.name} ${u.level}`).join(", ") : "—")),
+        el("span", {}, "открыты жители: ", el("b", {}, r.unlocks.length
+          ? r.unlocks.map(u => `${u.name} (${fmtMin(u.atMs)} мин, задание ${u.questLevel})`).join(", ") : "—"))) : null,
+      el("div", { class: "tablewrap", style: "margin-top:0" }, makeTable([
+        { label: "#", value: q => q.level }, { label: "Задание", value: q => q.title },
+        { label: "Готово на", num: true, value: q => fmtMin(q.doneMs) }, { label: "Заняло", num: true, value: q => fmtMin(q.doneMs - q.startMs) },
+        { label: "Действия", num: true, value: q => fmtMin(q.busyMs || 0) },
+        { label: "Поток", num: true, value: q => fmtMin(q.flowWaitMs) }, { label: "Золото", num: true, value: q => fmtMin(q.goldWaitMs) },
+        { label: "Таймер", num: true, value: q => fmtMin(q.timeWaitMs) }, { label: "Золото после", num: true, value: q => nf0.format(q.goldAfterClaim) },
+        { label: "Существ", num: true, value: q => q.population }, { label: "Построек", num: true, value: q => q.buildings }], r.quests)),
+      r.battles.length ? el("div", {}, el("h2", { style: "margin-top:16px" }, "Бои"), el("div", { class: "tablewrap" }, makeTable([
+        { label: "Минута", num: true, value: b => fmtMin(b.atMs) }, { label: "Задание", num: true, value: b => b.level },
+        { label: "Арена", num: true, value: b => b.arenaLevel ?? "—" },
+        { label: "Отряд", value: b => b.squad }, { label: "Исход", value: b => b.outcome === "PlayerVictory" ? "победа" : b.outcome === "Draw" ? "ничья" : "поражение" },
+        { label: "Погибло", num: true, value: b => b.fallen }, { label: "Награда", num: true, value: b => nf0.format(b.gold) }], r.battles))) : null,
+      r.refusals.length ? el("div", {}, el("h2", { style: "margin-top:16px" }, "Отказы сессии"),
+        el("div", { class: "tablewrap" }, makeTable([{ label: "Сообщение", value: x => x.message }, { label: "Раз", num: true, value: x => x.count }], r.refusals))) : null);
+  };
+  tabButtons.forEach((b, i) => b.addEventListener("click", () => showDetail(i)));
+  showDetail(0);
+
+  const profilesLegend = legend(runs.map(r => ({ label: r.title, color: colorOf(r.id) })));
+  put(app, 
+    kpis,
+    card("Темп кампании", "Сколько заданий закрыто к каждой минуте колонии. Ступенька — задание сдано.",
+      el("div", {}, profilesLegend, paceChart), paceTable),
+    el("div", { class: "grid2" },
+      card("На что ушло время", "Действия игрока — клики и чтение заданий (у профилей с ценой интерфейса); остальное — чего бот ждал между взглядами.",
+        el("div", {}, legend(WAITS.map(w => ({ label: w.label, color: css(w.color) })), true), waitChart), waitTable),
+      card("Арена", "До какого уровня арены дошёл бот, сколько раз ходил в бой и что это дало.", el("div", { class: "tablewrap", style: "margin-top:0" }, battleTable), null)),
+    card("Сколько заняло каждое задание", "Минуты колонии от взятия задания до сдачи. Тёмные клетки — узкие места; подсказка раскладывает время по причинам.",
+      heatmap(runs), null),
+    el("div", { class: "grid2" },
+      card("Золото в казне", "Раз в минуту колонии.", el("div", {}, legend(runs.map(r => ({ label: r.title, color: colorOf(r.id) }))), goldChart), sampleTable(s => s.gold)),
+      card("Существ в колонии", "Рабочие, носильщики и бойцы вместе.", el("div", {}, legend(runs.map(r => ({ label: r.title, color: colorOf(r.id) }))), popChart), sampleTable(s => s.population))),
+    card("Прогоны", `Время всей кампании по прогонам (последние ${history.length}).`,
+      history.length >= 2 ? el("div", {}, legend(runs.map(r => ({ label: r.title, color: colorOf(r.id) }))), historyBody) : historyBody,
+      history.length ? historyTable : null),
+    card("Профили подробно", null, el("div", {}, el("div", { class: "tabs" }, tabButtons), detailBox), null));
+}
+
+/* ---------- theme: auto / light / dark, remembered per viewer ---------- */
+const themeButton = document.getElementById("theme");
+const THEMES = ["auto", "light", "dark"], THEME_NAMES = { auto: "авто", light: "светлая", dark: "тёмная" };
+function applyTheme(theme) {
+  if (theme === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", theme);
+  themeButton.textContent = "Тема: " + THEME_NAMES[theme];
+}
+let theme = "auto";
+try { theme = localStorage.getItem("bots-theme") || "auto"; } catch (e) { /* storage blocked */ }
+const asked = new URLSearchParams(location.search).get("theme");
+if (asked) theme = asked;
+if (!THEMES.includes(theme)) theme = "auto";
+applyTheme(theme);
+themeButton.addEventListener("click", () => {
+  theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+  try { localStorage.setItem("bots-theme", theme); } catch (e) { /* storage blocked */ }
+  applyTheme(theme);
+  render();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (theme === "auto") render(); });
+
+/* ---------- redraw on resize, reload the data when a new run writes it ---------- */
+let resizeTimer = 0;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => charts.forEach(c => c.redraw()), 120);
+});
+
+const live = document.getElementById("live");
+function poll() {
+  const script = document.createElement("script");
+  script.src = "bots-data.js?t=" + Date.now();
+  script.onload = () => {
+    script.remove();
+    live.classList.remove("stale");
+    const data = window.BOT_DATA;
+    if (data && data.latest && data.latest.info.generatedAt !== shownAt) render();
+  };
+  script.onerror = () => { script.remove(); live.classList.add("stale"); };
+  document.head.appendChild(script);
+}
+render();
+setInterval(poll, 5000);
+</script>
+</body>
+</html>

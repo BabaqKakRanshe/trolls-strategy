@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TrollStrategy.Domain;
 
 namespace TrollStrategy.Bots
@@ -35,6 +36,8 @@ namespace TrollStrategy.Bots
         public int FlowWaitMs;
         public int GoldWaitMs;
         public int TimeWaitMs;
+        /// <summary>Player time spent on commands and reading the quest (profiles with action costs).</summary>
+        public int BusyMs;
         public int GoldAfterClaim;
         public int Population;
         public int Buildings;
@@ -45,6 +48,8 @@ namespace TrollStrategy.Bots
     {
         public int AtMs;
         public int QuestLevel;
+        /// <summary>The level of the arena ladder the battle was fought on.</summary>
+        public int ArenaLevel;
         public string Squad;
         public BattleOutcome Outcome;
         public int Fallen;
@@ -61,6 +66,15 @@ namespace TrollStrategy.Bots
         public int Population;
         public int Buildings;
         public int LandBlocks;
+        public int ArenaLevel;
+    }
+
+    /// <summary>A creature the colony could hire from this moment on (folk join after their arena level is won).</summary>
+    public sealed class UnlockRecord
+    {
+        public string Name;
+        public int AtMs;
+        public int QuestLevel;
     }
 
     /// <summary>Everything one bot run left behind: the outcome, the quest timeline, battles and refusals.</summary>
@@ -83,6 +97,14 @@ namespace TrollStrategy.Bots
         public int FinalBuildings { get; set; }
         public int Hired { get; set; }
         public int LandBought { get; set; }
+        /// <summary>The highest arena level won by the end.</summary>
+        public int ArenaLevel { get; set; }
+        public int BattleGold => Battles.Sum(b => b.Gold);
+        /// <summary>The colony at the end by creature name.</summary>
+        public SortedDictionary<string, int> Units { get; } = new(System.StringComparer.Ordinal);
+        /// <summary>Levels of the colony upgrades bought by the end, by name.</summary>
+        public SortedDictionary<string, int> Upgrades { get; } = new(System.StringComparer.Ordinal);
+        public List<UnlockRecord> Unlocks { get; } = new();
         public int Decisions { get; set; }
         public List<QuestRecord> Quests { get; } = new();
         public List<BattleRecord> Battles { get; } = new();
