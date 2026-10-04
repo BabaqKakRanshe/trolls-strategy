@@ -124,11 +124,13 @@
 
 Входит он сервисным аккаунтом, не логином человека. Завести один раз:
 
-1. Unity Dashboard → Administration → Service accounts → New.
+1. Unity Dashboard → Administration → Service accounts → New
+   (`cloud.unity.com/organizations/18968377466176/settings/service-accounts`).
 2. Дать ему доступ к проекту TrollStategy с ролью, которой можно читать Analytics.
 3. Add key — получить Key ID и Secret key.
-4. Положить их в `tools/stats/unity-service-account.json` как `{"keyId": "…", "secretKey": "…"}` (файл в
-   `.gitignore`: репозиторий публичный) или в переменные `UNITY_SERVICE_ACCOUNT_KEY_ID` и
+4. `python tools/stats/fetch_players.py --save-key`: спросит оба значения (секрет не печатается),
+   сохранит их в `tools/stats/unity-service-account.json` (файл в `.gitignore`: репозиторий публичный) и сразу
+   проверит, что Unity принял ключ. Вместо файла можно задать переменные `UNITY_SERVICE_ACCOUNT_KEY_ID` и
    `UNITY_SERVICE_ACCOUNT_SECRET`.
 
 У SQL Data Explorer нет описанного API: загрузчик зовёт тот же адрес, что и сама страница дашборда

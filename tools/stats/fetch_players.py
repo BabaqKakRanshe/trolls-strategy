@@ -8,10 +8,12 @@ per day (exports/fetched-YYYY-MM-DD.csv) in the same four columns as a dashboard
 fetched again on every run (events keep arriving); older days are kept once fetched.
 
 It signs in with a Unity service account, never with a person's login:
-  Unity Dashboard -> Administration -> Service accounts -> New, give it access to the project with a role that may
-  read Analytics, then Add key. Put the key id and secret into tools/stats/unity-service-account.json (git-ignored):
-      {"keyId": "...", "secretKey": "..."}
-  or into the environment variables UNITY_SERVICE_ACCOUNT_KEY_ID and UNITY_SERVICE_ACCOUNT_SECRET.
+  Unity Dashboard -> Administration -> Service accounts -> New
+  (https://cloud.unity.com/organizations/<org>/settings/service-accounts), give it access to the project with a role
+  that may read Analytics, then Add key. Save the key with
+      python tools/stats/fetch_players.py --save-key
+  which asks for the key id and secret and writes tools/stats/unity-service-account.json (git-ignored), or put them
+  into the environment variables UNITY_SERVICE_ACCOUNT_KEY_ID and UNITY_SERVICE_ACCOUNT_SECRET.
 
 SQL Data Explorer has no documented API: this calls the endpoint the dashboard page itself uses
 (live-ops/composer/v2/.../charts/sql_de, then .../jobs/<id>), so Unity may change it without notice. The dashboard
@@ -203,11 +205,34 @@ def fetch(exports=EXPORTS, days=30, today=None, session=None, log=print):
     return total
 
 
+def save_key(path=CREDENTIALS, ask=input, ask_secret=None):
+    """Asks for the service account's key id and secret and writes them where credentials() looks."""
+    import getpass
+    ask_secret = ask_secret or getpass.getpass
+    key_id = ask("Key ID: ").strip()
+    secret = ask_secret("Secret key (not shown): ").strip()
+    if not (key_id and secret):
+        raise FetchError("both the key id and the secret are needed")
+    Path(path).write_text(json.dumps({"keyId": key_id, "secretKey": secret}) + "\n", encoding="utf-8")
+    return Path(path)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--days", type=int, default=30, help="how many days back to download (UTC)")
     parser.add_argument("--exports", type=Path, default=EXPORTS, help="where the daily CSVs go")
+    parser.add_argument("--save-key", action="store_true",
+                        help=f"ask for the service account key and save it to {CREDENTIALS.name}, then check it")
     args = parser.parse_args(argv)
+    if args.save_key:
+        try:
+            path = save_key()
+            session = Session(credentials(path), project_id())
+        except FetchError as error:
+            print(f"key not saved or not taken: {error}", file=sys.stderr)
+            return 1
+        print(f"saved to {path}; Unity took it (environment {ENVIRONMENT} = {session.environment})")
+        return 0
     try:
         fetch(args.exports, args.days)
     except FetchError as error:

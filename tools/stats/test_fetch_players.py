@@ -99,6 +99,10 @@ class FetchTests(unittest.TestCase):
                 fetch_players.Session("Basic key", PROJECT, call=lambda *a, s=status: (s, {"detail": "no"}))
             self.assertIn(words, str(caught.exception))
 
+    def test_a_saved_key_is_read_back(self):
+        path = fetch_players.save_key(self.dir / "key.json", ask=lambda _: " id ", ask_secret=lambda _: " secret ")
+        self.assertEqual(fetch_players.credentials(path), "Basic aWQ6c2VjcmV0")
+
     def test_missing_key_is_explained(self):
         with self.assertRaises(fetch_players.FetchError) as caught:
             fetch_players.credentials(self.dir / "nothing.json")
