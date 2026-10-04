@@ -9,8 +9,9 @@ fetched again on every run (events keep arriving); older days are kept once fetc
 
 It signs in with a Unity service account, never with a person's login:
   Unity Dashboard -> Administration -> Service accounts -> New
-  (https://cloud.unity.com/organizations/<org>/settings/service-accounts), give it access to the project with a role
-  that may read Analytics, then Add key. Save the key with
+  (https://cloud.unity.com/organizations/<org>/settings/service-accounts), give it the project roles Unity Project
+  Viewer and Unity Environments Viewer (service accounts have no role made for reading Analytics), then Add key.
+  Save the key with
       python tools/stats/fetch_players.py --save-key
   which asks for the key id and secret and writes tools/stats/unity-service-account.json (git-ignored), or put them
   into the environment variables UNITY_SERVICE_ACCOUNT_KEY_ID and UNITY_SERVICE_ACCOUNT_SECRET.
@@ -133,7 +134,8 @@ class Session:
             status, payload = self.call("POST", f"{self.base}/charts/sql_de", self.auth, {"sql": sql})
         if status in (401, 403):
             raise FetchError(f"SQL Data Explorer refused the service account ({status}): {detail(payload)}. "
-                             "Give it a role that may read Analytics in the project.")
+                             "Service accounts have no role made for reading Analytics; when Unity Project Viewer is "
+                             "not enough, export by hand or use Data Access (docs/analytics.md).")
         if status != 200:
             raise FetchError(f"query: {status} {detail(payload)}")
         job = payload.get("job") or {}

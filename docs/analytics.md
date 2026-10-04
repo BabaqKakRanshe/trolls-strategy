@@ -126,7 +126,10 @@
 
 1. Unity Dashboard → Administration → Service accounts → New
    (`cloud.unity.com/organizations/18968377466176/settings/service-accounts`).
-2. Дать ему доступ к проекту TrollStategy с ролью, которой можно читать Analytics.
+2. Manage project roles → проект TrollStategy → в группе Admin роли `Unity Project Viewer` и
+   `Unity Environments Viewer`. Отдельной роли на чтение Analytics у сервисных аккаунтов нет (проверено
+   2026-10-04: в группе Analytics организации есть только `Analytics Event Manager`, это управление схемой
+   событий), поэтому пустит ли SQL Data Explorer такой аккаунт, видно только по первому запуску.
 3. Add key — получить Key ID и Secret key.
 4. `python tools/stats/fetch_players.py --save-key`: спросит оба значения (секрет не печатается),
    сохранит их в `tools/stats/unity-service-account.json` (файл в `.gitignore`: репозиторий публичный) и сразу
