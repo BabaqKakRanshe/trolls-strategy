@@ -178,6 +178,11 @@ namespace TrollStrategy.Tests
                 foreach (var quest in run.Quests)
                     StringAssert.Contains(BotReportData.Str(quest.Title), script);
                 Assert.That(File.Exists(Path.Combine(folder, "index.html")), Is.True, BotMenu.PageTemplatePath);
+
+                string bots = Path.Combine(folder, "bots");
+                BotMenu.WriteHub(bots);
+                StringAssert.Contains("players/players-data.js", File.ReadAllText(Path.Combine(folder, "index.html")),
+                    "the hub over bots and players sits one folder above the bots' page: " + BotMenu.HubTemplatePath);
             }
             finally
             {

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Статистика TrollStrategy</title>
+<!-- Written by TrollStrategy/Bots/Run Campaign Bots and tools/stats/players.py from tools/stats/templates/index.html.
+     It reads bots/bots-data.js and players/players-data.js and reloads them on its own. -->
+<script src="bots/bots-data.js"></script>
+<script src="players/players-data.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --border: rgba(11, 11, 11, 0.10); --hover: rgba(11, 11, 11, 0.05);
+    --accent: #2a78d6; --critical: #d03b3b; --good: #006300;
+    /* the bots' profile colours, as on their page */
+    --s-passive: #2a78d6; --s-typical: #eb6834; --s-active: #1baf7a; --s-warlord: #eda100; --s-human: #e87ba4;
+    --s-players: #4a3aa7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+      --accent: #3987e5; --good: #0ca30c; --critical: #e66767;
+      --s-passive: #3987e5; --s-typical: #d95926; --s-active: #199e70; --s-warlord: #c98500; --s-human: #d55181;
+      --s-players: #9085e9;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+    --accent: #3987e5; --good: #0ca30c; --critical: #e66767;
+    --s-passive: #3987e5; --s-typical: #d95926; --s-active: #199e70; --s-warlord: #c98500; --s-human: #d55181;
+    --s-players: #9085e9;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+  header.top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+  h1 { font-size: 24px; font-weight: 650; margin: 0 0 4px; }
+  h2 { font-size: 18px; font-weight: 650; margin: 0; }
+  a { color: var(--accent); }
+  .meta { color: var(--ink-2); margin: 0; }
+  .controls { display: flex; gap: 12px; align-items: center; color: var(--ink-2); font-size: 13px; }
+  .live { display: inline-flex; gap: 6px; align-items: center; }
+  .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
+  button { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+  button:hover { background: var(--hover); }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .card header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .card .when { color: var(--ink-2); font-size: 13px; }
+  .big { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+  .big div { display: flex; flex-direction: column; }
+  .big b { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .big span { color: var(--ink-2); font-size: 13px; }
+  .insight { color: var(--ink-2); margin: 0; }
+  .insight strong { color: var(--ink); font-weight: 600; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--grid); }
+  th { color: var(--ink-2); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .key { display: inline-block; width: 16px; height: 3px; border-radius: 2px; margin-right: 8px; vertical-align: middle; }
+  .bad { color: var(--critical); font-weight: 600; }
+  .empty { color: var(--ink-2); margin: 0; }
+  .open { margin-top: auto; font-weight: 600; }
+  code { font: 12px ui-monospace, Consolas, monospace; background: var(--hover); padding: 1px 4px; border-radius: 4px; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+  footer code { background: none; padding: 0; color: var(--ink-2); }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <h1>Статистика TrollStrategy</h1>
+      <p class="meta">Боты проверяют, как кампания проходится по правилам; игроки показывают, как её проходят люди.</p>
+    </div>
+    <div class="controls">
+      <span class="live">обновляется само</span>
+      <button type="button" id="theme" title="Тема страницы">Тема: авто</button>
+    </div>
+  </header>
+  <div class="grid2" id="app"></div>
+  <footer>
+    Боты: <code>TrollStrategy → Bots → Run Campaign Bots</code> или <code>tools/bots/run-bots.ps1</code>, папка <code>bots</code>.
+    Игроки: выгрузка <code>tools/stats/players-export.sql</code> в <code>players/exports</code>, затем
+    <code>python tools/stats/players.py</code>, папка <code>players</code>. Описание — <code>docs/campaign-bots.md</code> и
+    <code>docs/analytics.md</code>.
+  </footer>
+</main>
+<script>
+"use strict";
+const nf0 = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
+const nf1 = new Intl.NumberFormat("ru-RU", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const when = iso => new Date(iso).toLocaleString("ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+
+function el(tag, attrs, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null) continue;
+    if (k === "class") node.className = v;
+    else if (k === "style") node.style.cssText = v;
+    else node.setAttribute(k, v);
+  }
+  for (const child of children.flat()) {
+    if (child == null) continue;
+    node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+  }
+  return node;
+}
+const big = (value, label) => el("div", {}, el("b", {}, value), el("span", {}, label));
+
+function botsCard() {
+  const data = window.BOT_DATA;
+  const head = el("header", {}, el("h2", {}, "Боты"),
+    data && data.latest ? el("span", { class: "when" }, "прогон " + when(data.latest.info.generatedAt)) : null);
+  if (!data || !data.latest) return el("section", { class: "card" }, head,
+    el("p", { class: "empty" }, "Прогона ещё нет: TrollStrategy → Bots → Run Campaign Bots."));
+  const { info, runs } = data.latest;
+  const done = runs.filter(r => r.outcome === "Completed").length;
+  const rows = runs.map(r => el("tr", {},
+    el("td", {}, el("i", { class: "key", style: `background:${css("--s-" + r.id) || css("--muted")}` }), r.title),
+    el("td", { class: "num" }, nf1.format(r.endMs / 60000) + " мин"),
+    el("td", {}, r.outcome === "Completed" ? `${r.quests.length} из ${r.chainLength}` : el("span", { class: "bad" }, `${r.outcomeText}: ${r.quests.length} из ${r.chainLength}`))));
+  return el("section", { class: "card" }, head,
+    el("div", { class: "big" }, big(`${done} из ${runs.length}`, "профилей прошли кампанию"), big(nf0.format(info.chainLength), "заданий в цепочке")),
+    el("table", {}, el("thead", {}, el("tr", {}, el("th", {}, "Профиль"), el("th", { class: "num" }, "Кампания"), el("th", {}, "Заданий"))), el("tbody", {}, rows)),
+    el("a", { class: "open", href: "bots/index.html" }, "Открыть отчёт ботов →"));
+}
+
+function playersCard() {
+  const data = window.PLAYER_DATA;
+  const head = el("header", {}, el("h2", {}, "Игроки"),
+    data ? el("span", { class: "when" }, "собрано " + when(data.info.generatedAt)) : null);
+  const link = el("a", { class: "open", href: "players/index.html" }, "Открыть страницу игроков →");
+  if (!data || !data.totals.sessions) return el("section", { class: "card" }, head,
+    el("p", { class: "empty" }, "Данных ещё нет. Выгрузите ", el("code", {}, "tools/stats/players-export.sql"),
+      " из SQL Data Explorer в ", el("code", {}, "players/exports"), " и запустите ", el("code", {}, "python tools/stats/players.py"), "."),
+    data && data.info.excludedSessions ? el("p", { class: "empty" }, `Тестовых сессий отсеяно: ${data.info.excludedSessions}.`) : null,
+    link);
+  const t = data.totals, quests = data.quests;
+  // the quest most games end on: the biggest step down the funnel
+  let worst = null;
+  for (const q of quests) {
+    const ended = q.endedStuck + q.endedCompleted;
+    if (ended > 0 && (!worst || ended > worst.ended)) worst = { level: q.level, id: q.id, ended, reached: q.reached };
+  }
+  const title = (level, id) => {
+    const runs = window.BOT_DATA && window.BOT_DATA.latest ? window.BOT_DATA.latest.runs : [];
+    for (const r of runs) { const q = r.quests.find(o => o.level === level); if (q) return q.title; }
+    return id || `задание ${level}`;
+  };
+  return el("section", { class: "card" }, head,
+    el("div", { class: "big" }, big(nf0.format(t.players), "игроков"), big(nf0.format(t.sessions), "сессий"),
+      big(nf0.format(t.campaignCompleted), "прошли кампанию"),
+      big(t.medianLastLevel == null ? "—" : nf1.format(t.medianLastLevel), "последнее задание, медиана")),
+    worst ? el("p", { class: "insight" }, "Больше всего сессий заканчивается на задании ",
+      el("strong", {}, `${worst.level}. ${title(worst.level, worst.id)}`),
+      `: ${nf0.format(worst.ended)} из ${nf0.format(worst.reached)} дошедших (${nf0.format(100 * worst.ended / worst.reached)}%).`) : null,
+    data.info.lastEvent ? el("p", { class: "insight" }, `Последняя игра в выгрузке — ${new Date(data.info.lastEvent.replace(" ", "T") + "Z").toLocaleString("ru-RU")}.`) : null,
+    link);
+}
+
+let shownAt = null;
+function render() {
+  const bots = window.BOT_DATA, players = window.PLAYER_DATA;
+  shownAt = (bots && bots.latest ? bots.latest.info.generatedAt : "") + "|" + (players ? players.info.generatedAt : "");
+  document.getElementById("app").replaceChildren(botsCard(), playersCard());
+}
+
+const themeButton = document.getElementById("theme");
+const THEMES = ["auto", "light", "dark"], THEME_NAMES = { auto: "авто", light: "светлая", dark: "тёмная" };
+function applyTheme(theme) {
+  if (theme === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", theme);
+  themeButton.textContent = "Тема: " + THEME_NAMES[theme];
+}
+let theme = "auto";
+try { theme = localStorage.getItem("stats-theme") || "auto"; } catch (e) { /* storage blocked */ }
+const asked = new URLSearchParams(location.search).get("theme");
+if (asked) theme = asked;
+if (!THEMES.includes(theme)) theme = "auto";
+applyTheme(theme);
+themeButton.addEventListener("click", () => {
+  theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+  try { localStorage.setItem("stats-theme", theme); } catch (e) { /* storage blocked */ }
+  applyTheme(theme);
+  render();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (theme === "auto") render(); });
+
+function reload(src) {
+  return new Promise(resolve => {
+    const script = document.createElement("script");
+    script.src = src + "?t=" + Date.now();
+    script.onload = script.onerror = () => { script.remove(); resolve(); };
+    document.head.appendChild(script);
+  });
+}
+async function poll() {
+  await reload("bots/bots-data.js");
+  await reload("players/players-data.js");
+  const bots = window.BOT_DATA, players = window.PLAYER_DATA;
+  const at = (bots && bots.latest ? bots.latest.info.generatedAt : "") + "|" + (players ? players.info.generatedAt : "");
+  if (at !== shownAt) render();
+}
+render();
+setInterval(poll, 5000);
+</script>
+</body>
+</html>

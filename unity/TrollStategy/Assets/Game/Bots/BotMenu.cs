@@ -15,8 +15,9 @@ namespace TrollStrategy.Bots
 {
     /// <summary>
     /// Runs every bot profile on the shipped catalog and the colony scene's starting buildings and writes the
-    /// reports to Builds/Bots (git-ignored): summary.md, one Markdown and one CSV per profile, and the report page
-    /// (index.html with bots-data.js; history.jsonl keeps the earlier runs it compares against).
+    /// reports to Builds/Stats/bots (git-ignored): summary.md, one Markdown and one CSV per profile, and the report
+    /// page (index.html with bots-data.js; history.jsonl keeps the earlier runs it compares against). Builds/Stats
+    /// also holds the players' page (tools/stats/players.py) and the hub that shows both.
     /// Batch: -executeMethod TrollStrategy.Bots.BotMenu.RunAllBatch -quit.
     /// </summary>
     public static class BotMenu
@@ -24,7 +25,9 @@ namespace TrollStrategy.Bots
         public const string CatalogPath = "Assets/Game/Content/Definitions/GameContentCatalog.asset";
         public const string ColonyScenePath = "Assets/Game/Scenes/MainColonyScene.unity";
         public const string PageTemplatePath = "Assets/Game/Bots/Dashboard/BotsDashboard.html";
-        private const string Folder = "Builds/Bots";
+        private const string Folder = "Builds/Stats/bots";
+        /// <summary>The page over the bots' and the players' statistics, kept with the players' script.</summary>
+        public const string HubTemplatePath = "../../tools/stats/templates/index.html";
         private const int HistoryLength = 50;
 
         [MenuItem("TrollStrategy/Bots/Run Campaign Bots")]
@@ -34,6 +37,7 @@ namespace TrollStrategy.Bots
             {
                 var runs = RunProfiles(BotProfile.All, (i, profile) =>
                     EditorUtility.DisplayProgressBar("Боты играют кампанию", profile.Title, i / (float)BotProfile.All.Count));
+                WriteHub(Folder);
                 Debug.Log($"[Bots] report page {PagePath(Folder)}\n{BotReport.Summary(runs)}");
             }
             finally
@@ -42,10 +46,11 @@ namespace TrollStrategy.Bots
             }
         }
 
+        /// <summary>Opens the statistics hub (bots and players), or the bots' page where there is no hub yet.</summary>
         [MenuItem("TrollStrategy/Bots/Open Report Page")]
         public static void OpenPage()
         {
-            string page = PagePath(Folder);
+            string hub = PagePath(Path.Combine(Folder, "..")), page = File.Exists(hub) ? hub : PagePath(Folder);
             if (File.Exists(page)) UnityEngine.Application.OpenURL(new Uri(page).AbsoluteUri);
             else Debug.LogWarning($"[Bots] no report page yet: run TrollStrategy/Bots/Run Campaign Bots ({page})");
         }
@@ -55,7 +60,9 @@ namespace TrollStrategy.Bots
             int code = 0;
             try
             {
-                Debug.Log($"[Bots] report page {PagePath(Folder)}\n{Run(null, 0, Folder)}");
+                string summary = Run(null, 0, Folder);
+                WriteHub(Folder);
+                Debug.Log($"[Bots] report page {PagePath(Folder)}\n{summary}");
             }
             catch (Exception exception)
             {
@@ -126,6 +133,14 @@ namespace TrollStrategy.Bots
             File.WriteAllText(Path.Combine(folder, "bots-data.js"), BotReportData.Script(runs, info, history));
             if (File.Exists(PageTemplatePath)) File.Copy(PageTemplatePath, PagePath(folder), true);
             else Debug.LogWarning($"[Bots] no page template at {PageTemplatePath}");
+        }
+
+        /// <summary>The hub one folder above the bots' page, from <see cref="HubTemplatePath"/>.</summary>
+        public static void WriteHub(string folder)
+        {
+            string template = Path.GetFullPath(HubTemplatePath);
+            if (File.Exists(template)) File.Copy(template, PagePath(Path.Combine(folder, "..")), true);
+            else Debug.LogWarning($"[Bots] no hub template at {template}");
         }
 
         private static string PagePath(string folder) => Path.GetFullPath(Path.Combine(folder, "index.html"));

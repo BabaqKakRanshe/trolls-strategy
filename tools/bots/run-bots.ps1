@@ -1,11 +1,12 @@
 <#
 .SYNOPSIS
-    Plays the campaign with every bot profile in Unity batchmode and opens the report page.
+    Plays the campaign with every bot profile in Unity batchmode and opens the statistics page.
 
 .DESCRIPTION
-    Runs TrollStrategy.Bots.BotMenu.RunAllBatch on unity/TrollStategy, which writes Builds/Bots:
+    Runs TrollStrategy.Bots.BotMenu.RunAllBatch on unity/TrollStategy, which writes Builds/Stats/bots:
     index.html (the report page), bots-data.js (the latest runs), history.jsonl (earlier runs), and a
-    Markdown and CSV report per profile. An open report page picks the new run up on its own.
+    Markdown and CSV report per profile, and the hub Builds/Stats/index.html over the bots' and the players'
+    pages (tools/stats/players.py). An open page picks the new run up on its own.
 
     The Unity editor must be closed for this project: two editors cannot open one project. With the editor
     open, use the menu TrollStrategy > Bots > Run Campaign Bots instead.
@@ -18,7 +19,7 @@
 param(
     # Unity.exe to use; by default the Hub install of the project's editor version.
     [string]$Unity,
-    # Do not open the report page when the run is done.
+    # Do not open the statistics page when the run is done.
     [switch]$NoOpen,
     # Batch runs to try when Unity starts without its licence (it then compiles nothing).
     [int]$Attempts = 3
@@ -27,8 +28,8 @@ param(
 $ErrorActionPreference = 'Stop'
 $repo = Resolve-Path (Join-Path $PSScriptRoot '..\..')
 $project = Join-Path $repo 'unity\TrollStategy'
-$page = Join-Path $project 'Builds\Bots\index.html'
-$log = Join-Path $project 'Builds\Bots\batch.log'
+$page = Join-Path $project 'Builds\Stats\index.html'
+$log = Join-Path $project 'Builds\Stats\bots\batch.log'
 
 if (-not $Unity) {
     $versionLine = Select-String -Path (Join-Path $project 'ProjectSettings\ProjectVersion.txt') -Pattern '^m_EditorVersion:\s*(\S+)'
@@ -59,5 +60,5 @@ for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
 }
 if ($attempt -gt $Attempts) { throw "Bots: Unity never got its licence; see $log" }
 
-Write-Host "Bots: report page $page"
+Write-Host "Bots: statistics page $page"
 if (-not $NoOpen) { Start-Process $page }

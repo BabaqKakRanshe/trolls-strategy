@@ -70,6 +70,8 @@
   h1 { font-size: 24px; font-weight: 650; margin: 0 0 4px; }
   h2 { font-size: 15px; font-weight: 600; margin: 0; }
   .meta { color: var(--ink-2); margin: 0; }
+  .crumbs { font-size: 13px; margin: 0 0 6px; }
+  .crumbs a { color: var(--accent); }
   .meta span + span::before { content: "  ·  "; color: var(--muted); }
   .controls { display: flex; gap: 12px; align-items: center; color: var(--ink-2); font-size: 13px; }
   .live { display: inline-flex; gap: 6px; align-items: center; }
@@ -145,6 +147,7 @@
 <main>
   <header class="top">
     <div>
+      <p class="crumbs"><a href="../index.html">← Вся статистика</a> · <a href="../players/index.html">Игроки</a></p>
       <h1>Боты: прохождение кампании</h1>
       <p class="meta" id="meta"></p>
     </div>

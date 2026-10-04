@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Игроки: прохождение кампании</title>
+<!-- Written by tools/stats/players.py from tools/stats/templates/players.html.
+     Data comes from players-data.js next to this page and the bots' bots-data.js beside it; the page reloads both
+     on its own after a new run. -->
+<script src="players-data.js"></script>
+<script src="../bots/bots-data.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --hover: rgba(11, 11, 11, 0.05);
+    --accent: #2a78d6;
+    --critical: #d03b3b;
+    --good: #006300;
+    /* players against the live-player bot: categorical slots 7 and 5 (all-pairs dE 24.9 light / 16.0 dark) */
+    --s-players: #4a3aa7;
+    --s-human: #e87ba4;
+    /* how a game ended: slots 1 and 4 (adjacent dE 31.5 light / 27.4 dark) */
+    --e-stuck: #2a78d6;
+    --e-unclaimed: #eda100;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+      --accent: #3987e5; --good: #0ca30c; --critical: #e66767;
+      --s-players: #9085e9; --s-human: #d55181; --e-stuck: #3987e5; --e-unclaimed: #c98500;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+    --accent: #3987e5; --good: #0ca30c; --critical: #e66767;
+    --s-players: #9085e9; --s-human: #d55181; --e-stuck: #3987e5; --e-unclaimed: #c98500;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 1240px; margin: 0 auto; padding: 24px 16px 48px; }
+  header.top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+  h1 { font-size: 24px; font-weight: 650; margin: 0 0 4px; }
+  h2 { font-size: 15px; font-weight: 600; margin: 0; }
+  a { color: var(--accent); }
+  .crumbs { font-size: 13px; margin: 0 0 6px; }
+  .meta { color: var(--ink-2); margin: 0; }
+  .meta span + span::before { content: "  ·  "; color: var(--muted); }
+  .controls { display: flex; gap: 12px; align-items: center; color: var(--ink-2); font-size: 13px; }
+  .live { display: inline-flex; gap: 6px; align-items: center; }
+  .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
+  .live.stale::before { background: var(--muted); }
+
+  button {
+    font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 10px; cursor: pointer;
+  }
+  button:hover { background: var(--hover); }
+  button[aria-pressed="true"] { border-color: var(--ink-2); font-weight: 600; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .tile { padding: 14px 16px; }
+  .tile .who { color: var(--ink-2); font-weight: 600; }
+  .key { display: inline-block; width: 16px; height: 3px; border-radius: 2px; flex: none; }
+  .key.box { width: 10px; height: 10px; border-radius: 3px; }
+  .key.dot { width: 9px; height: 9px; border-radius: 50%; }
+  .tile .value { font-size: 30px; font-weight: 650; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
+  .tile .value small { font-size: 15px; font-weight: 500; color: var(--ink-2); margin-left: 4px; }
+  .tile .line { color: var(--ink-2); font-size: 13px; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); gap: 16px; margin-bottom: 16px; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; margin-bottom: 16px; }
+  .card { padding: 16px; margin-bottom: 16px; min-width: 0; }
+  .grid2 .card, .grid3 .card { margin-bottom: 0; }
+  .card header { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 4px; }
+  .card .sub { color: var(--ink-2); margin: 2px 0 12px; font-size: 13px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 8px; color: var(--ink-2); font-size: 13px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .chart { position: relative; width: 100%; }
+  .chart svg { display: block; width: 100%; overflow: visible; }
+  .axis text, .tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .rowlabel { fill: var(--ink); font-size: 12px; }
+  .rowlabel tspan.n { fill: var(--muted); }
+  .endlabel { fill: var(--ink); font-size: 12px; font-weight: 600; paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+  .note { fill: var(--ink-2); font-size: 11px; }
+  .empty { color: var(--ink-2); padding: 8px 0; }
+  .empty ol { margin: 8px 0 0; padding-left: 20px; }
+  .empty li { margin: 4px 0; }
+  code { font: 12px ui-monospace, Consolas, monospace; color: var(--ink); background: var(--hover); padding: 1px 4px; border-radius: 4px; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--ink-2); font-weight: 600; white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tablewrap { overflow-x: auto; margin-top: 12px; }
+  .hidden { display: none; }
+  .flag { color: var(--critical); font-weight: 600; white-space: nowrap; }
+
+  #tooltip {
+    position: fixed; z-index: 10; pointer-events: none; background: var(--surface); color: var(--ink);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); min-width: 140px; max-width: 300px;
+  }
+  #tooltip .title { color: var(--ink-2); margin-bottom: 4px; }
+  #tooltip .row { display: flex; align-items: center; gap: 8px; }
+  #tooltip .row strong { font-variant-numeric: tabular-nums; }
+  #tooltip .row span { color: var(--ink-2); }
+  footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
+  footer code { color: var(--ink-2); background: none; padding: 0; }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <p class="crumbs"><a href="../index.html">← Вся статистика</a> · <a href="../bots/index.html">Боты</a></p>
+      <h1>Игроки: прохождение кампании</h1>
+      <p class="meta" id="meta"></p>
+    </div>
+    <div class="controls">
+      <span class="live" id="live">обновляется само</span>
+      <button type="button" id="theme" title="Тема страницы">Тема: авто</button>
+    </div>
+  </header>
+
+  <div id="app"></div>
+
+  <footer>
+    Страницу пишет <code>python tools/stats/players.py</code> из выгрузок SQL Data Explorer в
+    <code>Builds/Stats/players/exports</code> (запрос — <code>tools/stats/players-export.sql</code>). Время — минуты
+    колонии: в бою, на паузе и без фокуса окна оно не идёт. Тестовые установки из <code>tools/stats/test-users.txt</code>
+    не считаются.
+  </footer>
+</main>
+<div id="tooltip" class="hidden" role="status"></div>
+
+<script>
+"use strict";
+
+const ENDINGS = [
+  { key: "endedStuck", label: "не выполнил задание", color: "--e-stuck" },
+  { key: "endedCompleted", label: "выполнил, не забрал награду", color: "--e-unclaimed" }
+];
+// a quest players take this many times longer than the live-player bot is likely unclear, not long
+const SLOW_RATIO = 2;
+const nf1 = new Intl.NumberFormat("ru-RU", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const nf0 = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
+const nfTick = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 1 });
+const pct =(a, b) => b > 0 ? nf0.format(100 * a / b) + "%" : "—";
+const minOfSec = s => s == null ? null : s / 60;
+const fmtSec = s => s == null ? "—" : nf1.format(s / 60);
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const SVG = "http://www.w3.org/2000/svg";
+
+/* shared with the bots' page (Assets/Game/Bots/Dashboard/BotsDashboard.html) */
+function el(tag, attrs, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null) continue;
+    if (k === "class") node.className = v;
+    else if (k === "style") node.style.cssText = v;
+    else if (k.startsWith("on")) node.addEventListener(k.slice(2), v);
+    else node.setAttribute(k, v);
+  }
+  for (const child of children.flat()) {
+    if (child == null) continue;
+    node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+  }
+  return node;
+}
+
+// replaceChildren would print a skipped (null) child as the text "null"
+function put(node, ...children) {
+  node.replaceChildren(...children.flat().filter(c => c != null));
+}
+
+function svg(tag, attrs, parent) {
+  const node = document.createElementNS(SVG, tag);
+  for (const [k, v] of Object.entries(attrs || {})) if (v != null) node.setAttribute(k, v);
+  if (parent) parent.appendChild(node);
+  return node;
+}
+
+/* ---------- tooltip: values lead, names follow, line keys ---------- */
+const tooltip = document.getElementById("tooltip");
+function showTip(event, title, rows) {
+  put(tooltip, 
+    el("div", { class: "title" }, title),
+    ...rows.map(r => el("div", { class: "row" },
+      el("i", { class: r.box ? "key box" : "key", style: `background:${r.color}` }),
+      el("strong", {}, r.value), el("span", {}, r.label))));
+  tooltip.classList.remove("hidden");
+  const pad = 14, rect = tooltip.getBoundingClientRect();
+  let x = event.clientX + pad, y = event.clientY + pad;
+  if (x + rect.width > window.innerWidth - 8) x = event.clientX - rect.width - pad;
+  if (y + rect.height > window.innerHeight - 8) y = event.clientY - rect.height - pad;
+  tooltip.style.left = Math.max(8, x) + "px";
+  tooltip.style.top = Math.max(8, y) + "px";
+}
+function hideTip() { tooltip.classList.add("hidden"); }
+
+/* ---------- scales ---------- */
+function niceTicks(maxValue, count) {
+  if (!(maxValue > 0)) return [0, 1];
+  const raw = maxValue / count, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= raw);
+  const ticks = [];
+  for (let v = 0; v <= maxValue + step * 0.001; v += step) ticks.push(+v.toFixed(6));
+  if (ticks[ticks.length - 1] < maxValue) ticks.push(+(ticks[ticks.length - 1] + step).toFixed(6));
+  return ticks;
+}
+
+/* ---------- card with a table-view twin ---------- */
+function card(title, subtitle, body, table) {
+  const tableBox = el("div", { class: "tablewrap hidden" }, table);
+  const toggle = el("button", { type: "button", "aria-pressed": "false" }, "Таблица");
+  toggle.addEventListener("click", () => {
+    const show = tableBox.classList.toggle("hidden") === false;
+    toggle.setAttribute("aria-pressed", String(show));
+  });
+  return el("section", { class: "card" },
+    el("header", {}, el("div", {}, el("h2", {}, title), subtitle ? el("p", { class: "sub" }, subtitle) : null),
+      table ? toggle : null),
+    body, tableBox);
+}
+
+function makeTable(columns, rows) {
+  return el("table", {},
+    el("thead", {}, el("tr", {}, columns.map(c => el("th", { class: c.num ? "num" : null }, c.label)))),
+    el("tbody", {}, rows.map(r => el("tr", {}, columns.map(c => el("td", { class: c.num ? "num" : null }, c.value(r)))))));
+}
+
+function legend(items, box) {
+  return el("div", { class: "legend" }, items.map(i =>
+    el("span", {}, el("i", { class: box ? "key box" : "key", style: `background:${i.color}` }), i.label)));
+}
+
+/* ---------- line chart: one axis, 2px lines, end dots with a surface ring, crosshair ---------- */
+function lineChart(series, opts) {
+  const box = el("div", { class: "chart" });
+  const draw = () => {
+    box.replaceChildren();
+    const width = Math.max(280, box.clientWidth || 600), height = opts.height || 260;
+    const m = { left: 52, right: opts.endLabels ? 84 : 16, top: 10, bottom: 30 };
+    const xs = series.flatMap(s => s.points.map(p => p.x));
+    const maxX = opts.maxX ?? Math.max(...xs, 1), maxY = opts.maxY ?? Math.max(...series.flatMap(s => s.points.map(p => p.y)), 1);
+    const yTicks = opts.yTicks || niceTicks(maxY, 5), yTop = yTicks[yTicks.length - 1];
+    const xTicks = opts.xTicks || niceTicks(maxX, 8), xRight = opts.xTicks ? maxX : xTicks[xTicks.length - 1];
+    const sx = v => m.left + (v / (xRight || 1)) * (width - m.left - m.right);
+    const sy = v => m.top + (1 - v / (yTop || 1)) * (height - m.top - m.bottom);
+    const root = svg("svg", { viewBox: `0 0 ${width} ${height}`, height, role: "img", "aria-label": opts.label });
+    const axis = svg("g", { class: "axis" }, root);
+    for (const t of yTicks) {
+      svg("line", { x1: m.left, x2: width - m.right, y1: sy(t), y2: sy(t), stroke: css(t === 0 ? "--axis" : "--grid"), "stroke-width": 1 }, axis);
+      svg("text", { x: m.left - 8, y: sy(t) + 4, "text-anchor": "end" }, axis).textContent = (opts.yFormat || nf0.format)(t);
+    }
+    for (const t of xTicks) {
+      svg("text", { x: sx(t), y: height - 8, "text-anchor": "middle" }, axis).textContent = (opts.xFormat || nf0.format)(t);
+    }
+
+    const at = (s, x) => {
+      // the value a series holds at x: the last point at or before it (steps), or the nearest (lines)
+      let best = null;
+      for (const p of s.points) { if (p.x <= x + 1e-9) best = p; else break; }
+      return best;
+    };
+    for (const s of series) {
+      if (!s.points.length) continue;
+      let d = "";
+      s.points.forEach((p, i) => {
+        if (i === 0) d += `M${sx(p.x)},${sy(p.y)}`;
+        else if (opts.step) d += `H${sx(p.x)}V${sy(p.y)}`;
+        else d += `L${sx(p.x)},${sy(p.y)}`;
+      });
+      if (opts.step && opts.extendTo != null) d += `H${sx(Math.min(opts.extendTo(s), xRight))}`;
+      svg("path", { d, fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, root);
+    }
+
+    // end dots and labels: each label sits beside its dot, right or else left of it, on the nearest row that
+    // covers no other label and no dot; a label moved off its dot's row keeps a short leader to it
+    if (opts.endLabels) {
+      box.appendChild(root); // in the document so labels can be measured
+      const ends = series.filter(s => s.points.length).map(s => {
+        const last = s.points[s.points.length - 1];
+        const lx = opts.step && opts.extendTo != null ? Math.min(opts.extendTo(s), xRight) : last.x;
+        return { s, x: sx(lx), y: sy(last.y) };
+      }).sort((a, b) => a.x - b.x || a.y - b.y);
+      const blocked = ends.map(e => ({ x1: e.x - 6, x2: e.x + 6, y1: e.y - 6, y2: e.y + 6 }));
+      const overlaps = (a, b) => !(a.x2 < b.x1 || a.x1 > b.x2 || a.y2 < b.y1 || a.y1 > b.y2);
+      for (const e of ends)
+        svg("circle", { cx: e.x, cy: e.y, r: 4, fill: e.s.color, stroke: css("--surface"), "stroke-width": 2 }, root);
+      for (const e of ends) {
+        const text = svg("text", { x: e.x + 9, y: e.y + 4, class: "endlabel" }, root);
+        text.textContent = e.s.label;
+        const w = text.getComputedTextLength();
+        let spot = null;
+        for (const side of [1, -1]) {
+          for (const shift of [0, -15, 15, -30, 30, -45, 45]) {
+            const x1 = side > 0 ? e.x + 9 : e.x - 9 - w, ly = e.y + shift;
+            const rect = { x1: x1 - 2, x2: x1 + w + 2, y1: ly - 9, y2: ly + 5 };
+            if (rect.y1 < 0 || rect.y2 > height - m.bottom || rect.x1 < m.left || rect.x2 > width) continue;
+            if (blocked.some(r => overlaps(r, rect))) continue;
+            spot = { x1, ly, rect, side };
+            break;
+          }
+          if (spot) break;
+        }
+        if (!spot) spot = { x1: e.x + 9, ly: e.y, rect: { x1: e.x + 7, x2: e.x + 11 + w, y1: e.y - 9, y2: e.y + 5 }, side: 1 };
+        text.setAttribute("x", spot.x1);
+        text.setAttribute("y", spot.ly + 4);
+        blocked.push(spot.rect);
+        if (Math.abs(spot.ly - e.y) > 2) {
+          const lx = spot.side > 0 ? spot.x1 - 2 : spot.x1 + w + 2;
+          svg("polyline", { points: `${e.x},${e.y} ${lx},${spot.ly}`, fill: "none", stroke: css("--axis"), "stroke-width": 1 }, root);
+        }
+      }
+    }
+
+    // crosshair: snaps to the nearest x any series has, lists every series there
+    const allX = [...new Set(xs)].sort((a, b) => a - b);
+    const cross = svg("line", { y1: m.top, y2: height - m.bottom, stroke: css("--axis"), "stroke-width": 1, visibility: "hidden" }, root);
+    const hit = svg("rect", { x: m.left, y: m.top, width: width - m.left - m.right, height: height - m.top - m.bottom, fill: "transparent", tabindex: 0 }, root);
+    const move = event => {
+      const r = root.getBoundingClientRect();
+      const px = (event.clientX - r.left) * (width / r.width);
+      const x = (px - m.left) / (width - m.left - m.right) * xRight;
+      let near = allX[0];
+      for (const v of allX) if (Math.abs(v - x) < Math.abs(near - x)) near = v;
+      cross.setAttribute("x1", sx(near)); cross.setAttribute("x2", sx(near)); cross.setAttribute("visibility", "visible");
+      showTip(event, opts.tipTitle(near), series.map(s => {
+        const p = at(s, near);
+        return { color: s.color, label: s.label, value: p ? (opts.tipValue || nf0.format)(p.y) : "—" };
+      }));
+    };
+    hit.addEventListener("pointermove", move);
+    hit.addEventListener("pointerleave", () => { cross.setAttribute("visibility", "hidden"); hideTip(); });
+    box.appendChild(root);
+  };
+  requestAnimationFrame(draw);
+  box.redraw = draw;
+  charts.push(box);
+  return box;
+}
+
+
+/* ---------- rows of one quest each: a label column, then the marks ---------- */
+function rowFrame(rows, opts, width) {
+  const labelW = Math.round(Math.min(250, Math.max(130, width * 0.36)));
+  const m = { left: labelW, right: opts.right ?? 96, top: 4, bottom: 26 };
+  const rowH = opts.rowH || 26;
+  return { m, rowH, height: m.top + rows.length * rowH + m.bottom };
+}
+
+function rowLabel(root, row, x, y, maxW) {
+  const text = svg("text", { x, y, "text-anchor": "end", class: "rowlabel" }, root);
+  if (row.n != null) { const n = svg("tspan", { class: "n" }, text); n.textContent = row.n + "  "; }
+  const t = svg("tspan", {}, text);
+  t.textContent = row.label;
+  // long quest names are cut to the column, the full name stays in the tooltip and the table
+  let label = row.label;
+  while (text.getComputedTextLength() > maxW && label.length > 4) {
+    label = label.slice(0, -2);
+    t.textContent = label.trimEnd() + "…";
+  }
+}
+
+function hoverRow(root, x, y, w, h, tip) {
+  const hit = svg("rect", { x, y, width: w, height: h, fill: "transparent", tabindex: 0 }, root);
+  hit.addEventListener("pointermove", tip);
+  hit.addEventListener("pointerleave", hideTip);
+  hit.addEventListener("focus", () => { const b = hit.getBoundingClientRect(); tip({ clientX: b.right - 40, clientY: b.top }); });
+  hit.addEventListener("blur", hideTip);
+  return hit;
+}
+
+// a bar square at the baseline and rounded at its data end
+function barPath(x, y, w, h) {
+  const rx = Math.min(4, w / 2, h / 2);
+  if (w <= 0) return "";
+  return `M${x},${y}H${x + w - rx}A${rx},${rx} 0 0 1 ${x + w},${y + rx}V${y + h - rx}A${rx},${rx} 0 0 1 ${x + w - rx},${y + h}H${x}Z`;
+}
+
+/* ---------- funnel: how many games reached each quest ---------- */
+function funnelChart(rows, opts) {
+  const box = el("div", { class: "chart" });
+  const draw = () => {
+    box.replaceChildren();
+    const width = Math.max(300, box.clientWidth || 700);
+    const { m, rowH, height } = rowFrame(rows, { right: 150 }, width);
+    const maxV = Math.max(...rows.map(r => r.value), 1);
+    const sx = v => (v / maxV) * (width - m.left - m.right);
+    const root = svg("svg", { viewBox: `0 0 ${width} ${height}`, height, role: "img", "aria-label": opts.label });
+    box.appendChild(root);
+    svg("line", { x1: m.left, x2: m.left, y1: m.top, y2: height - m.bottom, stroke: css("--axis"), "stroke-width": 1 }, root);
+    const color = css(opts.color);
+    rows.forEach((r, i) => {
+      const y = m.top + i * rowH, barH = 14, by = y + (rowH - barH) / 2;
+      rowLabel(root, r, m.left - 10, by + barH / 2 + 4, m.left - 18);
+      svg("path", { d: barPath(m.left, by, sx(r.value), barH), fill: color }, root);
+      const end = svg("text", { x: m.left + sx(r.value) + 8, y: by + barH / 2 + 4, class: "tick" }, root);
+      end.textContent = `${nf0.format(r.value)} · ${pct(r.value, rows[0].value)}`;
+      if (i === opts.markIndex) {
+        const w = end.getComputedTextLength();
+        svg("text", { x: m.left + sx(r.value) + 16 + w, y: by + barH / 2 + 4, class: "note" }, root).textContent =
+          `← здесь заканчивается больше всего сессий: ${nf0.format(r.ended)}`;
+      }
+      hoverRow(root, 0, y, width, rowH, event => showTip(event, `${r.n}. ${r.label}`, r.tip));
+    });
+  };
+  requestAnimationFrame(draw);
+  box.redraw = draw;
+  charts.push(box);
+  return box;
+}
+
+/* ---------- where games ended: stacked rows, 2px surface gap between parts ---------- */
+function endingsChart(rows, parts, opts) {
+  const box = el("div", { class: "chart" });
+  const draw = () => {
+    box.replaceChildren();
+    const width = Math.max(300, box.clientWidth || 700);
+    const { m, rowH, height } = rowFrame(rows, { right: 60 }, width);
+    const total = r => parts.reduce((a, p) => a + r[p.key], 0);
+    const ticks = niceTicks(Math.max(...rows.map(total), 1), 5), maxV = ticks[ticks.length - 1];
+    const sx = v => (v / maxV) * (width - m.left - m.right);
+    const root = svg("svg", { viewBox: `0 0 ${width} ${height}`, height, role: "img", "aria-label": opts.label });
+    box.appendChild(root);
+    const axis = svg("g", { class: "axis" }, root);
+    for (const t of ticks) {
+      svg("line", { x1: m.left + sx(t), x2: m.left + sx(t), y1: m.top, y2: height - m.bottom, stroke: css(t === 0 ? "--axis" : "--grid"), "stroke-width": 1 }, axis);
+      svg("text", { x: m.left + sx(t), y: height - 8, "text-anchor": "middle" }, axis).textContent = nf0.format(t);
+    }
+    rows.forEach((r, i) => {
+      const y = m.top + i * rowH, barH = 14, by = y + (rowH - barH) / 2;
+      rowLabel(root, r, m.left - 10, by + barH / 2 + 4, m.left - 18);
+      const visible = parts.filter(p => r[p.key] > 0);
+      let x = m.left;
+      visible.forEach((p, j) => {
+        const w = sx(r[p.key]), last = j === visible.length - 1, segW = Math.max(0, w - (last ? 0 : 2));
+        svg("path", { d: last ? barPath(x, by, segW, barH) : `M${x},${by}H${x + segW}V${by + barH}H${x}Z`, fill: css(p.color) }, root);
+        x += w;
+      });
+      svg("text", { x: m.left + sx(total(r)) + 8, y: by + barH / 2 + 4, class: "tick" }, root).textContent = nf0.format(total(r));
+      hoverRow(root, 0, y, width, rowH, event => showTip(event, `${r.n}. ${r.label}`,
+        parts.map(p => ({ color: css(p.color), box: true, label: p.label, value: nf0.format(r[p.key]) }))));
+    });
+  };
+  requestAnimationFrame(draw);
+  box.redraw = draw;
+  charts.push(box);
+  return box;
+}
+
+/* ---------- quest time: players' median with their middle half, the bot's time beside it ---------- */
+function timeChart(rows, opts) {
+  const box = el("div", { class: "chart" });
+  const draw = () => {
+    box.replaceChildren();
+    const width = Math.max(300, box.clientWidth || 700);
+    const { m, rowH, height } = rowFrame(rows, { right: 24 }, width);
+    const values = rows.flatMap(r => [r.p75, r.median, r.bot]).filter(v => v != null);
+    const ticks = niceTicks(Math.max(...values, 1), 6), maxV = ticks[ticks.length - 1];
+    const sx = v => m.left + (v / maxV) * (width - m.left - m.right);
+    const root = svg("svg", { viewBox: `0 0 ${width} ${height}`, height, role: "img", "aria-label": opts.label });
+    box.appendChild(root);
+    const axis = svg("g", { class: "axis" }, root);
+    for (const t of ticks) {
+      svg("line", { x1: sx(t), x2: sx(t), y1: m.top, y2: height - m.bottom, stroke: css(t === 0 ? "--axis" : "--grid"), "stroke-width": 1 }, axis);
+      svg("text", { x: sx(t), y: height - 8, "text-anchor": "middle" }, axis).textContent = nfTick.format(t);
+    }
+    const players = css("--s-players"), bot = css("--s-human"), ring = css("--surface");
+    rows.forEach((r, i) => {
+      const y = m.top + i * rowH, cy = y + rowH / 2;
+      rowLabel(root, r, m.left - 10, cy + 4, m.left - 18);
+      if (r.p25 != null && r.p75 != null && r.p75 > r.p25)
+        svg("line", { x1: sx(r.p25), x2: sx(r.p75), y1: cy, y2: cy, stroke: players, "stroke-width": 2, "stroke-linecap": "round" }, root);
+      if (r.bot != null) svg("circle", { cx: sx(r.bot), cy, r: 4.5, fill: bot, stroke: ring, "stroke-width": 2 }, root);
+      if (r.median != null) svg("circle", { cx: sx(r.median), cy, r: 4.5, fill: players, stroke: ring, "stroke-width": 2 }, root);
+      hoverRow(root, 0, y, width, rowH, event => showTip(event, `${r.n}. ${r.label}`, r.tip));
+    });
+  };
+  requestAnimationFrame(draw);
+  box.redraw = draw;
+  charts.push(box);
+  return box;
+}
+
+/* ---------- page ---------- */
+let charts = [];
+let shownAt = null;
+
+const localTime = utc => {
+  if (!utc) return "—";
+  const d = new Date(utc.replace(" ", "T") + "Z");
+  return isNaN(d) ? utc : d.toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+};
+const ENDING_TEXT = { stuck: "не выполнил задание", completed: "выполнил, не забрал награду", campaign: "прошёл кампанию" };
+
+function botRuns() {
+  const data = window.BOT_DATA;
+  return data && data.latest ? data.latest.runs : [];
+}
+function botRun(id) { return botRuns().find(r => r.id === id) || null; }
+function botQuestSeconds(run, level) {
+  const q = run && run.quests.find(o => o.level === level);
+  return q ? (q.doneMs - q.startMs) / 1000 : null;
+}
+function questTitle(level, id) {
+  for (const r of botRuns()) { const q = r.quests.find(o => o.level === level); if (q) return q.title; }
+  return id || `задание ${level}`;
+}
+
+function emptyState(info) {
+  return el("section", { class: "card" }, el("h2", {}, "Данных об игроках пока нет"),
+    el("div", { class: "empty" },
+      info && info.excludedSessions ? el("p", {}, `Тестовых сессий отсеяно: ${info.excludedSessions} (установки из tools/stats/test-users.txt).`) : null,
+      el("ol", {},
+        el("li", {}, "Unity Dashboard → Analytics → SQL Data Explorer, окружение production."),
+        el("li", {}, "Вставить запрос из ", el("code", {}, "tools/stats/players-export.sql"), ", нажать Run, затем Export."),
+        el("li", {}, "Положить CSV в ", el("code", {}, "unity/TrollStategy/Builds/Stats/players/exports"), "."),
+        el("li", {}, "Запустить ", el("code", {}, "python tools/stats/players.py"), " — страница обновится сама."))));
+}
+
+function render() {
+  charts = [];
+  const app = document.getElementById("app");
+  const data = window.PLAYER_DATA;
+  const meta = document.getElementById("meta");
+  if (!data) {
+    put(meta, el("span", {}, "нет players-data.js"));
+    put(app, emptyState(null));
+    return;
+  }
+  const { info, totals } = data;
+  shownAt = info.generatedAt + "|" + (window.BOT_DATA && window.BOT_DATA.latest ? window.BOT_DATA.latest.info.generatedAt : "");
+  put(meta,
+    el("span", {}, "собрано " + new Date(info.generatedAt).toLocaleString("ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })),
+    el("span", {}, `выгрузок ${info.exports.length}, событий ${nf0.format(info.events)}`),
+    info.firstEvent ? el("span", {}, `игры с ${localTime(info.firstEvent)} по ${localTime(info.lastEvent)}`) : null,
+    info.excludedSessions ? el("span", {}, `тестовых сессий отсеяно ${info.excludedSessions}`) : null,
+    info.since ? el("span", {}, `с ${info.since}`) : null);
+  if (!totals.sessions) {
+    put(app, emptyState(info));
+    return;
+  }
+
+  const human = botRun("human"), typical = botRun("typical");
+  const quests = data.quests.map(q => ({ ...q, label: questTitle(q.level, q.id), n: q.level }));
+
+  // the quest most games end on: the biggest step down the funnel
+  let markIndex = -1, worst = 0;
+  quests.forEach((q, i) => {
+    const ended = q.endedStuck + q.endedCompleted;
+    if (ended > worst) { worst = ended; markIndex = i; }
+  });
+
+  const kpis = el("div", { class: "kpis" },
+    tile("Игроков", nf0.format(totals.players), totals.returningPlayers ? `вернулись ${totals.returningPlayers}` : "никто не вернулся"),
+    tile("Сессий", nf0.format(totals.sessions), "одна сессия — одна попытка: сохранений нет"),
+    tile("Прошли кампанию", nf0.format(totals.campaignCompleted), `${pct(totals.campaignCompleted, totals.sessions)} сессий`),
+    tile("Последнее задание", totals.medianLastLevel == null ? "—" : nf1.format(totals.medianLastLevel), "медиана по сессиям"),
+    tile("В игре", totals.medianMinutes == null ? "—" : nf1.format(totals.medianMinutes), "время колонии, медиана", "мин"));
+
+  // funnel
+  const funnelRows = quests.map(q => ({ n: q.n, label: q.label, value: q.reached, ended: q.endedStuck + q.endedCompleted, tip: [
+    { color: css("--s-players"), box: true, label: "сессий начали", value: nf0.format(q.reached) },
+    { color: "transparent", label: "выполнили", value: nf0.format(q.completed) },
+    { color: css("--e-stuck"), box: true, label: "закончили, не выполнив", value: nf0.format(q.endedStuck) },
+    { color: css("--e-unclaimed"), box: true, label: "закончили, не забрав награду", value: nf0.format(q.endedCompleted) }] }));
+  const funnel = funnelChart(funnelRows, { label: "Сколько сессий дошло до каждого задания", color: "--s-players", markIndex });
+  const funnelTable = makeTable([
+    { label: "#", value: q => q.n }, { label: "Задание", value: q => q.label },
+    { label: "Начали", num: true, value: q => nf0.format(q.reached) }, { label: "% от всех", num: true, value: q => pct(q.reached, quests[0].reached) },
+    { label: "Выполнили", num: true, value: q => nf0.format(q.completed) },
+    { label: "Закончили, не выполнив", num: true, value: q => nf0.format(q.endedStuck) },
+    { label: "Не забрали награду", num: true, value: q => nf0.format(q.endedCompleted) }], quests);
+
+  // endings
+  const ended = quests.filter(q => q.endedStuck + q.endedCompleted > 0);
+  const endingsBody = ended.length
+    ? el("div", {}, legend(ENDINGS.map(e => ({ label: e.label, color: css(e.color) })), true),
+        endingsChart(ended, ENDINGS, { label: "На каком задании закончились сессии" }))
+    : el("p", { class: "empty" }, "Все сессии прошли кампанию.");
+  const endingsTable = makeTable([{ label: "#", value: q => q.n }, { label: "Задание", value: q => q.label },
+    ...ENDINGS.map(e => ({ label: e.label, num: true, value: q => nf0.format(q[e.key]) }))], ended);
+
+  // quest time against the bots
+  const timeRows = quests.filter(q => q.times.n > 0 || botQuestSeconds(human, q.level) != null).map(q => {
+    const bot = botQuestSeconds(human, q.level), ratio = q.times.median != null && bot > 0 ? q.times.median / bot : null;
+    return {
+      n: q.n, label: q.label, median: minOfSec(q.times.median), p25: minOfSec(q.times.p25), p75: minOfSec(q.times.p75),
+      bot: minOfSec(bot), typical: botQuestSeconds(typical, q.level), count: q.times.n, ratio, raw: q,
+      tip: [
+        { color: css("--s-players"), label: `игроки, медиана (${q.times.n} сесс.)`, value: fmtSec(q.times.median) + " мин" },
+        { color: "transparent", label: "половина игроков — от и до", value: q.times.n ? `${fmtSec(q.times.p25)}–${fmtSec(q.times.p75)}` : "—" },
+        { color: css("--s-human"), label: "бот «Живой игрок»", value: fmtSec(bot) + " мин" },
+        { color: "transparent", label: "бот «Обычный»", value: fmtSec(botQuestSeconds(typical, q.level)) + " мин" },
+        { color: "transparent", label: "к живому игроку", value: ratio == null ? "—" : "×" + nf1.format(ratio) }]
+    };
+  });
+  const timeBody = !human && !timeRows.some(r => r.count)
+    ? el("p", { class: "empty" }, "Нет ни времени игроков, ни прогона ботов.")
+    : el("div", {},
+        legend([{ label: "игроки: точка — медиана, линия — средняя половина игроков", color: css("--s-players") },
+                ...(human ? [{ label: "бот «Живой игрок»", color: css("--s-human") }] : [])]),
+        timeChart(timeRows, { label: "Минуты колонии на задание: игроки и бот" }),
+        human ? null : el("p", { class: "empty" }, "Прогона ботов нет: запустите TrollStrategy → Bots → Run Campaign Bots."));
+  const timeTable = makeTable([
+    { label: "#", value: r => r.n }, { label: "Задание", value: r => r.label },
+    { label: "Сессий", num: true, value: r => r.count },
+    { label: "Игроки, медиана", num: true, value: r => fmtSec(r.raw.times.median) },
+    { label: "Половина игроков", num: true, value: r => r.count ? `${fmtSec(r.raw.times.p25)}–${fmtSec(r.raw.times.p75)}` : "—" },
+    { label: "Живой игрок", num: true, value: r => fmtSec(r.bot == null ? null : r.bot * 60) },
+    { label: "Обычный", num: true, value: r => fmtSec(r.typical) },
+    { label: "× к живому", num: true, value: r => r.ratio == null ? "—"
+        : r.ratio >= SLOW_RATIO ? el("span", { class: "flag" }, "⚠ ×" + nf1.format(r.ratio)) : "×" + nf1.format(r.ratio) }], timeRows);
+
+  // battles
+  const battleBody = data.battles.length
+    ? el("div", { class: "tablewrap", style: "margin-top:0" }, makeTable([
+        { label: "Миссия", value: b => b.missionId }, { label: "Задание", num: true, value: b => b.levels || "—" },
+        { label: "Боёв", num: true, value: b => nf0.format(b.fought) }, { label: "Побед", num: true, value: b => `${nf0.format(b.won)} (${pct(b.won, b.fought)})` },
+        { label: "Погибло за бой", num: true, value: b => nf1.format(b.fallenAvg) }], data.battles))
+    : el("p", { class: "empty" }, "Боёв ещё не было.");
+
+  // the colony over time against the live-player bot, while enough games were still playing for a median to mean
+  // something, and the bot up to the same minute
+  const minSessions = Math.max(3, Math.ceil(totals.sessions * 0.05));
+  const colony = data.colony.filter(c => c.sessions >= minSessions);
+  const lastMinute = Math.max(...colony.map(c => c.minute), 1);
+  const colonyChart = (field, botField, label) => {
+    const series = [{ id: "players", label: "игроки", color: css("--s-players"),
+      points: colony.filter(c => c[field] != null).map(c => ({ x: c.minute, y: c[field] })) }];
+    if (human) series.push({ id: "human", label: "Живой игрок", color: css("--s-human"),
+      points: human.samples.filter(s => s.atMs / 60000 <= lastMinute).map(s => ({ x: s.atMs / 60000, y: s[botField] })) });
+    return lineChart(series, { label, endLabels: true, maxX: lastMinute, height: 200,
+      tipTitle: x => `${nf1.format(x)} мин колонии`, tipValue: v => nf0.format(v) });
+  };
+  const colonyLegend = legend([{ label: "игроки, медиана", color: css("--s-players") },
+    ...(human ? [{ label: "бот «Живой игрок»", color: css("--s-human") }] : [])]);
+  const colonyTable = makeTable([
+    { label: "Минута", num: true, value: c => c.minute }, { label: "Сессий", num: true, value: c => c.sessions },
+    { label: "Золото", num: true, value: c => c.gold == null ? "—" : nf0.format(c.gold) },
+    { label: "Построек", num: true, value: c => c.buildings == null ? "—" : nf0.format(c.buildings) },
+    { label: "Существ", num: true, value: c => c.units == null ? "—" : nf0.format(c.units) }], data.colony);
+  const colonyBody = colony.length
+    ? el("div", {}, colonyLegend, el("div", { class: "grid3" },
+        el("div", {}, el("h2", {}, "Золото"), colonyChart("gold", "gold", "Золото в казне")),
+        el("div", {}, el("h2", {}, "Постройки"), colonyChart("buildings", "buildings", "Построек")),
+        el("div", {}, el("h2", {}, "Существа"), colonyChart("units", "population", "Существ"))))
+    : el("p", { class: "empty" }, data.colony.length
+        ? `Слишком мало сессий на каждую минуту (нужно хотя бы ${minSessions}); числа — в таблице.`
+        : "Нет сердцебиений: ни одна сессия не прожила минуту колонии.");
+
+  const versionsTable = makeTable([
+    { label: "Версия", value: v => v.version }, { label: "Впервые", value: v => localTime(v.firstSeen) },
+    { label: "Сессий", num: true, value: v => nf0.format(v.sessions) }, { label: "Игроков", num: true, value: v => nf0.format(v.players) },
+    { label: "Последнее задание, медиана", num: true, value: v => v.medianLastLevel == null ? "—" : nf1.format(v.medianLastLevel) },
+    { label: "Прошли кампанию", num: true, value: v => nf0.format(v.campaignCompleted) }], data.versions);
+
+  const sessionsTable = makeTable([
+    { label: "Начало", value: s => localTime(s.start) }, { label: "Игрок", value: s => s.user },
+    { label: "Версия", value: s => s.version || "—" }, { label: "Страна", value: s => s.country || "—" },
+    { label: "Задание", num: true, value: s => s.lastLevel },
+    { label: "", value: s => questTitle(s.lastLevel, s.lastQuest) },
+    { label: "Итог", value: s => ENDING_TEXT[s.ending] || s.ending },
+    { label: "Мин", num: true, value: s => nf1.format(s.minutes) },
+    { label: "Бои", num: true, value: s => s.battles ? `${s.won}/${s.battles}` : "—" }], data.sessions);
+
+  const historyTable = makeTable([
+    { label: "Собрано", value: h => new Date(h.generatedAt).toLocaleString("ru-RU") },
+    { label: "Игры по", value: h => localTime(h.lastEvent) },
+    { label: "Сессий", num: true, value: h => nf0.format(h.sessions) }, { label: "Игроков", num: true, value: h => nf0.format(h.players) },
+    { label: "Прошли", num: true, value: h => nf0.format(h.campaignCompleted) },
+    { label: "Последнее задание", num: true, value: h => h.medianLastLevel == null ? "—" : nf1.format(h.medianLastLevel) }],
+    (data.history || []).slice().reverse());
+
+  put(app,
+    kpis,
+    card("Воронка", "Сколько сессий дошло до каждого задания. Самая большая ступенька вниз — задание, на котором уходят.",
+      funnel, funnelTable),
+    card("Где заканчиваются сессии", "Последнее задание каждой сессии. «Не выполнил» — не понял, что делать; «не забрал награду» — не нашёл кнопку.",
+      endingsBody, ended.length ? endingsTable : null),
+    card("Время на задание: игроки и бот", `Минуты колонии от начала задания до выполнения целей. Если игроки тратят в ${SLOW_RATIO}+ раза больше бота «Живой игрок» (он уже платит за клики и чтение), задание скорее непонятное, чем долгое.`,
+      timeBody, timeTable),
+    el("div", { class: "grid2" },
+      card("Бои", "Чем кончаются бои у игроков.", battleBody, null),
+      card("Версии", "Те же числа по сборкам: что дала правка.", el("div", { class: "tablewrap", style: "margin-top:0" }, versionsTable), null)),
+    card("Колония по минутам", `Медиана по сессиям, которые ещё играли на этой минуте; на графике минуты, где их хотя бы ${minSessions}, все минуты — в таблице. Бот показан до той же минуты.`,
+      colonyBody, data.colony.length ? colonyTable : null),
+    card("Сессии", `Последние ${data.sessions.length}, новые сверху.`, el("div", { class: "tablewrap", style: "margin-top:0" }, sessionsTable), null),
+    card("Выгрузки", "По строке на каждую сборку страницы с новыми данными.", el("div", { class: "tablewrap", style: "margin-top:0" }, historyTable), null));
+}
+
+function tile(title, value, line, unit) {
+  return el("div", { class: "tile" }, el("div", { class: "who" }, title),
+    el("div", { class: "value" }, value, unit ? el("small", {}, unit) : null), el("div", { class: "line" }, line));
+}
+
+/* ---------- theme: auto / light / dark, remembered per viewer ---------- */
+const themeButton = document.getElementById("theme");
+const THEMES = ["auto", "light", "dark"], THEME_NAMES = { auto: "авто", light: "светлая", dark: "тёмная" };
+function applyTheme(theme) {
+  if (theme === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", theme);
+  themeButton.textContent = "Тема: " + THEME_NAMES[theme];
+}
+let theme = "auto";
+try { theme = localStorage.getItem("stats-theme") || "auto"; } catch (e) { /* storage blocked */ }
+const asked = new URLSearchParams(location.search).get("theme");
+if (asked) theme = asked;
+if (!THEMES.includes(theme)) theme = "auto";
+applyTheme(theme);
+themeButton.addEventListener("click", () => {
+  theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+  try { localStorage.setItem("stats-theme", theme); } catch (e) { /* storage blocked */ }
+  applyTheme(theme);
+  render();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (theme === "auto") render(); });
+
+/* ---------- redraw on resize, reload the data when a new run writes it ---------- */
+let resizeTimer = 0;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => charts.forEach(c => c.redraw()), 120);
+});
+
+const live = document.getElementById("live");
+function reload(src) {
+  return new Promise(resolve => {
+    const script = document.createElement("script");
+    script.src = src + "?t=" + Date.now();
+    script.onload = () => { script.remove(); resolve(true); };
+    script.onerror = () => { script.remove(); resolve(false); };
+    document.head.appendChild(script);
+  });
+}
+async function poll() {
+  const ok = await reload("players-data.js");
+  await reload("../bots/bots-data.js");
+  live.classList.toggle("stale", !ok);
+  const data = window.PLAYER_DATA, bots = window.BOT_DATA;
+  const at = (data ? data.info.generatedAt : "") + "|" + (bots && bots.latest ? bots.latest.info.generatedAt : "");
+  if (at !== shownAt) render();
+}
+render();
+setInterval(poll, 5000);
+</script>
+</body>
+</html>

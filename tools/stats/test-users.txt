@@ -1,0 +1,4 @@
+# Analytics user ids of the developers' own installs: tools/stats/players.py leaves their sessions out
+# (--include-test-users keeps them). The id is USER_ID in an export, or userID in its EVENT_JSON.
+4335b274-e6aa-72f4-18a8-745af5626cba  # Windows build on the dev machine, test runs since 2026-10-02
+3b335796-ba7b-bdf4-cb93-1c5fc56cd59d  # editor Play Mode check of 2026-10-04 (bot session)
