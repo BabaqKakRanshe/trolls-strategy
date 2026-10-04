@@ -36,24 +36,219 @@ MonoBehaviour:
     - _resource: 11
       _amount: 1
     _work: 6
-    _minLevel: 2
+    _minLevel: 1
     _extras: []
-    _failChancePercent: 5
+    _failChancePercent: 10
     _failOutputs:
     - _resource: 18
       _amount: 1
   - _inputs:
-    - _resource: 7
+    - _resource: 29
       _amount: 1
     - _resource: 10
       _amount: 1
     _outputs:
-    - _resource: 11
+    - _resource: 40
       _amount: 1
     _work: 6
     _minLevel: 1
     _extras: []
-    _failChancePercent: 15
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 31
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 41
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 20
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 42
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 32
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 43
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 33
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 44
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 34
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 45
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 30
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 46
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 35
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 47
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 8
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 48
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 36
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 49
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 37
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 50
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 38
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 51
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 9
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 52
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 39
+      _amount: 1
+    - _resource: 10
+      _amount: 1
+    _outputs:
+    - _resource: 53
+      _amount: 1
+    _work: 6
+    _minLevel: 1
+    _extras: []
+    _failChancePercent: 10
     _failOutputs:
     - _resource: 18
       _amount: 1

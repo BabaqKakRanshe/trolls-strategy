@@ -265,20 +265,24 @@
 "v": "de {0} a {1}"
 },
 {
-"k": ", до {0} рабочих",
-"v": ", até {0} trabalhadores"
+"k": "Хранит трофеи арены",
+"v": "Guarda os troféus da arena"
 },
 {
-"k": ", хранит сырьё",
-"v": ", guarda matérias-primas"
+"k": "Хранит сырьё",
+"v": "Armazena matérias-primas"
 },
 {
-"k": ", продаёт товары",
-"v": ", vende mercadorias"
+"k": "Продаёт товары",
+"v": "Vende bens"
 },
 {
-"k": ", снаряжение отряда",
-"v": ", equipamento do esquadrão"
+"k": "Снаряжение отряда",
+"v": "Equipamento do esquadrão"
+},
+{
+"k": "{0}×{1}, до {2} рабочих",
+"v": "{0}×{1}, até {2} trabalhadores"
 },
 {
 "k": "С {0} уровня: ",
@@ -493,12 +497,8 @@
 "v": "Lote comprado e subindo das nuvens. Limpe-o para construir."
 },
 {
-"k": "Расчистка началась: деревья и камни уберут за ",
-"v": "A limpeza começou: árvores e pedras serão removidas em"
-},
-{
-"k": " с.",
-"v": " s."
+"k": "Расчистка началась: деревья и камни уберут за {0} с.",
+"v": "A limpeza começou: árvores e pedras serão removidas em {0} s."
 },
 {
 "k": "Участки в рамке продаются: следующий за {0} зол. Своя дикая земля расчищается кликом.",
@@ -1157,14 +1157,6 @@
 "v": "Vão para a batalha até {0} combatentes. Quem levar, você escolhe antes da luta."
 },
 {
-"k": "Уровень {0}. Побед: {1}",
-"v": "Nível {0}. Vitórias: {1}"
-},
-{
-"k": "Уровень {0}",
-"v": "Nível {0}"
-},
-{
 "k": "золота за первую победу",
 "v": "ouro pela primeira vitória"
 },
@@ -1173,12 +1165,16 @@
 "v": "ouro por vitória"
 },
 {
-"k": "Улучшения бараков делают отряд сильнее",
-"v": "As melhorias do quartel deixam o esquadrão mais forte"
-},
-{
 "k": "Отдых {0}",
 "v": "Descanso {0}"
+},
+{
+"k": "Уровень {0}. Побед: {1}",
+"v": "Nível {0}. Vitórias: {1}"
+},
+{
+"k": "Уровень {0}",
+"v": "Nível {0}"
 },
 {
 "k": "Побед: {0}. Можно в бой",
@@ -1203,6 +1199,10 @@
 {
 "k": "+{0} золота",
 "v": "+{0} de ouro"
+},
+{
+"k": "ждут в бараках",
+"v": "esperam no quartel"
 },
 {
 "k": "арена, ур. {0}",
@@ -1377,6 +1377,14 @@
 "v": "Se algo der errado, pressione F8 → “Enviar logs” ou escreva para mim."
 },
 {
+"k": "Есть в здании",
+"v": "No edifício"
+},
+{
+"k": "Все товары",
+"v": "Todos os bens"
+},
+{
 "k": "Куда носить →",
 "v": "Para onde levar →"
 },
@@ -1461,12 +1469,16 @@
 "v": "+{0}% de recompensa da arena por nível"
 },
 {
+"k": "Подробнее",
+"v": "Saiba mais"
+},
+{
 "k": "Уровень {0}, {1}×{2}",
 "v": "Nível {0}, {1}×{2}"
 },
 {
-"k": "Рецепт",
-"v": "Receita"
+"k": "Рецепты, кто здесь работает быстрее и цены уровней.",
+"v": "Receitas, quem trabalha mais rápido aqui e os preços dos níveis."
 },
 {
 "k": "Запас",
@@ -1497,8 +1509,16 @@
 "v": "Guarda matérias-primas e semiacabados dos carregadores."
 },
 {
-"k": "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене.",
-"v": "Aqui descansam as criaturas livres. As melhorias do quartel deixam o esquadrão mais forte na arena."
+"k": "Арена",
+"v": "Arena"
+},
+{
+"k": "уровень {0}",
+"v": "nível {0}"
+},
+{
+"k": "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене. Сюда же приходят трофеи арены: носильщики унесут их на склад экипировки, к зачарователю или на рынок.",
+"v": "Aqui descansam as criaturas livres. As melhorias do quartel deixam o esquadrão mais forte na arena. Os troféus da arena também chegam aqui: os carregadores os levam ao arsenal, ao encantador ou ao mercado."
 },
 {
 "k": "Улучшения гильдии действуют на всех носильщиков колонии сразу.",
@@ -1543,6 +1563,10 @@
 {
 "k": "нельзя снести",
 "v": "não pode ser demolido"
+},
+{
+"k": "Работа, шаг, груз, бой и любимые здания этого существа.",
+"v": "Trabalho, passo, carga, combate e edifícios favoritos desta criatura."
 },
 {
 "k": "Носит за ходку",
@@ -1813,6 +1837,22 @@
 "v": "{0} de {1}"
 },
 {
+"k": "Каждый предмет +",
+"v": "Cada item +"
+},
+{
+"k": "Брак {0}%",
+"v": "Defeito {0}%"
+},
+{
+"k": "Откроется, когда здание станет {0}-го уровня",
+"v": "Abre quando o edifício chegar ao nível {0}"
+},
+{
+"k": "ур. {0}",
+"v": "nív. {0}"
+},
+{
 "k": "Обучение: уровень {0} пройден",
 "v": "Tutorial: nível {0} concluído"
 },
@@ -1855,10 +1895,6 @@
 {
 "k": "{0}%, с {1} уровня",
 "v": "{0}%, a partir do nível {1}"
-},
-{
-"k": "Брак {0}%",
-"v": "Defeito {0}%"
 },
 {
 "k": "Других рецептов: {0}, они в карточке здания",
@@ -1931,10 +1967,6 @@
 {
 "k": "Клетки поля и пути носильщиков.",
 "v": "Quadrados do mapa e rotas dos carregadores."
-},
-{
-"k": "Арена",
-"v": "Arena"
 },
 {
 "k": "Уровни арены: победа открывает следующий, пройденный можно повторять ради золота. ",
@@ -2011,6 +2043,10 @@
 {
 "k": "Улучшения",
 "v": "Melhorias"
+},
+{
+"k": "Найти: товар, здание, существо",
+"v": "Buscar: bem, edifício, criatura"
 },
 {
 "k": "Ничего не нашлось",
@@ -2153,6 +2189,14 @@
 "v": "No catálogo desde o início."
 },
 {
+"k": "рабочих",
+"v": "trabalhadores"
+},
+{
+"k": "Рецепты",
+"v": "Receitas"
+},
+{
 "k": "Быстрее работают",
 "v": "Trabalham mais rápido"
 },
@@ -2173,10 +2217,6 @@
 "v": "Nível {0}: {1} de {2}"
 },
 {
-"k": "уровень {0}",
-"v": "nível {0}"
-},
-{
 "k": "Первая победа: {0}–{1} золота. Повтор: {2}–{3}.",
 "v": "Primeira vitória: {0}–{1} de ouro. Repetição: {2}–{3}."
 },
@@ -2191,6 +2231,10 @@
 {
 "k": "везде одинаково",
 "v": "igual em todo lugar"
+},
+{
+"k": "Подробнее в справочнике",
+"v": "Mais no manual"
 },
 {
 "k": "{0} зол.",
@@ -2277,6 +2321,98 @@
 "v": "Machado de batalha"
 },
 {
+"k": "Стальной меч",
+"v": "Espada de aço"
+},
+{
+"k": "Зачарованный стальной меч",
+"v": "Espada de aço encantada"
+},
+{
+"k": "Копьё",
+"v": "Lança"
+},
+{
+"k": "Зачарованное копьё",
+"v": "Lança encantada"
+},
+{
+"k": "Лук",
+"v": "Arco"
+},
+{
+"k": "Зачарованный лук",
+"v": "Arco encantado"
+},
+{
+"k": "Боевой молот",
+"v": "Martelo de guerra"
+},
+{
+"k": "Зачарованный боевой молот",
+"v": "Martelo de guerra encantado"
+},
+{
+"k": "Кожаная броня",
+"v": "Armadura de couro"
+},
+{
+"k": "Зачарованная кожаная броня",
+"v": "Armadura de couro encantada"
+},
+{
+"k": "Кольчуга",
+"v": "Cota de malha"
+},
+{
+"k": "Зачарованная кольчуга",
+"v": "Cota de malha encantada"
+},
+{
+"k": "Стальная броня",
+"v": "Armadura de aço"
+},
+{
+"k": "Зачарованная стальная броня",
+"v": "Armadura de aço encantada"
+},
+{
+"k": "Шлем",
+"v": "Elmo"
+},
+{
+"k": "Зачарованный шлем",
+"v": "Elmo encantado"
+},
+{
+"k": "Железный щит",
+"v": "Escudo de ferro"
+},
+{
+"k": "Зачарованный железный щит",
+"v": "Escudo de ferro encantado"
+},
+{
+"k": "Зачарованный ржавый меч",
+"v": "Espada enferrujada encantada"
+},
+{
+"k": "Зачарованный боевой топор",
+"v": "Machado de batalha encantado"
+},
+{
+"k": "Зачарованная латаная броня",
+"v": "Armadura remendada encantada"
+},
+{
+"k": "Зачарованная усиленная броня",
+"v": "Armadura reforçada encantada"
+},
+{
+"k": "Зачарованный деревянный щит",
+"v": "Escudo de madeira encantado"
+},
+{
 "k": "Руда",
 "v": "Minério"
 },
@@ -2339,6 +2475,46 @@
 {
 "k": "Пир",
 "v": "Banquete"
+},
+{
+"k": "Камень",
+"v": "Pedra"
+},
+{
+"k": "Медная руда",
+"v": "Minério de cobre"
+},
+{
+"k": "Медный слиток",
+"v": "Lingote de cobre"
+},
+{
+"k": "Золотая руда",
+"v": "Minério de ouro"
+},
+{
+"k": "Золотой слиток",
+"v": "Lingote de ouro"
+},
+{
+"k": "Сталь",
+"v": "Aço"
+},
+{
+"k": "Шерсть",
+"v": "Lã"
+},
+{
+"k": "Ткань",
+"v": "Tecido"
+},
+{
+"k": "Ржавый меч",
+"v": "Espada enferrujada"
+},
+{
+"k": "Латаная броня",
+"v": "Armadura remendada"
 },
 {
 "k": "Лёгкий шаг",
@@ -2667,10 +2843,6 @@
 {
 "k": "Заработай на рынке золото. Задание повторяется, и цель растёт.",
 "v": "Ganhe ouro no mercado. A tarefa se repete e a meta cresce."
-},
-{
-"k": "Выиграй бой. Повторные победы тоже приносят золото.",
-"v": "Vença uma batalha. As vitórias repetidas também rendem ouro."
 },
 {
 "k": "Оборот",
@@ -3109,10 +3281,6 @@
 "v": "O jogo envia estatísticas anônimas: até qual tarefa os jogadores chegam. Assim descobrimos onde jogar é difícil."
 },
 {
-"k": "Подробнее",
-"v": "Saiba mais"
-},
-{
 "k": "Не отправлять",
 "v": "Não enviar"
 },
@@ -3135,14 +3303,6 @@
 {
 "k": "Склад",
 "v": "Armazém"
-},
-{
-"k": "Латаная броня",
-"v": "Armadura remendada"
-},
-{
-"k": "Ржавый меч",
-"v": "Espada enferrujada"
 },
 {
 "k": "2. Слизни на лугу",
@@ -3277,36 +3437,12 @@
 "v": "Trabalha mais rápido que o goblin e leva mais, mas anda devagar. Forte na batalha."
 },
 {
-"k": "Найти: товар, здание, существо",
-"v": "Buscar: bem, edifício, criatura"
+"k": "Улучшения бараков делают отряд сильнее",
+"v": "As melhorias do quartel deixam o esquadrão mais forte"
 },
 {
-"k": "Хранит трофеи арены",
-"v": "Guarda os troféus da arena"
-},
-{
-"k": "Хранит сырьё",
-"v": "Armazena matérias-primas"
-},
-{
-"k": "Продаёт товары",
-"v": "Vende bens"
-},
-{
-"k": "Снаряжение отряда",
-"v": "Equipamento do esquadrão"
-},
-{
-"k": "{0}×{1}, до {2} рабочих",
-"v": "{0}×{1}, até {2} trabalhadores"
-},
-{
-"k": "рабочих",
-"v": "trabalhadores"
-},
-{
-"k": "Рецепты",
-"v": "Receitas"
+"k": "Выиграй бой. Повторные победы тоже приносят золото.",
+"v": "Vença uma batalha. As vitórias repetidas também rendem ouro."
 }
 ]
 }

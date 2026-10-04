@@ -38,6 +38,17 @@ MonoBehaviour:
     _extras: []
     _failChancePercent: 0
     _failOutputs: []
+  - _inputs:
+    - _resource: 27
+      _amount: 2
+    _outputs:
+    - _resource: 28
+      _amount: 1
+    _work: 3
+    _minLevel: 2
+    _extras: []
+    _failChancePercent: 0
+    _failOutputs: []
   _storageRole: 0
   _storedResources: 
   _slotStackSize: 0

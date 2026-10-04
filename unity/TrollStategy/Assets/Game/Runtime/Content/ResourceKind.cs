@@ -24,6 +24,42 @@ namespace TrollStrategy.Content
         Milk,
         Scrap,
         Feast,
-        BattleAxe
+        BattleAxe,
+        // Vitaria kit 2026-10-02: mine by-products, smeltery metals, wool and cloth
+        Stone,
+        CopperOre,
+        CopperIngot,
+        GoldOre,
+        GoldIngot,
+        Steel,
+        Wool,
+        Cloth,
+        // the arena's trophies, before only starting gear, and the kit's new gear
+        RustySword,
+        PatchedArmor,
+        SteelSword,
+        Spear,
+        Bow,
+        WarHammer,
+        LeatherArmor,
+        Chainmail,
+        SteelArmor,
+        Helmet,
+        IronShield,
+        // the enchanter's work on each of them (the iron sword's is EnchantedSword)
+        EnchantedRustySword,
+        EnchantedSteelSword,
+        EnchantedBattleAxe,
+        EnchantedSpear,
+        EnchantedBow,
+        EnchantedWarHammer,
+        EnchantedPatchedArmor,
+        EnchantedLeatherArmor,
+        EnchantedIronArmor,
+        EnchantedChainmail,
+        EnchantedSteelArmor,
+        EnchantedHelmet,
+        EnchantedWoodenShield,
+        EnchantedIronShield
     }
 }

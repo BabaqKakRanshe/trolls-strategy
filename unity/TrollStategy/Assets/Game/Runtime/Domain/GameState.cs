@@ -119,7 +119,10 @@ namespace TrollStrategy.Domain
         }
     }
 
-    /// <summary>A battle's gold waiting in the colony: the amount it rolled and the range it rolled in.</summary>
+    /// <summary>
+    /// A battle's gold waiting in the colony: the amount it rolled and the range it rolled in, and the trophies
+    /// its wins brought, which go to the barracks when the reward is taken.
+    /// </summary>
     [Serializable]
     public class PendingBattleReward
     {
@@ -128,8 +131,14 @@ namespace TrollStrategy.Domain
         public int MinGold { get; set; }
         public int MaxGold { get; set; }
         public bool FirstWin { get; set; }
+        public Dictionary<ResourceKind, int> Goods { get; set; } = new();
 
-        public PendingBattleReward Clone() => (PendingBattleReward)MemberwiseClone();
+        public PendingBattleReward Clone()
+        {
+            var clone = (PendingBattleReward)MemberwiseClone();
+            clone.Goods = Goods != null ? new Dictionary<ResourceKind, int>(Goods) : new Dictionary<ResourceKind, int>();
+            return clone;
+        }
     }
 
     /// <summary>Repeatable dice for surprise rewards: xorshift over a state kept in the game.</summary>

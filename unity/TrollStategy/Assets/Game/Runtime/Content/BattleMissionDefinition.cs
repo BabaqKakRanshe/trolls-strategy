@@ -45,6 +45,8 @@ namespace TrollStrategy.Content
         [SerializeField, Min(0)] private int _repeatWinGold = 75;
         [Tooltip("Больше всего золота за повторную победу; меньше минимума — всегда минимум.")]
         [SerializeField, Min(0)] private int _repeatWinGoldMax;
+        [Tooltip("Трофеи каждой победы: товары, которые приходят в бараки вместе с золотом.")]
+        [SerializeField] private ResourceAmount[] _winGoods = Array.Empty<ResourceAmount>();
         [SerializeField, Min(0f)] private float _unlockAfterActiveSeconds = 120f;
         [SerializeField, Min(0f)] private float _cooldownActiveSeconds = 120f;
 
@@ -73,6 +75,8 @@ namespace TrollStrategy.Content
         /// <summary>The least gold a repeat win pays; the win rolls up to <see cref="RepeatWinGoldMax"/>.</summary>
         public int RepeatWinGold => _repeatWinGold;
         public int RepeatWinGoldMax => Math.Max(_repeatWinGold, _repeatWinGoldMax);
+        /// <summary>Goods every win here brings to the barracks with its gold: the arena's trophies.</summary>
+        public IReadOnlyList<ResourceAmount> WinGoods => _winGoods ?? Array.Empty<ResourceAmount>();
         public float UnlockAfterActiveSeconds => _unlockAfterActiveSeconds;
         public float CooldownActiveSeconds => _cooldownActiveSeconds;
         public GameObject EnvironmentPrefab => _environmentPrefab;
@@ -151,5 +155,7 @@ namespace TrollStrategy.Content
             _firstWinGoldMax = firstWinGoldMax;
             _repeatWinGoldMax = repeatWinGoldMax;
         }
+
+        public void SetWinGoods(params ResourceAmount[] goods) => _winGoods = goods ?? Array.Empty<ResourceAmount>();
     }
 }

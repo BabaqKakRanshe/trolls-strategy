@@ -265,20 +265,24 @@
 "v": "{0} to {1}"
 },
 {
-"k": ", до {0} рабочих",
-"v": ", up to {0} workers"
+"k": "Хранит трофеи арены",
+"v": "Keeps arena trophies"
 },
 {
-"k": ", хранит сырьё",
-"v": ", stores raw materials"
+"k": "Хранит сырьё",
+"v": "Stores raw goods"
 },
 {
-"k": ", продаёт товары",
-"v": ", sells goods"
+"k": "Продаёт товары",
+"v": "Sells goods"
 },
 {
-"k": ", снаряжение отряда",
-"v": ", squad gear"
+"k": "Снаряжение отряда",
+"v": "The squad's gear"
+},
+{
+"k": "{0}×{1}, до {2} рабочих",
+"v": "{0}×{1}, up to {2} workers"
 },
 {
 "k": "С {0} уровня: ",
@@ -493,12 +497,8 @@
 "v": "Plot bought and rising from the clouds. Clear it to build."
 },
 {
-"k": "Расчистка началась: деревья и камни уберут за ",
-"v": "Clearing started: trees and rocks will be gone in "
-},
-{
-"k": " с.",
-"v": " s."
+"k": "Расчистка началась: деревья и камни уберут за {0} с.",
+"v": "Clearing started: trees and rocks will be gone in {0} s."
 },
 {
 "k": "Участки в рамке продаются: следующий за {0} зол. Своя дикая земля расчищается кликом.",
@@ -1157,14 +1157,6 @@
 "v": "Up to {0} fighters go into battle. You choose who before the fight."
 },
 {
-"k": "Уровень {0}. Побед: {1}",
-"v": "Level {0}. Wins: {1}"
-},
-{
-"k": "Уровень {0}",
-"v": "Level {0}"
-},
-{
 "k": "золота за первую победу",
 "v": "gold for the first win"
 },
@@ -1173,12 +1165,16 @@
 "v": "gold per win"
 },
 {
-"k": "Улучшения бараков делают отряд сильнее",
-"v": "Barracks upgrades make the squad stronger"
-},
-{
 "k": "Отдых {0}",
 "v": "Rest {0}"
+},
+{
+"k": "Уровень {0}. Побед: {1}",
+"v": "Level {0}. Wins: {1}"
+},
+{
+"k": "Уровень {0}",
+"v": "Level {0}"
 },
 {
 "k": "Побед: {0}. Можно в бой",
@@ -1203,6 +1199,10 @@
 {
 "k": "+{0} золота",
 "v": "+{0} gold"
+},
+{
+"k": "ждут в бараках",
+"v": "wait in the barracks"
 },
 {
 "k": "арена, ур. {0}",
@@ -1377,6 +1377,14 @@
 "v": "If something goes wrong, press F8 → “Send logs” or write to me."
 },
 {
+"k": "Есть в здании",
+"v": "In the building"
+},
+{
+"k": "Все товары",
+"v": "All goods"
+},
+{
 "k": "Куда носить →",
 "v": "Carry to →"
 },
@@ -1461,12 +1469,16 @@
 "v": "+{0}% arena reward per level"
 },
 {
+"k": "Подробнее",
+"v": "Learn more"
+},
+{
 "k": "Уровень {0}, {1}×{2}",
 "v": "Level {0}, {1}×{2}"
 },
 {
-"k": "Рецепт",
-"v": "Recipe"
+"k": "Рецепты, кто здесь работает быстрее и цены уровней.",
+"v": "Recipes, who works faster here and the level prices."
 },
 {
 "k": "Запас",
@@ -1497,8 +1509,16 @@
 "v": "Stores raw materials and semi-finished goods from carriers."
 },
 {
-"k": "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене.",
-"v": "Idle creatures rest here. Barracks upgrades make the squad stronger in the arena."
+"k": "Арена",
+"v": "Arena"
+},
+{
+"k": "уровень {0}",
+"v": "level {0}"
+},
+{
+"k": "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене. Сюда же приходят трофеи арены: носильщики унесут их на склад экипировки, к зачарователю или на рынок.",
+"v": "Idle creatures rest here. Barracks upgrades make the squad stronger in the arena. Arena trophies arrive here too: haulers carry them to the gear store, the enchanter or the market."
 },
 {
 "k": "Улучшения гильдии действуют на всех носильщиков колонии сразу.",
@@ -1543,6 +1563,10 @@
 {
 "k": "нельзя снести",
 "v": "can't be demolished"
+},
+{
+"k": "Работа, шаг, груз, бой и любимые здания этого существа.",
+"v": "This creature's work, pace, load, fight and favourite buildings."
 },
 {
 "k": "Носит за ходку",
@@ -1813,6 +1837,22 @@
 "v": "{0} of {1}"
 },
 {
+"k": "Каждый предмет +",
+"v": "Each item +"
+},
+{
+"k": "Брак {0}%",
+"v": "Spoils {0}%"
+},
+{
+"k": "Откроется, когда здание станет {0}-го уровня",
+"v": "Opens when the building reaches level {0}"
+},
+{
+"k": "ур. {0}",
+"v": "lv. {0}"
+},
+{
 "k": "Обучение: уровень {0} пройден",
 "v": "Tutorial: level {0} complete"
 },
@@ -1855,10 +1895,6 @@
 {
 "k": "{0}%, с {1} уровня",
 "v": "{0}%, from level {1}"
-},
-{
-"k": "Брак {0}%",
-"v": "Spoils {0}%"
 },
 {
 "k": "Других рецептов: {0}, они в карточке здания",
@@ -1931,10 +1967,6 @@
 {
 "k": "Клетки поля и пути носильщиков.",
 "v": "Field tiles and the carriers' paths."
-},
-{
-"k": "Арена",
-"v": "Arena"
 },
 {
 "k": "Уровни арены: победа открывает следующий, пройденный можно повторять ради золота. ",
@@ -2011,6 +2043,10 @@
 {
 "k": "Улучшения",
 "v": "Upgrades"
+},
+{
+"k": "Найти: товар, здание, существо",
+"v": "Find: a good, a building, a creature"
 },
 {
 "k": "Ничего не нашлось",
@@ -2153,6 +2189,14 @@
 "v": "In the catalog from the start."
 },
 {
+"k": "рабочих",
+"v": "workers"
+},
+{
+"k": "Рецепты",
+"v": "Recipes"
+},
+{
 "k": "Быстрее работают",
 "v": "Work faster here"
 },
@@ -2173,10 +2217,6 @@
 "v": "Level {0}: {1} of {2}"
 },
 {
-"k": "уровень {0}",
-"v": "level {0}"
-},
-{
 "k": "Первая победа: {0}–{1} золота. Повтор: {2}–{3}.",
 "v": "First win: {0}–{1} gold. Repeat: {2}–{3}."
 },
@@ -2191,6 +2231,10 @@
 {
 "k": "везде одинаково",
 "v": "same everywhere"
+},
+{
+"k": "Подробнее в справочнике",
+"v": "More in the handbook"
 },
 {
 "k": "{0} зол.",
@@ -2277,6 +2321,98 @@
 "v": "Battle axe"
 },
 {
+"k": "Стальной меч",
+"v": "Steel sword"
+},
+{
+"k": "Зачарованный стальной меч",
+"v": "Enchanted steel sword"
+},
+{
+"k": "Копьё",
+"v": "Spear"
+},
+{
+"k": "Зачарованное копьё",
+"v": "Enchanted spear"
+},
+{
+"k": "Лук",
+"v": "Bow"
+},
+{
+"k": "Зачарованный лук",
+"v": "Enchanted bow"
+},
+{
+"k": "Боевой молот",
+"v": "War hammer"
+},
+{
+"k": "Зачарованный боевой молот",
+"v": "Enchanted war hammer"
+},
+{
+"k": "Кожаная броня",
+"v": "Leather armor"
+},
+{
+"k": "Зачарованная кожаная броня",
+"v": "Enchanted leather armor"
+},
+{
+"k": "Кольчуга",
+"v": "Chainmail"
+},
+{
+"k": "Зачарованная кольчуга",
+"v": "Enchanted chainmail"
+},
+{
+"k": "Стальная броня",
+"v": "Steel armor"
+},
+{
+"k": "Зачарованная стальная броня",
+"v": "Enchanted steel armor"
+},
+{
+"k": "Шлем",
+"v": "Helmet"
+},
+{
+"k": "Зачарованный шлем",
+"v": "Enchanted helmet"
+},
+{
+"k": "Железный щит",
+"v": "Iron shield"
+},
+{
+"k": "Зачарованный железный щит",
+"v": "Enchanted iron shield"
+},
+{
+"k": "Зачарованный ржавый меч",
+"v": "Enchanted rusty sword"
+},
+{
+"k": "Зачарованный боевой топор",
+"v": "Enchanted battle axe"
+},
+{
+"k": "Зачарованная латаная броня",
+"v": "Enchanted patched armor"
+},
+{
+"k": "Зачарованная усиленная броня",
+"v": "Enchanted reinforced armor"
+},
+{
+"k": "Зачарованный деревянный щит",
+"v": "Enchanted wooden shield"
+},
+{
 "k": "Руда",
 "v": "Ore"
 },
@@ -2339,6 +2475,46 @@
 {
 "k": "Пир",
 "v": "Feast"
+},
+{
+"k": "Камень",
+"v": "Stone"
+},
+{
+"k": "Медная руда",
+"v": "Copper ore"
+},
+{
+"k": "Медный слиток",
+"v": "Copper ingot"
+},
+{
+"k": "Золотая руда",
+"v": "Gold ore"
+},
+{
+"k": "Золотой слиток",
+"v": "Gold ingot"
+},
+{
+"k": "Сталь",
+"v": "Steel"
+},
+{
+"k": "Шерсть",
+"v": "Wool"
+},
+{
+"k": "Ткань",
+"v": "Cloth"
+},
+{
+"k": "Ржавый меч",
+"v": "Rusty sword"
+},
+{
+"k": "Латаная броня",
+"v": "Patched armor"
 },
 {
 "k": "Лёгкий шаг",
@@ -2667,10 +2843,6 @@
 {
 "k": "Заработай на рынке золото. Задание повторяется, и цель растёт.",
 "v": "Earn gold at the market. The quest repeats and the goal grows."
-},
-{
-"k": "Выиграй бой. Повторные победы тоже приносят золото.",
-"v": "Win a battle. Repeat wins bring gold too."
 },
 {
 "k": "Оборот",
@@ -3109,10 +3281,6 @@
 "v": "The game sends anonymous statistics: which quest players get to. That's how we find where it gets hard to play."
 },
 {
-"k": "Подробнее",
-"v": "Learn more"
-},
-{
 "k": "Не отправлять",
 "v": "Don't send"
 },
@@ -3135,14 +3303,6 @@
 {
 "k": "Склад",
 "v": "Warehouse"
-},
-{
-"k": "Латаная броня",
-"v": "Patched armor"
-},
-{
-"k": "Ржавый меч",
-"v": "Rusty sword"
 },
 {
 "k": "2. Слизни на лугу",
@@ -3277,36 +3437,12 @@
 "v": "Works faster than a goblin and carries more, but walks slowly. Strong in battle."
 },
 {
-"k": "Найти: товар, здание, существо",
-"v": "Find: a good, a building, a creature"
+"k": "Улучшения бараков делают отряд сильнее",
+"v": "Barracks upgrades make the squad stronger"
 },
 {
-"k": "Хранит трофеи арены",
-"v": "Keeps arena trophies"
-},
-{
-"k": "Хранит сырьё",
-"v": "Stores raw goods"
-},
-{
-"k": "Продаёт товары",
-"v": "Sells goods"
-},
-{
-"k": "Снаряжение отряда",
-"v": "The squad's gear"
-},
-{
-"k": "{0}×{1}, до {2} рабочих",
-"v": "{0}×{1}, up to {2} workers"
-},
-{
-"k": "рабочих",
-"v": "workers"
-},
-{
-"k": "Рецепты",
-"v": "Recipes"
+"k": "Выиграй бой. Повторные победы тоже приносят золото.",
+"v": "Win a battle. Repeat wins bring gold too."
 }
 ]
 }

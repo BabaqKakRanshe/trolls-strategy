@@ -85,6 +85,10 @@ namespace TrollStrategy.Editor.Setup
                 foreach (var (kind, count) in roster)
                     for (int n = 0; n < count; n++)
                         enemies.Add(new BattleEnemyStart { Kind = kind, Cell = enemyCells[enemies.Count] });
+                // one more of the level's leading kind from level 2, and another every 6 levels, while the zone has room
+                int extra = level >= 2 ? 1 + (level - 2) / 6 : 0;
+                for (int n = 0; n < extra && enemies.Count < enemyCells.Count; n++)
+                    enemies.Add(new BattleEnemyStart { Kind = roster[0].Kind, Cell = enemyCells[enemies.Count] });
 
                 // the squad grows by one at levels 10 and 20; the barracks add more
                 int squad = 4 + (level >= 10 ? 1 : 0) + (level >= 20 ? 1 : 0);
@@ -97,8 +101,14 @@ namespace TrollStrategy.Editor.Setup
                 int repeatMax = (int)Math.Round(firstMax * 0.6 / 10) * 10;
                 mission.SetTimingAndRewards(level == 1 ? 120f : 0f, 120f, firstMin, repeatMin);
                 mission.SetRewardRanges(firstMax, repeatMax);
-                // enemies grow tougher: +4% health a level, +1 damage every 8 levels, +1 armour every 12
-                mission.SetArena(level, 100 + (level - 1) * 4, (level - 1) / 8, (level - 1) / 12, unlock);
+                // the first level's trophies: a rusty set for every win, so a young colony arms its squad here
+                mission.SetWinGoods(level == 1
+                    ? new[] { new ResourceAmount(ResourceKind.RustySword, 1), new ResourceAmount(ResourceKind.PatchedArmor, 1) }
+                    : Array.Empty<ResourceAmount>());
+                // the arena is hard to win (2026-10-04): past the first fight, which teaches the battle, enemies
+                // have 60% more health and 10% more each level, +1 damage and +1 armour every 4 levels. Four bare
+                // trolls stop at level 5, ironclad ones at 9, the campaign's best squad at about 13 (docs/economy-balance.md §12)
+                mission.SetArena(level, level == 1 ? 100 : 160 + (level - 1) * 10, (level - 1) / 4, (level - 1) / 4, unlock);
                 mission.SetEnvironment(environment);
                 mission.CreateBoard();
                 EditorUtility.SetDirty(mission);

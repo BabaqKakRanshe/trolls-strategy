@@ -483,6 +483,31 @@
     -unity-text-align: middle-center;
 }
 
+/* the arena's trophies under the amount: a picture and a number each, then where they wait */
+.jackpot__trophies {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    min-height: 56px;
+    margin-top: 2px;
+}
+
+.jackpot__trophy-icon {
+    width: 52px;
+    height: 52px;
+}
+
+.jackpot__trophy-count {
+    margin-right: 16px;
+    font-size: 26px;
+    color: var(--ink);
+}
+
+.jackpot__trophy-note {
+    font-size: 19px;
+    color: var(--ink-soft);
+}
+
 .jackpot__claim {
     min-width: 312px;
     min-height: 62px;

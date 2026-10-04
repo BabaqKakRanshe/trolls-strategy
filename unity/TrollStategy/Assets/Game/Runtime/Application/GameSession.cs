@@ -232,7 +232,7 @@ namespace TrollStrategy.Application
                 StartBattleCommand start => BattleApplication.Start(candidate, start, _catalog,
                     _debugBattleAccess),
                 AcknowledgeBattleCommand => BattleApplication.Acknowledge(candidate),
-                ClaimBattleRewardCommand => BattleApplication.ClaimReward(candidate),
+                ClaimBattleRewardCommand => BattleApplication.ClaimReward(candidate, _catalog),
                 _ => ColonySimulation.ApplyCommand(candidate, command, _catalog)
             };
             if (result.Ok)
@@ -488,7 +488,13 @@ namespace TrollStrategy.Application
             string name = pending.MissionId;
             foreach (var mission in _catalog.Missions)
                 if (mission != null && mission.MissionId == pending.MissionId) name = mission.DisplayName;
-            return new BattleRewardSnapshot(name, pending.Gold, pending.MinGold, pending.MaxGold, pending.FirstWin);
+            var trophies = new List<ResourceStack>();
+            if (pending.Goods != null)
+                foreach (ResourceKind resource in Enum.GetValues(typeof(ResourceKind)))
+                    if (pending.Goods.TryGetValue(resource, out int amount) && amount > 0)
+                        trophies.Add(new ResourceStack(resource, ResourceName(resource), amount));
+            return new BattleRewardSnapshot(name, pending.Gold, pending.MinGold, pending.MaxGold, pending.FirstWin,
+                trophies);
         }
 
         private ProgressSnapshot CreateProgressSnapshot()
@@ -669,7 +675,7 @@ namespace TrollStrategy.Application
             switch (building.StorageRole)
             {
                 case StorageRole.Stockpile:
-                    return "Хранит сырьё";
+                    return KeepsOnlyGear(building) ? "Хранит трофеи арены" : "Хранит сырьё";
                 case StorageRole.Market:
                     return "Продаёт товары";
                 case StorageRole.Armory:
@@ -693,6 +699,19 @@ namespace TrollStrategy.Application
             string list = recipes ? DescribeRecipes(building) : string.Empty;
             if (!string.IsNullOrEmpty(list)) lines.Add(list);
             return string.Join("\n", lines);
+        }
+
+        // a stockpile of gear alone is the barracks' trophy shelf, not a store of raw goods
+        private bool KeepsOnlyGear(BuildingDefinition building)
+        {
+            bool any = false;
+            foreach (ResourceKind resource in Enum.GetValues(typeof(ResourceKind)))
+            {
+                if (!building.Stores(resource)) continue;
+                if (_catalog.TryGetResource(resource)?.IsEquipment != true) return false;
+                any = true;
+            }
+            return any;
         }
 
         private string UnitName(UnitKind kind) => (TryUnit(kind)?.DisplayName ?? kind.ToString()).ToLowerInvariant();

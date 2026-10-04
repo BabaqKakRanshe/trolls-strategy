@@ -15,9 +15,9 @@ MonoBehaviour:
   _missionId: mission-11
   _displayName: "11. \u0413\u043D\u043E\u043C\u044C\u044F \u0437\u0430\u0441\u0442\u0430\u0432\u0430"
   _level: 11
-  _enemyHealthPercent: 140
-  _enemyDamageBonus: 1
-  _enemyArmorBonus: 0
+  _enemyHealthPercent: 260
+  _enemyDamageBonus: 2
+  _enemyArmorBonus: 2
   _unlocksUnit: 1
   _unlockUnit: 2
   _width: 9
@@ -87,10 +87,19 @@ MonoBehaviour:
     Cell:
       X: 8
       Y: 4
+  - Kind: 2
+    Cell:
+      X: 7
+      Y: 0
+  - Kind: 2
+    Cell:
+      X: 7
+      Y: 1
   _firstWinGold: 850
   _firstWinGoldMax: 1360
   _repeatWinGold: 510
   _repeatWinGoldMax: 820
+  _winGoods: []
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

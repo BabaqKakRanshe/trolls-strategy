@@ -28,7 +28,9 @@ namespace TrollStrategy.Editor.Setup
             ResourceKind.IronOre, ResourceKind.IronIngot, ResourceKind.Wheat, ResourceKind.AnimalHide,
             ResourceKind.Leather, ResourceKind.Logs, ResourceKind.Planks, ResourceKind.VioletCrystal,
             ResourceKind.Coal, ResourceKind.GoldNugget, ResourceKind.Straw, ResourceKind.GoldenWheat,
-            ResourceKind.Meat, ResourceKind.Milk, ResourceKind.Scrap
+            ResourceKind.Meat, ResourceKind.Milk, ResourceKind.Scrap, ResourceKind.Stone, ResourceKind.CopperOre,
+            ResourceKind.CopperIngot, ResourceKind.GoldOre, ResourceKind.GoldIngot, ResourceKind.Steel, ResourceKind.Wool,
+            ResourceKind.Cloth
         };
 
         [MenuItem("TrollStrategy/Dev/Setup Production Content")]
@@ -49,6 +51,22 @@ namespace TrollStrategy.Editor.Setup
             EnsureEquipment(catalog, "wooden-shield", "Деревянный щит", EquipmentSlot.Armor, 0, 2);
             EnsureEquipment(catalog, "enchanted-sword", "Зачарованный меч", EquipmentSlot.Weapon, 4, 0);
             EnsureEquipment(catalog, "battle-axe", "Боевой топор", EquipmentSlot.Weapon, 3, 1);
+            // the gear of the Vitaria kit 2026-10-02, each piece with its enchanted twin; the rusty sword and the
+            // patched armour are starting gear (their assets keep the starting quantity) and the arena's trophies
+            Gear(catalog, "steel-sword", "Стальной меч", "Зачарованный стальной меч", EquipmentSlot.Weapon, 4, 0);
+            Gear(catalog, "spear", "Копьё", "Зачарованное копьё", EquipmentSlot.Weapon, 1, 1);
+            Gear(catalog, "bow", "Лук", "Зачарованный лук", EquipmentSlot.Weapon, 3, 0);
+            Gear(catalog, "war-hammer", "Боевой молот", "Зачарованный боевой молот", EquipmentSlot.Weapon, 5, 0);
+            Gear(catalog, "leather-armor", "Кожаная броня", "Зачарованная кожаная броня", EquipmentSlot.Armor, 0, 2);
+            Gear(catalog, "chainmail", "Кольчуга", "Зачарованная кольчуга", EquipmentSlot.Armor, 0, 4);
+            Gear(catalog, "steel-armor", "Стальная броня", "Зачарованная стальная броня", EquipmentSlot.Armor, 0, 5);
+            Gear(catalog, "helmet", "Шлем", "Зачарованный шлем", EquipmentSlot.Helmet, 0, 1);
+            Gear(catalog, "iron-shield", "Железный щит", "Зачарованный железный щит", EquipmentSlot.Armor, 0, 3);
+            Enchanted(catalog, "rusty-sword", "Зачарованный ржавый меч", EquipmentSlot.Weapon, 1, 0);
+            Enchanted(catalog, "battle-axe", "Зачарованный боевой топор", EquipmentSlot.Weapon, 3, 1);
+            Enchanted(catalog, "patched-armor", "Зачарованная латаная броня", EquipmentSlot.Armor, 0, 1);
+            Enchanted(catalog, "iron-armor", "Зачарованная усиленная броня", EquipmentSlot.Armor, 0, 3);
+            Enchanted(catalog, "wooden-shield", "Зачарованный деревянный щит", EquipmentSlot.Armor, 0, 2);
 
             catalog.SetResources(new[]
             {
@@ -74,7 +92,42 @@ namespace TrollStrategy.Editor.Setup
                 Resource(icons, ResourceKind.Milk, "Молоко", 6, "milk", "Res_Milk"),
                 Resource(icons, ResourceKind.Scrap, "Лом", 5, "scrap", "Res_Scrap"),
                 Resource(icons, ResourceKind.Feast, "Пир", 50, "feast", "Res_Feast"),
-                Resource(icons, ResourceKind.BattleAxe, "Боевой топор", 85, "battle-axe", "Res_BattleAxe", equipmentId: "battle-axe")
+                Resource(icons, ResourceKind.BattleAxe, "Боевой топор", 85, "battle-axe", "Res_BattleAxe", equipmentId: "battle-axe"),
+                // Vitaria kit 2026-10-02 (docs/economy-balance.md §10): prices by tools/balance/pricing.py, a by-product
+                // counted as raw at 3 gold a unit of work
+                Resource(icons, ResourceKind.Stone, "Камень", 3, "stone", "Res_Stone", "Res_StonePile"),
+                Resource(icons, ResourceKind.CopperOre, "Медная руда", 4, "copper-ore", "Res_Ore_Copper", "Res_OrePile_Copper"),
+                Resource(icons, ResourceKind.CopperIngot, "Медный слиток", 17, "copper-ingot", "Res_Ingot_Copper", "Res_IngotStack_Copper"),
+                Resource(icons, ResourceKind.GoldOre, "Золотая руда", 20, "gold-ore", "Res_Ore_Gold", "Res_OrePile_Gold"),
+                Resource(icons, ResourceKind.GoldIngot, "Золотой слиток", 65, "gold-ingot", "Res_Ingot_Gold", "Res_IngotStack_Gold"),
+                Resource(icons, ResourceKind.Steel, "Сталь", 26, "steel", "Res_Ingot_Steel", "Res_IngotStack_Steel"),
+                Resource(icons, ResourceKind.Wool, "Шерсть", 5, "wool", "Res_Wool"),
+                Resource(icons, ResourceKind.Cloth, "Ткань", 22, "cloth", "Res_Cloth"),
+                Resource(icons, ResourceKind.RustySword, "Ржавый меч", 20, "rusty-sword", "Res_Sword_Rusty", equipmentId: "rusty-sword"),
+                Resource(icons, ResourceKind.PatchedArmor, "Латаная броня", 40, "patched-armor", "Res_Armor_Patched", equipmentId: "patched-armor"),
+                Resource(icons, ResourceKind.SteelSword, "Стальной меч", 80, "steel-sword", "Res_Sword_Steel", equipmentId: "steel-sword"),
+                Resource(icons, ResourceKind.Spear, "Копьё", 35, "spear", "Res_Spear", equipmentId: "spear"),
+                Resource(icons, ResourceKind.Bow, "Лук", 75, "bow", "Res_Bow", equipmentId: "bow"),
+                Resource(icons, ResourceKind.WarHammer, "Боевой молот", 90, "war-hammer", "Res_WarHammer", equipmentId: "war-hammer"),
+                Resource(icons, ResourceKind.LeatherArmor, "Кожаная броня", 60, "leather-armor", "Res_Armor_Leather", equipmentId: "leather-armor"),
+                Resource(icons, ResourceKind.Chainmail, "Кольчуга", 95, "chainmail", "Res_Armor_Chainmail", equipmentId: "chainmail"),
+                Resource(icons, ResourceKind.SteelArmor, "Стальная броня", 130, "steel-armor", "Res_Armor_Steel", equipmentId: "steel-armor"),
+                Resource(icons, ResourceKind.Helmet, "Шлем", 50, "helmet", "Res_Helmet", equipmentId: "helmet"),
+                Resource(icons, ResourceKind.IronShield, "Железный щит", 50, "iron-shield", "Res_Shield_Iron", equipmentId: "iron-shield"),
+                Enchanted(icons, ResourceKind.EnchantedRustySword, "Зачарованный ржавый меч", 85, "rusty-sword", "Res_Sword_Rusty"),
+                Enchanted(icons, ResourceKind.EnchantedSteelSword, "Зачарованный стальной меч", 170, "steel-sword", "Res_Sword_Steel"),
+                Enchanted(icons, ResourceKind.EnchantedBattleAxe, "Зачарованный боевой топор", 175, "battle-axe", "Res_BattleAxe"),
+                Enchanted(icons, ResourceKind.EnchantedSpear, "Зачарованное копьё", 105, "spear", "Res_Spear"),
+                Enchanted(icons, ResourceKind.EnchantedBow, "Зачарованный лук", 160, "bow", "Res_Bow"),
+                Enchanted(icons, ResourceKind.EnchantedWarHammer, "Зачарованный боевой молот", 180, "war-hammer", "Res_WarHammer"),
+                Enchanted(icons, ResourceKind.EnchantedPatchedArmor, "Зачарованная латаная броня", 110, "patched-armor", "Res_Armor_Patched"),
+                Enchanted(icons, ResourceKind.EnchantedLeatherArmor, "Зачарованная кожаная броня", 145, "leather-armor", "Res_Armor_Leather"),
+                Enchanted(icons, ResourceKind.EnchantedIronArmor, "Зачарованная усиленная броня", 180, "iron-armor", "Res_Armor_Iron"),
+                Enchanted(icons, ResourceKind.EnchantedChainmail, "Зачарованная кольчуга", 185, "chainmail", "Res_Armor_Chainmail"),
+                Enchanted(icons, ResourceKind.EnchantedSteelArmor, "Зачарованная стальная броня", 230, "steel-armor", "Res_Armor_Steel"),
+                Enchanted(icons, ResourceKind.EnchantedHelmet, "Зачарованный шлем", 130, "helmet", "Res_Helmet"),
+                Enchanted(icons, ResourceKind.EnchantedWoodenShield, "Зачарованный деревянный щит", 115, "wooden-shield", "Res_Shield_Wood"),
+                Enchanted(icons, ResourceKind.EnchantedIronShield, "Зачарованный железный щит", 125, "iron-shield", "Res_Shield_Iron")
             });
             EditorUtility.SetDirty(catalog);
 
@@ -92,7 +145,11 @@ namespace TrollStrategy.Editor.Setup
                 Recipe(1f, null, Out(ResourceKind.IronOre, 1),
                     Extra(ResourceKind.VioletCrystal, 1, 4),
                     Extra(ResourceKind.Coal, 1, 20, 2),
-                    Extra(ResourceKind.GoldNugget, 1, 2, 3)));
+                    Extra(ResourceKind.GoldNugget, 1, 2, 3),
+                    // the deeper mine finds stone and copper from level 2, gold ore from level 3
+                    Extra(ResourceKind.Stone, 1, 10, 2),
+                    Extra(ResourceKind.CopperOre, 1, 15, 2),
+                    Extra(ResourceKind.GoldOre, 1, 4, 3)));
             Upgrades(BuildingKind.Mine, new[] { 600, 900 }, capacityPerLevel: 25, workersPerLevel: 3, saleBonusPerLevel: 0);
             Storage(BuildingKind.Warehouse, StorageRole.Stockpile, RawAndIntermediateGoods);
             Upgrades(BuildingKind.Warehouse, new[] { 120, 200 }, capacityPerLevel: 250, workersPerLevel: 0, saleBonusPerLevel: 0);
@@ -104,18 +161,33 @@ namespace TrollStrategy.Editor.Setup
             Upgrades(BuildingKind.Armory, new[] { 800, 1800 }, 0, 0, 0);
             // the tutorial's last building before the first battle: about a minute and a half of income by then;
             // its upgrades (squad, health, rest, glory) are bought inside it, the deeper ones with its level
-            Storage(BuildingKind.Barracks, StorageRole.None);
+            // the arena's trophies wait here for haulers: to the armory, the enchanter or the market
+            Storage(BuildingKind.Barracks, StorageRole.Stockpile, ResourceKind.RustySword, ResourceKind.PatchedArmor);
+            Capacity(BuildingKind.Barracks, 20);
             Price(BuildingKind.Barracks, 300);
             Upgrades(BuildingKind.Barracks, new[] { 800, 2000 }, 0, 0, 0);
+            // a building runs the first recipe it has the inputs for, so the deliveries choose: two coal and up make
+            // steel from level 2 (listed first, or the coal ingots would always win), copper and gold ore their ingots
             Producer(BuildingKind.Smeltery, 700, 25, 4,
+                Recipe(3f, In(ResourceKind.IronOre, 2, ResourceKind.Coal, 2), Out(ResourceKind.Steel, 1), minLevel: 2),
                 Recipe(3f, In(ResourceKind.IronOre, 2, ResourceKind.Coal, 1), Out(ResourceKind.IronIngot, 2)),
                 Recipe(2f, In(ResourceKind.IronOre, 2), Out(ResourceKind.IronIngot, 1)),
-                Recipe(1f, In(ResourceKind.Scrap, 2), Out(ResourceKind.IronIngot, 1), minLevel: 2));
+                Recipe(1f, In(ResourceKind.Scrap, 2), Out(ResourceKind.IronIngot, 1), minLevel: 2),
+                Recipe(2f, In(ResourceKind.CopperOre, 2), Out(ResourceKind.CopperIngot, 1), minLevel: 2),
+                Recipe(3f, In(ResourceKind.GoldOre, 2), Out(ResourceKind.GoldIngot, 1), minLevel: 2));
             Upgrades(BuildingKind.Smeltery, new[] { 900, 1500 }, 15, 2, 0);
+            // every piece has its own set of inputs, the wider sets first: what the haulers bring decides what is
+            // forged (steel, cloth, wool and copper each switch to their piece)
             Producer(BuildingKind.Forge, 1500, 10, 4,
+                Spoils(Recipe(7f, In(ResourceKind.Steel, 2, ResourceKind.Leather, 1), Out(ResourceKind.SteelArmor, 1), minLevel: 3), 8),
+                Spoils(Recipe(6f, In(ResourceKind.Steel, 2, ResourceKind.Planks, 1), Out(ResourceKind.WarHammer, 1), minLevel: 3), 8),
+                Spoils(Recipe(6f, In(ResourceKind.Steel, 2), Out(ResourceKind.SteelSword, 1), minLevel: 2), 8),
+                Spoils(Recipe(6f, In(ResourceKind.IronIngot, 3, ResourceKind.Cloth, 1), Out(ResourceKind.Chainmail, 1), minLevel: 2), 8),
+                Spoils(Recipe(4f, In(ResourceKind.Leather, 1, ResourceKind.Wool, 1), Out(ResourceKind.LeatherArmor, 1), minLevel: 2), 8),
                 Spoils(Recipe(5f, In(ResourceKind.IronIngot, 2, ResourceKind.Leather, 1), Out(ResourceKind.IronArmor, 1)), 8),
                 Spoils(Recipe(6f, In(ResourceKind.IronIngot, 1, ResourceKind.Planks, 1, ResourceKind.Leather, 1),
                     Out(ResourceKind.BattleAxe, 1), minLevel: 2), 8),
+                Spoils(Recipe(3f, In(ResourceKind.CopperIngot, 2), Out(ResourceKind.Helmet, 1), minLevel: 2), 8),
                 Spoils(Recipe(4f, In(ResourceKind.IronIngot, 2), Out(ResourceKind.IronSword, 1)), 8));
             Upgrades(BuildingKind.Forge, new[] { 1500, 2500 }, 5, 2, 0);
             // the field harvests in one batch, straw with the grain; a golden ear now and then from level 2
@@ -128,27 +200,43 @@ namespace TrollStrategy.Editor.Setup
                 Recipe(3f, In(ResourceKind.Wheat, 3, ResourceKind.Straw, 1),
                     Out(ResourceKind.AnimalHide, 1, ResourceKind.Meat, 1),
                     Extra(ResourceKind.Milk, 1, 50),
-                    Extra(ResourceKind.Milk, 1, 50, 2)));
+                    Extra(ResourceKind.Milk, 1, 50, 2),
+                    Extra(ResourceKind.Wool, 1, 30, 2)));
             Upgrades(BuildingKind.Farm, new[] { 800, 1400 }, 15, 2, 0);
             // three units of work, like the farm: one farm keeps one tannery busy
             Producer(BuildingKind.Tannery, 1400, 25, 4,
-                Recipe(3f, In(ResourceKind.AnimalHide, 1), Out(ResourceKind.Leather, 1)));
+                Recipe(3f, In(ResourceKind.AnimalHide, 1), Out(ResourceKind.Leather, 1)),
+                Recipe(3f, In(ResourceKind.Wool, 2), Out(ResourceKind.Cloth, 1), minLevel: 2));
             Upgrades(BuildingKind.Tannery, new[] { 1200, 2000 }, 15, 2, 0);
             Producer(BuildingKind.LumberCamp, 400, 50, 5,
                 Recipe(1f, null, Out(ResourceKind.Logs, 1)));
             Upgrades(BuildingKind.LumberCamp, new[] { 500, 900 }, 25, 2, 0);
             Producer(BuildingKind.LumberMill, 1000, 25, 4,
+                Recipe(4f, In(ResourceKind.Logs, 2, ResourceKind.IronIngot, 1), Out(ResourceKind.Spear, 1), minLevel: 2),
                 Recipe(1f, In(ResourceKind.Logs, 1), Out(ResourceKind.Planks, 1)));
             Upgrades(BuildingKind.LumberMill, new[] { 900, 1600 }, 15, 2, 0);
             Producer(BuildingKind.ShieldWorkshop, 1200, 10, 4,
+                Recipe(5f, In(ResourceKind.Planks, 2, ResourceKind.IronIngot, 1), Out(ResourceKind.IronShield, 1), minLevel: 2),
+                Recipe(4f, In(ResourceKind.Planks, 2, ResourceKind.Leather, 1), Out(ResourceKind.Bow, 1), minLevel: 2),
                 Recipe(4f, In(ResourceKind.Planks, 3), Out(ResourceKind.WoodenShield, 1)));
             Upgrades(BuildingKind.ShieldWorkshop, new[] { 1200, 2000 }, 5, 2, 0);
-            // a steadier hand from level 2: the same enchantment spoils a third as often
+            // whatever gear the haulers bring, with a crystal, comes out enchanted; one in ten spoils into scrap
             Producer(BuildingKind.Enchanter, 3000, 10, 3,
-                Spoils(Recipe(6f, In(ResourceKind.IronSword, 1, ResourceKind.VioletCrystal, 1),
-                    Out(ResourceKind.EnchantedSword, 1), minLevel: 2), 5),
-                Spoils(Recipe(6f, In(ResourceKind.IronSword, 1, ResourceKind.VioletCrystal, 1),
-                    Out(ResourceKind.EnchantedSword, 1)), 15));
+                Enchant(ResourceKind.IronSword, ResourceKind.EnchantedSword),
+                Enchant(ResourceKind.RustySword, ResourceKind.EnchantedRustySword),
+                Enchant(ResourceKind.SteelSword, ResourceKind.EnchantedSteelSword),
+                Enchant(ResourceKind.BattleAxe, ResourceKind.EnchantedBattleAxe),
+                Enchant(ResourceKind.Spear, ResourceKind.EnchantedSpear),
+                Enchant(ResourceKind.Bow, ResourceKind.EnchantedBow),
+                Enchant(ResourceKind.WarHammer, ResourceKind.EnchantedWarHammer),
+                Enchant(ResourceKind.PatchedArmor, ResourceKind.EnchantedPatchedArmor),
+                Enchant(ResourceKind.LeatherArmor, ResourceKind.EnchantedLeatherArmor),
+                Enchant(ResourceKind.IronArmor, ResourceKind.EnchantedIronArmor),
+                Enchant(ResourceKind.Chainmail, ResourceKind.EnchantedChainmail),
+                Enchant(ResourceKind.SteelArmor, ResourceKind.EnchantedSteelArmor),
+                Enchant(ResourceKind.Helmet, ResourceKind.EnchantedHelmet),
+                Enchant(ResourceKind.WoodenShield, ResourceKind.EnchantedWoodenShield),
+                Enchant(ResourceKind.IronShield, ResourceKind.EnchantedIronShield));
             Upgrades(BuildingKind.Enchanter, new[] { 2500, 4000 }, 5, 1, 0);
             // four goods in, one feast out; a golden ear makes a double feast from level 2
             Producer(BuildingKind.Tavern, 2000, 15, 4,
@@ -231,6 +319,15 @@ namespace TrollStrategy.Editor.Setup
             serialized.ApplyModifiedPropertiesWithoutUndo();
             definition.SetRecipes(recipes);
             definition.SetStorage(StorageRole.None);
+            EditorUtility.SetDirty(definition);
+        }
+
+        private static void Capacity(BuildingKind kind, int capacity)
+        {
+            var definition = LoadBuilding(kind);
+            var serialized = new SerializedObject(definition);
+            serialized.FindProperty("_capacity").intValue = capacity;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(definition);
         }
 
@@ -357,6 +454,29 @@ namespace TrollStrategy.Editor.Setup
             list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = definition;
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
+
+        // A piece of gear and its enchanted twin: the enchanter adds 2 to its main bonus (damage for a weapon).
+        private static void Gear(GameContentCatalog catalog, string id, string name, string enchantedName,
+            EquipmentSlot slot, int damage, int armor)
+        {
+            EnsureEquipment(catalog, id, name, slot, damage, armor);
+            Enchanted(catalog, id, enchantedName, slot, damage, armor);
+        }
+
+        private static void Enchanted(GameContentCatalog catalog, string id, string name, EquipmentSlot slot,
+            int damage, int armor)
+        {
+            bool weapon = slot == EquipmentSlot.Weapon;
+            EnsureEquipment(catalog, "enchanted-" + id, name, slot, damage + (weapon ? 2 : 0), armor + (weapon ? 0 : 2));
+        }
+
+        // The good an enchanted piece travels as: icon enchanted-<id>, model <model>_Enchanted.
+        private static ResourceDefinition Enchanted(Dictionary<string, Sprite> icons, ResourceKind kind, string name,
+            int price, string id, string model) =>
+            Resource(icons, kind, name, price, "enchanted-" + id, model + "_Enchanted", equipmentId: "enchanted-" + id);
+
+        private static ProductionRecipe Enchant(ResourceKind gear, ResourceKind enchanted) =>
+            Spoils(Recipe(6f, In(gear, 1, ResourceKind.VioletCrystal, 1), Out(enchanted, 1)), 10);
 
         private static string ToPascal(string id) =>
             string.Concat(id.Split('-').Select(part => char.ToUpperInvariant(part[0]) + part.Substring(1)));

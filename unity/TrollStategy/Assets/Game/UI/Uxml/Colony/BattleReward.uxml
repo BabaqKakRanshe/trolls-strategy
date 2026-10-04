@@ -12,6 +12,8 @@
             </ui:VisualElement>
             <ui:Label name="battle-reward-range" class="jackpot__range t-medium" />
             <ui:Label name="battle-reward-amount" class="jackpot__amount t-black" />
+            <!-- the arena's trophies, a picture and a number each (BattleRewardOverlay builds them) -->
+            <ui:VisualElement name="battle-reward-trophies" class="jackpot__trophies" picking-mode="Ignore" />
             <ui:Button name="battle-reward-claim" class="btn btn--gold jackpot__claim">
                 <ui:Label text="Забрать золото" class="btn__caption" picking-mode="Ignore" />
             </ui:Button>

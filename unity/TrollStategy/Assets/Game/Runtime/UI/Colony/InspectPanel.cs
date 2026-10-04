@@ -239,7 +239,8 @@ namespace TrollStrategy.UI
                     break;
             }
             if (building.Kind == BuildingKind.Barracks)
-                note = "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене.";
+                note = "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене. " +
+                       "Сюда же приходят трофеи арены: носильщики унесут их на склад экипировки, к зачарователю или на рынок.";
             if (building.Kind == BuildingKind.HaulersGuild)
                 note = "Улучшения гильдии действуют на всех носильщиков колонии сразу.";
             // the deeper levels of the colony upgrades it hosts wait for this building's own level

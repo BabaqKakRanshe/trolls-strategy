@@ -914,6 +914,28 @@ namespace TrollStrategy.Domain
             }
         }
 
+        /// <summary>
+        /// Arena trophies: into the barracks as far as they have room; what finds none, or no barracks, goes
+        /// straight to the colony's inventory, as an armory takes delivered gear. Missions give only gear as
+        /// trophies (ResourceContentTests); anything else without room is lost.
+        /// </summary>
+        public static void StoreTrophies(GameState state, ResourceKind resource, int amount, GameContentCatalog catalog)
+        {
+            foreach (var building in state.Buildings)
+            {
+                if (amount <= 0) return;
+                if (building.Kind != BuildingKind.Barracks) continue;
+                int stored = Math.Min(amount, Room(building, resource, catalog));
+                if (stored <= 0) continue;
+                building.AddStock(resource, stored);
+                amount -= stored;
+            }
+            string equipmentId = amount > 0 ? catalog.TryGetResource(resource)?.EquipmentId : null;
+            if (string.IsNullOrEmpty(equipmentId)) return;
+            for (int i = 0; i < amount; i++)
+                state.Equipment.Add(new EquipmentState { Id = NextEquipmentId(state), DefinitionId = equipmentId });
+        }
+
         private static string NextEquipmentId(GameState state)
         {
             for (int n = state.Equipment.Count + 1; ; n++)

@@ -384,13 +384,15 @@ namespace TrollStrategy.Application
 
     public sealed class BattleRewardSnapshot
     {
-        public BattleRewardSnapshot(string missionName, int gold, int minGold, int maxGold, bool firstWin)
+        public BattleRewardSnapshot(string missionName, int gold, int minGold, int maxGold, bool firstWin,
+            IReadOnlyList<ResourceStack> trophies = null)
         {
             MissionName = missionName;
             Gold = gold;
             MinGold = minGold;
             MaxGold = maxGold;
             FirstWin = firstWin;
+            Trophies = trophies ?? new List<ResourceStack>();
         }
 
         public string MissionName { get; }
@@ -398,6 +400,8 @@ namespace TrollStrategy.Application
         public int MinGold { get; }
         public int MaxGold { get; }
         public bool FirstWin { get; }
+        /// <summary>Goods the wins brought, which the barracks receive when the reward is taken.</summary>
+        public IReadOnlyList<ResourceStack> Trophies { get; }
     }
 
     public sealed class QuestSnapshot

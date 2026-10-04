@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using TrollStrategy.Content;
+using TrollStrategy.Domain;
 using UnityEditor;
 using UnityEngine;
 
@@ -42,6 +43,48 @@ namespace TrollStrategy.Tests
                 AssertKitModel(resource.Model, kind);
                 if (resource.PileModel != null) AssertKitModel(resource.PileModel, kind + " pile");
             }
+        }
+
+        [Test]
+        public void EveryEquipment_HasItsIconAndAGoodThatBringsIt()
+        {
+            var goods = _catalog.Resources.Where(r => r.IsEquipment).Select(r => r.EquipmentId).ToList();
+            Assert.That(goods, Is.Unique);
+            foreach (var equipment in _catalog.Equipment)
+            {
+                Assert.That(equipment.Icon, Is.Not.Null, equipment.ItemId + " has no icon (TrollStrategy/Dev/Import Icon Atlases)");
+                Assert.That(goods, Does.Contain(equipment.ItemId), equipment.ItemId + " has no good to bring it to an armory");
+                Assert.That(equipment.Enchanted, Is.EqualTo(equipment.ItemId.StartsWith("enchanted-")), equipment.ItemId);
+            }
+            foreach (var id in goods)
+                Assert.That(_catalog.Equipment.Any(e => e.ItemId == id), Is.True, id + " is a good without an EquipmentDefinition");
+        }
+
+        [Test]
+        public void EveryGood_IsMadeSomewhereAndTakenSomewhere()
+        {
+            foreach (ResourceKind kind in Enum.GetValues(typeof(ResourceKind)))
+            {
+                bool made = _catalog.Buildings.Any(b => b != null && b.Recipes.Any(r => r.CanYield(kind))) ||
+                            _catalog.Missions.Any(m => m != null && m.WinGoods.Any(g => g.Resource == kind));
+                Assert.That(made, Is.True, kind + " is made by no recipe and won in no battle");
+                Assert.That(_catalog.Buildings.Any(b => b != null && ColonySimulation.Accepts(b, kind, _catalog)), Is.True,
+                    kind + " is taken by no building");
+            }
+        }
+
+        [Test]
+        public void ArenaTrophies_AreGearTheBarracksKeep()
+        {
+            var barracks = _catalog.GetBuilding(BuildingKind.Barracks);
+            var trophies = _catalog.Missions.Where(m => m != null).SelectMany(m => m.WinGoods).ToList();
+            Assert.That(trophies, Is.Not.Empty, "The first arena level gives a rusty set for every win");
+            foreach (var trophy in trophies)
+            {
+                Assert.That(_catalog.GetResource(trophy.Resource).IsEquipment, Is.True, trophy.Resource + " is no gear");
+                Assert.That(barracks.Stores(trophy.Resource), Is.True, "The barracks do not keep " + trophy.Resource);
+            }
+            Assert.That(barracks.Capacity(1), Is.GreaterThan(0));
         }
 
         // The FBX itself, so a kit export updates it; and only the kit's palette materials, never a pink one.

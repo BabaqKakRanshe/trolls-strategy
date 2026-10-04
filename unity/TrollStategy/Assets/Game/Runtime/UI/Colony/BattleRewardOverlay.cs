@@ -72,6 +72,7 @@ namespace TrollStrategy.UI
         private readonly Label _title;
         private readonly Label _range;
         private readonly Label _amount;
+        private readonly VisualElement _trophies;
         private readonly Button _claim;
         private readonly List<Reel> _reels = new();
         private readonly List<Coin> _coins = new();
@@ -97,6 +98,7 @@ namespace TrollStrategy.UI
             _title = Ui.Require<Label>(root, "battle-reward-title");
             _range = Ui.Require<Label>(root, "battle-reward-range");
             _amount = Ui.Require<Label>(root, "battle-reward-amount");
+            _trophies = Ui.Require<VisualElement>(root, "battle-reward-trophies");
             _claim = UiFeel.Bind(Ui.Require<Button>(root, "battle-reward-claim"), Claim, silentClick: true);
             Ui.Require<VisualElement>(root, "battle-reward-machine").RegisterCallback<PointerDownEvent>(_ => Skip());
             BuildCoins();
@@ -107,6 +109,8 @@ namespace TrollStrategy.UI
         public bool IsReady => IsOpen && _closing < 0f && _time >= ReadyAt;
         public Button ClaimButton => _claim;
         public string AmountText => _amount.text;
+        /// <summary>The trophies under the amount, as the player reads them: "Ржавый меч +1, ...".</summary>
+        public string TrophyText { get; private set; } = string.Empty;
         public int ReelCount => _reels.Count;
 
         /// <summary>The digits the reels stop on, left to right.</summary>
@@ -136,6 +140,7 @@ namespace TrollStrategy.UI
             Ui.SetText(_amount, string.Empty);
             _amountShown = false;
             BuildReels(reward);
+            BuildTrophies(reward);
             SetClaimShown(false);
             StopFlight();
             _overlay.style.opacity = 0f;
@@ -231,6 +236,7 @@ namespace TrollStrategy.UI
             float shown = Mathf.Clamp01((t - LastStopAt) / .35f);
             _amount.style.opacity = shown;
             _amount.style.scale = new Scale(Vector3.one * Mathf.Lerp(.6f, 1f, Ease.OutBack(shown, 2.4f)));
+            _trophies.style.opacity = shown;
             if (won != _amountShown)
             {
                 _amountShown = won;
@@ -388,6 +394,28 @@ namespace TrollStrategy.UI
                 Ui.Show(coin.Body, false);
                 foreach (var ghost in coin.Trail) Ui.Show(ghost, false);
             }
+        }
+
+        // The arena's trophies under the amount: a picture and a number each, then where they wait.
+        private void BuildTrophies(BattleRewardSnapshot reward)
+        {
+            _trophies.Clear();
+            var words = new List<string>();
+            foreach (var trophy in reward.Trophies)
+            {
+                var icon = _context.Catalog.TryGetResource(trophy.Resource)?.Icon;
+                if (icon != null)
+                {
+                    var image = new Image { sprite = icon, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                    image.AddToClassList("jackpot__trophy-icon");
+                    _trophies.Add(image);
+                }
+                _trophies.Add(Ui.Text($"+{trophy.Amount}", "jackpot__trophy-count t-black"));
+                words.Add($"{trophy.Name} +{trophy.Amount}");
+            }
+            if (words.Count > 0) _trophies.Add(Ui.Text("ждут в бараках", "jackpot__trophy-note t-medium"));
+            TrophyText = string.Join(", ", words);
+            Ui.Show(_trophies, words.Count > 0);
         }
 
         private void BuildReels(BattleRewardSnapshot reward)

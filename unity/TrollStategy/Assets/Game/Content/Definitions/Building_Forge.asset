@@ -28,6 +28,79 @@ MonoBehaviour:
   _saleBonusPerLevel: 0
   _recipes:
   - _inputs:
+    - _resource: 26
+      _amount: 2
+    - _resource: 4
+      _amount: 1
+    _outputs:
+    - _resource: 37
+      _amount: 1
+    _work: 7
+    _minLevel: 3
+    _extras: []
+    _failChancePercent: 8
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 26
+      _amount: 2
+    - _resource: 6
+      _amount: 1
+    _outputs:
+    - _resource: 34
+      _amount: 1
+    _work: 6
+    _minLevel: 3
+    _extras: []
+    _failChancePercent: 8
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 26
+      _amount: 2
+    _outputs:
+    - _resource: 31
+      _amount: 1
+    _work: 6
+    _minLevel: 2
+    _extras: []
+    _failChancePercent: 8
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 1
+      _amount: 3
+    - _resource: 28
+      _amount: 1
+    _outputs:
+    - _resource: 36
+      _amount: 1
+    _work: 6
+    _minLevel: 2
+    _extras: []
+    _failChancePercent: 8
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 4
+      _amount: 1
+    - _resource: 27
+      _amount: 1
+    _outputs:
+    - _resource: 35
+      _amount: 1
+    _work: 4
+    _minLevel: 2
+    _extras: []
+    _failChancePercent: 8
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
     - _resource: 1
       _amount: 2
     - _resource: 4
@@ -53,6 +126,19 @@ MonoBehaviour:
     - _resource: 20
       _amount: 1
     _work: 6
+    _minLevel: 2
+    _extras: []
+    _failChancePercent: 8
+    _failOutputs:
+    - _resource: 18
+      _amount: 1
+  - _inputs:
+    - _resource: 23
+      _amount: 2
+    _outputs:
+    - _resource: 38
+      _amount: 1
+    _work: 3
     _minLevel: 2
     _extras: []
     _failChancePercent: 8

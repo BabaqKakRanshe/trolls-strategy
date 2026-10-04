@@ -15,9 +15,9 @@ MonoBehaviour:
   _missionId: mission-22
   _displayName: "22. \u0421\u043D\u0435\u0436\u043D\u0430\u044F \u0437\u0430\u0441\u0430\u0434\u0430"
   _level: 22
-  _enemyHealthPercent: 184
-  _enemyDamageBonus: 2
-  _enemyArmorBonus: 1
+  _enemyHealthPercent: 370
+  _enemyDamageBonus: 5
+  _enemyArmorBonus: 5
   _unlocksUnit: 0
   _unlockUnit: 0
   _width: 9
@@ -87,10 +87,27 @@ MonoBehaviour:
     Cell:
       X: 8
       Y: 4
+  - Kind: 24
+    Cell:
+      X: 7
+      Y: 0
+  - Kind: 24
+    Cell:
+      X: 7
+      Y: 1
+  - Kind: 24
+    Cell:
+      X: 7
+      Y: 2
+  - Kind: 24
+    Cell:
+      X: 7
+      Y: 3
   _firstWinGold: 1510
   _firstWinGoldMax: 2420
   _repeatWinGold: 910
   _repeatWinGoldMax: 1450
+  _winGoods: []
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

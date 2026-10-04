@@ -15,9 +15,9 @@ MonoBehaviour:
   _missionId: mission-14
   _displayName: "14. \u0421\u0438\u043D\u0435\u0435 \u0431\u043E\u043B\u043E\u0442\u043E"
   _level: 14
-  _enemyHealthPercent: 152
-  _enemyDamageBonus: 1
-  _enemyArmorBonus: 1
+  _enemyHealthPercent: 290
+  _enemyDamageBonus: 3
+  _enemyArmorBonus: 3
   _unlocksUnit: 0
   _unlockUnit: 0
   _width: 9
@@ -91,10 +91,23 @@ MonoBehaviour:
     Cell:
       X: 7
       Y: 0
+  - Kind: 18
+    Cell:
+      X: 7
+      Y: 1
+  - Kind: 18
+    Cell:
+      X: 7
+      Y: 2
+  - Kind: 18
+    Cell:
+      X: 7
+      Y: 3
   _firstWinGold: 1030
   _firstWinGoldMax: 1650
   _repeatWinGold: 620
   _repeatWinGoldMax: 990
+  _winGoods: []
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

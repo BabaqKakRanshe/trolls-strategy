@@ -49,6 +49,21 @@ MonoBehaviour:
         _amount: 1
       _chancePercent: 2
       _minLevel: 3
+    - _output:
+        _resource: 21
+        _amount: 1
+      _chancePercent: 10
+      _minLevel: 2
+    - _output:
+        _resource: 22
+        _amount: 1
+      _chancePercent: 15
+      _minLevel: 2
+    - _output:
+        _resource: 24
+        _amount: 1
+      _chancePercent: 4
+      _minLevel: 3
     _failChancePercent: 0
     _failOutputs: []
   _storageRole: 0

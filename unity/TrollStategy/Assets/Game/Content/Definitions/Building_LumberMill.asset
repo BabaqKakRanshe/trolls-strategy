@@ -29,6 +29,19 @@ MonoBehaviour:
   _recipes:
   - _inputs:
     - _resource: 5
+      _amount: 2
+    - _resource: 1
+      _amount: 1
+    _outputs:
+    - _resource: 32
+      _amount: 1
+    _work: 4
+    _minLevel: 2
+    _extras: []
+    _failChancePercent: 0
+    _failOutputs: []
+  - _inputs:
+    - _resource: 5
       _amount: 1
     _outputs:
     - _resource: 6

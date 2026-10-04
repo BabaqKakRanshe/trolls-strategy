@@ -87,6 +87,11 @@ MonoBehaviour:
   _firstWinGoldMax: 400
   _repeatWinGold: 150
   _repeatWinGoldMax: 240
+  _winGoods:
+  - _resource: 29
+    _amount: 1
+  - _resource: 30
+    _amount: 1
   _unlockAfterActiveSeconds: 120
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

@@ -15,9 +15,9 @@ MonoBehaviour:
   _missionId: mission-5
   _displayName: "5. \u041B\u044E\u0434\u0438 \u0441 \u0445\u043E\u043B\u043C\u043E\u0432"
   _level: 5
-  _enemyHealthPercent: 116
-  _enemyDamageBonus: 0
-  _enemyArmorBonus: 0
+  _enemyHealthPercent: 200
+  _enemyDamageBonus: 1
+  _enemyArmorBonus: 1
   _unlocksUnit: 1
   _unlockUnit: 6
   _width: 9
@@ -83,10 +83,15 @@ MonoBehaviour:
     Cell:
       X: 8
       Y: 3
+  - Kind: 6
+    Cell:
+      X: 8
+      Y: 4
   _firstWinGold: 490
   _firstWinGoldMax: 780
   _repeatWinGold: 290
   _repeatWinGoldMax: 470
+  _winGoods: []
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

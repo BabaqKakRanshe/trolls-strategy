@@ -98,6 +98,29 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 645c395ad48e61c43819e1052aa5bfa5, type: 2}
   - {fileID: 11400000, guid: f39ef2e08ee2aaa4da2e616097775b13, type: 2}
   - {fileID: 11400000, guid: 0f7a0dd42d87fa64e9f01442b6886257, type: 2}
+  - {fileID: 11400000, guid: 5cde3efd54a37674db2ba475b0c4e9f7, type: 2}
+  - {fileID: 11400000, guid: 00c6a967ead8dbc40b3030283af2ec75, type: 2}
+  - {fileID: 11400000, guid: a925ec427e128ef4cb0826e7bdeabc39, type: 2}
+  - {fileID: 11400000, guid: 4736f43a613369946a7bc3ec4c0d1ce4, type: 2}
+  - {fileID: 11400000, guid: e8568395e5339714ebc97899ac5c47fe, type: 2}
+  - {fileID: 11400000, guid: 743a92066b0e04842b4a1aefbab2ecde, type: 2}
+  - {fileID: 11400000, guid: c3dbdfdffb4901e4f967f5c11fa869ed, type: 2}
+  - {fileID: 11400000, guid: 1ced19634d29a7f49be79a051c42e782, type: 2}
+  - {fileID: 11400000, guid: afe9d84ef4d2d4944ac2034aa89ddfeb, type: 2}
+  - {fileID: 11400000, guid: 3ef497993c1c85e4fa6c954ad67dac6c, type: 2}
+  - {fileID: 11400000, guid: 676f0b1d4fafca845870c0f41c171373, type: 2}
+  - {fileID: 11400000, guid: 5f75b456bb79ff64a9c32f7fd9ba555a, type: 2}
+  - {fileID: 11400000, guid: ce1e4295e8053924c841b656070f00d9, type: 2}
+  - {fileID: 11400000, guid: 73c54798f0510034eab18db62f984807, type: 2}
+  - {fileID: 11400000, guid: 5f3fb274e7a40724fbc546841fe4cc60, type: 2}
+  - {fileID: 11400000, guid: 94a0b68fd1206df49ba960c334e63cdb, type: 2}
+  - {fileID: 11400000, guid: 30a71d28bfc0a5141a932f26cc648212, type: 2}
+  - {fileID: 11400000, guid: a126ae2337127994ebc40b19f980bcb2, type: 2}
+  - {fileID: 11400000, guid: f3a58d35a67bf414696b4c20558ce284, type: 2}
+  - {fileID: 11400000, guid: 03b4155a05f401c48badc87c73ac9b97, type: 2}
+  - {fileID: 11400000, guid: 2fb6090f37471c84f97ed061652e5029, type: 2}
+  - {fileID: 11400000, guid: dab21f3803addae459033c0d73f009fd, type: 2}
+  - {fileID: 11400000, guid: edc434b2fffdac246a386a2cb5b28dcd, type: 2}
   _resources:
   - _kind: 0
     _displayName: "\u0420\u0443\u0434\u0430"
@@ -245,6 +268,237 @@ MonoBehaviour:
     _icon: {fileID: -362982171, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
     _equipmentId: battle-axe
     _model: {fileID: 919132149155446097, guid: 22d24128947e7fb4e80b0ac9f284e415, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 21
+    _displayName: "\u041A\u0430\u043C\u0435\u043D\u044C"
+    _sellPrice: 3
+    _icon: {fileID: 1778923127, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 34983a87d4fa2ee4aa8aea97d694ebdc, type: 3}
+    _pileModel: {fileID: 919132149155446097, guid: 1b2fa94dbb5d5a84f9fc8d784ece1fad, type: 3}
+  - _kind: 22
+    _displayName: "\u041C\u0435\u0434\u043D\u0430\u044F \u0440\u0443\u0434\u0430"
+    _sellPrice: 4
+    _icon: {fileID: -2097054474, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 6df299de655a497439b141a6a7c24f03, type: 3}
+    _pileModel: {fileID: 919132149155446097, guid: 9b1eefebcb08f4a479c9c9cdd40c172d, type: 3}
+  - _kind: 23
+    _displayName: "\u041C\u0435\u0434\u043D\u044B\u0439 \u0441\u043B\u0438\u0442\u043E\u043A"
+    _sellPrice: 17
+    _icon: {fileID: -327528250, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 328ec8aafe315914391fa5e66efde6ff, type: 3}
+    _pileModel: {fileID: 919132149155446097, guid: 78974a686a1f1f3418563f7298b77843, type: 3}
+  - _kind: 24
+    _displayName: "\u0417\u043E\u043B\u043E\u0442\u0430\u044F \u0440\u0443\u0434\u0430"
+    _sellPrice: 20
+    _icon: {fileID: -845132943, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 2a4a636ff3db42b41a522408025db867, type: 3}
+    _pileModel: {fileID: 919132149155446097, guid: f738ab273a31b4e4f9e575fdbc5489e7, type: 3}
+  - _kind: 25
+    _displayName: "\u0417\u043E\u043B\u043E\u0442\u043E\u0439 \u0441\u043B\u0438\u0442\u043E\u043A"
+    _sellPrice: 65
+    _icon: {fileID: -192730131, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 7267d686b2242334fad65a76efd546f7, type: 3}
+    _pileModel: {fileID: 919132149155446097, guid: 1e995829809f16340849fe78f752982f, type: 3}
+  - _kind: 26
+    _displayName: "\u0421\u0442\u0430\u043B\u044C"
+    _sellPrice: 26
+    _icon: {fileID: -1928325901, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: f4206fc2c0e96f14995fd00abab51474, type: 3}
+    _pileModel: {fileID: 919132149155446097, guid: 9f97855eadf75ea42a7ebc7ae5fee810, type: 3}
+  - _kind: 27
+    _displayName: "\u0428\u0435\u0440\u0441\u0442\u044C"
+    _sellPrice: 5
+    _icon: {fileID: 1057242086, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 0e7b00ac4355a3848ac6dcdf08a6b986, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 28
+    _displayName: "\u0422\u043A\u0430\u043D\u044C"
+    _sellPrice: 22
+    _icon: {fileID: 1820213575, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: 
+    _model: {fileID: 919132149155446097, guid: 40dcf3f0177e35b449f899cb9c938ce8, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 29
+    _displayName: "\u0420\u0436\u0430\u0432\u044B\u0439 \u043C\u0435\u0447"
+    _sellPrice: 20
+    _icon: {fileID: 1059859425, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: rusty-sword
+    _model: {fileID: 919132149155446097, guid: 6b43e7be6b5d79c48baf380b01738d46, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 30
+    _displayName: "\u041B\u0430\u0442\u0430\u043D\u0430\u044F \u0431\u0440\u043E\u043D\u044F"
+    _sellPrice: 40
+    _icon: {fileID: 1449877732, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: patched-armor
+    _model: {fileID: 919132149155446097, guid: a94c5e6ef48bde94999a4c6f9892537e, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 31
+    _displayName: "\u0421\u0442\u0430\u043B\u044C\u043D\u043E\u0439 \u043C\u0435\u0447"
+    _sellPrice: 80
+    _icon: {fileID: 422431949, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: steel-sword
+    _model: {fileID: 919132149155446097, guid: 4c0072909ef15bb4288fc291b1e88a95, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 32
+    _displayName: "\u041A\u043E\u043F\u044C\u0451"
+    _sellPrice: 35
+    _icon: {fileID: -270420401, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: spear
+    _model: {fileID: 919132149155446097, guid: d2fc41d7805de564f92d137262ffae4f, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 33
+    _displayName: "\u041B\u0443\u043A"
+    _sellPrice: 75
+    _icon: {fileID: 1044888530, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: bow
+    _model: {fileID: 919132149155446097, guid: ac26e8a63c872c04283802cd470ffdd1, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 34
+    _displayName: "\u0411\u043E\u0435\u0432\u043E\u0439 \u043C\u043E\u043B\u043E\u0442"
+    _sellPrice: 90
+    _icon: {fileID: -1522275951, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: war-hammer
+    _model: {fileID: 919132149155446097, guid: baf468c033a39cf4c9b115de5c3f6d03, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 35
+    _displayName: "\u041A\u043E\u0436\u0430\u043D\u0430\u044F \u0431\u0440\u043E\u043D\u044F"
+    _sellPrice: 60
+    _icon: {fileID: -1721971011, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: leather-armor
+    _model: {fileID: 919132149155446097, guid: 65e8cfc03e94b1b4e933027326ab0411, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 36
+    _displayName: "\u041A\u043E\u043B\u044C\u0447\u0443\u0433\u0430"
+    _sellPrice: 95
+    _icon: {fileID: 106085837, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: chainmail
+    _model: {fileID: 919132149155446097, guid: cff7d8fd5c6beba49a146658dc42e719, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 37
+    _displayName: "\u0421\u0442\u0430\u043B\u044C\u043D\u0430\u044F \u0431\u0440\u043E\u043D\u044F"
+    _sellPrice: 130
+    _icon: {fileID: -1815209015, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: steel-armor
+    _model: {fileID: 919132149155446097, guid: b97000b52934ead48b8e613a34819f69, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 38
+    _displayName: "\u0428\u043B\u0435\u043C"
+    _sellPrice: 50
+    _icon: {fileID: -1071898678, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: helmet
+    _model: {fileID: 919132149155446097, guid: 5d5dbfda5d204ff438029a3498221428, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 39
+    _displayName: "\u0416\u0435\u043B\u0435\u0437\u043D\u044B\u0439 \u0449\u0438\u0442"
+    _sellPrice: 50
+    _icon: {fileID: -629867628, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: iron-shield
+    _model: {fileID: 919132149155446097, guid: 51588c1fffdcf0b47a3607d24103f08c, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 40
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0440\u0436\u0430\u0432\u044B\u0439 \u043C\u0435\u0447"
+    _sellPrice: 85
+    _icon: {fileID: -1442886578, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-rusty-sword
+    _model: {fileID: 919132149155446097, guid: aeb309f2572e3a34db9ce007377ac8ae, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 41
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0441\u0442\u0430\u043B\u044C\u043D\u043E\u0439 \u043C\u0435\u0447"
+    _sellPrice: 170
+    _icon: {fileID: -1668322358, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-steel-sword
+    _model: {fileID: 919132149155446097, guid: d6c87f6773093ae45805342a94b3c7b7, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 42
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0431\u043E\u0435\u0432\u043E\u0439 \u0442\u043E\u043F\u043E\u0440"
+    _sellPrice: 175
+    _icon: {fileID: -1602360647, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-battle-axe
+    _model: {fileID: 919132149155446097, guid: 1fd04e4adcab3a54cb7061647624a59c, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 43
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u0435 \u043A\u043E\u043F\u044C\u0451"
+    _sellPrice: 105
+    _icon: {fileID: -1497429091, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-spear
+    _model: {fileID: 919132149155446097, guid: 2967be9a4966f1241bc209d1d558b131, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 44
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043B\u0443\u043A"
+    _sellPrice: 160
+    _icon: {fileID: 598735164, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-bow
+    _model: {fileID: 919132149155446097, guid: 3035a5d1fef084b45bed4112fb4b7cd1, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 45
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0431\u043E\u0435\u0432\u043E\u0439 \u043C\u043E\u043B\u043E\u0442"
+    _sellPrice: 180
+    _icon: {fileID: 175947767, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-war-hammer
+    _model: {fileID: 919132149155446097, guid: 8526b67c371b3a84dbdb1437c4f5b91d, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 46
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u043B\u0430\u0442\u0430\u043D\u0430\u044F \u0431\u0440\u043E\u043D\u044F"
+    _sellPrice: 110
+    _icon: {fileID: 103864642, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-patched-armor
+    _model: {fileID: 919132149155446097, guid: 4245b96e646b4e140b41a9ebb948b116, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 47
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u043A\u043E\u0436\u0430\u043D\u0430\u044F \u0431\u0440\u043E\u043D\u044F"
+    _sellPrice: 145
+    _icon: {fileID: -1973532255, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-leather-armor
+    _model: {fileID: 919132149155446097, guid: 6f72a58fa0eb7be468ebce0c3648ac7a, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 48
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0443\u0441\u0438\u043B\u0435\u043D\u043D\u0430\u044F \u0431\u0440\u043E\u043D\u044F"
+    _sellPrice: 180
+    _icon: {fileID: 1574717794, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-iron-armor
+    _model: {fileID: 919132149155446097, guid: 354a38191607c814c97e54a0327e7d85, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 49
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u043A\u043E\u043B\u044C\u0447\u0443\u0433\u0430"
+    _sellPrice: 185
+    _icon: {fileID: 500440112, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-chainmail
+    _model: {fileID: 919132149155446097, guid: dfd7fd59c54346e4eb462b6753647277, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 50
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0442\u0430\u043B\u044C\u043D\u0430\u044F \u0431\u0440\u043E\u043D\u044F"
+    _sellPrice: 230
+    _icon: {fileID: -776298098, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-steel-armor
+    _model: {fileID: 919132149155446097, guid: 11ea7cea9e6197849bac3097b57c8b44, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 51
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0448\u043B\u0435\u043C"
+    _sellPrice: 130
+    _icon: {fileID: -1044268620, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-helmet
+    _model: {fileID: 919132149155446097, guid: 9976c98b45e127b48a6c118f196d0d12, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 52
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0434\u0435\u0440\u0435\u0432\u044F\u043D\u043D\u044B\u0439 \u0449\u0438\u0442"
+    _sellPrice: 115
+    _icon: {fileID: 61971469, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-wooden-shield
+    _model: {fileID: 919132149155446097, guid: 87ed34382ad94be40bbdfd1b601a3f11, type: 3}
+    _pileModel: {fileID: 0}
+  - _kind: 53
+    _displayName: "\u0417\u0430\u0447\u0430\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0436\u0435\u043B\u0435\u0437\u043D\u044B\u0439 \u0449\u0438\u0442"
+    _sellPrice: 125
+    _icon: {fileID: 1948439519, guid: 03d4554813ef07d4a8e60cb9bbdceec0, type: 3}
+    _equipmentId: enchanted-iron-shield
+    _model: {fileID: 919132149155446097, guid: 8235fa2d745174e4a81cb91d377a9407, type: 3}
     _pileModel: {fileID: 0}
   _upgrades:
   - _id: guild-step

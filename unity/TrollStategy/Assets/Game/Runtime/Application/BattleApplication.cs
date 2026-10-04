@@ -169,6 +169,12 @@ namespace TrollStrategy.Application
                 var (min, max) = WinGold(state, mission, catalog);
                 reward = RewardDice.Roll(state, min, max);
                 var pending = state.PendingBattleReward;
+                // trophies add up like the gold: every win brings the mission's set
+                var goods = pending?.Goods != null
+                    ? new Dictionary<ResourceKind, int>(pending.Goods)
+                    : new Dictionary<ResourceKind, int>();
+                foreach (var trophy in mission.WinGoods)
+                    goods[trophy.Resource] = (goods.TryGetValue(trophy.Resource, out int held) ? held : 0) + trophy.Amount;
                 state.PendingBattleReward = new PendingBattleReward
                 {
                     MissionId = mission.MissionId,
@@ -176,7 +182,8 @@ namespace TrollStrategy.Application
                     Gold = reward + (pending?.Gold ?? 0),
                     MinGold = min + (pending?.Gold ?? 0),
                     MaxGold = max + (pending?.Gold ?? 0),
-                    FirstWin = first
+                    FirstWin = first,
+                    Goods = goods
                 };
                 state.MissionWins[mission.MissionId] = state.WinsOf(mission.MissionId) + 1;
                 state.BattlesWon++;
@@ -195,12 +202,16 @@ namespace TrollStrategy.Application
             return CommandResult.Success();
         }
 
-        /// <summary>Puts a won battle's gold into the treasury.</summary>
-        public static CommandResult ClaimReward(GameState state)
+        /// <summary>Puts a won battle's gold into the treasury and its trophies into the barracks.</summary>
+        public static CommandResult ClaimReward(GameState state, GameContentCatalog catalog)
         {
             var pending = state.PendingBattleReward;
             if (pending == null) return CommandResult.Fail("Награды за бой нет");
             state.Gold += pending.Gold;
+            if (pending.Goods != null)
+                foreach (ResourceKind resource in Enum.GetValues(typeof(ResourceKind)))
+                    if (pending.Goods.TryGetValue(resource, out int amount) && amount > 0)
+                        ColonySimulation.StoreTrophies(state, resource, amount, catalog);
             state.PendingBattleReward = null;
             return CommandResult.Success();
         }
