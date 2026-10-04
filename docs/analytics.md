@@ -72,6 +72,37 @@
 4. Собрать игрока, сыграть пару минут, проверить в **Event Browser**, что события валидны. Без схемы
    они там будут с пометкой об ошибке.
 
+Проверено 2026-10-04: проект привязан (`cloudProjectId` в сборке совпадает с дашбордом), все 5 событий и
+10 полей заведены в окружении `production` с типами из таблицы. `questStarted` и `progressHeartbeat`
+пришли валидными из Windows-сборки. `questCompleted` и `battleFinished` пришли валидными из Play Mode
+редактора (см. «Без сборки»): бот «Обычный» прошёл задания 1–8, дошли все 9 `questStarted`,
+8 `questCompleted`, 5 `progressHeartbeat` и `battleFinished` (`mission-1`, `won` в SQL читается как 1).
+
+## Проверка
+
+- **Где смотреть.** SQL Data Explorer показывает только принятые события. Первые видны примерно через
+  минуту после отправки, остальные из того же пакета догружаются ещё несколько минут, по событиям
+  вразнобой. Последние события:
+
+  ```sql
+  SELECT EVENT_TIMESTAMP, EVENT_NAME, EVENT_JSON:questId::STRING AS quest,
+         EVENT_JSON:activeSeconds::INT AS secs
+  FROM EVENTS
+  WHERE EVENT_DATE >= CURRENT_DATE - 1
+  ORDER BY EVENT_TIMESTAMP DESC;
+  ```
+
+  Отброшенные события (не совпала схема) видны только в Event Browser. Счётчики Valid/Invalid в Event
+  Manager отстают: 2026-10-04 они показывали нули при данных в SQL.
+- **Фокус.** `runInBackground` выключен: без фокуса окна игра стоит, время колонии не идёт, и
+  `progressHeartbeat` не приходит. Сессия, открытая полчаса в свёрнутом окне, даёт только старт.
+- **Без сборки.** Игра в редакторе ничего не шлёт, а сервисы Unity поднимаются только в Play Mode.
+  Проверка из редактора: в Play Mode (`runInBackground` на время проверки включить) вызвать
+  `UnityAnalyticsBackend.SetConsent(true)` и `StartAsync()`, затем повесить `CampaignTelemetry` на новую
+  `GameSession`, отправлять через `UnityAnalyticsBackend.Record`, сыграть её ботом (`CampaignBot`,
+  `StopAfterLevel = 8` даёт и бой) и вызвать `Flush()`. Такая сессия попадает в те же данные `production`
+  с платформой `PC_CLIENT`.
+
 ## Как читать
 
 - **Воронка.** Analytics → Funnels: шаги `questStarted` с `questLevel = 1, 2, 3…`. Самая большая
@@ -101,7 +132,7 @@
   ORDER BY level;
   ```
 
-Данные в дашборде появляются с задержкой (обычно несколько часов).
+В SQL Data Explorer события видны примерно через минуту; готовые графики дашбордов обновляются реже.
 
 ## Изменить события
 
