@@ -460,6 +460,10 @@
     background-image: url("../Icons/rest.svg");
 }
 
+.glyph--star {
+    background-image: url("../Icons/star.svg");
+}
+
 /*
  * An arrow pointing up: "fold". Turned over, it points down: "unfold".
  * The SVG imports cropped to the stroke (wider than tall), so it fits its square box instead of stretching.

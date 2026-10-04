@@ -362,7 +362,8 @@ namespace TrollStrategy.Presentation.Battle
             var run = _colony.Session.ActiveBattle;
             int fallen = run?.FallenUnitIds.Count ?? 0;
             int lostItems = run != null ? _deployment.LostItems(run.FallenUnitIds) : 0;
-            _screen.ShowResult(_report.Outcome, _deployment.Placements.Count - fallen, fallen, lostItems);
+            var cost = BattleCost.Of(run, _colony.Session.Catalog, _colony.Session.CurrentSnapshot.BattleReward != null);
+            _screen.ShowResult(_report.Outcome, _deployment.Placements.Count - fallen, fallen, lostItems, cost);
             GameAudio.Play(_report.Outcome == BattleOutcome.PlayerVictory ? Sfx.Victory
                 : _report.Outcome == BattleOutcome.EnemyVictory ? Sfx.Defeat : Sfx.UiBack);
         }

@@ -91,6 +91,10 @@ namespace TrollStrategy.Presentation.Battle
         public string Id { get; private set; }
         public UnitKind Kind { get; private set; }
         public bool IsEnemy => _enemy;
+        /// <summary>A milestone's champion: bigger, its HP bar framed in coin gold.</summary>
+        public bool IsChampion { get; private set; }
+        /// <summary>The HP bar carries the champion's coin-gold frame.</summary>
+        public bool ShowsChampionFrame => _bar != null && _bar.Content.ClassListContains("hp-bar--champion");
         public bool IsDead => _pose == Pose.Dead;
         public Cell Cell { get; private set; }
         public int Hp => _hp;
@@ -422,6 +426,23 @@ namespace TrollStrategy.Presentation.Battle
             }
             _feet = -min * _spriteScale;
             _height = Mathf.Max(.4f, (max - min) * _spriteScale);
+        }
+
+        private const float ChampionScale = 1.25f;
+
+        /// <summary>Makes the fighter a milestone's champion: a quarter bigger, its HP bar framed in coin gold.</summary>
+        public void SetChampion()
+        {
+            if (IsChampion) return;
+            IsChampion = true;
+            _spriteScale *= ChampionScale;
+            MeasureBody();
+            if (_collider != null)
+            {
+                _collider.height = Mathf.Max(.8f, _height + .2f);
+                _collider.center = new Vector3(0f, _collider.height * .5f, 0f);
+            }
+            _bar?.Content.AddToClassList("hp-bar--champion");
         }
 
         private VisualElement _gearLeft, _gearRight, _weaponToken;

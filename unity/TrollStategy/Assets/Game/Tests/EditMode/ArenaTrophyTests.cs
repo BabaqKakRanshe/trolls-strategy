@@ -41,6 +41,9 @@ namespace TrollStrategy.Tests
         {
             var session = Session(barracksCapacity: 20, withBarracks: true);
             Win(session);
+            // a repeat win brings trophies when the arena's prize fund pays it: a second of colony time fills it here
+            session.Catalog.Economy.SetArena(fundPeriodSeconds: 1f);
+            for (int i = 0; i < 4; i++) session.Advance(.25f);
             Win(session);
             Assert.That(session.CurrentSnapshot.BattleReward.Trophies.Select(t => t.Amount), Is.EqualTo(new[] { 2, 2 }));
             Assert.That(session.Dispatch(new ClaimBattleRewardCommand()).Ok, Is.True);

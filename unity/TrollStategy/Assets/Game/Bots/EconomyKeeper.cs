@@ -117,7 +117,7 @@ namespace TrollStrategy.Bots
         public void FightForGold(BotWait wait)
         {
             _hands.SpendLimit = Spare(wait);
-            _battles.TryFight(null, hire: true);
+            _battles.TryFightForGold(null);
         }
 
         private IEnumerable<BuildingSnapshot> Producers() =>

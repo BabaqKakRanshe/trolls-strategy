@@ -81,8 +81,8 @@ namespace TrollStrategy.UI
         public void ShowReplay(bool paused, float speed, int alivePlayers, int aliveEnemies) =>
             _view?.ShowReplay(paused, speed, alivePlayers, aliveEnemies);
 
-        public void ShowResult(BattleOutcome outcome, int survived, int fallen, int lostItems) =>
-            _view?.ShowResult(outcome, survived, fallen, lostItems);
+        public void ShowResult(BattleOutcome outcome, int survived, int fallen, int lostItems, BattleCost cost = null) =>
+            _view?.ShowResult(outcome, survived, fallen, lostItems, cost);
 
         public void Close()
         {

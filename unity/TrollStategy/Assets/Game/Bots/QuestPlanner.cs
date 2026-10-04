@@ -78,7 +78,7 @@ namespace TrollStrategy.Bots
                     break;
                 case QuestGoalKind.ReachArenaLevel:
                     // a lost climb asks for a stronger squad first: the barracks' cheapest upgrade
-                    if (_battles.LostLast) _hands.BuyUpgrade(wait, "отряд сильнее", BuildingKind.Barracks);
+                    if (_battles.LostLast || _battles.NeedsStrength) _hands.BuyUpgrade(wait, "отряд сильнее", BuildingKind.Barracks);
                     _battles.TryFight(wait, hire: true);
                     break;
                 case QuestGoalKind.OwnLand:

@@ -25,6 +25,10 @@
 "v": "The arena is recovering after the battle"
 },
 {
+"k": "Не хватает золота на ставку: ещё {0}",
+"v": "Not enough gold for the stake: {0} more"
+},
+{
 "k": "Неверные данные боя",
 "v": "Invalid battle data"
 },
@@ -1129,6 +1133,34 @@
 "v": "You'll see how much gold once you're back in the colony."
 },
 {
+"k": "Ставка сгорела",
+"v": "Stake lost"
+},
+{
+"k": "Поражение и ничья сжигают ставку, победа её возвращает.",
+"v": "A defeat or a draw burns the stake; a win gives it back."
+},
+{
+"k": "Отдых уровня",
+"v": "Level rest"
+},
+{
+"k": "После поражения уровень отдыхает вдвое дольше.",
+"v": "After a defeat the level rests twice as long."
+},
+{
+"k": "Уровень закрыт",
+"v": "Level closed"
+},
+{
+"k": "Поражение на вершине лестницы закрывает её снова до новой победы ниже.",
+"v": "A defeat at the top of the ladder closes it again until a new win below."
+},
+{
+"k": "Уровень {0} закрыт до победы на {1}-м",
+"v": "Level {0} is closed until a win on level {1}"
+},
+{
 "k": "Отряд",
 "v": "Squad"
 },
@@ -1157,6 +1189,38 @@
 "v": "Up to {0} fighters go into battle. You choose who before the fight."
 },
 {
+"k": "Оценка отряда",
+"v": "Squad estimate"
+},
+{
+"k": "Сила врагов",
+"v": "Enemy strength"
+},
+{
+"k": "Враги сильнее обычного: здоровье ×{0}, урон +{1}, броня +{2}",
+"v": "Enemies stronger than usual: health ×{0}, damage +{1}, armor +{2}"
+},
+{
+"k": "Трофеи",
+"v": "Trophies"
+},
+{
+"k": "Призовой фонд",
+"v": "Prize fund"
+},
+{
+"k": "Повторные победы на любом уровне платят из призового фонда арены. Одна выплата приходит каждые {0}.",
+"v": "Repeat wins on any level pay from the arena's prize fund. One payout comes every {0}."
+},
+{
+"k": "Ставка",
+"v": "Stake"
+},
+{
+"k": "Победа возвращает ставку, поражение и ничья её сжигают.",
+"v": "A win gives the stake back; a defeat or a draw burns it."
+},
+{
 "k": "золота за первую победу",
 "v": "gold for the first win"
 },
@@ -1165,8 +1229,32 @@
 "v": "gold per win"
 },
 {
+"k": "фонд пуст: только ставка назад",
+"v": "fund empty: only the stake back"
+},
+{
+"k": "Поражение: ставка сгорит, отдых {0}, уровень закроется до победы на {1}-м",
+"v": "Defeat: the stake burns, rest {0}, the level closes until a win on level {1}"
+},
+{
+"k": "Поражение: ставка сгорит, отдых {0}",
+"v": "Defeat: the stake burns, rest {0}"
+},
+{
 "k": "Отдых {0}",
 "v": "Rest {0}"
+},
+{
+"k": "Лестница пройдена. Повторы платят из фонда.",
+"v": "Ladder complete. Repeats pay from the fund."
+},
+{
+"k": "Веха. Уровень {0}. Побед: {1}",
+"v": "Milestone. Level {0}. Wins: {1}"
+},
+{
+"k": "Веха. Уровень {0}",
+"v": "Milestone. Level {0}"
 },
 {
 "k": "Уровень {0}. Побед: {1}",
@@ -1175,6 +1263,66 @@
 {
 "k": "Уровень {0}",
 "v": "Level {0}"
+},
+{
+"k": "Отряд сильнее",
+"v": "Squad stronger"
+},
+{
+"k": "На равных",
+"v": "Even"
+},
+{
+"k": "Отряд слабее",
+"v": "Squad weaker"
+},
+{
+"k": "В колонии нет бойцов: наймите существ в бараках.",
+"v": "The colony has no fighters: hire creatures at the barracks."
+},
+{
+"k": "Оценка по лучшим {0} бойцам колонии и её снаряжению. Это подсказка, исход решает бой.",
+"v": "Estimated from the colony's best {0} fighters and its gear. It is a hint: the battle decides."
+},
+{
+"k": "Сделайте отряд сильнее: улучшения бараков, снаряжение, больше бойцов.",
+"v": "Make the squad stronger: barracks upgrades, gear, more fighters."
+},
+{
+"k": "Враги носят это снаряжение, и оно действует в бою.",
+"v": "The enemies wear this gear, and it works in battle."
+},
+{
+"k": "фонд полон",
+"v": "fund full"
+},
+{
+"k": "через {0}",
+"v": "in {0}"
+},
+{
+"k": "Лес",
+"v": "Forest"
+},
+{
+"k": "Болото",
+"v": "Swamp"
+},
+{
+"k": "Кладбище",
+"v": "Graveyard"
+},
+{
+"k": "Горная застава",
+"v": "Mountain outpost"
+},
+{
+"k": "Снега",
+"v": "Snowfields"
+},
+{
+"k": "Луг",
+"v": "Meadow"
 },
 {
 "k": "Побед: {0}. Можно в бой",
@@ -1187,6 +1335,10 @@
 {
 "k": "{0}, первая победа",
 "v": "{0}, first win"
+},
+{
+"k": "{0}, ничья",
+"v": "{0}, draw"
 },
 {
 "k": "Награда за бой: от {0} до {1} золота",
@@ -1515,6 +1667,18 @@
 {
 "k": "уровень {0}",
 "v": "level {0}"
+},
+{
+"k": "нет побед",
+"v": "no wins"
+},
+{
+"k": "Следующая веха",
+"v": "Next milestone"
+},
+{
+"k": "все пройдены",
+"v": "all done"
 },
 {
 "k": "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене. Сюда же приходят трофеи арены: носильщики унесут их на склад экипировки, к зачарователю или на рынок.",
@@ -2845,6 +3009,14 @@
 "v": "Earn gold at the market. The quest repeats and the goal grows."
 },
 {
+"k": "Веха арены",
+"v": "Arena milestone"
+},
+{
+"k": "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.",
+"v": "Win at the next arena milestone. A champion stands there, and every round the milestone is higher."
+},
+{
 "k": "Оборот",
 "v": "Turnover"
 },
@@ -3185,8 +3357,16 @@
 "v": "Enemy"
 },
 {
+"k": "трофеи придут в бараки",
+"v": "trophies go to the barracks"
+},
+{
 "k": "найм откроется первой победой",
 "v": "hiring opens with the first win"
+},
+{
+"k": "ставка",
+"v": "stake"
 },
 {
 "k": "Победа!",
@@ -3435,14 +3615,6 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Works faster than a goblin and carries more, but walks slowly. Strong in battle."
-},
-{
-"k": "Улучшения бараков делают отряд сильнее",
-"v": "Barracks upgrades make the squad stronger"
-},
-{
-"k": "Выиграй бой. Повторные победы тоже приносят золото.",
-"v": "Win a battle. Repeat wins bring gold too."
 }
 ]
 }

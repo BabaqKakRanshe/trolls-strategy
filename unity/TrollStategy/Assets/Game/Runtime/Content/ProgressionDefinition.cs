@@ -225,6 +225,10 @@ namespace TrollStrategy.Content
         [SerializeField] private List<QuestDefinition> _repeatableQuests = new();
         [Tooltip("How much each full cycle of repeatable quests raises their targets and gold, in percent.")]
         [SerializeField, Range(0, 200)] private int _repeatGrowthPercent = 25;
+        [Tooltip("A repeatable \"reach the arena level\" quest asks for this many levels more every cycle instead of growing by percent: the ladder's milestones.")]
+        [SerializeField, Min(1)] private int _repeatArenaLevelStep = 5;
+        [Tooltip("The highest arena level a repeatable quest asks for: the top of the ladder.")]
+        [SerializeField, Min(1)] private int _repeatArenaLevelCap = 30;
 
         public IReadOnlyList<UnitKind> StartingUnits => _startingUnits ?? Array.Empty<UnitKind>();
         public IReadOnlyList<BuildingKind> StartingBuildings => _startingBuildings ?? Array.Empty<BuildingKind>();
@@ -233,6 +237,15 @@ namespace TrollStrategy.Content
         public IReadOnlyList<QuestDefinition> RepeatableQuests =>
             _repeatableQuests ?? (IReadOnlyList<QuestDefinition>)Array.Empty<QuestDefinition>();
         public int RepeatGrowthPercent => _repeatGrowthPercent;
+        public int RepeatArenaLevelStep => Math.Max(1, _repeatArenaLevelStep);
+        public int RepeatArenaLevelCap => Math.Max(1, _repeatArenaLevelCap);
+
+        /// <summary>How a repeatable arena quest climbs the ladder: <paramref name="step"/> levels a cycle, up to <paramref name="cap"/>.</summary>
+        public void SetRepeatArenaLevels(int step, int cap)
+        {
+            _repeatArenaLevelStep = Math.Max(1, step);
+            _repeatArenaLevelCap = Math.Max(1, cap);
+        }
 
         public void Init(IEnumerable<UnitKind> startingUnits, IEnumerable<BuildingKind> startingBuildings,
             IEnumerable<string> startingMissions, IEnumerable<QuestDefinition> quests,

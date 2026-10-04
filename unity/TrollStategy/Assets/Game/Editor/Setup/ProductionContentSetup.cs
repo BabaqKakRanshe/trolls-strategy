@@ -161,8 +161,10 @@ namespace TrollStrategy.Editor.Setup
             Upgrades(BuildingKind.Armory, new[] { 800, 1800 }, 0, 0, 0);
             // the tutorial's last building before the first battle: about a minute and a half of income by then;
             // its upgrades (squad, health, rest, glory) are bought inside it, the deeper ones with its level
-            // the arena's trophies wait here for haulers: to the armory, the enchanter or the market
-            Storage(BuildingKind.Barracks, StorageRole.Stockpile, ResourceKind.RustySword, ResourceKind.PatchedArmor);
+            // the arena's trophies wait here for haulers: to the armory, the enchanter or the market. Every level of
+            // the ladder brings its own (ArenaContentSetup), so the barracks keep every good that is gear
+            Storage(BuildingKind.Barracks, StorageRole.Stockpile,
+                catalog.Resources.Where(r => r != null && r.IsEquipment).Select(r => r.Kind).ToArray());
             Capacity(BuildingKind.Barracks, 20);
             Price(BuildingKind.Barracks, 300);
             Upgrades(BuildingKind.Barracks, new[] { 800, 2000 }, 0, 0, 0);

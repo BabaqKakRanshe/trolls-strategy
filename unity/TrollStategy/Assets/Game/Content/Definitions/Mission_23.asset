@@ -16,10 +16,14 @@ MonoBehaviour:
   _displayName: "23. \u0426\u0438\u043A\u043B\u043E\u043F \u0438 \u0441\u0432\u0438\u0442\u0430"
   _level: 23
   _enemyHealthPercent: 380
-  _enemyDamageBonus: 5
-  _enemyArmorBonus: 5
+  _enemyDamageBonus: 0
+  _enemyArmorBonus: 0
   _unlocksUnit: 0
   _unlockUnit: 0
+  _formation: 2
+  _milestone: 0
+  _championHealthPercent: 0
+  _biome: 4
   _width: 9
   _height: 5
   _maxPlayerUnits: 6
@@ -69,45 +73,83 @@ MonoBehaviour:
   _enemies:
   - Kind: 25
     Cell:
+      X: 7
+      Y: 0
+    Gear:
+    - war-hammer
+    - steel-armor
+    Champion: 0
+  - Kind: 25
+    Cell:
+      X: 7
+      Y: 4
+    Gear:
+    - war-hammer
+    - steel-armor
+    Champion: 0
+  - Kind: 25
+    Cell:
       X: 8
       Y: 0
-  - Kind: 0
-    Cell:
-      X: 8
-      Y: 1
-  - Kind: 0
-    Cell:
-      X: 8
-      Y: 2
-  - Kind: 0
-    Cell:
-      X: 8
-      Y: 3
-  - Kind: 0
+    Gear:
+    - war-hammer
+    - steel-armor
+    Champion: 0
+  - Kind: 25
     Cell:
       X: 8
       Y: 4
-  - Kind: 25
-    Cell:
-      X: 7
-      Y: 0
+    Gear:
+    - war-hammer
+    - steel-armor
+    Champion: 0
   - Kind: 25
     Cell:
       X: 7
       Y: 1
-  - Kind: 25
-    Cell:
-      X: 7
-      Y: 2
-  - Kind: 25
+    Gear:
+    - war-hammer
+    - steel-armor
+    Champion: 0
+  - Kind: 0
     Cell:
       X: 7
       Y: 3
+    Gear:
+    - enchanted-bow
+    - steel-armor
+    Champion: 0
+  - Kind: 0
+    Cell:
+      X: 8
+      Y: 1
+    Gear:
+    - enchanted-bow
+    - steel-armor
+    Champion: 0
+  - Kind: 0
+    Cell:
+      X: 8
+      Y: 3
+    Gear:
+    - enchanted-bow
+    - steel-armor
+    Champion: 0
+  - Kind: 0
+    Cell:
+      X: 7
+      Y: 2
+    Gear:
+    - enchanted-bow
+    - steel-armor
+    Champion: 0
   _firstWinGold: 1570
   _firstWinGoldMax: 2510
   _repeatWinGold: 940
   _repeatWinGoldMax: 1510
-  _winGoods: []
+  _winGoods:
+  - _resource: 37
+    _amount: 1
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

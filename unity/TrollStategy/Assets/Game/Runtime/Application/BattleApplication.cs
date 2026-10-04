@@ -7,8 +7,12 @@ namespace TrollStrategy.Application
 {
     public static class BattleApplication
     {
+        /// <summary>
+        /// Whether the colony may fight this mission now: no battle running, the level open and rested, and the
+        /// stake in the treasury (when the <paramref name="catalog"/> sets one).
+        /// </summary>
         public static CommandResult ValidateAvailability(GameState state, BattleMissionDefinition mission,
-            bool debugBypassTime = false)
+            bool debugBypassTime = false, GameContentCatalog catalog = null)
         {
             if (state == null || mission == null) return CommandResult.Fail("Миссия не найдена");
             if (state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
@@ -20,8 +24,39 @@ namespace TrollStrategy.Application
             if (state.ActiveTimeMs < UnlockAtMs(mission)) return CommandResult.Fail("Миссия ещё не открыта");
             if (state.ActiveTimeMs < state.ReadyAtOf(mission.MissionId))
                 return CommandResult.Fail("Арена восстанавливается после боя");
+            int stake = Stake(state, mission, catalog);
+            if (state.Gold < stake) return CommandResult.Fail($"Не хватает золота на ставку: ещё {stake - state.Gold}");
             return CommandResult.Success();
         }
+
+        /// <summary>
+        /// The gold a battle here stakes: the arena's share of the level's least reward, for a first win until the
+        /// level is won and for a repeat after, in tens and at least 10. A win keeps it; a defeat or a draw burns it.
+        /// </summary>
+        public static int Stake(GameState state, BattleMissionDefinition mission, GameContentCatalog catalog)
+        {
+            if (state == null || mission == null || catalog == null || catalog.Economy == null) return 0;
+            int percent = catalog.Economy.ArenaStakePercent;
+            int basis = state.WinsOf(mission.MissionId) == 0 ? mission.FirstWinGold : mission.RepeatWinGold;
+            if (percent <= 0 || basis <= 0) return 0;
+            return Math.Max(10, (int)Math.Round(basis * percent / 1000.0) * 10);
+        }
+
+        /// <summary>The highest level open on the ladder now, or null in a sandbox game without the ladder's locks.</summary>
+        internal static BattleMissionDefinition HighestOpenMission(GameState state, GameContentCatalog catalog)
+        {
+            BattleMissionDefinition top = null;
+            foreach (var candidate in catalog.Missions)
+                if (candidate != null && Progression.IsMissionUnlocked(state, candidate.MissionId) &&
+                    (top == null || candidate.Level > top.Level))
+                    top = candidate;
+            return top;
+        }
+
+        /// <summary>A defeat here closes the level again: it is the top of the open ladder, above the first level.</summary>
+        public static bool ClosesOnDefeat(GameState state, BattleMissionDefinition mission, GameContentCatalog catalog) =>
+            state?.Progress != null && mission != null && mission.Level > 1 &&
+            Progression.IsMissionUnlocked(state, mission.MissionId) && HighestOpenMission(state, catalog) == mission;
 
         /// <summary>Active time left until the mission opens and has recovered from the last run.</summary>
         public static int WaitMs(GameState state, BattleMissionDefinition mission)
@@ -75,8 +110,12 @@ namespace TrollStrategy.Application
             foreach (var candidate in catalog.Missions)
                 if (candidate != null && candidate.MissionId == command.MissionId)
                     mission = candidate;
-            var available = ValidateAvailability(state, mission, debugBypassTime);
+            var available = ValidateAvailability(state, mission, debugBypassTime, catalog);
             if (!available.Ok) return available;
+            // the stake and whether this is a first win are read before the battle changes them
+            int stake = Stake(state, mission, catalog);
+            bool first = state.WinsOf(mission.MissionId) == 0;
+            bool closesOnDefeat = ClosesOnDefeat(state, mission, catalog);
 
             BattleBoard board;
             try { board = mission.CreateBoard(); }
@@ -137,10 +176,8 @@ namespace TrollStrategy.Application
             for (int i = 0; i < placements.Count; i++)
                 fighters.Add(FighterInput(selectedUnits[i].Id, selectedUnits[i].Kind, true,
                     placements[i].Cell, catalog, state.Equipment, 100 + healthPercent, damageBonus, 0));
-            for (int i = 0; i < mission.Enemies.Count; i++)
-                fighters.Add(FighterInput($"enemy-{i:D3}", mission.Enemies[i].Kind, false,
-                    mission.Enemies[i].Cell, catalog, state.Equipment, mission.EnemyHealthPercent,
-                    mission.EnemyDamageBonus, mission.EnemyArmorBonus));
+            try { fighters.AddRange(EnemyFighters(mission, catalog)); }
+            catch (ArgumentOutOfRangeException) { return CommandResult.Fail("Данные миссии некорректны"); }
 
             BattleReport report;
             try { report = BattleSimulation.Run(board, fighters, 1); }
@@ -161,30 +198,49 @@ namespace TrollStrategy.Application
             state.Equipment.RemoveAll(item => item.OwnerUnitId != null && fallen.Contains(item.OwnerUnitId));
             state.Units.RemoveAll(u => fallen.Contains(u.Id));
 
+            var economy = catalog.Economy;
+            bool victory = report.Outcome == BattleOutcome.PlayerVictory;
+            bool draw = report.Outcome == BattleOutcome.Draw;
+            // a first win pays in full; a repeat win or a draw on a won level pays only with a payout from the
+            // arena's prize fund, which it takes at once, so untaken rewards never draw more than the fund held
+            bool paid = (victory || draw) && (first || ArenaFund.Take(state, economy.ArenaFundCap, economy.ArenaFundPeriodMs));
             int reward = 0;
-            if (report.Outcome == BattleOutcome.PlayerVictory)
+            if (paid)
             {
-                // a surprise within the mission's range; the colony gets it when the player takes it
-                bool first = state.WinsOf(mission.MissionId) == 0;
+                // a surprise within the mission's range; the colony gets it when the player takes it. A draw pays
+                // the share of the enemies' health the squad took.
                 var (min, max) = WinGold(state, mission, catalog);
                 reward = RewardDice.Roll(state, min, max);
+                if (draw)
+                {
+                    double share = report.DefeatedShare(enemies: true);
+                    reward = (int)Math.Round(reward * share);
+                    min = (int)Math.Round(min * share);
+                    max = (int)Math.Round(max * share);
+                }
                 var pending = state.PendingBattleReward;
-                // trophies add up like the gold: every win brings the mission's set
+                // trophies add up like the gold: every paid win brings the mission's set, a draw none
                 var goods = pending?.Goods != null
                     ? new Dictionary<ResourceKind, int>(pending.Goods)
                     : new Dictionary<ResourceKind, int>();
-                foreach (var trophy in mission.WinGoods)
-                    goods[trophy.Resource] = (goods.TryGetValue(trophy.Resource, out int held) ? held : 0) + trophy.Amount;
-                state.PendingBattleReward = new PendingBattleReward
-                {
-                    MissionId = mission.MissionId,
-                    // an untaken earlier win is never lost: it adds to this one
-                    Gold = reward + (pending?.Gold ?? 0),
-                    MinGold = min + (pending?.Gold ?? 0),
-                    MaxGold = max + (pending?.Gold ?? 0),
-                    FirstWin = first,
-                    Goods = goods
-                };
+                if (victory)
+                    foreach (var trophy in mission.WinGoods)
+                        goods[trophy.Resource] = (goods.TryGetValue(trophy.Resource, out int held) ? held : 0) + trophy.Amount;
+                if (reward > 0 || (victory && mission.WinGoods.Count > 0))
+                    state.PendingBattleReward = new PendingBattleReward
+                    {
+                        MissionId = mission.MissionId,
+                        // an untaken earlier win is never lost: it adds to this one
+                        Gold = reward + (pending?.Gold ?? 0),
+                        MinGold = min + (pending?.Gold ?? 0),
+                        MaxGold = max + (pending?.Gold ?? 0),
+                        FirstWin = victory && first,
+                        Draw = draw,
+                        Goods = goods
+                    };
+            }
+            if (victory)
+            {
                 state.MissionWins[mission.MissionId] = state.WinsOf(mission.MissionId) + 1;
                 state.BattlesWon++;
                 state.HighestMissionLevel = Math.Max(state.HighestMissionLevel, mission.Level);
@@ -196,9 +252,18 @@ namespace TrollStrategy.Application
                     if (first && mission.UnlockUnit.HasValue) state.Progress.UnlockedUnits.Add(mission.UnlockUnit.Value);
                 }
             }
-            state.MissionReadyAtMs[mission.MissionId] = state.ActiveTimeMs +
-                (int)Math.Ceiling(CooldownSeconds(state, mission, catalog) * 1000f);
-            state.ActiveBattle = new BattleRunState(mission.MissionId, report, reward, fallen);
+            // a defeat burns the stake (a draw too), rests the level longer and closes the top of the ladder again
+            int burned = victory ? 0 : Math.Min(stake, Math.Max(0, state.Gold));
+            state.Gold -= burned;
+            float rest = CooldownSeconds(state, mission, catalog);
+            if (report.Outcome == BattleOutcome.EnemyVictory) rest *= economy.ArenaDefeatRestMultiplier;
+            int restMs = (int)Math.Ceiling(rest * 1000f);
+            string closed = null;
+            if (report.Outcome == BattleOutcome.EnemyVictory && closesOnDefeat && state.Progress != null &&
+                state.Progress.UnlockedMissions.Remove(mission.MissionId))
+                closed = mission.MissionId;
+            state.MissionReadyAtMs[mission.MissionId] = state.ActiveTimeMs + restMs;
+            state.ActiveBattle = new BattleRunState(mission.MissionId, report, reward, fallen, burned, closed, restMs);
             return CommandResult.Success();
         }
 
@@ -223,9 +288,33 @@ namespace TrollStrategy.Application
             return CommandResult.Success();
         }
 
-        private static BattleFighterInput FighterInput(string id, UnitKind kind, bool isPlayer,
+        /// <summary>
+        /// The level's enemies as the battle takes them: the level's strength, the gear each wears and the
+        /// champion's health. Throws <see cref="ArgumentOutOfRangeException"/> for gear the catalog lacks.
+        /// </summary>
+        internal static List<BattleFighterInput> EnemyFighters(BattleMissionDefinition mission, GameContentCatalog catalog)
+        {
+            var enemies = new List<BattleFighterInput>(mission.Enemies.Count);
+            for (int i = 0; i < mission.Enemies.Count; i++)
+            {
+                var enemy = mission.Enemies[i];
+                int health = mission.EnemyHealthPercent;
+                if (enemy.Champion && mission.ChampionHealthPercent > 0)
+                    health = (int)Math.Round(health * mission.ChampionHealthPercent / 100.0);
+                enemies.Add(FighterInput($"enemy-{i:D3}", enemy.Kind, false, enemy.Cell, catalog,
+                    Array.Empty<EquipmentState>(), health, mission.EnemyDamageBonus, mission.EnemyArmorBonus,
+                    enemy.GearIds));
+            }
+            return enemies;
+        }
+
+        /// <summary>
+        /// One fighter as the battle takes it. A colony fighter adds the items it owns in
+        /// <paramref name="equipment"/>, an enemy the item ids of <paramref name="gear"/>.
+        /// </summary>
+        internal static BattleFighterInput FighterInput(string id, UnitKind kind, bool isPlayer,
             Cell cell, GameContentCatalog catalog, IReadOnlyList<EquipmentState> equipment, int healthPercent,
-            int extraDamage, int extraArmor)
+            int extraDamage, int extraArmor, IReadOnlyList<string> gear = null)
         {
             var definition = catalog.GetUnit(kind);
             int damageBonus = extraDamage, armorBonus = extraArmor;
@@ -234,6 +323,13 @@ namespace TrollStrategy.Application
                 {
                     if (item.OwnerUnitId != id) continue;
                     var itemDefinition = catalog.GetEquipment(item.DefinitionId);
+                    damageBonus += itemDefinition.DamageBonus;
+                    armorBonus += itemDefinition.ArmorBonus;
+                }
+            else if (gear != null)
+                foreach (string itemId in gear)
+                {
+                    var itemDefinition = catalog.GetEquipment(itemId);
                     damageBonus += itemDefinition.DamageBonus;
                     armorBonus += itemDefinition.ArmorBonus;
                 }

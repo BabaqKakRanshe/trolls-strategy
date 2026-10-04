@@ -138,6 +138,18 @@ namespace TrollStrategy.UI
         }
 
         /// <summary>The line under each shown upgrade: what a level gives, or what opens the next one.</summary>
+        /// <summary>The card's facts as shown, key and value per row.</summary>
+        public IReadOnlyList<(string Key, string Value)> RowTexts
+        {
+            get
+            {
+                var rows = new List<(string, string)>();
+                foreach (var row in _rowPool)
+                    if (Ui.IsShown(row.Root)) rows.Add((row.Key.text, row.Value.text));
+                return rows;
+            }
+        }
+
         public IReadOnlyList<string> UpgradeInfos
         {
             get
@@ -237,6 +249,14 @@ namespace TrollStrategy.UI
                 case StorageRole.Stockpile:
                     note = "Хранит сырьё и полуфабрикаты от носильщиков.";
                     break;
+            }
+            if (building.Kind == BuildingKind.Barracks)
+            {
+                // the arena's progress where the squad lives: the highest level won and the next milestone
+                int highest = _context.Session.HighestMissionLevel;
+                AddRow("Арена", highest > 0 ? $"уровень {highest}" : "нет побед");
+                var milestone = _context.Session.NextMilestone();
+                AddRow("Следующая веха", milestone != null ? $"уровень {milestone.Level}" : "все пройдены");
             }
             if (building.Kind == BuildingKind.Barracks)
                 note = "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене. " +

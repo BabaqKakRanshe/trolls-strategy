@@ -16,10 +16,14 @@ MonoBehaviour:
   _displayName: "26. \u0414\u0432\u0430 \u0446\u0438\u043A\u043B\u043E\u043F\u0430"
   _level: 26
   _enemyHealthPercent: 410
-  _enemyDamageBonus: 6
-  _enemyArmorBonus: 6
+  _enemyDamageBonus: 0
+  _enemyArmorBonus: 0
   _unlocksUnit: 0
   _unlockUnit: 0
+  _formation: 1
+  _milestone: 0
+  _championHealthPercent: 0
+  _biome: 4
   _width: 9
   _height: 5
   _maxPlayerUnits: 6
@@ -69,49 +73,91 @@ MonoBehaviour:
   _enemies:
   - Kind: 25
     Cell:
-      X: 8
-      Y: 0
-  - Kind: 25
-    Cell:
-      X: 8
-      Y: 1
-  - Kind: 11
-    Cell:
-      X: 8
-      Y: 2
-  - Kind: 11
-    Cell:
-      X: 8
-      Y: 3
-  - Kind: 11
-    Cell:
-      X: 8
-      Y: 4
-  - Kind: 25
-    Cell:
       X: 7
-      Y: 0
+      Y: 2
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
   - Kind: 25
     Cell:
       X: 7
       Y: 1
-  - Kind: 25
-    Cell:
-      X: 7
-      Y: 2
-  - Kind: 25
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
+  - Kind: 11
     Cell:
       X: 7
       Y: 3
-  - Kind: 25
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
+  - Kind: 11
+    Cell:
+      X: 7
+      Y: 0
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
+  - Kind: 11
     Cell:
       X: 7
       Y: 4
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
+  - Kind: 25
+    Cell:
+      X: 8
+      Y: 2
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
+  - Kind: 25
+    Cell:
+      X: 8
+      Y: 1
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
+  - Kind: 25
+    Cell:
+      X: 8
+      Y: 3
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
+  - Kind: 25
+    Cell:
+      X: 8
+      Y: 0
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
+  - Kind: 25
+    Cell:
+      X: 8
+      Y: 4
+    Gear:
+    - enchanted-steel-sword
+    - enchanted-chainmail
+    Champion: 0
   _firstWinGold: 1750
   _firstWinGoldMax: 2800
   _repeatWinGold: 1050
   _repeatWinGoldMax: 1680
-  _winGoods: []
+  _winGoods:
+  - _resource: 41
+    _amount: 1
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

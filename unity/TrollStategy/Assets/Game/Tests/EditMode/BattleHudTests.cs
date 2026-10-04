@@ -209,6 +209,19 @@ namespace TrollStrategy.Tests
             Assert.That(_hud.Replay.Verdict, Is.EqualTo("Поражение"));
             Assert.That(_hud.Replay.ShowsLostGear, Is.True);
             Assert.That(_hud.Replay.ShowsPrize, Is.False);
+
+            // what the defeat cost: the stake, the level's longer rest and the top of the ladder closed again
+            _hud.ShowResult(BattleOutcome.EnemyVictory, 0, 2, 1, new BattleCost(60, 4, 3, 240000, false));
+            Assert.That(_hud.Replay.BurnedStake, Is.EqualTo("−60"));
+            Assert.That(_hud.Replay.Rest, Is.EqualTo(TopBar.Duration(240000)));
+            Assert.That(_hud.Replay.Closed, Is.EqualTo("Уровень 4 закрыт до победы на 3-м"));
+            _hud.ShowResult(BattleOutcome.Draw, 1, 0, 0, new BattleCost(60, 0, 3, 120000, true));
+            Assert.That(_hud.Replay.Closed, Is.Null, "A draw closes nothing");
+            Assert.That(_hud.Replay.ShowsPrize, Is.True, "A draw's share waits in the colony");
+            _hud.ShowResult(BattleOutcome.PlayerVictory, 2, 0, 0, new BattleCost(0, 0, 3, 120000, false));
+            Assert.That(_hud.Replay.BurnedStake, Is.Null, "A win keeps the stake");
+            Assert.That(_hud.Replay.Rest, Is.Null);
+            Assert.That(_hud.Replay.ShowsPrize, Is.False, "A repeat win from an empty fund leaves nothing to take");
         }
 
         private Cell FreeCell() => _mission.PlayerDeployment.First(cell =>

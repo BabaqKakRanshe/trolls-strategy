@@ -1172,6 +1172,13 @@
     white-space: normal;
 }
 
+/* the level's surroundings in a word, by the close button */
+.arena-poster__biome {
+    margin: 6px 14px 0 0;
+    font-size: 15px;
+    color: var(--ink-faint);
+}
+
 /* your squad's places against the enemy, as they stand on the board; both captions on one line */
 .arena-lineup {
     flex-direction: row;
@@ -1245,6 +1252,64 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
+/* how the best squad compares: a pill under the squad's places, its border in the grade's colour */
+.arena-odds {
+    align-self: flex-start;
+    margin-top: 8px;
+    padding: 3px 12px;
+    border-width: 2px;
+    border-radius: 14px;
+    font-size: 15px;
+}
+
+.arena-odds--stronger {
+    border-color: var(--good-fill);
+}
+
+.arena-odds--even {
+    border-color: var(--coin);
+}
+
+.arena-odds--weaker {
+    border-color: var(--bad);
+}
+
+/* the enemies' strength: health, damage and armour over their kind's, then their gear */
+.arena-strength {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.arena-stat {
+    flex-direction: row;
+    align-items: center;
+    margin-left: 12px;
+}
+
+.arena-stat__glyph {
+    width: 18px;
+    height: 18px;
+    margin-right: 3px;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.arena-stat__value {
+    font-size: 15px;
+}
+
+.arena-enemy-gear {
+    flex-direction: row;
+    margin-left: 8px;
+}
+
+.arena-enemy-gear__item {
+    width: 26px;
+    height: 26px;
+    margin-left: 3px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
 .arena-foe__count {
     margin-top: -22px;
     padding: 0 9px;
@@ -1300,6 +1365,82 @@
 .arena-fact__value--gold {
     font-size: 24px;
     color: var(--coin-deep);
+}
+
+/* the trophies a win brings: their pictures side by side */
+.arena-trophies__art {
+    flex-direction: row;
+    margin-right: 8px;
+}
+
+.arena-trophies__item {
+    width: 36px;
+    height: 36px;
+    margin-right: -6px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.arena-fund {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.arena-fund__caption {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-right: 10px;
+}
+
+.arena-fund__dots {
+    flex-direction: row;
+    margin-right: 10px;
+}
+
+.arena-fund__dot {
+    width: 14px;
+    height: 14px;
+    margin-right: 5px;
+    border-width: 2px;
+    border-radius: 7px;
+    border-color: var(--coin-deep);
+}
+
+.arena-fund__dot--full {
+    background-color: var(--coin);
+}
+
+.arena-fund__next {
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+/* the stake: a coin and its number, left of the battle's risk */
+.arena-stake {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 14px;
+}
+
+.arena-stake__coin {
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
+}
+
+.arena-stake__value {
+    font-size: 20px;
+    color: var(--coin-deep);
+}
+
+/* a milestone's star on its disc's upper left */
+.arena-rail__star {
+    position: absolute;
+    top: 6px;
+    left: 4px;
+    width: 22px;
+    height: 22px;
+    -unity-background-image-tint-color: var(--coin-deep);
 }
 
 .arena-fact__value--hire {

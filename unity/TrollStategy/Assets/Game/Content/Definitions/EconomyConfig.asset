@@ -44,3 +44,8 @@ MonoBehaviour:
   _trailRoadSpeed: 1.3
   _trailGraceSeconds: 60
   _trailDecaySeconds: 3
+  _arenaFundPeriodSeconds: 180
+  _arenaFundCap: 3
+  _arenaStakePercent: 30
+  _arenaDefeatRestMultiplier: 2
+  _arenaOddsMargin: 1.5

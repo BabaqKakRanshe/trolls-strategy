@@ -102,6 +102,21 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void Arena_TheChainAsksForTheSixthLevel_AndTheCycleAfterItForTheMilestones()
+        {
+            Assert.That(_progression.Quests.Any(q => q.Goals.Any(g => g.Kind == QuestGoalKind.ReachArenaLevel && g.Amount == 6)),
+                Is.True, "The chain's last arena quest stays at the sixth level");
+            Assert.That(_progression.Quests.SelectMany(q => q.Goals).Where(g => g.Kind == QuestGoalKind.ReachArenaLevel)
+                .Max(g => g.Amount), Is.EqualTo(6), "Milestones above it wait for the cycle, so the campaign keeps its length");
+            var arena = _progression.RepeatableQuests.Single(q => q.Goals.Any(g => g.Kind == QuestGoalKind.ReachArenaLevel));
+            Assert.That(arena.Goals.Single().Amount, Is.EqualTo(10));
+            int milestone = _catalog.Missions.Where(m => m != null && m.Milestone && m.Level > 6).Min(m => m.Level);
+            Assert.That(milestone, Is.EqualTo(10), "The first cycle asks for the first milestone above the chain");
+            Assert.That(_progression.RepeatArenaLevelStep, Is.EqualTo(5));
+            Assert.That(_progression.RepeatArenaLevelCap, Is.EqualTo(_catalog.Missions.Where(m => m != null).Max(m => m.Level)));
+        }
+
+        [Test]
         public void RepeatableQuests_GiveOnlyGold()
         {
             Assert.That(_progression.RepeatableQuests, Is.Not.Empty, "Quests must not run out after the chain");

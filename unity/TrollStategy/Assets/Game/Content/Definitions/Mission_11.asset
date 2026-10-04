@@ -16,10 +16,14 @@ MonoBehaviour:
   _displayName: "11. \u0413\u043D\u043E\u043C\u044C\u044F \u0437\u0430\u0441\u0442\u0430\u0432\u0430"
   _level: 11
   _enemyHealthPercent: 260
-  _enemyDamageBonus: 2
-  _enemyArmorBonus: 2
+  _enemyDamageBonus: 0
+  _enemyArmorBonus: 0
   _unlocksUnit: 1
   _unlockUnit: 2
+  _formation: 2
+  _milestone: 0
+  _championHealthPercent: 0
+  _biome: 4
   _width: 9
   _height: 5
   _maxPlayerUnits: 5
@@ -69,37 +73,67 @@ MonoBehaviour:
   _enemies:
   - Kind: 2
     Cell:
+      X: 7
+      Y: 0
+    Gear:
+    - iron-sword
+    - leather-armor
+    Champion: 0
+  - Kind: 2
+    Cell:
+      X: 7
+      Y: 4
+    Gear:
+    - iron-sword
+    - leather-armor
+    Champion: 0
+  - Kind: 2
+    Cell:
       X: 8
       Y: 0
+    Gear:
+    - iron-sword
+    - leather-armor
+    Champion: 0
   - Kind: 2
-    Cell:
-      X: 8
-      Y: 1
-  - Kind: 2
-    Cell:
-      X: 8
-      Y: 2
-  - Kind: 0
-    Cell:
-      X: 8
-      Y: 3
-  - Kind: 0
     Cell:
       X: 8
       Y: 4
-  - Kind: 2
-    Cell:
-      X: 7
-      Y: 0
+    Gear:
+    - iron-sword
+    - leather-armor
+    Champion: 0
   - Kind: 2
     Cell:
       X: 7
       Y: 1
+    Gear:
+    - iron-sword
+    - leather-armor
+    Champion: 0
+  - Kind: 0
+    Cell:
+      X: 7
+      Y: 3
+    Gear:
+    - iron-sword
+    - leather-armor
+    Champion: 0
+  - Kind: 0
+    Cell:
+      X: 8
+      Y: 1
+    Gear:
+    - iron-sword
+    - leather-armor
+    Champion: 0
   _firstWinGold: 850
   _firstWinGoldMax: 1360
   _repeatWinGold: 510
   _repeatWinGoldMax: 820
-  _winGoods: []
+  _winGoods:
+  - _resource: 35
+    _amount: 1
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

@@ -188,6 +188,17 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void Inspect_BarracksShowTheArenasProgress_TheHighestLevelAndTheNextMilestone()
+        {
+            _interaction.SelectBuilding("barracks-1");
+            Refresh();
+            var rows = _hud.Inspect.RowTexts;
+            Assert.That(rows, Does.Contain(("Арена", "нет побед")));
+            var first = _session.ArenaLadder().First(m => m.Milestone);
+            Assert.That(rows, Does.Contain(("Следующая веха", $"уровень {first.Level}")));
+        }
+
+        [Test]
         public void Inspect_UnitSaleOffersAndPaysTheSessionRefund()
         {
             var id = BuyUnit(UnitKind.Troll);

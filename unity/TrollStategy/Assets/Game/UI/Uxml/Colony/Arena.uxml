@@ -16,17 +16,36 @@
                         <ui:Label name="arena-level" class="arena-poster__eyebrow t-medium" />
                         <ui:Label name="arena-name" class="arena-poster__name t-black" />
                     </ui:VisualElement>
+                    <ui:Label name="arena-biome" class="arena-poster__biome t-medium" />
                     <ui:Button name="arena-close" text="×" class="btn btn-close" />
                 </ui:VisualElement>
                 <ui:VisualElement class="arena-lineup" picking-mode="Ignore">
                     <ui:VisualElement class="arena-lineup__side" picking-mode="Ignore">
                         <ui:Label text="Ваш отряд" class="arena-lineup__caption t-medium" picking-mode="Ignore" />
                         <ui:VisualElement name="arena-squad" class="arena-lineup__row arena-squad" />
+                        <!-- how the colony's best squad compares (ArenaPanel fills it from the session's offer) -->
+                        <ui:Label name="arena-odds" class="arena-odds t-bold" />
                     </ui:VisualElement>
                     <ui:VisualElement class="glyph glyph--battle arena-lineup__versus" picking-mode="Ignore" />
                     <ui:VisualElement class="arena-lineup__side arena-lineup__side--enemy" picking-mode="Ignore">
                         <ui:Label text="Противник" class="arena-lineup__caption t-medium" picking-mode="Ignore" />
                         <ui:VisualElement name="arena-enemies" class="arena-lineup__row" picking-mode="Ignore" />
+                        <!-- the enemies' strength over their kind's and the gear they wear -->
+                        <ui:VisualElement name="arena-strength" class="arena-strength">
+                            <ui:VisualElement class="arena-stat" picking-mode="Ignore">
+                                <ui:VisualElement class="glyph glyph--health arena-stat__glyph" picking-mode="Ignore" />
+                                <ui:Label name="arena-stat-health" class="arena-stat__value t-bold" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="arena-stat" picking-mode="Ignore">
+                                <ui:VisualElement class="glyph glyph--damage arena-stat__glyph" picking-mode="Ignore" />
+                                <ui:Label name="arena-stat-damage" class="arena-stat__value t-bold" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:VisualElement class="arena-stat" picking-mode="Ignore">
+                                <ui:VisualElement class="glyph glyph--armor arena-stat__glyph" picking-mode="Ignore" />
+                                <ui:Label name="arena-stat-armor" class="arena-stat__value t-bold" picking-mode="Ignore" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="arena-enemy-gear" class="arena-enemy-gear" picking-mode="Ignore" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="arena-facts" picking-mode="Ignore">
@@ -35,6 +54,13 @@
                         <ui:VisualElement class="arena-fact__text" picking-mode="Ignore">
                             <ui:Label name="arena-gold" class="arena-fact__value arena-fact__value--gold t-black" />
                             <ui:Label name="arena-gold-note" class="arena-fact__note" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="arena-trophies" class="arena-fact">
+                        <ui:VisualElement name="arena-trophy-art" class="arena-trophies__art" picking-mode="Ignore" />
+                        <ui:VisualElement class="arena-fact__text" picking-mode="Ignore">
+                            <ui:Label name="arena-trophy-count" class="arena-fact__value t-bold" />
+                            <ui:Label text="трофеи придут в бараки" class="arena-fact__note" />
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement name="arena-hire" class="arena-fact" picking-mode="Ignore">
@@ -47,7 +73,20 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
+                <!-- the arena's prize fund for repeat wins: a dot per payout it may hold, full ones held now -->
+                <ui:VisualElement name="arena-fund" class="arena-fund">
+                    <ui:Label text="Призовой фонд" class="arena-fund__caption t-medium" picking-mode="Ignore" />
+                    <ui:VisualElement name="arena-fund-dots" class="arena-fund__dots" picking-mode="Ignore" />
+                    <ui:Label name="arena-fund-next" class="arena-fund__next" picking-mode="Ignore" />
+                </ui:VisualElement>
                 <ui:VisualElement class="arena-poster__foot" picking-mode="Ignore">
+                    <ui:VisualElement name="arena-stake" class="arena-stake">
+                        <ui:VisualElement name="arena-stake-coin" class="arena-stake__coin" picking-mode="Ignore" />
+                        <ui:VisualElement class="arena-fact__text" picking-mode="Ignore">
+                            <ui:Label name="arena-stake-value" class="arena-stake__value t-black" />
+                            <ui:Label text="ставка" class="arena-fact__note" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                     <ui:VisualElement name="arena-state-picture" class="arena-poster__picture" picking-mode="Ignore" />
                     <ui:VisualElement name="arena-state-glyph" class="glyph arena-poster__glyph" picking-mode="Ignore" />
                     <ui:Label name="arena-state" class="arena-poster__state" />

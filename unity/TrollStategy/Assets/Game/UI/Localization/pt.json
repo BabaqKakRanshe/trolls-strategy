@@ -25,6 +25,10 @@
 "v": "A arena está se recuperando após a batalha"
 },
 {
+"k": "Не хватает золота на ставку: ещё {0}",
+"v": "Falta ouro para a aposta: mais {0}"
+},
+{
 "k": "Неверные данные боя",
 "v": "Dados de batalha inválidos"
 },
@@ -1129,6 +1133,34 @@
 "v": "Quanto ouro, você descobre na colônia."
 },
 {
+"k": "Ставка сгорела",
+"v": "Aposta perdida"
+},
+{
+"k": "Поражение и ничья сжигают ставку, победа её возвращает.",
+"v": "Derrota e empate queimam a aposta; a vitória a devolve."
+},
+{
+"k": "Отдых уровня",
+"v": "Descanso do nível"
+},
+{
+"k": "После поражения уровень отдыхает вдвое дольше.",
+"v": "Depois de uma derrota, o nível descansa o dobro."
+},
+{
+"k": "Уровень закрыт",
+"v": "Nível fechado"
+},
+{
+"k": "Поражение на вершине лестницы закрывает её снова до новой победы ниже.",
+"v": "Uma derrota no topo da escada a fecha de novo até uma nova vitória abaixo."
+},
+{
+"k": "Уровень {0} закрыт до победы на {1}-м",
+"v": "Nível {0} fechado até vencer no nível {1}"
+},
+{
 "k": "Отряд",
 "v": "Esquadrão"
 },
@@ -1157,6 +1189,38 @@
 "v": "Vão para a batalha até {0} combatentes. Quem levar, você escolhe antes da luta."
 },
 {
+"k": "Оценка отряда",
+"v": "Estimativa do esquadrão"
+},
+{
+"k": "Сила врагов",
+"v": "Força dos inimigos"
+},
+{
+"k": "Враги сильнее обычного: здоровье ×{0}, урон +{1}, броня +{2}",
+"v": "Inimigos mais fortes que o normal: vida ×{0}, dano +{1}, armadura +{2}"
+},
+{
+"k": "Трофеи",
+"v": "Troféus"
+},
+{
+"k": "Призовой фонд",
+"v": "Fundo de prêmios"
+},
+{
+"k": "Повторные победы на любом уровне платят из призового фонда арены. Одна выплата приходит каждые {0}.",
+"v": "Vitórias repetidas em qualquer nível pagam do fundo de prêmios da arena. Um pagamento chega a cada {0}."
+},
+{
+"k": "Ставка",
+"v": "Aposta"
+},
+{
+"k": "Победа возвращает ставку, поражение и ничья её сжигают.",
+"v": "A vitória devolve a aposta; derrota e empate a queimam."
+},
+{
 "k": "золота за первую победу",
 "v": "ouro pela primeira vitória"
 },
@@ -1165,8 +1229,32 @@
 "v": "ouro por vitória"
 },
 {
+"k": "фонд пуст: только ставка назад",
+"v": "fundo vazio: só a aposta de volta"
+},
+{
+"k": "Поражение: ставка сгорит, отдых {0}, уровень закроется до победы на {1}-м",
+"v": "Derrota: a aposta queima, descanso {0}, o nível fecha até vencer no nível {1}"
+},
+{
+"k": "Поражение: ставка сгорит, отдых {0}",
+"v": "Derrota: a aposta queima, descanso {0}"
+},
+{
 "k": "Отдых {0}",
 "v": "Descanso {0}"
+},
+{
+"k": "Лестница пройдена. Повторы платят из фонда.",
+"v": "Escada concluída. As repetições pagam do fundo."
+},
+{
+"k": "Веха. Уровень {0}. Побед: {1}",
+"v": "Marco. Nível {0}. Vitórias: {1}"
+},
+{
+"k": "Веха. Уровень {0}",
+"v": "Marco. Nível {0}"
 },
 {
 "k": "Уровень {0}. Побед: {1}",
@@ -1175,6 +1263,66 @@
 {
 "k": "Уровень {0}",
 "v": "Nível {0}"
+},
+{
+"k": "Отряд сильнее",
+"v": "Esquadrão mais forte"
+},
+{
+"k": "На равных",
+"v": "Equilibrado"
+},
+{
+"k": "Отряд слабее",
+"v": "Esquadrão mais fraco"
+},
+{
+"k": "В колонии нет бойцов: наймите существ в бараках.",
+"v": "A colônia não tem lutadores: contrate criaturas no quartel."
+},
+{
+"k": "Оценка по лучшим {0} бойцам колонии и её снаряжению. Это подсказка, исход решает бой.",
+"v": "Estimativa pelos {0} melhores lutadores da colônia e seu equipamento. É uma dica: quem decide é a batalha."
+},
+{
+"k": "Сделайте отряд сильнее: улучшения бараков, снаряжение, больше бойцов.",
+"v": "Fortaleça o esquadrão: melhorias do quartel, equipamento, mais lutadores."
+},
+{
+"k": "Враги носят это снаряжение, и оно действует в бою.",
+"v": "Os inimigos usam este equipamento, e ele funciona na batalha."
+},
+{
+"k": "фонд полон",
+"v": "fundo cheio"
+},
+{
+"k": "через {0}",
+"v": "em {0}"
+},
+{
+"k": "Лес",
+"v": "Floresta"
+},
+{
+"k": "Болото",
+"v": "Pântano"
+},
+{
+"k": "Кладбище",
+"v": "Cemitério"
+},
+{
+"k": "Горная застава",
+"v": "Posto da montanha"
+},
+{
+"k": "Снега",
+"v": "Neves"
+},
+{
+"k": "Луг",
+"v": "Prado"
 },
 {
 "k": "Побед: {0}. Можно в бой",
@@ -1187,6 +1335,10 @@
 {
 "k": "{0}, первая победа",
 "v": "{0}, primeira vitória"
+},
+{
+"k": "{0}, ничья",
+"v": "{0}, empate"
 },
 {
 "k": "Награда за бой: от {0} до {1} золота",
@@ -1515,6 +1667,18 @@
 {
 "k": "уровень {0}",
 "v": "nível {0}"
+},
+{
+"k": "нет побед",
+"v": "sem vitórias"
+},
+{
+"k": "Следующая веха",
+"v": "Próximo marco"
+},
+{
+"k": "все пройдены",
+"v": "todos concluídos"
 },
 {
 "k": "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене. Сюда же приходят трофеи арены: носильщики унесут их на склад экипировки, к зачарователю или на рынок.",
@@ -2845,6 +3009,14 @@
 "v": "Ganhe ouro no mercado. A tarefa se repete e a meta cresce."
 },
 {
+"k": "Веха арены",
+"v": "Marco da arena"
+},
+{
+"k": "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.",
+"v": "Vença no próximo marco da arena. Lá espera um campeão, e a cada rodada o marco fica mais alto."
+},
+{
 "k": "Оборот",
 "v": "Giro"
 },
@@ -3185,8 +3357,16 @@
 "v": "Inimigo"
 },
 {
+"k": "трофеи придут в бараки",
+"v": "os troféus vão para o quartel"
+},
+{
 "k": "найм откроется первой победой",
 "v": "a contratação abre com a primeira vitória"
+},
+{
+"k": "ставка",
+"v": "aposta"
 },
 {
 "k": "Победа!",
@@ -3435,14 +3615,6 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Trabalha mais rápido que o goblin e leva mais, mas anda devagar. Forte na batalha."
-},
-{
-"k": "Улучшения бараков делают отряд сильнее",
-"v": "As melhorias do quartel deixam o esquadrão mais forte"
-},
-{
-"k": "Выиграй бой. Повторные победы тоже приносят золото.",
-"v": "Vença uma batalha. As vitórias repetidas também rendem ouro."
 }
 ]
 }

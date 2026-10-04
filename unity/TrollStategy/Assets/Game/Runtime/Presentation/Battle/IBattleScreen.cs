@@ -26,7 +26,8 @@ namespace TrollStrategy.Presentation.Battle
 
         void BeginReplay();
         void ShowReplay(bool paused, float speed, int alivePlayers, int aliveEnemies);
-        void ShowResult(BattleOutcome outcome, int survived, int fallen, int lostItems);
+        /// <summary>The verdict; <paramref name="cost"/> adds the burnt stake, the rest and a closed level.</summary>
+        void ShowResult(BattleOutcome outcome, int survived, int fallen, int lostItems, BattleCost cost = null);
         void Close();
     }
 }

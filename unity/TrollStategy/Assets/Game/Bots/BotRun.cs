@@ -54,6 +54,15 @@ namespace TrollStrategy.Bots
         public BattleOutcome Outcome;
         public int Fallen;
         public int Gold;
+        public bool FirstWin;
+        /// <summary>The battle took a payout from the arena's prize fund.</summary>
+        public bool PaidFromFund;
+        /// <summary>The stake a defeat or a draw burnt.</summary>
+        public int Stake;
+        /// <summary>How the arena window rated the squad before the battle.</summary>
+        public string Odds;
+        /// <summary>The level a defeat closed again; 0 when none.</summary>
+        public int ClosedLevel;
     }
 
     /// <summary>The colony once a minute, for the timeline.</summary>
@@ -100,6 +109,28 @@ namespace TrollStrategy.Bots
         /// <summary>The highest arena level won by the end.</summary>
         public int ArenaLevel { get; set; }
         public int BattleGold => Battles.Sum(b => b.Gold);
+        /// <summary>Gold the market paid over the run.</summary>
+        public int SalesGold { get; set; }
+        /// <summary>Gold the quests paid over the run.</summary>
+        public int QuestGold { get; set; }
+        /// <summary>The arena's share of all the gold the colony earned, 0…1.</summary>
+        public double ArenaGoldShare => BattleGold + SalesGold + QuestGold > 0
+            ? (double)BattleGold / (BattleGold + SalesGold + QuestGold) : 0;
+        /// <summary>The most repeat wins the prize fund paid in any ten minutes of colony time.</summary>
+        public int PaidRepeatsIn10Min
+        {
+            get
+            {
+                var paid = Battles.Where(b => b.PaidFromFund).Select(b => b.AtMs).OrderBy(t => t).ToList();
+                int most = 0;
+                for (int i = 0, j = 0; i < paid.Count; i++)
+                {
+                    while (paid[i] - paid[j] >= 600000) j++;
+                    most = System.Math.Max(most, i - j + 1);
+                }
+                return most;
+            }
+        }
         /// <summary>The colony at the end by creature name.</summary>
         public SortedDictionary<string, int> Units { get; } = new(System.StringComparer.Ordinal);
         /// <summary>Levels of the colony upgrades bought by the end, by name.</summary>

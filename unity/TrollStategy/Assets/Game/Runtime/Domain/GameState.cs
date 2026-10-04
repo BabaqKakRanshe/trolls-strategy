@@ -30,6 +30,10 @@ namespace TrollStrategy.Domain
         public BattleRunState ActiveBattle { get; set; }
         // Gold a won battle rolled and the player has not taken yet; null when there is none.
         public PendingBattleReward PendingBattleReward { get; set; }
+        // The arena's prize fund for repeat wins: the payouts it held at ArenaFundSinceMs, the active time the next
+        // payout gathers from. ArenaFund counts what came since.
+        public int ArenaFundPayouts { get; set; }
+        public int ArenaFundSinceMs { get; set; }
         // State of the reward dice: every roll reads and advances it, so the same game rolls the same amounts.
         public uint RewardRoll { get; set; } = RewardDice.Seed;
         // State of the production dice (by-products, spoilage); separate from the reward dice so a change in
@@ -94,6 +98,8 @@ namespace TrollStrategy.Domain
                 HighestMissionLevel = HighestMissionLevel,
                 ActiveBattle = ActiveBattle,
                 PendingBattleReward = PendingBattleReward?.Clone(),
+                ArenaFundPayouts = ArenaFundPayouts,
+                ArenaFundSinceMs = ArenaFundSinceMs,
                 RewardRoll = RewardRoll,
                 ProductionRoll = ProductionRoll,
                 ProducedByResource = new Dictionary<ResourceKind, int>(ProducedByResource),
@@ -131,6 +137,8 @@ namespace TrollStrategy.Domain
         public int MinGold { get; set; }
         public int MaxGold { get; set; }
         public bool FirstWin { get; set; }
+        // The last battle that added to the reward ended in a draw: the gold is a share of a win's.
+        public bool Draw { get; set; }
         public Dictionary<ResourceKind, int> Goods { get; set; } = new();
 
         public PendingBattleReward Clone()

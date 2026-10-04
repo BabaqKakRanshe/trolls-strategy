@@ -346,6 +346,23 @@ namespace TrollStrategy.Presentation.Battle
             KillLanded?.Invoke();
         }
 
+        private static readonly EquipmentSlot[] EnemySlots = { EquipmentSlot.Weapon, EquipmentSlot.Armor, EquipmentSlot.Helmet };
+
+        // the items of the catalog an enemy wears, as their pictures
+        private List<WornItem> EnemyGear(BattleEnemyStart enemy)
+        {
+            var worn = new List<WornItem>();
+            if (_catalog == null) return worn;
+            foreach (string id in enemy.GearIds)
+                foreach (var definition in _catalog.Equipment)
+                    if (definition != null && definition.ItemId == id)
+                    {
+                        worn.Add(new WornItem(definition.Slot, definition.Icon, definition.Enchanted));
+                        break;
+                    }
+            return worn;
+        }
+
         private BattleFighterView CreateFighter(string name, string id, UnitKind kind, bool enemy, Cell cell)
         {
             UnitDefinition definition = null;
@@ -425,6 +442,9 @@ namespace TrollStrategy.Presentation.Battle
             {
                 var enemy = _mission.Enemies[i];
                 var view = CreateFighter($"Enemy_{enemy.Cell.X}_{enemy.Cell.Y}", $"enemy-{i:D3}", enemy.Kind, true, enemy.Cell);
+                if (enemy.Champion) view.SetChampion();
+                // the gear an enemy wears, as tokens at its bar for the whole battle; it has no free slots to offer
+                view.SetGear(EnemyGear(enemy), EnemySlots, false);
                 view.PopIn(.25f + i * .09f);
                 _enemies.Add(view);
             }

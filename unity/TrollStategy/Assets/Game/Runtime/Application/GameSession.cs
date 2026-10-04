@@ -25,6 +25,8 @@ namespace TrollStrategy.Application
         private int _revision;
         private float _remainderSeconds;
         private bool _debugBattleAccess;
+        private readonly Dictionary<string, ArenaOfferSnapshot> _offers = new(StringComparer.Ordinal);
+        private int _offersRevision = -1;
         // Which level of the authored chain opens each building, creature and mission; read once from content.
         private Dictionary<BuildingKind, int> _buildingUnlockLevels;
         private Dictionary<UnitKind, int> _unitUnlockLevels;
@@ -83,6 +85,8 @@ namespace TrollStrategy.Application
         /// <summary>Highest arena level the colony has won.</summary>
         public int HighestMissionLevel => _state.HighestMissionLevel;
         public int BattlesWon => _state.BattlesWon;
+        /// <summary>Gold the market has paid over the whole game.</summary>
+        public int SalesGold => _state.SalesGold;
         public bool IsCampaign => _state.Progress != null;
 
         public bool IsBuildingUnlocked(BuildingKind kind) => Progression.IsBuildingUnlocked(_state, kind);
@@ -112,6 +116,20 @@ namespace TrollStrategy.Application
             var candidate = _state.Clone();
             foreach (var definition in _catalog.Buildings)
                 if (definition != null) candidate.Progress.UnlockedBuildings.Add(definition.Kind);
+            _state = candidate;
+            _revision++;
+            Emit();
+            return CommandResult.Success();
+        }
+
+        /// <summary>Development shortcut: every level of the arena ladder is open without its win below.</summary>
+        public CommandResult DebugOpenArenaLadder()
+        {
+            if (_state.Progress == null) return CommandResult.Fail("В этой игре вся арена уже открыта");
+            if (_state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
+            var candidate = _state.Clone();
+            foreach (var mission in _catalog.Missions)
+                if (mission != null) candidate.Progress.UnlockedMissions.Add(mission.MissionId);
             _state = candidate;
             _revision++;
             Emit();
@@ -170,7 +188,7 @@ namespace TrollStrategy.Application
         {
             foreach (var mission in _catalog.Missions)
                 if (mission != null && mission.MissionId == missionId)
-                    return BattleApplication.ValidateAvailability(_state, mission, _debugBattleAccess);
+                    return BattleApplication.ValidateAvailability(_state, mission, _debugBattleAccess, _catalog);
             return CommandResult.Fail("Миссия не найдена");
         }
 
@@ -180,6 +198,34 @@ namespace TrollStrategy.Application
         /// <summary>A win's gold range at this mission now, first or repeat win, with the barracks' glory.</summary>
         public (int Min, int Max) WinGold(BattleMissionDefinition mission) =>
             BattleApplication.WinGold(_state, mission, _catalog);
+
+        /// <summary>
+        /// What the colony can know about an arena level before the battle: the enemies' strength, how its best squad
+        /// compares, what a win brings now, the stake and what a defeat costs. Rebuilt once per revision.
+        /// </summary>
+        public ArenaOfferSnapshot ArenaOffer(BattleMissionDefinition mission)
+        {
+            if (mission == null) return null;
+            if (_offersRevision != _revision)
+            {
+                _offers.Clear();
+                _offersRevision = _revision;
+            }
+            if (!_offers.TryGetValue(mission.MissionId, out var offer))
+                _offers[mission.MissionId] = offer = ArenaOffers.Create(_state, mission, _catalog);
+            return offer;
+        }
+
+        /// <summary>The arena's prize fund for repeat wins.</summary>
+        public ArenaFundSnapshot ArenaFund => ArenaOffers.Fund(_state, _catalog);
+
+        /// <summary>The next milestone of the ladder above the highest level won, or null once all are won.</summary>
+        public BattleMissionDefinition NextMilestone()
+        {
+            foreach (var mission in ArenaLadder())
+                if (mission.Milestone && mission.Level > _state.HighestMissionLevel) return mission;
+            return null;
+        }
 
         /// <summary>Whether the mission is open on the ladder (not counting the time it rests).</summary>
         public bool IsMissionUnlocked(string missionId) => Progression.IsMissionUnlocked(_state, missionId);
@@ -494,7 +540,7 @@ namespace TrollStrategy.Application
                     if (pending.Goods.TryGetValue(resource, out int amount) && amount > 0)
                         trophies.Add(new ResourceStack(resource, ResourceName(resource), amount));
             return new BattleRewardSnapshot(name, pending.Gold, pending.MinGold, pending.MaxGold, pending.FirstWin,
-                trophies);
+                trophies, pending.Draw);
         }
 
         private ProgressSnapshot CreateProgressSnapshot()

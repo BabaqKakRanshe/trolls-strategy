@@ -66,7 +66,8 @@ namespace TrollStrategy.Domain
 
         /// <summary>
         /// The quest at a place in the chain. After the authored chain the repeatable quests follow in a cycle,
-        /// each cycle raising their targets and gold by the definition's growth; null when nothing follows.
+        /// each cycle raising their targets and gold by the definition's growth (an arena level by the ladder's step
+        /// of milestones instead); null when nothing follows.
         /// </summary>
         public static QuestDefinition QuestAt(ProgressionDefinition definition, int index)
         {
@@ -77,7 +78,7 @@ namespace TrollStrategy.Domain
             if (repeatable.Count == 0) return null;
             int offset = index - chain.Count;
             return Repeat(repeatable[offset % repeatable.Count], offset / repeatable.Count,
-                definition.RepeatGrowthPercent);
+                definition.RepeatGrowthPercent, definition.RepeatArenaLevelStep, definition.RepeatArenaLevelCap);
         }
 
         /// <summary>How far a goal of the current quest has come: counted from the quest's start for sales and wins.</summary>
@@ -262,12 +263,17 @@ namespace TrollStrategy.Domain
             Update(state, catalog);
         }
 
-        private static QuestDefinition Repeat(QuestDefinition template, int cycle, int growthPercent)
+        private static QuestDefinition Repeat(QuestDefinition template, int cycle, int growthPercent, int arenaStep,
+            int arenaCap)
         {
             int percent = 100 + Math.Max(0, growthPercent) * cycle;
             var goals = new List<QuestGoal>(template.Goals.Count);
             foreach (var goal in template.Goals)
-                goals.Add(goal.Kind == QuestGoalKind.UpgradeBuilding ? goal : goal.WithAmount(Scale(goal.Amount, percent)));
+                goals.Add(goal.Kind == QuestGoalKind.UpgradeBuilding ? goal
+                    // the arena climbs to the next milestone of the ladder each cycle, never past its top
+                    : goal.Kind == QuestGoalKind.ReachArenaLevel
+                        ? goal.WithAmount(Math.Min(Math.Max(goal.Amount, arenaCap), goal.Amount + cycle * Math.Max(1, arenaStep)))
+                        : goal.WithAmount(Scale(goal.Amount, percent)));
             var rewards = new List<QuestReward>(template.Rewards.Count);
             foreach (var reward in template.Rewards)
                 rewards.Add(reward.Kind == QuestRewardKind.Gold ? reward.WithGold(Scale(reward.Gold, percent)) : reward);

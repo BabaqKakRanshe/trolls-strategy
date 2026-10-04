@@ -20,6 +20,10 @@ MonoBehaviour:
   _enemyArmorBonus: 1
   _unlocksUnit: 1
   _unlockUnit: 8
+  _formation: 2
+  _milestone: 0
+  _championHealthPercent: 0
+  _biome: 0
   _width: 9
   _height: 5
   _maxPlayerUnits: 4
@@ -69,33 +73,47 @@ MonoBehaviour:
   _enemies:
   - Kind: 8
     Cell:
-      X: 8
+      X: 7
       Y: 0
-  - Kind: 8
-    Cell:
-      X: 8
-      Y: 1
-  - Kind: 8
-    Cell:
-      X: 8
-      Y: 2
-  - Kind: 8
-    Cell:
-      X: 8
-      Y: 3
-  - Kind: 6
-    Cell:
-      X: 8
-      Y: 4
+    Gear: []
+    Champion: 0
   - Kind: 8
     Cell:
       X: 7
+      Y: 4
+    Gear: []
+    Champion: 0
+  - Kind: 8
+    Cell:
+      X: 8
       Y: 0
+    Gear: []
+    Champion: 0
+  - Kind: 8
+    Cell:
+      X: 8
+      Y: 4
+    Gear: []
+    Champion: 0
+  - Kind: 6
+    Cell:
+      X: 7
+      Y: 1
+    Gear: []
+    Champion: 0
+  - Kind: 8
+    Cell:
+      X: 7
+      Y: 3
+    Gear: []
+    Champion: 0
   _firstWinGold: 610
   _firstWinGoldMax: 980
   _repeatWinGold: 370
   _repeatWinGoldMax: 590
-  _winGoods: []
+  _winGoods:
+  - _resource: 38
+    _amount: 1
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

@@ -16,10 +16,14 @@ MonoBehaviour:
   _displayName: "13. \u041E\u0440\u043E\u0447\u0438\u0439 \u043D\u0430\u0431\u0435\u0433"
   _level: 13
   _enemyHealthPercent: 280
-  _enemyDamageBonus: 3
-  _enemyArmorBonus: 3
+  _enemyDamageBonus: 0
+  _enemyArmorBonus: 0
   _unlocksUnit: 1
   _unlockUnit: 9
+  _formation: 0
+  _milestone: 0
+  _championHealthPercent: 0
+  _biome: 4
   _width: 9
   _height: 5
   _maxPlayerUnits: 5
@@ -69,37 +73,67 @@ MonoBehaviour:
   _enemies:
   - Kind: 9
     Cell:
-      X: 8
+      X: 7
       Y: 0
+    Gear:
+    - battle-axe
+    - leather-armor
+    Champion: 0
   - Kind: 9
     Cell:
-      X: 8
+      X: 7
       Y: 1
+    Gear:
+    - battle-axe
+    - leather-armor
+    Champion: 0
   - Kind: 9
     Cell:
-      X: 8
+      X: 7
       Y: 2
+    Gear:
+    - battle-axe
+    - leather-armor
+    Champion: 0
   - Kind: 11
     Cell:
-      X: 8
+      X: 7
       Y: 3
+    Gear:
+    - battle-axe
+    - leather-armor
+    Champion: 0
   - Kind: 11
     Cell:
-      X: 8
+      X: 7
       Y: 4
+    Gear:
+    - battle-axe
+    - leather-armor
+    Champion: 0
   - Kind: 9
     Cell:
-      X: 7
+      X: 8
       Y: 0
+    Gear:
+    - battle-axe
+    - leather-armor
+    Champion: 0
   - Kind: 9
     Cell:
-      X: 7
+      X: 8
       Y: 1
+    Gear:
+    - battle-axe
+    - leather-armor
+    Champion: 0
   _firstWinGold: 970
   _firstWinGoldMax: 1550
   _repeatWinGold: 580
   _repeatWinGoldMax: 930
-  _winGoods: []
+  _winGoods:
+  - _resource: 35
+    _amount: 1
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120
   _environmentPrefab: {fileID: 2407726125375429754, guid: 4a6f5e7134ca1b347abe694f015b89b4, type: 3}

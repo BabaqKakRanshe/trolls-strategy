@@ -25,6 +25,10 @@
 "v": "Arena savaştan sonra toparlanıyor"
 },
 {
+"k": "Не хватает золота на ставку: ещё {0}",
+"v": "Bahis için altın yetmiyor: {0} daha"
+},
+{
 "k": "Неверные данные боя",
 "v": "Savaş verisi geçersiz"
 },
@@ -1129,6 +1133,34 @@
 "v": "Ne kadar altın olduğunu kolonide görürsün."
 },
 {
+"k": "Ставка сгорела",
+"v": "Bahis yandı"
+},
+{
+"k": "Поражение и ничья сжигают ставку, победа её возвращает.",
+"v": "Yenilgi ve beraberlik bahsi yakar, zafer geri verir."
+},
+{
+"k": "Отдых уровня",
+"v": "Seviye dinlenmesi"
+},
+{
+"k": "После поражения уровень отдыхает вдвое дольше.",
+"v": "Yenilgiden sonra seviye iki kat uzun dinlenir."
+},
+{
+"k": "Уровень закрыт",
+"v": "Seviye kapandı"
+},
+{
+"k": "Поражение на вершине лестницы закрывает её снова до новой победы ниже.",
+"v": "Merdivenin tepesindeki yenilgi, aşağıda yeni bir zafere kadar onu yeniden kapatır."
+},
+{
+"k": "Уровень {0} закрыт до победы на {1}-м",
+"v": "Seviye {0}, seviye {1} kazanılana kadar kapalı"
+},
+{
 "k": "Отряд",
 "v": "Birlik"
 },
@@ -1157,6 +1189,38 @@
 "v": "Savaşa en fazla {0} savaşçı gider. Kimi götüreceğini savaştan önce seçersin."
 },
 {
+"k": "Оценка отряда",
+"v": "Birlik tahmini"
+},
+{
+"k": "Сила врагов",
+"v": "Düşman gücü"
+},
+{
+"k": "Враги сильнее обычного: здоровье ×{0}, урон +{1}, броня +{2}",
+"v": "Düşmanlar her zamankinden güçlü: can ×{0}, hasar +{1}, zırh +{2}"
+},
+{
+"k": "Трофеи",
+"v": "Ganimetler"
+},
+{
+"k": "Призовой фонд",
+"v": "Ödül fonu"
+},
+{
+"k": "Повторные победы на любом уровне платят из призового фонда арены. Одна выплата приходит каждые {0}.",
+"v": "Herhangi bir seviyedeki tekrar zaferler arenanın ödül fonundan ödenir. Her {0} bir ödeme gelir."
+},
+{
+"k": "Ставка",
+"v": "Bahis"
+},
+{
+"k": "Победа возвращает ставку, поражение и ничья её сжигают.",
+"v": "Zafer bahsi geri verir, yenilgi ve beraberlik yakar."
+},
+{
 "k": "золота за первую победу",
 "v": "ilk zafer için altın"
 },
@@ -1165,8 +1229,32 @@
 "v": "zafer başına altın"
 },
 {
+"k": "фонд пуст: только ставка назад",
+"v": "fon boş: yalnızca bahis geri"
+},
+{
+"k": "Поражение: ставка сгорит, отдых {0}, уровень закроется до победы на {1}-м",
+"v": "Yenilgi: bahis yanar, dinlenme {0}, seviye {1} kazanılana kadar seviye kapanır"
+},
+{
+"k": "Поражение: ставка сгорит, отдых {0}",
+"v": "Yenilgi: bahis yanar, dinlenme {0}"
+},
+{
 "k": "Отдых {0}",
 "v": "Dinlenme {0}"
+},
+{
+"k": "Лестница пройдена. Повторы платят из фонда.",
+"v": "Merdiven tamamlandı. Tekrarlar fondan ödenir."
+},
+{
+"k": "Веха. Уровень {0}. Побед: {1}",
+"v": "Dönüm noktası. Seviye {0}. Zafer: {1}"
+},
+{
+"k": "Веха. Уровень {0}",
+"v": "Dönüm noktası. Seviye {0}"
 },
 {
 "k": "Уровень {0}. Побед: {1}",
@@ -1175,6 +1263,66 @@
 {
 "k": "Уровень {0}",
 "v": "Seviye {0}"
+},
+{
+"k": "Отряд сильнее",
+"v": "Birlik daha güçlü"
+},
+{
+"k": "На равных",
+"v": "Denk"
+},
+{
+"k": "Отряд слабее",
+"v": "Birlik daha zayıf"
+},
+{
+"k": "В колонии нет бойцов: наймите существ в бараках.",
+"v": "Kolonide savaşçı yok: kışlada yaratık işe al."
+},
+{
+"k": "Оценка по лучшим {0} бойцам колонии и её снаряжению. Это подсказка, исход решает бой.",
+"v": "Koloninin en iyi {0} savaşçısı ve teçhizatına göre tahmin. Yalnızca bir ipucu, sonucu savaş belirler."
+},
+{
+"k": "Сделайте отряд сильнее: улучшения бараков, снаряжение, больше бойцов.",
+"v": "Birliği güçlendir: kışla geliştirmeleri, teçhizat, daha çok savaşçı."
+},
+{
+"k": "Враги носят это снаряжение, и оно действует в бою.",
+"v": "Düşmanlar bu teçhizatı giyer ve savaşta işe yarar."
+},
+{
+"k": "фонд полон",
+"v": "fon dolu"
+},
+{
+"k": "через {0}",
+"v": "{0} sonra"
+},
+{
+"k": "Лес",
+"v": "Orman"
+},
+{
+"k": "Болото",
+"v": "Bataklık"
+},
+{
+"k": "Кладбище",
+"v": "Mezarlık"
+},
+{
+"k": "Горная застава",
+"v": "Dağ karakolu"
+},
+{
+"k": "Снега",
+"v": "Karlar"
+},
+{
+"k": "Луг",
+"v": "Çayır"
 },
 {
 "k": "Побед: {0}. Можно в бой",
@@ -1187,6 +1335,10 @@
 {
 "k": "{0}, первая победа",
 "v": "{0}, ilk zafer"
+},
+{
+"k": "{0}, ничья",
+"v": "{0}, berabere"
 },
 {
 "k": "Награда за бой: от {0} до {1} золота",
@@ -1515,6 +1667,18 @@
 {
 "k": "уровень {0}",
 "v": "seviye {0}"
+},
+{
+"k": "нет побед",
+"v": "zafer yok"
+},
+{
+"k": "Следующая веха",
+"v": "Sonraki dönüm noktası"
+},
+{
+"k": "все пройдены",
+"v": "hepsi tamam"
 },
 {
 "k": "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене. Сюда же приходят трофеи арены: носильщики унесут их на склад экипировки, к зачарователю или на рынок.",
@@ -2845,6 +3009,14 @@
 "v": "Pazarda altın kazan. Görev tekrarlanır, hedef büyür."
 },
 {
+"k": "Веха арены",
+"v": "Arena dönüm noktası"
+},
+{
+"k": "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.",
+"v": "Arenanın sonraki dönüm noktasında kazan. Orada bir şampiyon bekler ve her turda dönüm noktası yükselir."
+},
+{
 "k": "Оборот",
 "v": "Ciro"
 },
@@ -3185,8 +3357,16 @@
 "v": "Rakip"
 },
 {
+"k": "трофеи придут в бараки",
+"v": "ganimetler kışlaya gelir"
+},
+{
 "k": "найм откроется первой победой",
 "v": "işe alım ilk zaferle açılır"
+},
+{
+"k": "ставка",
+"v": "bahis"
 },
 {
 "k": "Победа!",
@@ -3435,14 +3615,6 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Gobline göre hızlı çalışır ve daha çok taşır ama yavaş yürür. Savaşta güçlü."
-},
-{
-"k": "Улучшения бараков делают отряд сильнее",
-"v": "Kışla geliştirmeleri birliği güçlendirir"
-},
-{
-"k": "Выиграй бой. Повторные победы тоже приносят золото.",
-"v": "Bir savaş kazan. Tekrarlanan zaferler de altın getirir."
 }
 ]
 }

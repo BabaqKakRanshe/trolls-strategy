@@ -25,6 +25,10 @@
 "v": "Die Arena erholt sich nach dem Kampf"
 },
 {
+"k": "Не хватает золота на ставку: ещё {0}",
+"v": "Für den Einsatz fehlt Gold: noch {0}"
+},
+{
 "k": "Неверные данные боя",
 "v": "Ungültige Kampfdaten"
 },
@@ -1129,6 +1133,34 @@
 "v": "Wie viel Gold, siehst du in der Kolonie."
 },
 {
+"k": "Ставка сгорела",
+"v": "Einsatz verloren"
+},
+{
+"k": "Поражение и ничья сжигают ставку, победа её возвращает.",
+"v": "Niederlage und Unentschieden kosten den Einsatz, ein Sieg gibt ihn zurück."
+},
+{
+"k": "Отдых уровня",
+"v": "Erholung der Stufe"
+},
+{
+"k": "После поражения уровень отдыхает вдвое дольше.",
+"v": "Nach einer Niederlage erholt sich die Stufe doppelt so lange."
+},
+{
+"k": "Уровень закрыт",
+"v": "Stufe gesperrt"
+},
+{
+"k": "Поражение на вершине лестницы закрывает её снова до новой победы ниже.",
+"v": "Eine Niederlage an der Spitze der Leiter sperrt sie wieder bis zu einem neuen Sieg darunter."
+},
+{
+"k": "Уровень {0} закрыт до победы на {1}-м",
+"v": "Stufe {0} gesperrt bis zum Sieg auf Stufe {1}"
+},
+{
 "k": "Отряд",
 "v": "Trupp"
 },
@@ -1157,6 +1189,38 @@
 "v": "Bis zu {0} Kämpfer ziehen in den Kampf. Wen du mitnimmst, wählst du vor dem Kampf."
 },
 {
+"k": "Оценка отряда",
+"v": "Trupp-Einschätzung"
+},
+{
+"k": "Сила врагов",
+"v": "Stärke der Gegner"
+},
+{
+"k": "Враги сильнее обычного: здоровье ×{0}, урон +{1}, броня +{2}",
+"v": "Die Gegner sind stärker als sonst: Leben ×{0}, Schaden +{1}, Rüstung +{2}"
+},
+{
+"k": "Трофеи",
+"v": "Trophäen"
+},
+{
+"k": "Призовой фонд",
+"v": "Preiskasse"
+},
+{
+"k": "Повторные победы на любом уровне платят из призового фонда арены. Одна выплата приходит каждые {0}.",
+"v": "Wiederholte Siege auf jeder Stufe zahlen aus der Preiskasse der Arena. Alle {0} kommt eine Auszahlung dazu."
+},
+{
+"k": "Ставка",
+"v": "Einsatz"
+},
+{
+"k": "Победа возвращает ставку, поражение и ничья её сжигают.",
+"v": "Ein Sieg gibt den Einsatz zurück, Niederlage und Unentschieden kosten ihn."
+},
+{
 "k": "золота за первую победу",
 "v": "Gold für den ersten Sieg"
 },
@@ -1165,8 +1229,32 @@
 "v": "Gold pro Sieg"
 },
 {
+"k": "фонд пуст: только ставка назад",
+"v": "Kasse leer: nur der Einsatz zurück"
+},
+{
+"k": "Поражение: ставка сгорит, отдых {0}, уровень закроется до победы на {1}-м",
+"v": "Niederlage: Einsatz verloren, Erholung {0}, Stufe gesperrt bis zum Sieg auf Stufe {1}"
+},
+{
+"k": "Поражение: ставка сгорит, отдых {0}",
+"v": "Niederlage: Einsatz verloren, Erholung {0}"
+},
+{
 "k": "Отдых {0}",
 "v": "Erholung {0}"
+},
+{
+"k": "Лестница пройдена. Повторы платят из фонда.",
+"v": "Leiter geschafft. Wiederholungen zahlen aus der Kasse."
+},
+{
+"k": "Веха. Уровень {0}. Побед: {1}",
+"v": "Meilenstein. Stufe {0}. Siege: {1}"
+},
+{
+"k": "Веха. Уровень {0}",
+"v": "Meilenstein. Stufe {0}"
 },
 {
 "k": "Уровень {0}. Побед: {1}",
@@ -1175,6 +1263,66 @@
 {
 "k": "Уровень {0}",
 "v": "Stufe {0}"
+},
+{
+"k": "Отряд сильнее",
+"v": "Trupp stärker"
+},
+{
+"k": "На равных",
+"v": "Ausgeglichen"
+},
+{
+"k": "Отряд слабее",
+"v": "Trupp schwächer"
+},
+{
+"k": "В колонии нет бойцов: наймите существ в бараках.",
+"v": "Die Kolonie hat keine Kämpfer: heuere Wesen in der Kaserne an."
+},
+{
+"k": "Оценка по лучшим {0} бойцам колонии и её снаряжению. Это подсказка, исход решает бой.",
+"v": "Schätzung nach den {0} besten Kämpfern der Kolonie und ihrer Ausrüstung. Nur ein Hinweis, den Ausgang entscheidet der Kampf."
+},
+{
+"k": "Сделайте отряд сильнее: улучшения бараков, снаряжение, больше бойцов.",
+"v": "Mach den Trupp stärker: Kasernen-Verbesserungen, Ausrüstung, mehr Kämpfer."
+},
+{
+"k": "Враги носят это снаряжение, и оно действует в бою.",
+"v": "Die Gegner tragen diese Ausrüstung, und sie wirkt im Kampf."
+},
+{
+"k": "фонд полон",
+"v": "Kasse voll"
+},
+{
+"k": "через {0}",
+"v": "in {0}"
+},
+{
+"k": "Лес",
+"v": "Wald"
+},
+{
+"k": "Болото",
+"v": "Sumpf"
+},
+{
+"k": "Кладбище",
+"v": "Friedhof"
+},
+{
+"k": "Горная застава",
+"v": "Bergposten"
+},
+{
+"k": "Снега",
+"v": "Schneefelder"
+},
+{
+"k": "Луг",
+"v": "Wiese"
 },
 {
 "k": "Побед: {0}. Можно в бой",
@@ -1187,6 +1335,10 @@
 {
 "k": "{0}, первая победа",
 "v": "{0}, erster Sieg"
+},
+{
+"k": "{0}, ничья",
+"v": "{0}, Unentschieden"
 },
 {
 "k": "Награда за бой: от {0} до {1} золота",
@@ -1515,6 +1667,18 @@
 {
 "k": "уровень {0}",
 "v": "Stufe {0}"
+},
+{
+"k": "нет побед",
+"v": "keine Siege"
+},
+{
+"k": "Следующая веха",
+"v": "Nächster Meilenstein"
+},
+{
+"k": "все пройдены",
+"v": "alle geschafft"
 },
 {
 "k": "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене. Сюда же приходят трофеи арены: носильщики унесут их на склад экипировки, к зачарователю или на рынок.",
@@ -2845,6 +3009,14 @@
 "v": "Verdiene auf dem Markt Gold. Die Aufgabe wiederholt sich, und das Ziel wächst."
 },
 {
+"k": "Веха арены",
+"v": "Arena-Meilenstein"
+},
+{
+"k": "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.",
+"v": "Siege am nächsten Meilenstein der Arena. Dort wartet ein Champion, und jede Runde liegt der Meilenstein höher."
+},
+{
 "k": "Оборот",
 "v": "Umsatz"
 },
@@ -3185,8 +3357,16 @@
 "v": "Gegner"
 },
 {
+"k": "трофеи придут в бараки",
+"v": "Trophäen kommen in die Kaserne"
+},
+{
 "k": "найм откроется первой победой",
 "v": "Anheuern ab dem ersten Sieg"
+},
+{
+"k": "ставка",
+"v": "Einsatz"
 },
 {
 "k": "Победа!",
@@ -3435,14 +3615,6 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Arbeitet schneller als ein Goblin und trägt mehr, geht aber langsam. Stark im Kampf."
-},
-{
-"k": "Улучшения бараков делают отряд сильнее",
-"v": "Kasernen-Verbesserungen machen den Trupp stärker"
-},
-{
-"k": "Выиграй бой. Повторные победы тоже приносят золото.",
-"v": "Gewinne einen Kampf. Weitere Siege bringen ebenfalls Gold."
 }
 ]
 }

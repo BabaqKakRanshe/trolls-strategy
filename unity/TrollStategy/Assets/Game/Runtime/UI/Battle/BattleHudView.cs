@@ -87,13 +87,13 @@ namespace TrollStrategy.UI
         public void ShowReplay(bool paused, float speed, int alivePlayers, int aliveEnemies) =>
             Replay.Show(paused, speed, alivePlayers, aliveEnemies);
 
-        public void ShowResult(BattleOutcome outcome, int survived, int fallen, int lostItems)
+        public void ShowResult(BattleOutcome outcome, int survived, int fallen, int lostItems, BattleCost cost = null)
         {
             bool victory = outcome == BattleOutcome.PlayerVictory;
             bool defeat = outcome == BattleOutcome.EnemyVictory;
             string verdict = victory ? "Победа" : defeat ? "Поражение" : "Ничья";
             // the amount is a surprise revealed back in the colony
-            Replay.ShowResult(verdict, survived, fallen, lostItems, victory);
+            Replay.ShowResult(verdict, survived, fallen, lostItems, cost?.RewardWaits ?? victory, cost);
             Banner.Show(verdict, victory ? "is-victory" : defeat ? "is-defeat" : "is-draw", 2f);
         }
 

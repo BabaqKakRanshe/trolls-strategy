@@ -94,6 +94,10 @@ namespace TrollStrategy.Bots
             ("landBought", Num(run.LandBought)),
             ("arenaLevel", Num(run.ArenaLevel)),
             ("battleGold", Num(run.BattleGold)),
+            ("salesGold", Num(run.SalesGold)),
+            ("questGold", Num(run.QuestGold)),
+            ("arenaGoldShare", Num(run.ArenaGoldShare)),
+            ("paidRepeatsIn10Min", Num(run.PaidRepeatsIn10Min)),
             ("units", Arr(run.Units, u => Obj(("name", Str(u.Key)), ("count", Num(u.Value))))),
             ("upgrades", Arr(run.Upgrades, u => Obj(("name", Str(u.Key)), ("level", Num(u.Value))))),
             ("unlocks", Arr(run.Unlocks, u => Obj(
@@ -120,7 +124,12 @@ namespace TrollStrategy.Bots
                 ("squad", Str(b.Squad)),
                 ("outcome", Str(b.Outcome.ToString())),
                 ("fallen", Num(b.Fallen)),
-                ("gold", Num(b.Gold))))),
+                ("gold", Num(b.Gold)),
+                ("firstWin", Bool(b.FirstWin)),
+                ("paidFromFund", Bool(b.PaidFromFund)),
+                ("stake", Num(b.Stake)),
+                ("odds", Str(b.Odds)),
+                ("closedLevel", Num(b.ClosedLevel))))),
             ("samples", Arr(run.Samples, s => Obj(
                 ("atMs", Num(s.AtMs)),
                 ("level", Num(s.QuestLevel)),
@@ -139,6 +148,7 @@ namespace TrollStrategy.Bots
             "[" + string.Join(",", items.Select(item)) + "]";
 
         private static string Num(double value) => value.ToString("0.###", Invariant);
+        private static string Bool(bool value) => value ? "true" : "false";
 
         public static string Str(string value)
         {

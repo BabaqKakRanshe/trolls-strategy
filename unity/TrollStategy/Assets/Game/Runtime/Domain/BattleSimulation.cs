@@ -79,6 +79,34 @@ namespace TrollStrategy.Domain
             _events = events.ToArray();
             _survivors = survivors.ToArray();
         }
+
+        /// <summary>
+        /// The share of one side's health the battle took, 0…1: each fighter's damage taken, up to its health,
+        /// over the side's health at the start. A draw pays this share of the enemies' health.
+        /// </summary>
+        public double DefeatedShare(bool enemies)
+        {
+            var health = new Dictionary<string, int>(StringComparer.Ordinal);
+            long total = 0;
+            foreach (var fighter in _fighters)
+            {
+                if (fighter.IsPlayer == enemies) continue;
+                health[fighter.Id] = fighter.Health;
+                total += fighter.Health;
+            }
+            if (total <= 0) return 0;
+            var taken = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var battleEvent in _events)
+            {
+                if (battleEvent.Kind != BattleEventKind.Attack || battleEvent.TargetId == null ||
+                    !health.ContainsKey(battleEvent.TargetId)) continue;
+                taken.TryGetValue(battleEvent.TargetId, out int sum);
+                taken[battleEvent.TargetId] = sum + battleEvent.Damage;
+            }
+            long defeated = 0;
+            foreach (var pair in taken) defeated += Math.Min(pair.Value, health[pair.Key]);
+            return (double)defeated / total;
+        }
     }
 
     public sealed class BattleRunState
@@ -88,13 +116,22 @@ namespace TrollStrategy.Domain
         public BattleReport Report { get; }
         public int AwardedGold { get; }
         public IReadOnlyList<string> FallenUnitIds => _fallenUnitIds;
+        /// <summary>The stake a lost or drawn battle burned; 0 after a win.</summary>
+        public int BurnedStake { get; }
+        /// <summary>The level a defeat at the top of the ladder closed again, or null.</summary>
+        public string ClosedMissionId { get; }
+        /// <summary>Active time the level rests after this battle.</summary>
+        public int RestMs { get; }
 
         public BattleRunState(string missionId, BattleReport report, int awardedGold,
-            IReadOnlyList<string> fallenUnitIds)
+            IReadOnlyList<string> fallenUnitIds, int burnedStake = 0, string closedMissionId = null, int restMs = 0)
         {
             MissionId = missionId;
             Report = report;
             AwardedGold = awardedGold;
+            BurnedStake = burnedStake;
+            ClosedMissionId = closedMissionId;
+            RestMs = restMs;
             _fallenUnitIds = new string[fallenUnitIds.Count];
             for (int i = 0; i < fallenUnitIds.Count; i++) _fallenUnitIds[i] = fallenUnitIds[i];
         }

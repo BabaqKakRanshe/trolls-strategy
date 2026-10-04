@@ -10,6 +10,13 @@ namespace TrollStrategy.Content
     {
         public UnitKind Kind;
         public Cell Cell;
+        [Tooltip("Снаряжение врага: id предметов каталога, по одному на слот. Действует в бою, как у бойцов колонии.")]
+        public string[] Gear;
+        [Tooltip("Чемпион вехи: здоровье умножается на процент чемпиона уровня.")]
+        public bool Champion;
+
+        /// <summary>The item ids the enemy wears; empty when it wears none.</summary>
+        public IReadOnlyList<string> GearIds => Gear ?? Array.Empty<string>();
     }
 
     [CreateAssetMenu(fileName = "BattleMission", menuName = "TrollStrategy/Content/Battle Mission")]
@@ -29,6 +36,15 @@ namespace TrollStrategy.Content
         [Tooltip("Первая победа открывает найм этого существа в колонию.")]
         [SerializeField] private bool _unlocksUnit;
         [SerializeField] private UnitKind _unlockUnit;
+        [Header("Лестница")]
+        [Tooltip("Как враги стоят в своей зоне; соседние уровни стоят по-разному.")]
+        [SerializeField] private BattleFormation _formation;
+        [Tooltip("Уровень-веха: на нём чемпион, окно арены отмечает его звездой.")]
+        [SerializeField] private bool _milestone;
+        [Tooltip("Здоровье чемпиона в процентах от здоровья врагов уровня; 0 — чемпиона нет.")]
+        [SerializeField, Min(0)] private int _championHealthPercent;
+        [Tooltip("Окружение уровня; его вид — префаб окружения ниже.")]
+        [SerializeField] private ArenaBiome _biome;
         [SerializeField, Min(3)] private int _width = 9;
         [SerializeField, Min(3)] private int _height = 5;
         [SerializeField, Min(1)] private int _maxPlayerUnits = 4;
@@ -62,6 +78,12 @@ namespace TrollStrategy.Content
         public int EnemyArmorBonus => Math.Max(0, _enemyArmorBonus);
         /// <summary>The creature a first win here opens for hire, or null.</summary>
         public UnitKind? UnlockUnit => _unlocksUnit ? _unlockUnit : (UnitKind?)null;
+        public BattleFormation Formation => _formation;
+        /// <summary>A milestone of the ladder: its champion is met nowhere else.</summary>
+        public bool Milestone => _milestone;
+        /// <summary>The champion's health against the level's other enemies, in percent; 0 when there is none.</summary>
+        public int ChampionHealthPercent => Math.Max(0, _championHealthPercent);
+        public ArenaBiome Biome => _biome;
         public int Width => _width;
         public int Height => _height;
         public int MaxPlayerUnits => _maxPlayerUnits;
@@ -148,6 +170,16 @@ namespace TrollStrategy.Content
         }
 
         public void SetEnvironment(GameObject environmentPrefab) => _environmentPrefab = environmentPrefab;
+
+        /// <summary>What sets the level apart on the ladder: its formation, whether it is a milestone and its champion.</summary>
+        public void SetLadderTraits(BattleFormation formation, bool milestone, int championHealthPercent)
+        {
+            _formation = formation;
+            _milestone = milestone;
+            _championHealthPercent = Math.Max(0, championHealthPercent);
+        }
+
+        public void SetBiome(ArenaBiome biome) => _biome = biome;
 
         /// <summary>Lets a win pay a surprise amount between the minimum and these maximums.</summary>
         public void SetRewardRanges(int firstWinGoldMax, int repeatWinGoldMax)

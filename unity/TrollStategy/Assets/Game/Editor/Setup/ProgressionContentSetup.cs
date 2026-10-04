@@ -189,10 +189,11 @@ namespace TrollStrategy.Editor.Setup
                         "Заработай на рынке золото. Задание повторяется, и цель растёт.",
                         Goals(QuestGoal.EarnGold(4000)),
                         Rewards(QuestReward.Coins(500))),
-                    Quest("repeat-battle", "Арена",
-                        "Выиграй бой. Повторные победы тоже приносят золото.",
-                        Goals(QuestGoal.WinBattles()),
-                        Rewards(QuestReward.Coins(400))),
+                    // the ladder's milestones: 10, 15, 20, 25, 30 (the definition's step and cap), one a cycle
+                    Quest("repeat-arena", "Веха арены",
+                        "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.",
+                        Goals(QuestGoal.ReachArenaLevel(10)),
+                        Rewards(QuestReward.Coins(800))),
                     Quest("repeat-goods", "Оборот",
                         "Продай на рынке товары любого вида.",
                         Goals(QuestGoal.SellGoods(400)),
@@ -203,6 +204,7 @@ namespace TrollStrategy.Editor.Setup
                         Rewards(QuestReward.Coins(500)))
                 },
                 repeatGrowthPercent: 25);
+            progression.SetRepeatArenaLevels(5, 30);
             EditorUtility.SetDirty(progression);
 
             catalog.SetProgression(progression);

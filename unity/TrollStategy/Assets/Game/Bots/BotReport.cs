@@ -62,7 +62,12 @@ namespace TrollStrategy.Bots
             text.AppendLine($"- Взглядов на колонию {run.Decisions}, принятых команд {run.CommandsAccepted}, " +
                             $"отказов {run.Refusals.Values.Sum()}");
             text.AppendLine($"- Арена: уровень {run.ArenaLevel}, боёв {run.Battles.Count}, " +
-                            $"побед {run.Battles.Count(b => b.Outcome == BattleOutcome.PlayerVictory)}, золота {run.BattleGold}");
+                            $"побед {run.Battles.Count(b => b.Outcome == BattleOutcome.PlayerVictory)}, " +
+                            $"ничьих {run.Battles.Count(b => b.Outcome == BattleOutcome.Draw)}, золота {run.BattleGold} " +
+                            $"({run.ArenaGoldShare:P0} золота кампании: рынок {run.SalesGold}, задания {run.QuestGold})");
+            text.AppendLine($"- Призовой фонд: оплаченных повторов {run.Battles.Count(b => b.PaidFromFund)}, " +
+                            $"за любые 10 минут не больше {run.PaidRepeatsIn10Min}; сгорело ставок {run.Battles.Sum(b => b.Stake)}, " +
+                            $"закрытий вершины {run.Battles.Count(b => b.ClosedLevel > 0)}");
             text.AppendLine($"- Существа: {Listed(run.Units)}");
             text.AppendLine($"- Улучшения: {Listed(run.Upgrades)}");
             text.AppendLine("- Открыты жители: " + (run.Unlocks.Count == 0

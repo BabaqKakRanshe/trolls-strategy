@@ -28,6 +28,19 @@
                 <ui:VisualElement class="glyph glyph--damage battle-fact__glyph" picking-mode="Ignore" />
                 <ui:Label name="battle-lost-value" class="battle-fact__value t-black" picking-mode="Ignore" />
             </ui:VisualElement>
+            <!-- what a defeat or a draw cost: the burnt stake, the level's rest, a closed level -->
+            <ui:VisualElement name="battle-stake" class="battle-fact">
+                <ui:VisualElement name="battle-stake-icon" class="battle-fact__icon" picking-mode="Ignore" />
+                <ui:Label name="battle-stake-value" class="battle-fact__value t-black" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="battle-rest" class="battle-fact">
+                <ui:VisualElement class="glyph glyph--rest battle-fact__glyph" picking-mode="Ignore" />
+                <ui:Label name="battle-rest-value" class="battle-fact__value t-black" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="battle-closed" class="battle-fact">
+                <ui:VisualElement class="glyph glyph--lock battle-fact__glyph" picking-mode="Ignore" />
+                <ui:Label name="battle-closed-value" class="battle-fact__note t-bold" picking-mode="Ignore" />
+            </ui:VisualElement>
             <ui:VisualElement name="battle-prize" class="battle-fact">
                 <ui:VisualElement name="battle-prize-icon" class="battle-fact__icon" picking-mode="Ignore" />
                 <ui:Label text="ждёт в колонии" class="battle-fact__note t-bold" picking-mode="Ignore" />

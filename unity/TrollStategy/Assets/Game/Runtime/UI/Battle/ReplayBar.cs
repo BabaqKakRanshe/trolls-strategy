@@ -1,4 +1,5 @@
 using System;
+using TrollStrategy.Application;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -28,6 +29,13 @@ namespace TrollStrategy.UI
         private readonly VisualElement[] _ourIcons;
         private readonly VisualElement _theirIcon;
         private readonly VisualElement _prizeIcon;
+        private readonly VisualElement _stakeFact;
+        private readonly VisualElement _stakeIcon;
+        private readonly Label _stake;
+        private readonly VisualElement _restFact;
+        private readonly Label _rest;
+        private readonly VisualElement _closedFact;
+        private readonly Label _closed;
         private readonly Button[] _speeds = new Button[SpeedValues.Length];
         // what the bar shows now; the texts are rebuilt only when one of these changes
         private (bool Paused, float Speed, int Players, int Enemies) _shown = (false, -1f, -1, -1);
@@ -53,6 +61,13 @@ namespace TrollStrategy.UI
             };
             _theirIcon = Ui.Require<VisualElement>(root, "battle-theirs-icon");
             _prizeIcon = Ui.Require<VisualElement>(root, "battle-prize-icon");
+            _stakeFact = Ui.Require<VisualElement>(root, "battle-stake");
+            _stakeIcon = Ui.Require<VisualElement>(root, "battle-stake-icon");
+            _stake = Ui.Require<Label>(root, "battle-stake-value");
+            _restFact = Ui.Require<VisualElement>(root, "battle-rest");
+            _rest = Ui.Require<Label>(root, "battle-rest-value");
+            _closedFact = Ui.Require<VisualElement>(root, "battle-closed");
+            _closed = Ui.Require<Label>(root, "battle-closed-value");
             _pauseGlyph = Ui.Require<VisualElement>(root, "battle-pause-glyph");
             Pause = UiFeel.Bind(Ui.Require<Button>(root, "battle-pause"), pause, silentClick: true);
             for (int i = 0; i < SpeedValues.Length; i++)
@@ -71,6 +86,9 @@ namespace TrollStrategy.UI
                 tooltip.Attach(Ui.Require<VisualElement>(root, "battle-fallen"), () => "Пали", () => "Погибшие бойцы не вернутся.");
                 tooltip.Attach(_lostFact, () => "Потеряно снаряжения", () => "Вещи павших бойцов пропали вместе с ними.");
                 tooltip.Attach(_prize, () => "Награда", () => "Сколько золота, узнаешь в колонии.");
+                tooltip.Attach(_stakeFact, () => "Ставка сгорела", () => "Поражение и ничья сжигают ставку, победа её возвращает.");
+                tooltip.Attach(_restFact, () => "Отдых уровня", () => "После поражения уровень отдыхает вдвое дольше.");
+                tooltip.Attach(_closedFact, () => "Уровень закрыт", () => "Поражение на вершине лестницы закрывает её снова до новой победы ниже.");
             }
             Hide();
         }
@@ -86,6 +104,10 @@ namespace TrollStrategy.UI
         public string Fallen => _fallen.text;
         public bool ShowsLostGear => Ui.IsShown(_lostFact);
         public bool ShowsPrize => Ui.IsShown(_prize);
+        /// <summary>The burnt stake as shown ("−60"), or null while the verdict shows none.</summary>
+        public string BurnedStake => Ui.IsShown(_stakeFact) ? _stake.text : null;
+        public string Rest => Ui.IsShown(_restFact) ? _rest.text : null;
+        public string Closed => Ui.IsShown(_closedFact) ? _closed.text : null;
 
         public Button SpeedButton(float speed) => _speeds[Array.IndexOf(SpeedValues, speed)];
 
@@ -98,6 +120,7 @@ namespace TrollStrategy.UI
             foreach (var icon in _ourIcons) Ui.SetPicture(icon, ours);
             Ui.SetPicture(_theirIcon, theirs);
             Ui.SetPicture(_prizeIcon, coin);
+            Ui.SetPicture(_stakeIcon, coin);
             Ui.Show(_panel, true);
             Ui.Show(_score, true);
             Ui.Show(_outcome, false);
@@ -121,8 +144,18 @@ namespace TrollStrategy.UI
         }
 
         /// <summary>The verdict takes the place of the controls, with the way home.</summary>
-        public void ShowResult(string verdict, int survived, int fallen, int lostGear, bool reward)
+        public void ShowResult(string verdict, int survived, int fallen, int lostGear, bool reward, BattleCost cost = null)
         {
+            // what the battle cost: the burnt stake, the level's rest after a defeat and a closed level
+            bool burned = cost != null && cost.BurnedStake > 0;
+            Ui.Show(_stakeFact, burned);
+            if (burned) Ui.SetText(_stake, "−" + cost.BurnedStake);
+            bool closed = cost != null && cost.ClosedLevel > 0;
+            Ui.Show(_closedFact, closed);
+            if (closed) Ui.SetText(_closed, $"Уровень {cost.ClosedLevel} закрыт до победы на {cost.ReopenLevel}-м");
+            bool rest = burned && cost.RestMs > 0;
+            Ui.Show(_restFact, rest);
+            if (rest) Ui.SetText(_rest, TopBar.Duration(cost.RestMs));
             Ui.SetText(_verdict, verdict);
             Ui.SetText(_survived, survived.ToString());
             Ui.SetText(_fallen, fallen.ToString());

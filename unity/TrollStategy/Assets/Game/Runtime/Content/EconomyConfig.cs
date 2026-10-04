@@ -72,6 +72,18 @@ namespace TrollStrategy.Content
         [Tooltip("Раз в сколько секунд зарастающая клетка теряет единицу протоптанности.")]
         [SerializeField, Min(.25f)] private float _trailDecaySeconds = 3f;
 
+        [Header("Арена")]
+        [Tooltip("Призовой фонд арены получает одну выплату за повторную победу раз в столько активных секунд. Фонд один на все уровни.")]
+        [SerializeField, Min(1f)] private float _arenaFundPeriodSeconds = 180f;
+        [Tooltip("Больше стольких выплат фонд не копит.")]
+        [SerializeField, Min(1)] private int _arenaFundCap = 3;
+        [Tooltip("Ставка за бой в процентах от награды уровня: за первую победу, пока уровень не пройден, иначе за повтор. Победа её возвращает, поражение и ничья сжигают.")]
+        [SerializeField, Range(0, 100)] private int _arenaStakePercent = 30;
+        [Tooltip("Во сколько раз дольше отдыхает уровень после поражения.")]
+        [SerializeField, Min(1f)] private float _arenaDefeatRestMultiplier = 2f;
+        [Tooltip("С какого отношения сил отряда к силам врагов окно арены пишет «Отряд сильнее»; обратное отношение — «Отряд слабее».")]
+        [SerializeField, Min(1.01f)] private float _arenaOddsMargin = 1.5f;
+
         public int GridWidth => _gridWidth;
         public int GridHeight => _gridHeight;
         public float CellSize => _cellSize;
@@ -102,6 +114,11 @@ namespace TrollStrategy.Content
         public float TrailRoadSpeed => Mathf.Max(TrailPathSpeed, _trailRoadSpeed);
         public float TrailGraceSeconds => Mathf.Max(0f, _trailGraceSeconds);
         public float TrailDecaySeconds => Mathf.Max(.25f, _trailDecaySeconds);
+        public int ArenaFundPeriodMs => Mathf.Max(1000, Mathf.RoundToInt(_arenaFundPeriodSeconds * 1000f));
+        public int ArenaFundCap => Mathf.Max(1, _arenaFundCap);
+        public int ArenaStakePercent => Mathf.Clamp(_arenaStakePercent, 0, 100);
+        public float ArenaDefeatRestMultiplier => Mathf.Max(1f, _arenaDefeatRestMultiplier);
+        public float ArenaOddsMargin => Mathf.Max(1.01f, _arenaOddsMargin);
 
         /// <param name="transferTimeSeconds">Both loading and unloading time; see <see cref="SetHauling"/>.</param>
         public void Init(int gridWidth, int gridHeight, float cellSize, int startingGold, int maxUnitsPerCell, float tickIntervalSeconds, float workPerStrengthSecond, float transferTimeSeconds)
@@ -154,6 +171,16 @@ namespace TrollStrategy.Content
             _trailRoadSpeed = Mathf.Max(1f, roadSpeed);
             _trailGraceSeconds = Mathf.Max(0f, graceSeconds);
             _trailDecaySeconds = Mathf.Max(.25f, decaySeconds);
+        }
+
+        public void SetArena(float fundPeriodSeconds = 180f, int fundCap = 3, int stakePercent = 30,
+            float defeatRestMultiplier = 2f, float oddsMargin = 1.5f)
+        {
+            _arenaFundPeriodSeconds = Mathf.Max(1f, fundPeriodSeconds);
+            _arenaFundCap = Mathf.Max(1, fundCap);
+            _arenaStakePercent = Mathf.Clamp(stakePercent, 0, 100);
+            _arenaDefeatRestMultiplier = Mathf.Max(1f, defeatRestMultiplier);
+            _arenaOddsMargin = Mathf.Max(1.01f, oddsMargin);
         }
     }
 }

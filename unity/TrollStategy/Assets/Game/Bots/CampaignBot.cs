@@ -33,13 +33,16 @@ namespace TrollStrategy.Bots
             _stallMs = (int)Math.Round(stallMinutes * 60000f);
         }
 
-        /// <summary>Stops after this quest level is claimed; 0 plays the whole authored chain.</summary>
+        /// <summary>
+        /// Stops after this quest level is claimed; 0 plays the whole authored chain, a level past it plays on into
+        /// the repeatable quests (the arena's milestones among them).
+        /// </summary>
         public int StopAfterLevel { get; set; }
 
         public BotRun Run()
         {
             int chain = _session.Catalog.Progression.Quests.Count;
-            int goal = StopAfterLevel > 0 ? Math.Min(StopAfterLevel, chain) : chain;
+            int goal = StopAfterLevel > 0 ? StopAfterLevel : chain;
             var run = new BotRun(_profile, goal);
             var hands = new BotHands(_session, run, _profile);
             var battles = new BattlePlanner(hands, run, _profile);
@@ -62,7 +65,9 @@ namespace TrollStrategy.Bots
 
                 while (hands.Snapshot.Progress.Quest is { IsComplete: true } done && done.Level <= goal)
                 {
+                    int questGold = done.Rewards.Where(r => r.Reward.Kind == QuestRewardKind.Gold).Sum(r => r.Reward.Gold);
                     if (!hands.Dispatch(new ClaimQuestRewardCommand())) break;
+                    run.QuestGold += questGold;
                     record.DoneMs = now;
                     record.GoldAfterClaim = hands.Gold;
                     record.Population = hands.Snapshot.Units.Count;
@@ -132,6 +137,7 @@ namespace TrollStrategy.Bots
             hands.Refresh();
             run.EndMs = _session.ActiveTimeMs;
             run.FinalGold = hands.Gold;
+            run.SalesGold = _session.SalesGold;
             run.FinalPopulation = hands.Snapshot.Units.Count;
             run.FinalBuildings = hands.Snapshot.Buildings.Count;
             run.ArenaLevel = hands.ArenaLevel();

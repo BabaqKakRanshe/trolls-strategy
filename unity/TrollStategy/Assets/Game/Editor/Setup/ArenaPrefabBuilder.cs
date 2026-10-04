@@ -306,7 +306,7 @@ namespace TrollStrategy.Editor.Setup
                     EditorUtility.SetDirty(importer);
                     AssetDatabase.WriteImportSettingsIfDirty(PrefabPath(layout));
                 }
-                AssignToMissions(prefab, layout.board);
+                // which level stands in which surroundings is ArenaContentSetup's alone (its Ladder table)
                 var summary = $"[Arena] {layout.name}: {placed} objects, {sockets} sockets -> {PrefabPath(layout)}";
                 if (missing.Count > 0)
                     Debug.LogWarning($"{summary}; missing models: {string.Join(", ", missing)}", prefab);
@@ -353,29 +353,6 @@ namespace TrollStrategy.Editor.Setup
                 IslandLook.Positive(layout.fog.endPerDistance, IslandLook.FogEndPerDistance),
                 IslandLook.Positive(post.dofStartPerDistance, IslandLook.DofStartPerDistance),
                 IslandLook.Positive(post.dofEndPerDistance, IslandLook.DofEndPerDistance));
-        }
-
-        /// <summary>
-        /// Missions of the arena's board size without an environment get the arena; an assigned environment
-        /// is never replaced, and other board sizes would put tiles over cliffs and water.
-        /// </summary>
-        private static void AssignToMissions(GameObject prefab, LayoutBoard board)
-        {
-            foreach (var guid in AssetDatabase.FindAssets("t:" + nameof(BattleMissionDefinition)))
-            {
-                var mission = AssetDatabase.LoadAssetAtPath<BattleMissionDefinition>(AssetDatabase.GUIDToAssetPath(guid));
-                if (mission == null || mission.EnvironmentPrefab != null) continue;
-                if (board != null && board.width > 0 && (mission.Width != board.width || mission.Height != board.height))
-                    continue;
-                var serialized = new SerializedObject(mission);
-                var property = serialized.FindProperty("_environmentPrefab");
-                if (property == null) continue;
-                property.objectReferenceValue = prefab;
-                serialized.ApplyModifiedPropertiesWithoutUndo();
-                EditorUtility.SetDirty(mission);
-                AssetDatabase.SaveAssetIfDirty(mission);
-                Debug.Log($"[Arena] {mission.name}: environment = {prefab.name}", mission);
-            }
         }
 
         /// <summary>Emitters of smoke, embers and mist; a kind this builder does not know is reported and skipped.</summary>

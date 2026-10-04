@@ -90,6 +90,7 @@ namespace TrollStrategy.Editor.Tools
             session.EnableDebugBattleAccess();
             session.DebugAddGold(20000);
             session.DebugUnlockAllBuildings();
+            session.DebugOpenArenaLadder();
             Build(session, BuildingKind.HaulersGuild);
             Build(session, BuildingKind.Tavern);
             session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 3, session.FindSpawnCell()));
@@ -147,6 +148,17 @@ namespace TrollStrategy.Editor.Tools
                     view.Arena.Open();
                     view.Arena.Refresh();
                 } });
+                // a milestone in gear with its champion, and a level above it, as the poster shows them
+                foreach (int level in new[] { 10, 25 })
+                {
+                    int shown = level;
+                    Pending.Enqueue(new Shot { Name = $"{code}-arena-{shown}", Setup = () =>
+                    {
+                        var buttons = view.Arena.LevelButtons;
+                        if (buttons.Count >= shown) UiFeel.Press(buttons[shown - 1]);
+                        view.Arena.Refresh();
+                    } });
+                }
                 Pending.Enqueue(new Shot { Name = $"{code}-menu", Setup = () =>
                 {
                     view.Arena.Close();

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
+using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Audio;
 using UnityEngine.UIElements;
 
@@ -9,9 +11,11 @@ namespace TrollStrategy.UI
 {
     /// <summary>
     /// The arena as a poster, opened by the battle tool. On the left a rail of level discs: every level the
-    /// colony has opened and the next closed one, a tick on a won level, a lock on the closed one and the rest
-    /// time under a resting one. The chosen level fills the poster: the squad's places against the enemy, the
-    /// gold a win brings, the folk a first win opens for hire and the button into its battle. Which level is
+    /// colony has opened and the next closed one, a tick on a won level, a lock on the closed one, a star on a
+    /// milestone and the rest time under a resting one. The chosen level fills the poster from the session's
+    /// <see cref="ArenaOfferSnapshot"/>: the squad's places and how the colony's best squad compares, the enemies
+    /// with their strength and gear, what a win brings (gold, trophies, the folk a first win opens for hire), the
+    /// arena's prize fund, the stake and what a defeat costs, and the button into its battle. Which level is
     /// chosen is the panel's own; outcomes stay with the session. Reads the session, never the state.
     /// </summary>
     public sealed class ArenaPanel
@@ -19,6 +23,8 @@ namespace TrollStrategy.UI
         private const float RefreshSeconds = .5f;
         private const int EnemyKinds = 4;
         private const int PathDots = 3;
+        private const int GearShown = 3;
+        private const int TrophiesShown = 3;
 
         private sealed class Level
         {
@@ -27,6 +33,7 @@ namespace TrollStrategy.UI
             public Button Disc;
             public VisualElement Badge;
             public VisualElement BadgeGlyph;
+            public VisualElement Star;
             public VisualElement Rest;
             public Label RestTime;
             public BattleMissionDefinition Mission;
@@ -49,7 +56,21 @@ namespace TrollStrategy.UI
         private readonly VisualElement _stateGlyph;
         private readonly Label _state;
         private readonly Button _fight;
+        private readonly Label _biome;
+        private readonly Label _odds;
+        private readonly Label _statHealth;
+        private readonly Label _statDamage;
+        private readonly Label _statArmor;
+        private readonly VisualElement _enemyGear;
+        private readonly VisualElement _trophies;
+        private readonly VisualElement _trophyArt;
+        private readonly Label _trophyCount;
+        private readonly VisualElement _fundDots;
+        private readonly Label _fundNext;
+        private readonly Label _stakeValue;
         private readonly List<Level> _levels = new();
+        private ArenaOfferSnapshot _offer;
+        private string _trophiesShown;
         private BattleMissionDefinition _chosen;
         private BattleMissionDefinition _posterOf;
         private int _squadShown = -1;
@@ -78,6 +99,19 @@ namespace TrollStrategy.UI
             _state = Ui.Require<Label>(root, "arena-state");
             Ui.SetPicture(Ui.Require<VisualElement>(root, "arena-coin"), RewardArt.Coin(context.Catalog));
             _fight = UiFeel.Bind(Ui.Require<Button>(root, "arena-fight"), Fight);
+            _biome = Ui.Require<Label>(root, "arena-biome");
+            _odds = Ui.Require<Label>(root, "arena-odds");
+            _statHealth = Ui.Require<Label>(root, "arena-stat-health");
+            _statDamage = Ui.Require<Label>(root, "arena-stat-damage");
+            _statArmor = Ui.Require<Label>(root, "arena-stat-armor");
+            _enemyGear = Ui.Require<VisualElement>(root, "arena-enemy-gear");
+            _trophies = Ui.Require<VisualElement>(root, "arena-trophies");
+            _trophyArt = Ui.Require<VisualElement>(root, "arena-trophy-art");
+            _trophyCount = Ui.Require<Label>(root, "arena-trophy-count");
+            _fundDots = Ui.Require<VisualElement>(root, "arena-fund-dots");
+            _fundNext = Ui.Require<Label>(root, "arena-fund-next");
+            _stakeValue = Ui.Require<Label>(root, "arena-stake-value");
+            Ui.SetPicture(Ui.Require<VisualElement>(root, "arena-stake-coin"), RewardArt.Coin(context.Catalog));
             UiFeel.Bind(Ui.Require<Button>(root, "arena-close"), Close, Sfx.UiBack);
             // a click on the veil around the sheet closes it, like Esc
             _overlay.RegisterCallback<PointerDownEvent>(evt =>
@@ -87,6 +121,16 @@ namespace TrollStrategy.UI
             _tooltip?.Attach(_squad, () => "Ваш отряд", () => _chosen == null
                 ? null
                 : $"В бой идут до {_context.Session.SquadLimit(_chosen)} бойцов. Кого взять, решите перед боем.");
+            _tooltip?.Attach(_odds, () => "Оценка отряда", OddsHint);
+            _tooltip?.Attach(Ui.Require<VisualElement>(root, "arena-strength"), () => "Сила врагов", () => _offer == null
+                ? null
+                : $"Враги сильнее обычного: здоровье ×{Multiplier(_offer.EnemyHealthPercent)}, урон +{_offer.EnemyDamageBonus}, броня +{_offer.EnemyArmorBonus}");
+            _tooltip?.Attach(_trophies, () => "Трофеи", TrophiesHint);
+            _tooltip?.Attach(Ui.Require<VisualElement>(root, "arena-fund"), () => "Призовой фонд", () => _offer == null
+                ? null
+                : $"Повторные победы на любом уровне платят из призового фонда арены. Одна выплата приходит каждые {TopBar.Duration(_offer.Fund.PeriodMs)}.");
+            _tooltip?.Attach(Ui.Require<VisualElement>(root, "arena-stake"), () => "Ставка", () =>
+                "Победа возвращает ставку, поражение и ничья её сжигают.");
             Ui.Show(_overlay, false);
         }
 
@@ -116,6 +160,50 @@ namespace TrollStrategy.UI
         public int EnemyKindsShown => _enemies.childCount;
 
         public string Gold => _gold.text;
+
+        /// <summary>The offer the poster shows.</summary>
+        public ArenaOfferSnapshot Offer => _offer;
+
+        /// <summary>The odds pill's words, as the poster shows them.</summary>
+        public string Odds => _odds.text;
+
+        /// <summary>The enemies' health, damage and armour, as the poster shows them.</summary>
+        public string EnemyStrength => $"{_statHealth.text} {_statDamage.text} {_statArmor.text}";
+
+        /// <summary>The items the enemies wear, as tokens on the poster.</summary>
+        public int EnemyGearShown => _enemyGear.childCount;
+
+        /// <summary>Trophy pictures on the poster; 0 while it shows none.</summary>
+        public int TrophiesShownCount => Ui.IsShown(_trophies) ? _trophyArt.childCount : 0;
+
+        /// <summary>The prize fund's dots and how many of them are full.</summary>
+        public (int Full, int All) FundDots
+        {
+            get
+            {
+                int full = 0;
+                foreach (var dot in _fundDots.Children())
+                    if (dot.ClassListContains("arena-fund__dot--full")) full++;
+                return (full, _fundDots.childCount);
+            }
+        }
+
+        public string Stake => _stakeValue.text;
+
+        /// <summary>The line by the battle button: what stands in the way, or what a defeat costs.</summary>
+        public string State => _state.text;
+
+        public string Eyebrow => _eyebrow.text;
+
+        public string Biome => _biome.text;
+
+        /// <summary>Whether the level's disc on the rail carries the milestone star.</summary>
+        public bool HasStar(BattleMissionDefinition mission)
+        {
+            foreach (var level in _levels)
+                if (Ui.IsShown(level.Root) && level.Mission == mission) return Ui.IsShown(level.Star);
+            return false;
+        }
 
         /// <summary>The folk a first win opens for hire, as the poster names it; null when it names none.</summary>
         public string Hire => Ui.IsShown(_hire) ? _hireName.text : null;
@@ -203,6 +291,7 @@ namespace TrollStrategy.UI
             Ui.Show(level.Badge, won || !open);
             level.Badge.EnableInClassList("arena-rail__badge--won", won);
             level.Badge.EnableInClassList("arena-rail__badge--closed", !open);
+            Ui.Show(level.Star, level.Mission.Milestone);
             level.BadgeGlyph.EnableInClassList("glyph--check", won);
             level.BadgeGlyph.EnableInClassList("glyph--lock", !open);
             Ui.Show(level.Rest, wait > 0);
@@ -217,23 +306,35 @@ namespace TrollStrategy.UI
             var enter = session.CanEnterMission(id);
             int wins = session.MissionWins(id);
             int wait = session.MissionWaitMs(id);
-            var (min, max) = session.WinGold(mission);
+            var offer = _offer = session.ArenaOffer(mission);
+            int min = offer.GoldMin, max = offer.GoldMax;
 
             if (_posterOf != mission)
             {
                 _posterOf = mission;
                 Ui.SetText(_name, StripLevel(mission.DisplayName));
+                Ui.SetText(_biome, BiomeName(mission.Biome));
                 FillEnemies(mission);
+                FillEnemyGear(offer);
+                Ui.SetText(_statHealth, "×" + Multiplier(offer.EnemyHealthPercent));
+                Ui.SetText(_statDamage, "+" + offer.EnemyDamageBonus);
+                Ui.SetText(_statArmor, "+" + offer.EnemyArmorBonus);
             }
-            Ui.SetText(_eyebrow, wins > 0 ? $"Уровень {mission.Level}. Побед: {wins}" : $"Уровень {mission.Level}");
+            var ladder = session.ArenaLadder();
+            Ui.SetText(_eyebrow, EyebrowOf(offer, wins, ladder.Count > 0 && ladder[ladder.Count - 1] == mission));
             int limit = session.SquadLimit(mission);
             if (limit != _squadShown) FillSquad(limit);
+            ShowOdds(offer);
 
             Ui.SetText(_gold, max > min ? $"{min}–{max}" : min.ToString());
-            Ui.SetText(_goldNote, wins == 0 ? "золота за первую победу" : "золота за победу");
+            Ui.SetText(_goldNote, offer.FirstWin ? "золота за первую победу"
+                : offer.PaysFromFund ? "золота за победу" : "фонд пуст: только ставка назад");
+            ShowTrophies(offer);
+            ShowFund(offer.Fund);
+            Ui.SetText(_stakeValue, offer.Stake.ToString());
 
             // a first win over a folk opens it for hire
-            var unit = mission.UnlockUnit.HasValue && wins == 0 ? _context.Catalog.TryGetUnit(mission.UnlockUnit.Value) : null;
+            var unit = offer.UnlockUnit.HasValue ? _context.Catalog.TryGetUnit(offer.UnlockUnit.Value) : null;
             Ui.Show(_hire, unit != null);
             if (unit != null)
             {
@@ -241,9 +342,8 @@ namespace TrollStrategy.UI
                 Ui.SetPicture(_hireArt, RewardArt.Tight(unit.PortraitSprite));
             }
 
-            // what stands between the colony and this battle, or a word on growing stronger
+            // what stands between the colony and this battle, or what a defeat would cost
             string glyph = null;
-            bool advice = false;
             string state;
             if (!open)
             {
@@ -251,10 +351,9 @@ namespace TrollStrategy.UI
                 glyph = "glyph--lock";
             }
             else if (enter.Ok)
-            {
-                state = "Улучшения бараков делают отряд сильнее";
-                advice = true;
-            }
+                state = offer.ClosesOnDefeat
+                    ? $"Поражение: ставка сгорит, отдых {TopBar.Duration(offer.DefeatRestMs)}, уровень закроется до победы на {offer.ReopenLevel}-м"
+                    : $"Поражение: ставка сгорит, отдых {TopBar.Duration(offer.DefeatRestMs)}";
             else if (wait > 0)
             {
                 state = $"Отдых {TopBar.Duration(wait)}";
@@ -262,8 +361,7 @@ namespace TrollStrategy.UI
             }
             else state = enter.Error;
             Ui.SetText(_state, state);
-            if (advice) Ui.SetPicture(_statePicture, RewardArt.BuildingIcon(_context.Catalog, BuildingKind.Barracks));
-            else Ui.Show(_statePicture, false);
+            Ui.Show(_statePicture, false);
             Ui.Show(_stateGlyph, glyph != null);
             _stateGlyph.EnableInClassList("glyph--lock", glyph == "glyph--lock");
             _stateGlyph.EnableInClassList("glyph--rest", glyph == "glyph--rest");
@@ -322,6 +420,116 @@ namespace TrollStrategy.UI
             }
         }
 
+        // "Уровень 7", "Уровень 7. Побед: 3", on a milestone "Веха. Уровень 10", at the won top of the ladder its end
+        private static string EyebrowOf(ArenaOfferSnapshot offer, int wins, bool top)
+        {
+            if (top && offer.LadderComplete) return "Лестница пройдена. Повторы платят из фонда.";
+            if (offer.Milestone)
+                return wins > 0 ? $"Веха. Уровень {offer.Level}. Побед: {wins}" : $"Веха. Уровень {offer.Level}";
+            return wins > 0 ? $"Уровень {offer.Level}. Побед: {wins}" : $"Уровень {offer.Level}";
+        }
+
+        private void ShowOdds(ArenaOfferSnapshot offer)
+        {
+            Ui.SetText(_odds, offer.Odds == OddsGrade.Stronger ? "Отряд сильнее"
+                : offer.Odds == OddsGrade.Even ? "На равных" : "Отряд слабее");
+            _odds.EnableInClassList("arena-odds--stronger", offer.Odds == OddsGrade.Stronger);
+            _odds.EnableInClassList("arena-odds--even", offer.Odds == OddsGrade.Even);
+            _odds.EnableInClassList("arena-odds--weaker", offer.Odds == OddsGrade.Weaker);
+        }
+
+        private string OddsHint()
+        {
+            if (_offer == null) return null;
+            if (_offer.SquadCount == 0) return "В колонии нет бойцов: наймите существ в бараках.";
+            string basis = $"Оценка по лучшим {_offer.SquadCount} бойцам колонии и её снаряжению. Это подсказка, исход решает бой.";
+            return _offer.Odds == OddsGrade.Weaker
+                ? basis + "\n" + "Сделайте отряд сильнее: улучшения бараков, снаряжение, больше бойцов."
+                : basis;
+        }
+
+        private string TrophiesHint()
+        {
+            if (_offer == null || _offer.Trophies.Count == 0) return null;
+            var names = new List<string>();
+            foreach (var trophy in _offer.Trophies) names.Add($"{trophy.Name} ×{trophy.Amount}");
+            return string.Join("\n", names);
+        }
+
+        // up to three items the enemies wear, as their pictures
+        private void FillEnemyGear(ArenaOfferSnapshot offer)
+        {
+            _enemyGear.Clear();
+            for (int i = 0; i < offer.EnemyGear.Count && i < GearShown; i++)
+            {
+                var item = offer.EnemyGear[i];
+                var token = Ui.Box("arena-enemy-gear__item");
+                Ui.SetPicture(token, item.Icon);
+                _enemyGear.Add(token);
+                if (_tooltip != null)
+                {
+                    string title = item.DisplayName;
+                    _tooltip.Attach(token, () => title, () => "Враги носят это снаряжение, и оно действует в бою.");
+                }
+            }
+        }
+
+        private void ShowTrophies(ArenaOfferSnapshot offer)
+        {
+            Ui.Show(_trophies, offer.Trophies.Count > 0);
+            if (offer.Trophies.Count == 0) return;
+            var key = new List<string>();
+            int count = 0;
+            foreach (var trophy in offer.Trophies)
+            {
+                key.Add($"{trophy.Resource}:{trophy.Amount}");
+                count += trophy.Amount;
+            }
+            string signature = string.Join(",", key);
+            if (signature == _trophiesShown) return;
+            _trophiesShown = signature;
+            _trophyArt.Clear();
+            for (int i = 0; i < offer.Trophies.Count && i < TrophiesShown; i++)
+            {
+                var picture = Ui.Box("arena-trophies__item");
+                picture.pickingMode = PickingMode.Ignore;
+                Ui.SetPicture(picture, _context.Catalog.TryGetResource(offer.Trophies[i].Resource)?.Icon);
+                _trophyArt.Add(picture);
+            }
+            Ui.SetText(_trophyCount, "×" + count);
+        }
+
+        private void ShowFund(ArenaFundSnapshot fund)
+        {
+            while (_fundDots.childCount < fund.Cap)
+            {
+                var dot = Ui.Box("arena-fund__dot");
+                dot.pickingMode = PickingMode.Ignore;
+                _fundDots.Add(dot);
+            }
+            while (_fundDots.childCount > fund.Cap) _fundDots.RemoveAt(_fundDots.childCount - 1);
+            for (int i = 0; i < _fundDots.childCount; i++)
+                _fundDots[i].EnableInClassList("arena-fund__dot--full", i < fund.Payouts);
+            Ui.SetText(_fundNext, fund.NextInMs < 0 ? "фонд полон" : $"через {TopBar.Duration(fund.NextInMs)}");
+        }
+
+        // 250 % reads "2.5": the enemies' health over their kind's
+        private static string Multiplier(int percent) =>
+            (percent / 100.0).ToString("0.#", CultureInfo.InvariantCulture);
+
+        private static string BiomeName(ArenaBiome biome)
+        {
+            switch (biome)
+            {
+                case ArenaBiome.Forest: return "Лес";
+                case ArenaBiome.Swamp: return "Болото";
+                case ArenaBiome.Graveyard: return "Кладбище";
+                case ArenaBiome.MountainPass: return "Горная застава";
+                case ArenaBiome.Snow: return "Снега";
+                default: return "Луг";
+            }
+        }
+
         private Level CreateLevel()
         {
             var level = new Level { Root = Ui.Box("arena-rail__level") };
@@ -343,6 +551,11 @@ namespace TrollStrategy.UI
             level.BadgeGlyph.pickingMode = PickingMode.Ignore;
             level.Badge.Add(level.BadgeGlyph);
             level.Disc.Add(level.Badge);
+            // a milestone's star, on the disc's other shoulder
+            level.Star = Ui.Box("glyph glyph--star arena-rail__star");
+            level.Star.pickingMode = PickingMode.Ignore;
+            Ui.Show(level.Star, false);
+            level.Disc.Add(level.Star);
             level.Rest = Ui.Box("arena-rail__rest");
             level.Rest.pickingMode = PickingMode.Ignore;
             var clock = Ui.Box("glyph glyph--rest");

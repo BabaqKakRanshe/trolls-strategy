@@ -133,7 +133,8 @@ namespace TrollStrategy.UI
             _reward = reward;
             _time = 0f;
             _closing = -1f;
-            Ui.SetText(_title, reward.FirstWin ? $"{reward.MissionName}, первая победа" : reward.MissionName);
+            Ui.SetText(_title, reward.FirstWin ? $"{reward.MissionName}, первая победа"
+                : reward.Draw ? $"{reward.MissionName}, ничья" : reward.MissionName);
             Ui.SetText(_range, reward.MaxGold > reward.MinGold
                 ? $"Награда за бой: от {reward.MinGold} до {reward.MaxGold} золота"
                 : $"Награда за бой: {reward.MinGold} золота");

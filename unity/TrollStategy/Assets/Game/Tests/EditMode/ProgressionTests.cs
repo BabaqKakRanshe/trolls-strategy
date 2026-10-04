@@ -235,6 +235,19 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void RepeatableArenaQuest_ClimbsTheLaddersMilestones_UpToItsTop()
+        {
+            var catalog = Catalog(new[] { Quest("only", QuestGoal.OwnUnits(UnitKind.Goblin, 1)) },
+                new[] { Quest("arena", new[] { QuestGoal.ReachArenaLevel(10) }, QuestReward.Coins(800)) }, growthPercent: 25);
+            var definition = catalog.Progression;
+            definition.SetRepeatArenaLevels(5, 30);
+
+            var targets = System.Linq.Enumerable.Select(System.Linq.Enumerable.Range(1, 6), i => Progression.QuestAt(definition, i).Goals[0].Amount);
+            Assert.That(targets, Is.EqualTo(new[] { 10, 15, 20, 25, 30, 30 }), "A milestone more each cycle, never past the top");
+            Assert.That(Progression.QuestAt(definition, 2).Rewards[0].Gold, Is.EqualTo(1000), "The gold grows as for every repeat");
+        }
+
+        [Test]
         public void EndOfChainWithoutRepeatables_LeavesNoQuest()
         {
             var session = Campaign(Quest("only", QuestGoal.OwnUnits(UnitKind.Goblin, 1)));
