@@ -117,7 +117,15 @@
 | `players/history.jsonl` | по строке на каждую сборку с новыми данными |
 | `players/exports/` | сюда кладутся выгрузки из Unity |
 
-**Обновить автоматически:** `python tools/stats/players.py --fetch` (с `--open` откроет общую страницу).
+**Обновить через ваш Chrome (Claude в Chrome).** Попросить Claude «обнови статистику игроков». Он
+открывает SQL Data Explorer в вашем Chrome, где вы уже вошли в Unity, запускает запрос из
+`tools/stats/players-export.sql`, забирает ответ прямо в странице (без токенов) и с вашего разрешения
+сохраняет его файлом `trollstrategy-players-ГГГГ-ММ-ДД.csv`. Файл переезжает из «Загрузок» в
+`players/exports`, затем `python tools/stats/players.py` собирает страницу. Так сделано 2026-10-04:
+32 события, 9 сессий, все тестовые.
+
+**Обновить скриптом в отдельном браузере:** `python tools/stats/players.py --fetch` (с `--open` откроет
+общую страницу).
 Скрипт `tools/stats/fetch_players.py` сам гоняет запрос по дням через SQL Data Explorer и кладёт по CSV на
 день в `players/exports` (`fetched-ГГГГ-ММ-ДД.csv`); сегодня и вчера каждый раз перекачиваются, более старые
 дни берутся из уже скачанного. `--days 30` — сколько дней назад.

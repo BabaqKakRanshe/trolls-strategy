@@ -418,9 +418,11 @@ function funnelChart(rows, opts) {
       const end = svg("text", { x: m.left + sx(r.value) + 8, y: by + barH / 2 + 4, class: "tick" }, root);
       end.textContent = `${nf0.format(r.value)} · ${pct(r.value, rows[0].value)}`;
       if (i === opts.markIndex) {
-        const w = end.getComputedTextLength();
-        svg("text", { x: m.left + sx(r.value) + 16 + w, y: by + barH / 2 + 4, class: "note" }, root).textContent =
-          `← здесь заканчивается больше всего сессий: ${nf0.format(r.ended)}`;
+        // beside the bar while it fits; the line above the chart says the same in any case
+        const x = m.left + sx(r.value) + 16 + end.getComputedTextLength();
+        const note = svg("text", { x, y: by + barH / 2 + 4, class: "note" }, root);
+        note.textContent = `← здесь заканчивается больше всего сессий: ${nf0.format(r.ended)}`;
+        if (x + note.getComputedTextLength() > width - 4) note.remove();
       }
       hoverRow(root, 0, y, width, rowH, event => showTip(event, `${r.n}. ${r.label}`, r.tip));
     });
@@ -587,7 +589,11 @@ function render() {
     { color: "transparent", label: "выполнили", value: nf0.format(q.completed) },
     { color: css("--e-stuck"), box: true, label: "закончили, не выполнив", value: nf0.format(q.endedStuck) },
     { color: css("--e-unclaimed"), box: true, label: "закончили, не забрав награду", value: nf0.format(q.endedCompleted) }] }));
-  const funnel = funnelChart(funnelRows, { label: "Сколько сессий дошло до каждого задания", color: "--s-players", markIndex });
+  const marked = quests[markIndex];
+  const funnel = el("div", {},
+    marked ? el("p", { class: "sub" }, "Больше всего сессий заканчивается на задании ", el("b", {}, `${marked.n}. ${marked.label}`),
+      `: ${nf0.format(worst)} из ${nf0.format(marked.reached)} дошедших (${pct(worst, marked.reached)}).`) : null,
+    funnelChart(funnelRows, { label: "Сколько сессий дошло до каждого задания", color: "--s-players", markIndex }));
   const funnelTable = makeTable([
     { label: "#", value: q => q.n }, { label: "Задание", value: q => q.label },
     { label: "Начали", num: true, value: q => nf0.format(q.reached) }, { label: "% от всех", num: true, value: q => pct(q.reached, quests[0].reached) },
