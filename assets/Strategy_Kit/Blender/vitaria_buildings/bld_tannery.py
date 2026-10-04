@@ -8,7 +8,9 @@ import math, random
 from mathutils import Vector
 from build_vitaria import p_box, p_cyl, p_prism
 from vitaria_buildings.common import Frame, brace, STONE_TOP
-from vitaria_buildings.levels import pennant, wall_lantern
+from vitaria_buildings.common import plank_door
+from vitaria_buildings.levels import (Shift, quoins, masonry, stack, win, gable_x_at, gable_y_at, gable_end, gable_front,
+                                    wall_lamp, WALL, BEAM, PLANKS)
 
 NAME = "Bld_Tannery"
 TITLE = "Кожевня"
@@ -249,50 +251,122 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): навес -> мастерская кожевника -> кожевня с сушильным чердаком
 # =========================================================================================
-def _roof_hide(a, s, x, col, seed):
-    """Шкура, разложенная сушиться на скате кровли: плоский контур на 3 см над поясом ската."""
-    p = PITCH
-    up = Vector((0, math.cos(p), math.sin(p)))
-    nrm = Vector((0, -math.sin(p), math.cos(p)))
-    c = Vector((x, YF, ZF)) + up * s + nrm * 0.25
+X0, X1, Y0, Y1 = -1.55, 1.55, 0.28, 1.56          # коробка мастерской на месте навеса
+
+
+def _platform(a):
+    a.add(p_box((2 * SX + 0.40, YB - YF + 0.50, F + 0.14), loc=(0, (YF + YB) / 2 + 0.03, (F - 0.14) / 2),
+                bevel=0.06), STONE_TOP)
+
+
+def _frames(a):
+    _hide_frame(a, Frame((-1.20, -0.62, 0), rz=9), w=1.50, h=2.62, zb=0.62, body="hide_light", spine="hide",
+                seed=1)
+    _hide_frame(a, Frame((1.24, -0.58, 0), rz=-11), w=1.42, h=2.48, zb=0.60, body="hide", spine="hide_dark",
+                seed=2)
+
+
+def _pit(a, x, y, w, d, fill):
+    """Дубильная яма: каменная обкладка в уровень земли, раствор на 6 см ниже края, мешалка."""
+    for sy in (-1, 1):
+        a.add(p_box((w + 0.16, 0.12, 0.22), loc=(x, y + sy * (d / 2 + 0.02), 0.07), bevel=0.0), "stone_light")
+    for sx in (-1, 1):
+        a.add(p_box((0.12, d + 0.04, 0.20), loc=(x + sx * (w / 2 + 0.02), y, 0.06), bevel=0.0), "stone_light")
+    a.add(p_box((w, d, 0.04), loc=(x, y, 0.10), bevel=0.0), fill)
+
+
+def _hung_hide(a, x, y, z, col, seed, face=-1):
+    """Шкура, перекинутая через жердь сушильни: два полотнища вниз от жерди, лицом к камере."""
     rng = random.Random(seed)
-    pts = _hide_outline(0.40, 0.42, rng)
-    fr = Frame(tuple(c), rot=(math.degrees(p) - 90.0, 0, 0))
-    fr.prism(a, pts, 0.04, col=lambda f: col if abs(f.normal.y) > 0.6 else "hide_dark")
+    pts = [(-0.24, 0.0), (0.24, 0.0), (0.26, -0.34), (0.16, -0.52), (0.04, -0.44), (-0.10, -0.56), (-0.22, -0.40)]
+    pts = [(u + rng.uniform(-0.02, 0.02), v + rng.uniform(-0.02, 0.02) * (v < 0)) for u, v in pts]
+    a.add(p_prism(pts, 0.04, loc=(x, y, z)), lambda f, c=col: c if abs(f.normal.y) > 0.6 else "hide_dark")
 
 
-def upgrade(a, level):
-    """2: флажок над верхней кромкой кровли, две шкуры сушатся на скате, стопка кожи вдвое выше.
-    3: + чаны с красителем (синий и багряный) у внешних стоек рам, коптильня — каменная труба сквозь
-    кровлю, вывеска гильдии с золотой шкурой на переднем прогоне, фонари на передних стойках навеса,
-    золотая доска по верхней кромке кровли."""
-    pennant(a, 1.05, YB + 0.10, ZB + 0.18, level, h=1.20, side=-1)
-    _roof_hide(a, 0.55, -0.62, "hide_light", 11)
-    _roof_hide(a, 0.62, 0.58, "hide", 12)
-    _leather_stack(a, Frame((-1.22, -1.30, 0.53), rz=10), n=4, seed=8)        # поверх прежней стопки
-    if level < 3:
-        return
-    _vat(a, Frame((-1.84, -1.06, 0)), r=0.22, h=0.36, fill="roof", seg=12)
-    _vat(a, Frame((1.84, -1.06, 0)), r=0.20, h=0.32, fill="berry", seg=12)
+def _l2(a):
+    """Мастерская кожевника: навес закрыт — каменный цоколь, дощатые стены на стойках, кровля коньком вдоль Y
+    фронтоном к камере (вместо одного ската), на фронтоне — прибитая шкура-вывеска и люк чердака; дверь и
+    окна; перед мастерской рамы со шкурами как у навеса, чан с раствором стоит в каменной дубильной яме."""
+    _platform(a)
+    zp, zw = F + 0.46, 2.12
+    a.add(p_box((X1 - X0, Y1 - Y0, zp - F + 0.02), loc=(0, (Y0 + Y1) / 2, (F + zp) / 2), bevel=0.04), WALL)
+    a.add(p_box((X1 - X0 - 0.06, Y1 - Y0 - 0.06, zw - zp), loc=(0, (Y0 + Y1) / 2, (zp + zw) / 2), bevel=0.03),
+          "wood_mid")
+    for x in (X0, -0.52, 0.52, X1):
+        a.add(p_box((0.16, 0.16, zw - zp), loc=(x, Y0 - 0.02, (zp + zw) / 2), bevel=0.0), BEAM)
+    for x in (X0, X1):
+        a.add(p_box((0.16, 0.16, zw - zp), loc=(x, Y1 + 0.02, (zp + zw) / 2), bevel=0.0), BEAM)
+    a.add(p_box((X1 - X0 + 0.10, 0.18, 0.16), loc=(0, Y0 - 0.03, zw - 0.06), bevel=0.0), BEAM)
+    plank_door(a, Y0 + 0.02, F, w=0.58, h=1.20, x=0.02)
+    win(a, Frame((-1.04, Y0 - 0.04, 1.28)), w=0.38, h=0.36, shutters="wood_light", sill="wood_dark")
+    win(a, Frame((1.04, Y0 - 0.04, 1.28)), w=0.38, h=0.36, shutters="wood_light", sill="wood_dark")
+    yc = (Y0 + Y1) / 2
+    zr = gable_y_at(a, 0.0, yc, X1 - X0, Y1 - Y0, zw, pitch_deg=32, ox=0.16, oy=0.12, bands=2)
+    gable_front(a, 0.0, Y0 + 0.06, X1 - X0, zw - 0.02, zr, depth=0.12, face=-1)
+    gable_front(a, 0.0, Y1 - 0.06, X1 - X0, zw - 0.02, zr, depth=0.12, face=1, boards=False)
+    # шкура-вывеска на фронтоне, под ней люк чердака
+    rng = random.Random(11)
+    pts = _hide_outline(0.40, 0.36, rng)
+    fr = Frame((0.0, Y0 - 0.02, zw + 0.42))
+    fr.prism(a, pts, 0.05, col=lambda f: "hide_light" if abs(f.normal.y) > 0.6 else "hide_dark")
+    for i in (3, 9, 16, 22):
+        fr.cyl(a, 0.03, 0.03, 0.07, 5, loc=(pts[i][0] * 0.9, -0.03, pts[i][1] * 0.9), rot=(90, 0, 0), col="wood_dark")
+    _side_hides(a)
+    _frames(a)
+    _pit(a, 0.02, -1.14, 0.96, 0.62, "leather_dark")
+    _vat(a, Frame((1.20, -1.24, 0)), r=0.35, h=0.46, fill="water")
+    a.add(p_cyl(0.035, 0.03, 1.25, 6, loc=(0.15, -1.04, 0.05), rot=(18, -22, 0)), "wood_light")
+    _leather_stack(a, Frame((-1.22, -1.30, 0), rz=7))
+
+
+def _l3(a):
+    """Кожевня с сушильным чердаком: низ — камень с дверью и окнами со светом, верх — открытая сушильня:
+    стойки, жердь и редкие жалюзи, между ними висят шкуры; кровля круче, каменная труба варочной печи;
+    перед зданием — две дубильные ямы (бурая и красная), рамы со шкурами и стопка кожи."""
+    _platform(a)
+    zg, zl = 1.52, 2.86
+    masonry(a, 0.0, (Y0 + Y1) / 2, X1 - X0, Y1 - Y0, F, zg, corners=((-1, -1), (1, -1)))
+    plank_door(a, Y0 + 0.02, F, w=0.58, h=1.12, x=0.02)
+    for x in (-1.04, 1.04):
+        win(a, Frame((x, Y0 - 0.04, 1.02)), w=0.36, h=0.34, lit=True, shutters="roof_dark", sill="stone_light")
+    # сушильня: пол-балка, угловые и промежуточные стойки, жалюзи сверху и снизу, жердь со шкурами
+    a.add(p_box((X1 - X0 + 0.12, Y1 - Y0 + 0.12, 0.14), loc=(0, (Y0 + Y1) / 2, zg + 0.05), bevel=0.0), BEAM)
+    a.add(p_box((X1 - X0 - 0.30, Y1 - Y0 - 0.30, zl - zg), loc=(0, (Y0 + Y1) / 2, (zg + zl) / 2), bevel=0.0), "black")
+    for x in (X0 + 0.05, -0.80, 0.0, 0.80, X1 - 0.05):
+        for y in (Y0 + 0.05, Y1 - 0.05):
+            a.add(p_box((0.14, 0.14, zl - zg), loc=(x, y, (zg + zl) / 2), bevel=0.0), BEAM)
+    for k in range(3):
+        z = zl - 0.12 - k * 0.12
+        a.add(p_box((X1 - X0, 0.04, 0.07), loc=(0, Y0 + 0.02, z), rot=(-30, 0, 0), bevel=0.0), "wood_mid")
+    a.add(p_box((X1 - X0, 0.07, 0.10), loc=(0, Y0 - 0.005, zg + 0.40), bevel=0.0), "wood_mid")
+    for k, (x, col) in enumerate(((-1.18, "hide_light"), (-0.40, "hide"), (0.40, "hide_light"), (1.18, "hide"))):
+        _hung_hide(a, x, Y0 + 0.10, zl - 0.46, col, 30 + k)
+    zr = gable_x_at(a, 0.0, (Y0 + Y1) / 2, X1 - X0, Y1 - Y0, zl, pitch_deg=40, ox=0.20, oy=0.06, bands=2)
     for sx in (-1, 1):
-        wall_lantern(a, sx * SX, YF - 0.10, 1.80, out=(-sx * 0.25, -0.97))
-    # коптильня: каменная труба сквозь кровлю у левого заднего угла
-    cx, cy = -0.98, 1.12
-    zroof = ZF + (cy - YF) * math.tan(PITCH)
-    a.add(p_box((0.42, 0.42, 1.30), loc=(cx, cy, zroof + 0.40), bevel=0.04), "stone_mid")
-    a.add(p_box((0.56, 0.56, 0.12), loc=(cx, cy, zroof + 1.02), bevel=0.04), "stone_dark")
-    a.add(p_box((0.28, 0.28, 0.03), loc=(cx, cy, zroof + 1.095), bevel=0.0), "black")
-    # вывеска гильдии на переднем прогоне: доска в золотой рамке, золотая шкура
-    ys = YF - 0.14
-    for sx in (-1, 1):
-        a.add(p_box((0.03, 0.03, 0.22), loc=(sx * 0.20, ys, 1.72), bevel=0.0), "iron_dark")
-    a.add(p_box((0.62, 0.05, 0.46), loc=(0, ys + 0.01, 1.42), bevel=0.0), "gold")
-    a.add(p_box((0.52, 0.06, 0.36), loc=(0, ys - 0.01, 1.42), bevel=0.0), "wood_dark")
-    fr = Frame((0, ys - 0.05, 1.42))
-    fr.prism(a, _hide_outline(0.16, 0.14, random.Random(5)), 0.03, col="gold")
-    p = PITCH
-    up = Vector((0, math.cos(p), math.sin(p)))
-    top = Vector((0, YF, ZF)) + up * ((YB - YF + 0.22) / math.cos(p))
-    a.add(p_box((2 * SX + 0.56, 0.06, 0.14), loc=(0, top.y - 0.03, top.z + 0.12), bevel=0.0), "gold")
+        gable_end(a, sx * (X1 - 0.02), (Y0 + Y1) / 2, Y1 - Y0, zl - 0.02, zr, face=sx)
+    # фронтон-ризалит посередине: сушильня поднимается выше карниза, своя кровля, балка с шкурой на крюке
+    cw, zc = 1.10, zl + 0.36
+    tp = math.tan(math.radians(40))
+    zr2 = zc + 0.08 + (cw / 2) * math.tan(math.radians(42))
+    yb = (Y0 + Y1) / 2 - (zr - zr2 + 0.10) / tp
+    a.add(p_box((cw, 0.14, zc - zl + 0.04), loc=(0.0, Y0 + 0.07, (zl + zc) / 2), bevel=0.0), "wood_mid")
+    gable_y_at(a, 0.0, (Y0 + yb) / 2, cw, yb - Y0, zc, pitch_deg=42, ox=0.10, oy=0.18, bands=1)
+    gable_front(a, 0.0, Y0 + 0.07, cw, zc - 0.02, zr2, depth=0.14, face=-1, boards=False)
+    a.add(p_box((0.44, 0.04, 0.46), loc=(0.0, Y0 - 0.01, zl + 0.20), bevel=0.0), "black")
+    a.add(p_box((0.12, 0.62, 0.12), loc=(0.0, Y0 - 0.22, zr2 - 0.30), bevel=0.0), BEAM)
+    a.add(p_box((0.03, 0.03, 0.40), loc=(0.0, Y0 - 0.48, zr2 - 0.52), bevel=0.0), "rope")
+    _hung_hide(a, 0.0, Y0 - 0.48, zr2 - 0.70, "hide", 41)
+    stack(a, -1.00, (Y0 + Y1) / 2 + 0.30, 2.20, zr + 0.40 - 2.20, w=0.40)
+    _frames(a)
+    _pit(a, -0.30, -1.20, 0.72, 0.58, "leather_dark")
+    _pit(a, 0.62, -1.26, 0.62, 0.50, "cloth_dark")
+    a.add(p_cyl(0.035, 0.03, 1.20, 6, loc=(-0.20, -1.12, 0.05), rot=(18, -22, 0)), "wood_light")
+    _leather_stack(a, Frame((-1.30, -1.36, 0), rz=7))
+    wall_lamp(a, 0.50, Y0 - 0.04, 1.30, out=(0.3, -0.95))
+
+
+def evolve(a, level):
+    """2: мастерская кожевника. 3: кожевня с сушильным чердаком."""
+    (_l2 if level == 2 else _l3)(a)

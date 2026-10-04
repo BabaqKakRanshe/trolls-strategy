@@ -10,7 +10,7 @@ from build_vitaria import p_box, p_cyl, p_prism, p_taper_box, by_normal
 from vitaria_buildings.common import (Frame, gable_roof, gable_wall, stone_base, cornice, banner,
                                       barrel, heater_shield, spear, sword, armor_stand,
                                       STONE_DARK_TOP)
-from vitaria_buildings.levels import pennant, gold_ridge, wall_lantern, turret, finial
+from vitaria_buildings.levels import (quoins, stepped_gable, tower_square, wall_lamp, stone_arch, WALL)
 
 NAME = "Bld_Armory"
 TITLE = "Склад экипировки"
@@ -183,35 +183,70 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): склад экипировки -> оружейная -> арсенал
 # =========================================================================================
-def _canopy(a):
-    """Козырёк над дверью: два кованых кронштейна из стены и маленькая двускатная кровля цвета цепочки."""
-    y0, z0 = YF - 0.02, F + DH + 0.42
-    for sx in (-1, 1):
-        a.add(p_box((0.09, 0.56, 0.09), loc=(sx * 0.70, y0 - 0.28, z0), bevel=0.0), "iron_dark")
-        a.add(p_box((0.07, 0.07, 0.48), loc=(sx * 0.70, y0 - 0.20, z0 - 0.20), rot=(-40, 0, 0), bevel=0.0),
-              "iron_dark")
-    for sx in (-1, 1):
-        a.add(p_box((0.86, 0.70, 0.08), loc=(sx * 0.39, y0 - 0.30, z0 + 0.19), rot=(0, sx * 26, 0), bevel=0.0),
-              "roof" if sx < 0 else "roof_dark")
-    a.add(p_box((0.12, 0.74, 0.12), loc=(0, y0 - 0.30, z0 + 0.39), rot=(0, 45, 0), bevel=0.0), "wood_dark")
+def _body(a, zt, pitch):
+    """Каменная коробка до zt с квадрами по всем углам, кровля между двумя ступенчатыми щипцами."""
+    stone_base(a, W + 0.28, D + 0.28, h=F, col=STONE_DARK_TOP)
+    a.add(p_box((W, D, zt - F + 0.02), loc=(0, 0, (F + zt) / 2 - 0.01), bevel=0.05), "stone_mid")
+    quoins(a, 0, 0, W, D, F, zt, corners=((-1, -1), (1, -1), (1, 1)), long=0.50, short=0.30, out=0.06, hb=0.46)
+    zr = gable_roof(a, W, D - 0.30, zt, pitch_deg=pitch, ox=0.22, oy=0.0)
+    for y in (YF + 0.15, D / 2 - 0.15):
+        stepped_gable(a, 0.0, y, W + 0.06, zt, zr, depth=0.30, steps=4, rise=0.30)
+    return zr
 
 
-def upgrade(a, level):
-    """2: флажок на правом скате у фасада, козырёк над дверью на кованых кронштейнах, ящик с копьями
-    перед левой хоругвью. 3: + башенка на левом переднем углу, золото по коньку и навершия, фонари по
-    сторонам двери."""
-    zr = ZT + 0.08 + (W / 2) * math.tan(math.radians(PITCH))
-    pennant(a, 0.62, YF + 0.10, zr - 0.62 * math.tan(math.radians(PITCH)) + 0.10, level, side=1)
-    _canopy(a)
-    cr = Frame((-0.78, YF - 0.40, 0.0), rz=4)
-    cr.box(a, (0.56, 0.34, 0.34), (0, 0, 0.17), col=by_normal("wood_pale", "wood_light", "wood_dark", 0.7), bevel=0.03)
-    for k in range(4):
-        spear(a, cr.sub((-0.18 + k * 0.12, 0.0, 0.24), rot=(0, (k - 1.5) * 5, 0)), L=1.05)
-    if level < 3:
-        return
-    turret(a, -W / 2 + 0.11, YF + 0.06, 1.70, level, r=0.36, h=1.30, rh=0.95)
-    gold_ridge(a, D + 2 * 0.08 + 0.14, zr, axis="y")
+def _shield_on_gable(a, zt):
+    heater_shield(a, Frame((0, YF - 0.06, zt + 0.52)), w=0.82, h=1.0, t=0.07, face="roof", rim="gold",
+                  emblem="swords", paint="steel")
+
+
+def _banners(a, z=2.30):
+    chev = [(-0.12, -0.07), (0.0, 0.04), (0.12, -0.07), (0.12, 0.04), (0.0, 0.15), (-0.12, 0.04)]
     for sx in (-1, 1):
-        wall_lantern(a, sx * 0.86, YF - 0.06, 1.84, out=(sx * 0.3, -0.95))
+        a.add(p_box((0.08, 0.20, 0.08), loc=(sx * 1.1, YF - 0.08, z + 0.06), bevel=0.0), "iron_dark")
+        banner(a, (sx * 1.1, YF - 0.12, z), w=0.26, h=0.80, col="roof", pole=False)
+        a.add(p_prism(chev, 0.02, loc=(sx * 1.1, YF - 0.15, z - 0.36)), "gold")
+
+
+def _l2(a):
+    """Оружейная: стены выше на 0.45, квадры на всех углах, деревянные фронтоны заменены каменными
+    ступенчатыми щипцами (кровля круче и прячется за ними), щит с мечами — на переднем щипце; дверь
+    с засовом и замком, хоругви на кованых кронштейнах, бочка мечей и доспех — прежние."""
+    zt = 2.70
+    _body(a, zt, 44.0)
+    _shield_on_gable(a, zt)
+    _door(a)
+    _banners(a)
+    _sword_barrel(a, Frame((-1.3, YF - 0.42, 0)))
+    armor_stand(a, Frame((1.28, YF - 0.46, 0), rz=8))
+    for sx in (-1, 1):
+        _barred_window(a, Frame((sx * W / 2, 0.20, 1.34), rz=sx * 90))
+
+
+def _l3(a):
+    """Арсенал: два этажа камня (пояс по межэтажью, бойницы верхнего яруса), ступенчатые щипцы, на левом
+    переднем углу — квадратная башня с зубцами и шатром выше конька; над дверью — каменная арка с замковым
+    камнем, у двери фонарь; бочка мечей перед башней и доспех у входа."""
+    zt = 3.30
+    zr = _body(a, zt, 44.0)
+    a.add(p_box((W + 0.10, D + 0.10, 0.14), loc=(0, 0, 1.98), bevel=0.0), "stone_light")
+    for x in (-0.55, 0.55):
+        a.add(p_box((0.24, 0.06, 0.56), loc=(x, YF - 0.02, 2.62), bevel=0.0), "stone_light")
+        a.add(p_box((0.10, 0.06, 0.44), loc=(x, YF - 0.05, 2.62), bevel=0.0), "black")
+    for sx in (-1, 1):
+        _barred_window(a, Frame((sx * W / 2, 0.20, 1.34), rz=sx * 90))
+        a.add(p_box((0.06, 0.24, 0.56), loc=(sx * (W / 2 + 0.02), 0.20, 2.62), bevel=0.0), "stone_light")
+        a.add(p_box((0.06, 0.10, 0.44), loc=(sx * (W / 2 + 0.05), 0.20, 2.62), bevel=0.0), "black")
+    _shield_on_gable(a, zt)
+    _door(a)
+    stone_arch(a, Frame((0, YF - 0.12, F)), DW + 0.30, DH + 0.62, depth=0.14, ring=0.18, fill=None)
+    tower_square(a, -1.18, YF + 0.20, 0.96, 0.0, zt + 1.10, roof_h=1.10, slits=2)
+    wall_lamp(a, 0.84, YF - 0.06, 1.92, out=(0.3, -0.95))
+    armor_stand(a, Frame((1.28, YF - 0.46, 0), rz=8))
+    _sword_barrel(a, Frame((-1.20, YF - 0.62, 0)))
+
+
+def evolve(a, level):
+    """2: оружейная со ступенчатыми щипцами. 3: арсенал с башней."""
+    (_l2 if level == 2 else _l3)(a)

@@ -14,7 +14,8 @@ import bmesh
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, by_normal, TM
 from vitaria_buildings.common import (Frame, gable_roof_x, gable_wall_x, stone_base, post, brace,
                                       cornice, plank_stack, STONE_TOP)
-from vitaria_buildings.levels import pennant, gold_ridge, wall_banner, wall_lantern, finial
+from vitaria_buildings.levels import (Shift, quoins, win, fachwerk, shed_roof, porch_post, wall_lamp, cross_gable, WALL,
+                                    BEAM, PLANKS, PLASTER)
 
 NAME = "Bld_LumberMill"
 TITLE = "Пилорама"
@@ -72,13 +73,13 @@ def _xz_bar(a, p0, p1, y, t=(0.085, 0.06), col="wood_mid", bevel=0.02):
                 rot=(0, -ang, 0), bevel=bevel), col)
 
 
-def _front_gable(a, zr):
+def _front_gable(a, zr, pitch=PITCH, zb=2.44):
     """
     Щипец над пилой поверх переднего ската. Основной скат не разрезан: щипец закрытый,
     его скаты за ендовой уходят под основную кровлю и снаружи не видны ни с одного ракурса.
     Фронтон стоит на 3 см впереди торца полосы ската, иначе синяя кромка прорезает его низ.
     """
-    tp = math.tan(math.radians(PITCH))
+    tp = math.tan(math.radians(pitch))
     ye = PY + OY                          # свес основного ската по Y
     xe = 1.15                             # полуширина щипца на линии свеса
     q = math.atan(ye * tp / xe)           # уклон, при котором свес щипца = свесу ската
@@ -100,7 +101,7 @@ def _front_gable(a, zr):
     a.add(p_box((0.38, -yf + 0.16, 0.38), loc=(0, (yf - 0.16) / 2, zr + 0.09), rot=(0, 45, 0), bevel=0.055),
           "roof_dark")
     # фронтон: пятиугольник — низ опущен до кромки свеса, чтобы линия карниза не прерывалась
-    zb, ze = 2.44, zr - xe * math.tan(q) - 0.01
+    ze = zr - xe * math.tan(q) - 0.01
     yw = -ye - 0.01               # передняя грань на -1.53: впереди торца полосы ската (-1.50)
     a.add(p_prism([(-xe, zb), (xe, zb), (xe, ze), (0, zr - 0.01), (-xe, ze)], 0.14, loc=(0, yw, 0)),
           "wood_light")
@@ -279,11 +280,11 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): навес с пилой -> пилорама с сушильным навесом ->
+# водяная пилорама
 # =========================================================================================
 def _crane(a, x, y, h=2.70):
-    """Кран над кучей брёвен: П-рама поперёк кучи, стрела вдоль Y к фасаду с подкосом, бревно на стропе
-    вдоль Y (к камере торцом) — кран не выходит за след по X."""
+    """Кран над кучей брёвен: П-рама поперёк кучи, стрела вдоль Y к фасаду с подкосом, бревно на стропе."""
     for sx in (-1, 1):
         a.add(p_box((0.13, 0.13, h), loc=(x + sx * 0.30, y + 0.30, h / 2), bevel=0.0), "wood_mid")
     a.add(p_box((0.78, 0.14, 0.14), loc=(x, y + 0.30, h), bevel=0.0), "wood_dark")
@@ -294,27 +295,169 @@ def _crane(a, x, y, h=2.70):
           lambda f: "wood_pale" if abs(f.normal.y) > 0.7 else "bark")
 
 
-def upgrade(a, level):
-    """2: флажок на вершине щипца, второй штабель досок перед правым торцом, тачка с опилками перед
-    рамой. 3: + кран с подвешенным бревном над кучей брёвен, золото по коньку с навершиями, знамя
-    под щипцом, фонари на передних угловых стойках."""
-    tp = math.tan(math.radians(PITCH))
-    zr = ZT + 0.08 + PY * tp
-    ye = PY + OY
-    pennant(a, 0.0, -ye - 0.12, zr + 0.18, level, h=1.25, side=1)
-    plank_stack(a, Frame((1.62, -1.98, 0.0), rz=0), L=1.20, w=0.22, t=0.07, cols=2, layers=4)
-    wb = Frame((-0.72, -2.02, 0.0), rz=-12)
-    wb.prism(a, [(-0.30, 0.0), (0.12, 0.0), (0.36, 0.26), (-0.36, 0.26)], 0.46, loc=(0, 0, 0.22),
-             col=lambda f: "wood_dark" if f.normal.z < -0.5 else "wood_mid")
-    wb.ico(a, 0.26, loc=(0.0, 0, 0.50), scl=(1.2, 0.85, 0.45), col=by_normal("wood_pale", "wood_yellow", "wood_yellow", 0.4),
-           cut=0.0)
-    wb.cyl(a, 0.16, 0.16, 0.06, 10, loc=(0.40, 0.0, 0.16), rot=(90, 0, 0), col="wood_dark")
-    for sy in (-1, 1):
-        wb.box(a, (0.62, 0.05, 0.05), (-0.52, sy * 0.18, 0.28), rot=(0, -10, 0), col="wood_mid", bevel=0.0)
-    if level < 3:
-        return
-    _crane(a, -2.28, -0.30, h=2.75)
-    gold_ridge(a, 2 * PX + 2 * 0.30 + 0.14, zr, axis="x")
-    wall_banner(a, 0.0, -ye - 0.20, 2.40, w=0.44, h=0.70)
+def _machine(a):
+    """Пила, рольганги, маховик, бревно в раме, доски и опилки — как у уровня 1."""
+    _table(a, -1.82, -0.88)
+    _table(a, 0.88, 1.90)
+    _saw(a)
+    _drive(a)
+    x0, x1 = -1.85, -0.30
+    zl = ZR + LR
+    a.add(p_cyl(LR, LR, x1 - x0, 10, loc=(x0, YS, zl), rot=(0, 90, 0), bevel=0.02), _bark)
+    a.add(p_cyl(LR * 0.55, LR * 0.55, 0.01, 8, loc=(x0 - 0.008, YS, zl), rot=(0, 90, 0)), "wood_light")
+    for k in range(4):
+        fr = Frame((-0.34, YS - 0.135 + k * 0.09, ZR + 0.005), rz=(k - 1.5) * 1.6)
+        fr.box(a, (1.64, 0.075, 0.32), (0.82, 0, 0.16), col=BOARD, bevel=0.015)
+    rng = random.Random(3)
+    for x, y, r, h in ((-0.32, -1.18, 0.30, 0.20), (0.06, -1.24, 0.20, 0.13)):
+        a.add(p_ico(r, 1, loc=(x, y, F - 0.01), scl=(1.35, 0.75, h / r), jitter=0.12, rng=rng, cut=0.0),
+              by_normal("wood_pale", "wood_yellow", "wood_yellow", 0.4))
+
+
+def _plank_wall(a, x0, x1, y, z0, z1, n, axis="x"):
+    """Обшивка горизонтальными досками в два тона (вдоль X на линии y, или вдоль Y на линии x=y)."""
+    ph = (z1 - z0) / n
+    for i in range(n):
+        if axis == "x":
+            a.add(p_box((x1 - x0, 0.10, ph + 0.02), loc=((x0 + x1) / 2, y, z0 + (i + 0.5) * ph), bevel=0.0),
+                  "wood_light" if i % 2 else "wood_mid")
+        else:
+            a.add(p_box((0.10, x1 - x0, ph + 0.02), loc=(y, (x0 + x1) / 2, z0 + (i + 0.5) * ph), bevel=0.0),
+                  "wood_light" if i % 2 else "wood_mid")
+
+
+def _l2(a):
+    """Пилорама с чердаком: навес обшит досками с тыла и с боков (фасад с пилой открыт), над обвязкой —
+    дощатый чердак-сушильня на полметра, кровля выше и круче, на щипце над пилой — подъёмная балка с пачкой
+    досок; за тылом сушильный навес со штабелями, спереди ещё два штабеля. Пила, маховик, брёвна — прежние."""
+    zt, zk = 2.55, 3.06
+    stone_base(a, 3.9, 2.9, h=0.26)
+    a.add(p_box((3.7, 2.7, 0.16), loc=(0, 0, F - 0.08), bevel=0.04), STONE_TOP)
     for sx in (-1, 1):
-        wall_lantern(a, sx * PX, -PY - 0.10, 1.95, out=(-sx * 0.3, -0.95))
+        for sy in (-1, 1):
+            post(a, sx * PX, sy * PY, F, zk - F - 0.04, s=0.20)
+        brace(a, sx * 1.52, -PY, zt - 0.43, length=0.62, angle=-sx * 45)
+    cornice(a, 2 * PX, 2 * PY, zt - 0.09, t=0.18)
+    cornice(a, 2 * PX, 2 * PY, zk - 0.09, t=0.16)
+    _plank_wall(a, -PX - 0.10, PX + 0.10, PY + 0.16, 0.27, zk - 0.10, 6)
+    for sx in (-1, 1):
+        _plank_wall(a, -0.20, PY + 0.10, sx * (PX + 0.16), 0.27, zk - 0.10, 6, axis="y")
+    # чердак над открытым фасадом: доски между обвязками
+    _plank_wall(a, -PX, PX, -PY - 0.06, zt, zk - 0.10, 2)
+    for x in (-1.10, -0.40, 0.40, 1.10):
+        a.add(p_box((0.12, 0.12, zk - zt), loc=(x, -PY - 0.10, (zt + zk) / 2 - 0.04), bevel=0.0), BEAM)
+    pitch = 30.0
+    zr = gable_roof_x(a, 2 * PX, 2 * PY, zk, pitch_deg=pitch, ox=0.30, oy=OY)
+    gable_wall_x(a, 2 * PX, 2 * PY, zk - 0.02, zr, col="wood_light", inset=0.10, depth=0.22)
+    _front_gable(a, zr, pitch=pitch, zb=zk - 0.11)
+    ye = PY + OY
+    a.add(p_box((0.14, 0.72, 0.14), loc=(0.0, -ye - 0.30, zr - 0.24), bevel=0.0), BEAM)
+    a.add(p_box((0.03, 0.03, 0.50), loc=(0.0, -ye - 0.60, zr - 0.52), bevel=0.0), "rope")
+    plank_stack(a, Frame((0.0, -ye - 0.60, zr - 0.92)), L=0.80, w=0.18, t=0.06, cols=2, layers=2, spacers=False)
+    _machine(a)
+    _log_pile(a)
+    plank_stack(a, Frame((2.30, -0.55, 0.0), rz=90), L=1.3, w=0.24, t=0.07, cols=2, layers=5)
+    plank_stack(a, Frame((1.62, -1.98, 0.0), rz=0), L=1.20, w=0.22, t=0.07, cols=2, layers=4)
+    plank_stack(a, Frame((-1.30, -2.02, 0.0), rz=0), L=1.10, w=0.22, t=0.07, cols=2, layers=3)
+    # навес над штабелем у правого торца: односкатный от стены, на двух столбах
+    for y in (-1.22, 0.36):
+        porch_post(a, 2.52, y, 0.0, 1.86, s=0.13)
+    shed_roof(Shift(a, (2.24, -0.43, 0), rz=90), 0, 0, 1.58, 0.56, 2.26, 1.92, face=-1, ox=0.12, oy=0.06)
+    y0, y1 = PY + 0.30, PY + 1.22
+    for x in (-1.55, 0.0, 1.55):
+        porch_post(a, x, y1, 0.0, 1.62, s=0.14)
+    shed_roof(a, 0.0, (y0 + y1) / 2, 3.30, y1 - y0, 2.20, 1.70, face=1, ox=0.12, oy=0.16)
+    for x in (-0.80, 0.80):
+        plank_stack(a, Frame((x, (y0 + y1) / 2, 0.0)), L=1.30, w=0.22, t=0.07, cols=3, layers=5)
+
+
+def _water_wheel(a, cx, cy, cz, r=0.62, w=0.26):
+    """Водяное колесо наливного типа лицом к камере: два обода, ступица, восемь спиц и лопатки по ободу."""
+    m = TM((cx, cy + w / 2, cz), (90, 0, 0))
+    _ring(a, r, r - 0.10, 0.07, 16, m, "wood_dark")
+    m2 = TM((cx, cy - w / 2 + 0.07, cz), (90, 0, 0))
+    _ring(a, r, r - 0.10, 0.07, 16, m2, "wood_dark")
+    a.add(p_cyl(0.13, 0.13, w + 0.06, 8, loc=(cx, cy + w / 2 + 0.03, cz), rot=(90, 0, 0)), "iron_dark")
+    a.add(p_cyl(0.05, 0.05, w + 0.60, 6, loc=(cx, cy + w / 2 + 0.50, cz), rot=(90, 0, 0)), "iron")
+    for k in range(8):
+        ang = math.radians(k * 45 + 11)
+        _xz_bar(a, (cx + 0.10 * math.cos(ang), cz + 0.10 * math.sin(ang)),
+                (cx + (r - 0.06) * math.cos(ang), cz + (r - 0.06) * math.sin(ang)), cy - w / 2 + 0.035,
+                t=(0.07, 0.05), col="wood_mid", bevel=0.0)
+    for k in range(12):
+        ang = math.radians(k * 30)
+        fr = Frame((cx + (r - 0.05) * math.cos(ang), cy, cz + (r - 0.05) * math.sin(ang)), rot=(0, -math.degrees(ang), 0))
+        fr.box(a, (0.16, w - 0.02, 0.04), (0, 0, 0), col="wood_light", bevel=0.0)
+
+
+def _flume(a, x, y0, y1, z, w=0.30):
+    """Жёлоб на козлах: дно и борта, вода в нём, опоры парами."""
+    L = y1 - y0
+    yc = (y0 + y1) / 2
+    a.add(p_box((w, L, 0.05), loc=(x, yc, z), bevel=0.0), "wood_mid")
+    for sx in (-1, 1):
+        a.add(p_box((0.05, L, 0.18), loc=(x + sx * (w / 2 - 0.025), yc, z + 0.08), bevel=0.0), "wood_dark")
+    a.add(p_box((w - 0.10, L, 0.02), loc=(x, yc, z + 0.10), bevel=0.0), "water")
+    n = max(2, int(L / 0.95) + 1)
+    for i in range(n):
+        y = y0 + 0.12 + i * (L - 0.24) / (n - 1)
+        for sx in (-1, 1):
+            a.add(p_box((0.08, 0.08, z - 0.02), loc=(x + sx * 0.20, y, (z - 0.02) / 2), bevel=0.0), BEAM)
+        a.add(p_box((0.50, 0.08, 0.08), loc=(x, y, z - 0.06), bevel=0.0), BEAM)
+
+
+def _l3(a):
+    """Водяная пилорама: низ — камень по тылу и бокам, над открытым фасадом с пилой — второй этаж фахверком
+    со светом в окнах, кровля выше и круче, щипец над пилой; справа спереди — водяное колесо, к нему по
+    жёлобу на козлах идёт вода из бака на вышке за тылом; слева — кран над кучей брёвен."""
+    zg, zt = 1.86, 3.12
+    stone_base(a, 3.9, 2.9, h=0.26)
+    a.add(p_box((3.7, 2.7, 0.16), loc=(0, 0, F - 0.08), bevel=0.04), STONE_TOP)
+    # каменный низ: тыл и бока, стойки по фасаду
+    a.add(p_box((2 * PX + 0.30, 0.30, zg - F), loc=(0, PY + 0.10, (F + zg) / 2), bevel=0.04), WALL)
+    for sx in (-1, 1):
+        a.add(p_box((0.30, 2 * PY - 0.40, zg - F), loc=(sx * (PX + 0.05), 0.20, (F + zg) / 2), bevel=0.04), WALL)
+        post(a, sx * PX, -PY, F, zg - F, s=0.24)
+    quoins(a, 0, 0.10, 2 * PX + 0.30, 2 * PY + 0.20, F, zg, corners=((-1, -1), (1, -1)))
+    # верх: фахверк по штукатурке, выпуск вперёд на 0.12 над открытым фасадом
+    x0, x1, y0, y1 = -PX - 0.18, PX + 0.18, -PY - 0.12, PY + 0.25
+    a.add(p_box((x1 - x0, y1 - y0, zt - zg), loc=(0, (y0 + y1) / 2, (zg + zt) / 2), bevel=0.03), PLASTER)
+    a.add(p_box((x1 - x0 + 0.08, 0.24, 0.22), loc=(0, y0 + 0.04, zg + 0.02), bevel=0.0), BEAM)
+    wz = 2.56
+    fachwerk(a, Frame((0, y0, 0)), x1 - x0 - 0.06, zg + 0.12, zt, posts=(-1.20, -0.40, 0.40, 1.20),
+             rails=(wz - 0.30,), braces=((-1.86, zg + 0.18, -1.26, wz - 0.36), (1.86, zg + 0.18, 1.26, wz - 0.36)))
+    for x in (-1.62, -0.80, 0.80, 1.62):
+        win(a, Frame((x, y0 - 0.02, wz + 0.10)), w=0.34, h=0.38, lit=True, shutters=None, sill=None)
+    pitch = 30.0
+    gf = Shift(a, (0, (y0 + y1) / 2, 0))
+    zr = gable_roof_x(gf, x1 - x0, y1 - y0, zt, pitch_deg=pitch, ox=0.20, oy=0.22)
+    gable_wall_x(gf, x1 - x0, y1 - y0, zt - 0.02, zr, col=PLASTER, inset=0.10, depth=0.22)
+    zr2 = cross_gable(a, 0.0, y0, 1.80, zt, zt + 0.30, zr, (y0 + y1) / 2, pitch)
+    a.add(p_box((0.56, 0.06, 0.64), loc=(0.0, y0 - 0.02, zt + 0.12), bevel=0.0), "wood_mid")
+    a.add(p_box((0.14, 0.70, 0.14), loc=(0.0, y0 - 0.28, zr2 - 0.30), bevel=0.0), BEAM)
+    a.add(p_box((0.03, 0.03, 0.54), loc=(0.0, y0 - 0.58, zr2 - 0.62), bevel=0.0), "rope")
+    plank_stack(a, Frame((0.0, y0 - 0.58, zr2 - 1.04)), L=0.80, w=0.18, t=0.06, cols=2, layers=2, spacers=False)
+    _machine(a)
+    _log_pile(a)
+    _crane(a, -2.28, -0.30, h=2.75)
+    # вода: бак на вышке за тылом справа, жёлоб вдоль правого бока к колесу
+    bx, by = 2.10, 2.02
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            a.add(p_box((0.10, 0.10, 1.56), loc=(bx + sx * 0.32, by + sy * 0.32, 0.78), bevel=0.0), BEAM)
+    a.add(p_cyl(0.48, 0.48, 0.70, 12, loc=(bx, by, 1.56)), by_normal("wood_light", "wood_mid", "wood_dark", 0.8))
+    for z in (1.70, 2.06):
+        a.add(p_cyl(0.50, 0.50, 0.05, 12, loc=(bx, by, z)), "iron_dark")
+    a.add(p_cyl(0.43, 0.43, 0.02, 12, loc=(bx, by, 2.24)), "water")
+    wx, wy, wz0 = 1.98, -1.52, 0.86
+    _flume(a, wx, wy + 0.10, by - 0.40, 1.62)
+    a.add(p_box((0.24, 0.30, 0.03), loc=(wx, wy + 0.12, 1.52), rot=(-30, 0, 0), bevel=0.0), "water")
+    _water_wheel(a, wx, wy, wz0, r=0.62)
+    a.add(p_box((0.52, 0.80, 0.14), loc=(wx, wy - 0.08, 0.05), bevel=0.0), "stone_light")
+    a.add(p_box((0.38, 0.78, 0.03), loc=(wx, wy - 0.08, 0.12), bevel=0.0), "water")
+    plank_stack(a, Frame((0.90, -2.02, 0.0), rz=0), L=1.20, w=0.22, t=0.07, cols=2, layers=4)
+
+
+def evolve(a, level):
+    """2: пилорама с сушильным навесом. 3: водяная пилорама."""
+    (_l2 if level == 2 else _l3)(a)

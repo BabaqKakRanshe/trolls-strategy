@@ -9,9 +9,10 @@
 """
 import math, random
 from mathutils import Vector
-from build_vitaria import p_box, p_ico, by_normal
+from build_vitaria import p_box, p_cyl, p_ico, by_normal
 from vitaria_buildings.common import Frame, fence_line, hay_bale
-from vitaria_buildings.levels import pennant, gold_ridge, wall_banner, wall_lantern, finial
+from vitaria_buildings.common import ladder
+from vitaria_buildings.levels import (Shift, gable_x_at, shed_roof, porch_post, wall_lamp, BEAM, PLANKS)
 
 NAME = "Bld_Farm"
 TITLE = "Ферма"
@@ -192,8 +193,8 @@ def _window_x(a, fr, x, y, z, sx):
     fr.box(a, (0.05, 0.06, 0.34), (x + sx * 0.105, y, z), col=TRIM, bevel=0.0)
 
 
-def _barn(a):
-    fr = Frame((BX, BY, 0.0))
+def _barn(a, fr=None):
+    fr = fr or Frame((BX, BY, 0.0))
     _body(a, fr)
     zr = _gambrel(a, fr)
     _battens(a, fr)
@@ -366,59 +367,119 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): амбар и загон -> скотный двор -> усадьба
 # =========================================================================================
-def _well(a, fr, level):
-    """Колодец: каменный сруб, ворот на двух стойках, двускатная крышка цвета кровли, ведро."""
-    st = by_normal("stone_light", "stone_mid", "stone_dark", 0.8)
-    fr.cyl(a, 0.36, 0.36, 0.46, 10, loc=(0, 0, 0.0), col=st, bevel=0.03)
-    fr.cyl(a, 0.27, 0.27, 0.02, 10, loc=(0, 0, 0.40), col="water")
+def _silo2(a, x, y, r=0.46, h=2.50, stone=False):
+    """Силос: каменный цоколь, дощатый ствол с обручами (stone — каменный ствол с поясами), кремовый венец,
+    купол цвета кровли, лестница к люку под куполом."""
+    a.add(p_cyl(r + 0.08, r + 0.08, 0.30, 12, loc=(x, y, -0.06)), by_normal("stone_mid", "stone_dark", "stone_dark", 0.8))
+    if stone:
+        a.add(p_cyl(r, r - 0.03, h, 12, loc=(x, y, 0.24)), by_normal("stone_light", "stone_mid", "stone_dark", 0.8))
+        for z in (0.9, 1.8):
+            a.add(p_cyl(r + 0.01, r + 0.01, 0.10, 12, loc=(x, y, 0.24 + z)), "stone_light")
+    else:
+        a.add(p_cyl(r, r, h, 12, loc=(x, y, 0.24)), by_normal("wood_light", "wood_mid", "wood_dark", 0.8))
+        for z in (0.55, 1.25, 1.95):
+            a.add(p_cyl(r + 0.02, r + 0.02, 0.06, 12, loc=(x, y, 0.24 + z)), "iron_dark")
+    a.add(p_cyl(r + 0.06, r + 0.06, 0.08, 12, loc=(x, y, 0.24 + h)), TRIM)
+    a.add(p_ico(r + 0.02, 1, loc=(x, y, 0.30 + h), scl=(1, 1, 0.80), cut=0.0), by_normal("roof", "roof", "roof_dark", 0.3))
+    a.add(p_box((0.24, 0.06, 0.26), loc=(x, y - r - 0.01, 0.24 + h - 0.30), bevel=0.0), "black")
+    ladder(a, x, y - r - 0.06, 0.0, h - 0.10, w=0.30)
+
+
+def _coop(a, x, y):
+    """Курятник на сваях: дощатая будка цвета стен амбара, кремовые углы, двускатная крышечка, лаз с трапом."""
+    w, d, z0, h = 0.92, 0.70, 0.42, 0.62
     for sx in (-1, 1):
-        fr.box(a, (0.09, 0.09, 1.12), (sx * 0.30, 0, 0.56), col="wood_dark", bevel=0.0)
-        fr.box(a, (0.07, 0.62, 0.06), (sx * 0.24, 0, 1.17), rot=(sx * 0, 0, 0), col="wood_dark", bevel=0.0)
-    fr.cyl(a, 0.06, 0.06, 0.62, 8, loc=(-0.31, 0, 0.84), rot=(0, 90, 0), col="wood_light")
-    fr.box(a, (0.05, 0.05, 0.22), (0.33, 0.0, 0.76), col="iron_dark", bevel=0.0)
-    for sy in (-1, 1):
-        fr.box(a, (0.80, 0.42, 0.06), (0, sy * 0.17, 1.30), rot=(-sy * 34, 0, 0),
-               col="roof" if sy < 0 else "roof_dark", bevel=0.0)
-    fr.cyl(a, 0.08, 0.10, 0.14, 8, loc=(0.0, 0.0, 0.50), col="wood_mid")
-
-
-def _silo(a, fr, level):
-    """Силос: каменный цоколь, дощатый ствол с железными обручами, купол цвета кровли, золотое навершие."""
-    r, h = 0.44, 2.30
-    fr.cyl(a, r + 0.06, r + 0.06, 0.30, 12, loc=(0, 0, -0.06), col=by_normal("stone_mid", "stone_dark", "stone_dark", 0.8),
-           bevel=0.03)
-    fr.cyl(a, r, r, h, 12, loc=(0, 0, 0.24), col=by_normal("wood_light", "wood_mid", "wood_dark", 0.8))
-    for z in (0.75, 1.45, 2.15):
-        fr.cyl(a, r + 0.02, r + 0.02, 0.06, 12, loc=(0, 0, 0.24 + z - 0.4), col="iron_dark")
-    fr.cyl(a, r + 0.07, r + 0.07, 0.08, 12, loc=(0, 0, 0.24 + h), col="cream")
-    fr.cyl(a, r + 0.04, 0.08, 0.50, 12, loc=(0, 0, 0.24 + h + 0.08), col="roof")
-    finial(a, fr.at((0, 0, 0)).x, fr.at((0, 0, 0)).y, fr.at((0, 0, 0.24 + h + 0.56)).z, h=0.40)
-    # окошко-люк к камере
-    fr.box(a, (0.26, 0.08, 0.30), (0, -r + 0.01, 0.24 + h - 0.45), col="cream", bevel=0.0)
-    fr.box(a, (0.18, 0.06, 0.22), (0, -r - 0.02, 0.24 + h - 0.45), col="black", bevel=0.0)
-
-
-def upgrade(a, level):
-    """2: флажок на правом скате амбара, колодец у левого угла, вторая овца у кормушки, поросёнок,
-    ещё два тюка сена. 3: + силос между амбаром и стогом, золото по коньку амбара с навершиями,
-    знамя слева от ворот, фонари у ворот."""
-    rng = random.Random(17)
-    hw, t1, t2, zb, zr = _roof_geom()
-    xp = 0.45
-    pennant(a, BX + xp, BY - 0.85, zr - xp * t2 + 0.10, level, side=1)
-    _well(a, Frame((-2.02, -1.55, 0.0), rz=-8), level)
-    _sheep(a, Frame((0.62, 0.38, ZG), rz=-12), rng)
-    pg = Frame((2.08, -1.66, ZG), rz=-150, s=0.62)
-    _pig(a, pg)
-    hay_bale(a, (-1.62, -0.62, 0.0), s=(0.52, 0.40, 0.34), rot=(0, 0, -14))
-    hay_bale(a, (-1.95, -0.30, 0.0), s=(0.50, 0.38, 0.32), rot=(0, 0, 80))
-    if level < 3:
-        return
-    _silo(a, Frame((0.66, 1.58, 0.0)), level)
-    gold_ridge(a, D + 2 * OY + 0.14, zr - 0.01, axis="y", x=BX, y=BY, cap=0.30)
-    yF = BY - D / 2
-    wall_banner(a, BX - 0.92, yF - 0.07, 1.58, w=0.36, h=0.70)
+        for sy in (-1, 1):
+            a.add(p_box((0.08, 0.08, z0 + 0.04), loc=(x + sx * (w / 2 - 0.06), y + sy * (d / 2 - 0.06), z0 / 2),
+                        bevel=0.0), BEAM)
+    a.add(p_box((w + 0.06, d + 0.06, 0.08), loc=(x, y, z0), bevel=0.0), PLANKS)
+    a.add(p_box((w, d, h), loc=(x, y, z0 + 0.04 + h / 2), bevel=0.0), WALL)
     for sx in (-1, 1):
-        wall_lantern(a, BX + sx * 0.84, yF - 0.06, 1.44, out=(sx * 0.35, -0.94))
+        a.add(p_box((0.08, 0.08, h), loc=(x + sx * w / 2, y - d / 2, z0 + 0.04 + h / 2), bevel=0.0), TRIM)
+    a.add(p_box((0.22, 0.04, 0.26), loc=(x + 0.18, y - d / 2 - 0.01, z0 + 0.20), bevel=0.0), "black")
+    run = 0.62
+    ang = math.degrees(math.atan2(z0 + 0.06, run))
+    fr = Frame((x + 0.18, y - d / 2 - run / 2 - 0.02, (z0 + 0.06) / 2), rot=(ang, 0, 0))
+    fr.box(a, (0.24, math.hypot(run, z0) + 0.04, 0.03), (0, 0, 0), col="wood_light", bevel=0.0)
+    for k in range(3):
+        fr.box(a, (0.24, 0.03, 0.03), (0, -0.20 + k * 0.20, 0.03), col="wood_dark", bevel=0.0)
+    a.add(p_box((0.28, 0.24, 0.20), loc=(x - 0.20, y - d / 2 - 0.10, z0 + 0.30), bevel=0.0), WALL)
+    gable_x_at(a, x, y, w, d, z0 + 0.04 + h, pitch_deg=34, ox=0.10, oy=0.12, bands=1)
+
+
+def _pen_shelter(a):
+    """Навес над задней частью загона: столбы, односкатная кровля к фасаду; под ним кормушка."""
+    x0, x1, y0, y1 = PEN
+    xs = (x0 + 0.24, (x0 + x1) / 2 + 0.10, x1 - 0.10)
+    for x in xs:
+        porch_post(a, x, 0.26, ZG, 1.34, s=0.12)
+        porch_post(a, x, y1 - 0.08, ZG, 1.62, s=0.12)
+    shed_roof(a, (x0 + x1) / 2 + 0.07, (0.26 + y1 - 0.08) / 2, x1 - x0 - 0.20, y1 - 0.08 - 0.26, 1.70, 1.42,
+              face=-1, ox=0.14, oy=0.16)
+
+
+def _yard(a, rng, sheep2=True):
+    """Загон уровня 1: земля, изгородь, кормушка, поилка, корова, свинья, овца; куры и тюки сена."""
+    x0, x1, y0, y1 = PEN
+    a.add(p_box((x1 - x0 - 0.06, y1 - y0 - 0.06, 0.07), loc=((x0 + x1) / 2, (y0 + y1) / 2, ZG - 0.035),
+                bevel=0.025), by_normal("soil_light", "soil_mid", "soil_mid", 0.8))
+    fence_line(a, (x0, y0), (x1, y0), posts=3)
+    fence_line(a, (x1, y0), (x1, y1), posts=3, end_posts=(False, True))
+    fence_line(a, (x1, y1), (0.16, y1), posts=3, end_posts=(False, True))
+    fence_line(a, (x0, y0), (x0, -0.34), posts=2, end_posts=(False, True))
+    _feeder(a, Frame((1.55, 0.52, ZG)))
+    _trough(a, Frame((2.08, -0.36, ZG), rz=90))
+    _cow(a, Frame((1.12, -0.28, ZG), rz=-28), rng)
+    _pig(a, Frame((1.72, -1.34, ZG), rz=-35))
+    _sheep(a, Frame((0.82, -1.45, ZG), rz=235), rng)
+    if sheep2:
+        _sheep(a, Frame((0.66, 0.40, ZG), rz=-12), rng)
+        _pig(a, Frame((2.08, -1.70, ZG), rz=-150, s=0.62))
+
+
+def _l2(a):
+    """Скотный двор: над задней половиной загона — навес на столбах с кормушкой под ним; вместо стога —
+    дощатый силос с обручами и куполом; спереди слева курятник на сваях с трапом; во дворе вторая овца
+    и поросёнок. Амбар — прежний."""
+    rng = random.Random(5)
+    _barn(a)
+    _yard(a, rng)
+    _pen_shelter(a)
+    _silo2(a, 1.66, 1.70)
+    _coop(a, -2.08, -1.56)
+    _chicken(a, Frame((-1.36, -1.18, 0.0), rz=-55))
+    _chicken(a, Frame((-0.78, -1.62, 0.0), rz=150), peck=True)
+    hay_bale(a, (-2.15, -0.66, 0.0), s=(0.56, 0.42, 0.36), rot=(0, 0, 8))
+    hay_bale(a, (-2.12, -0.62, 0.36), s=(0.52, 0.40, 0.34), rot=(0, 0, -6))
+    _sack(a, Frame((-0.14, -0.66, 0.0), rz=20), rng)
+
+
+def _l3(a):
+    """Усадьба: амбар выше и шире (каркас тот же), справа сзади — второй, малый амбар-сенник той же
+    формы, рядом высокий каменный силос; навес над загоном, курятник, фонари у ворот амбара."""
+    rng = random.Random(5)
+    big = Frame((BX - 0.06, BY + 0.06, 0.0), s=(1.06, 1.04, 1.16))
+    _barn(a, big)
+    small = Frame((0.98, 1.92, 0.0), s=(0.62, 0.60, 0.70))
+    fr = small
+    _body(a, fr)
+    _gambrel(a, fr)
+    _doors(a, fr, -D / 2, F)
+    _silo2(a, 2.16, 2.12, r=0.40, h=3.00, stone=True)
+    _yard(a, rng)
+    _pen_shelter(a)
+    _coop(a, -2.10, -1.58)
+    _chicken(a, Frame((-1.36, -1.18, 0.0), rz=-55))
+    _chicken(a, Frame((-0.78, -1.62, 0.0), rz=150), peck=True)
+    hay_bale(a, (-2.20, -0.66, 0.0), s=(0.56, 0.42, 0.36), rot=(0, 0, 8))
+    _sack(a, Frame((-0.14, -0.70, 0.0), rz=20), rng)
+    yF = BY + 0.06 - D * 1.04 / 2
+    for sx in (-1, 1):
+        wall_lamp(a, BX - 0.06 + sx * 0.92, yF - 0.06, 1.62, out=(sx * 0.35, -0.94))
+
+
+def evolve(a, level):
+    """2: скотный двор. 3: усадьба с двумя амбарами и каменным силосом."""
+    (_l2 if level == 2 else _l3)(a)

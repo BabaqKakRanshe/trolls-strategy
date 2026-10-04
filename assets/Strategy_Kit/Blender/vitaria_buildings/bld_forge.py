@@ -10,7 +10,9 @@ import random
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, p_taper_box, by_normal
 from vitaria_buildings.common import (Frame, gable_roof, chimney, post, brace, sword, hammer,
                                       armor_stand, tub, STONE_TOP, PLANK_TOP)
-from vitaria_buildings.levels import pennant, gold_ridge, wall_banner, wall_lantern, ingot_pallet
+from vitaria_buildings.common import plank_door
+from vitaria_buildings.levels import (Shift, quoins, stack, win, fachwerk, arched_wall, ridge_louver, gable_front,
+                                    wall_lamp, PLASTER, BEAM)
 
 NAME = "Bld_Forge"
 TITLE = "Кузница"
@@ -95,9 +97,7 @@ def _anvil_sign(a, fr, s=1.0):
     fr.prism(a, [(x * s, z * s) for x, z in pts], 0.024, col="iron_dark")
 
 
-def build(a):
-    rng = random.Random(3)
-
+def _floor(a):
     # ---- цоколь и пол ---------------------------------------------------------------------
     # Пол — отдельная плита со светлым верхом: у открытой мастерской это самая большая видимая
     # грань, на тёмном камне реквизит тонул бы. Перед фасадом — вынос под товар.
@@ -105,6 +105,8 @@ def build(a):
           by_normal("stone_mid", "stone_dark", "stone_dark", 0.8))
     a.add(p_box((3.40, 2.86, 0.14), loc=(0, -0.10, F - 0.07), bevel=0.04), STONE_TOP)
 
+
+def _walls_l1(a):
     # ---- каменные стены: левая и задняя (у огня кладка, а не доски) ------------------------
     hw = ZW - ZB
     a.add(p_box((0.38, 2.55, hw), loc=(-1.56, 0.035, ZB + hw / 2), bevel=0.05), WALL)
@@ -138,6 +140,8 @@ def build(a):
     for sx in (-1, 1):
         wp.box(a, (0.08, 0.08, 0.50), (sx * 0.53, 0.0, 0.25), col="wood_dark", bevel=0.02)
 
+
+def _frame_l1(a):
     # ---- деревянный каркас: стойки правого бока и прогоны по верху --------------------------
     for y in (YF, YM):
         a.add(p_box((0.32, 0.32, 0.10), loc=(PX, y, F + 0.03), bevel=0.03), "stone_dark")
@@ -152,6 +156,8 @@ def build(a):
     for sy in (-1, 1):
         brace(a, PX, YM + sy * 0.23, ZT - 0.42, length=0.62, angle=-sy * 45, axis="x")
 
+
+def _roof_l1(a):
     # ---- кровля и фронтоны -------------------------------------------------------------------
     zr = gable_roof(a, RW, RD, ZT, pitch_deg=30, ox=0.24, oy=0.30)     # свес 0.24: след 2x2 при масштабе 0.5
     # фронтоны на 4 см впереди прогонов: вровень с ними грани фронтона и бруса сливались
@@ -161,6 +167,9 @@ def build(a):
     # труба горна выходит сквозь левый скат и поднята над коньком
     chimney(a, HX - 0.03, 0.70, 1.98, h=1.74, w=0.52)
 
+
+def _hearth(a, zt_hood=ZT):
+    rng = random.Random(3)
     # ---- горн: каменный стол, низкий бортик, горка углей, колпак-клин к стене ---------------------
     # Угли лежат выше бортика и ближе к фасаду: на первом рендере горн стоял у задней стены,
     # высокий бортик и фасадный прогон закрывали жар от любой камеры.
@@ -176,7 +185,7 @@ def build(a):
     # колпак клином: задняя грань к стене, передняя скошена к трубе; пояс-обрез по низу
     zh, yh = 1.46, HY0 + 0.06
     a.add(p_box((1.10, HY1 - yh + 0.06, 0.10), loc=(HX - 0.03, (yh + HY1) / 2 + 0.01, zh), bevel=0.03), "stone_dark")
-    a.add(p_prism([(yh + 0.02, zh + 0.04), (HY1 + 0.05, zh + 0.04), (HY1 + 0.05, ZT - 0.18), (0.40, ZT - 0.18)],
+    a.add(p_prism([(yh + 0.02, zh + 0.04), (HY1 + 0.05, zh + 0.04), (HY1 + 0.05, zt_hood - 0.18), (0.40, zt_hood - 0.18)],
                   1.02, loc=(HX - 0.03, 0, 0), rot=(0, 0, 90)), WALL)
     # правый передний угол колпака держит каменный столб
     a.add(p_box((0.18, 0.18, zh - zt), loc=(HX + 0.42, HY0 + 0.09, (zh + zt) / 2), bevel=0.03), "stone_light")
@@ -185,6 +194,8 @@ def build(a):
     _bellows(a, Frame((HX + 0.44, 0.40, F + 0.40), rot=(0, -6, 0)), floor_z=F, rz=0,
              L=0.64, w=0.42, h=0.28)
 
+
+def _tool_wall(a):
     # ---- стена с инструментом на левой кладке: видна с герой-ракурса сквозь открытый фасад ------
     a.add(p_box((0.06, 0.74, 0.62), loc=(XL + 0.02, -0.62, 1.36), bevel=0.02), PLANK_TOP)
     for y in (-0.90, -0.32):
@@ -192,6 +203,8 @@ def build(a):
     _tongs(a, Frame((XL + 0.085, -0.72, 1.04), rz=90), L=0.56)
     _tongs(a, Frame((XL + 0.085, -0.54, 1.08), rz=90), L=0.50)
 
+
+def _quench_tub(a):
     # ---- кадка для закалки ------------------------------------------------------------------
     # в common.tub венец — сплошной диск и закрывает воду, поэтому зеркало кладём поверх венца:
     # кадка полна до краёв, а тёмное кольцо венца остаётся видно
@@ -199,8 +212,9 @@ def build(a):
     tub(a, Frame((tx, ty, F - 0.005)), r=tr, h=th, fill="water")
     a.add(p_cyl(tr * 0.9, tr * 0.9, 0.018, 14, loc=(tx, ty, F - 0.005 + th - 0.01)), "water")
 
+
+def _anvil_group(a, ax=0.10, ay=-0.80):
     # ---- наковальня на пне: у самого фасада, чтобы из-под прогона её видела игровая камера -----
-    ax, ay = 0.10, -0.80
     a.add(p_cyl(0.33, 0.29, 0.46, 8, loc=(ax, ay, F - 0.02), bevel=0.02, spin=10),
           by_normal("wood_pale", "bark", "bark", 0.7))
     a.add(p_cyl(0.32, 0.32, 0.06, 8, loc=(ax, ay, F + 0.26), spin=10), "iron_dark")
@@ -212,6 +226,8 @@ def build(a):
     hf = af.sub((0.12, -0.06, 0.44), rot=(-84, 0, 28))
     hammer(a, hf.sub((0, 0, -0.60)), L=0.62)
 
+
+def _goods(a):
     # ---- готовый товар: мечи слева, доспех справа ------------------------------------------------
     rk = Frame((-1.08, -1.44, F), rz=6)
     rk.box(a, (1.14, 0.26, 0.10), (0, 0, 0.045), col="wood_dark", bevel=0.025)
@@ -224,55 +240,168 @@ def build(a):
     # манекен у самого края: на первом рендере он стоял между герой-камерой и наковальней
     armor_stand(a, Frame((1.40, -1.46, F), rz=-20), crest="roof")
 
+
+def _sign(a, px=PX, yf=YF, zb=2.00):
     # ---- вывеска с силуэтом наковальни на кронштейне правой стойки ----------------------------------
     # консоль короче прежней (0.60): вывеска не выносит здание за след 2x2
-    zb = 2.00
-    a.add(p_box((0.46, 0.10, 0.10), loc=(PX + 0.27, YF, zb), bevel=0.025), "wood_dark")
+    a.add(p_box((0.46, 0.10, 0.10), loc=(px + 0.27, yf, zb), bevel=0.025), "wood_dark")
     # укосина от стойки вверх-наружу под консоль
-    a.add(p_box((0.08, 0.08, 0.32), loc=(PX + 0.2, YF, zb - 0.15), rot=(0, 48, 0), bevel=0.02), "wood_dark")
+    a.add(p_box((0.08, 0.08, 0.32), loc=(px + 0.2, yf, zb - 0.15), rot=(0, 48, 0), bevel=0.02), "wood_dark")
     for dx in (0.14, 0.40):
-        a.add(p_box((0.05, 0.05, 0.14), loc=(PX + dx, YF, zb - 0.11), bevel=0.0), "iron_dark")
-    a.add(p_box((0.40, 0.08, 0.32), loc=(PX + 0.27, YF, zb - 0.34), bevel=0.03), PLANK_TOP)
-    _anvil_sign(a, Frame((PX + 0.27, YF - 0.046, zb - 0.34)), s=1.1)
+        a.add(p_box((0.05, 0.05, 0.14), loc=(px + dx, yf, zb - 0.11), bevel=0.0), "iron_dark")
+    a.add(p_box((0.40, 0.08, 0.32), loc=(px + 0.27, yf, zb - 0.34), bevel=0.03), PLANK_TOP)
+    _anvil_sign(a, Frame((px + 0.27, yf - 0.046, zb - 0.34)), s=1.1)
 
+
+def build(a):
+    _floor(a)
+    _walls_l1(a)
+    _frame_l1(a)
+    _roof_l1(a)
+    _hearth(a)
+    _tool_wall(a)
+    _quench_tub(a)
+    _anvil_group(a)
+    _goods(a)
+    _sign(a)
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py): кузница та же, добавляются детали
+# Уровни 2 и 3 (vitaria_buildings/levels.py): открытая кузня -> каменная кузня -> двухэтажная оружейная
 # =========================================================================================
-def _crest(a, x, y, z, r=0.34):
-    """Герб гильдии на фронтоне: щит-диск цвета цепочки в золотом ободе, золотая наковальня."""
-    a.add(p_cyl(r + 0.05, r + 0.05, 0.06, 12, loc=(x, y + 0.03, z), rot=(90, 0, 0)), "gold")
-    a.add(p_cyl(r, r, 0.06, 12, loc=(x, y - 0.01, z), rot=(90, 0, 0)), "roof")
-    _anvil_sign(a, Frame((x - 0.01, y - 0.06, z - 0.01)), s=1.45)
+YW0, YW1 = YF - 0.15, YF + 0.15          # фасадная стена уровней 2-3 (по линии фасадных стоек уровня 1)
+XW = 1.75                                # наружные грани боковых стен
 
 
-def upgrade(a, level):
-    """2: флажок на правом скате у фасада, труба выше на 0.5 м с искрогасителем, поддон слитков
-    между наковальней и манекеном, железные хомуты на стойках. 3: + золото по коньку и навершия, знамя у
-    левой стены, фонарь на правой стойке, герб с золотой наковальней на фронтоне, золотая рамка вывески."""
-    zr = ZT + 0.08 + (RW / 2) * math.tan(math.radians(30))       # конёк gable_roof(..., pitch_deg=30)
-    ly = RD + 2 * 0.30
-    # флажок на правом скате у фасада, а не на коньке: на уровне 3 по коньку идёт золотая полоса, и древко
-    # на ней читалось бы её продолжением
-    pennant(a, 0.75, -1.20, zr - 0.75 * math.tan(math.radians(30)) + 0.08, level, side=1)
-    # труба: надставка на 0.5 м и железный колпак-искрогаситель на четырёх ножках
-    cx, cy, ztop = HX - 0.03, 0.70, 1.98 + 1.74
-    a.add(p_box((0.52, 0.52, 0.52), loc=(cx, cy, ztop + 0.26), bevel=0.045), "stone_mid")
-    a.add(p_box((0.65, 0.65, 0.14), loc=(cx, cy, ztop + 0.47), bevel=0.045), "stone_dark")
-    a.add(p_box((0.36, 0.36, 0.03), loc=(cx, cy, ztop + 0.555), bevel=0.0), "black")
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            a.add(p_box((0.05, 0.05, 0.26), loc=(cx + sx * 0.22, cy + sy * 0.22, ztop + 0.66), bevel=0.0), "iron_dark")
-    a.add(p_cyl(0.46, 0.0, 0.22, 4, loc=(cx, cy, ztop + 0.78), spin=45), "iron_dark")
-    ingot_pallet(a, 0.80, -1.22, F, rz=-6)
-    for y in (YF, YM):
-        for z in (F + 0.55, ZT - 0.62):
-            a.add(p_box((0.25, 0.25, 0.07), loc=(PX, y, z), bevel=0.0), "iron_dark")
-    if level < 3:
-        return
-    gold_ridge(a, ly + 0.14, zr, axis="y")
-    wall_banner(a, -1.45, YF - 0.14, ZT - 0.22, w=0.40, h=0.80)
-    wall_lantern(a, PX - 0.02, YF - 0.12, 1.86, out=(-0.55, -0.85))
-    _crest(a, 0.0, YF - 0.17, 2.70)
-    a.add(p_box((0.44, 0.05, 0.38), loc=(PX + 0.27, YF + 0.045, 2.00 - 0.34), bevel=0.0), "gold")
+def _shell(a, zw, front, corners=((-1, -1), (1, -1), (1, 1))):
+    """Каменная коробка: левая и задняя стены как у уровня 1 (горн у них же), правая — кладка вместо стоек;
+    фасад собирает front(a, zw). Квадры на углах, видимых с камеры колонии."""
+    hw = zw - ZB
+    yb = 1.28
+    a.add(p_box((0.38, yb - YW0, hw), loc=(-1.56, (YW0 + yb) / 2, ZB + hw / 2), bevel=0.05), WALL)
+    a.add(p_box((2 * XW, 0.38, hw), loc=(0.0, 1.09, ZB + hw / 2), bevel=0.05), WALL)
+    a.add(p_box((0.38, yb - YW0, hw), loc=(1.56, (YW0 + yb) / 2, ZB + hw / 2), bevel=0.05), WALL)
+    front(a, zw)
+    quoins(a, 0.0, (YW0 + yb) / 2, 2 * XW, yb - YW0, ZB, zw, corners=corners)
+
+
+def _chimney_stack(a, top, flues=1):
+    """Труба горна снаружи левой стены: широкое основание с уступом, ствол выше конька."""
+    cx, cy = -1.66, 0.62
+    a.add(p_box((0.62, 0.78, 1.36), loc=(cx, cy, 0.61), bevel=0.04), WALL)
+    a.add(p_box((0.68, 0.84, 0.10), loc=(cx, cy, 1.32), bevel=0.0), "stone_dark")
+    stack(a, cx, cy, 1.36, top - 1.36, w=0.50, d=0.62, flues=flues)
+
+
+def _l2(a):
+    """Каменная кузня: коробка закрыта кладкой, стены выше на 0.26, фасад — широкий проём горна под дубовой
+    перемычкой и дверь; кровля круче с дымовым фонарём на коньке, снаружи левой стены — труба-стояк выше
+    конька. Горн, наковальня, кадка, стойка с мечами и доспех — прежние."""
+    _floor(a)
+    zt = 2.62
+    zw = zt - 0.16
+    bx0, bx1 = -1.37, 0.40                  # проём горна: виден горн, наковальня и кадка
+    dx0, dx1 = 0.58, 1.20                   # дверь
+    zl = 1.86                               # низ перемычки проёма
+
+    def front(a, zw):
+        hw = zw - ZB
+        a.add(p_box((dx0 - bx1, 0.30, hw), loc=((bx1 + dx0) / 2, YF, ZB + hw / 2), bevel=0.04), WALL)
+        a.add(p_box((1.37 - dx1, 0.30, hw), loc=((dx1 + 1.37) / 2, YF, ZB + hw / 2), bevel=0.04), WALL)
+        a.add(p_box((bx1 - bx0, 0.30, zw - zl - 0.20), loc=((bx0 + bx1) / 2, YF, (zl + 0.20 + zw) / 2),
+                    bevel=0.04), WALL)
+        a.add(p_box((dx1 - dx0, 0.30, zw - 1.50), loc=((dx0 + dx1) / 2, YF, (1.50 + zw) / 2), bevel=0.04), WALL)
+        a.add(p_box((bx1 - bx0 + 0.40, 0.36, 0.22), loc=((bx0 + bx1) / 2, YF - 0.02, zl + 0.11), bevel=0.03), BEAM)
+        for x in (bx0 - 0.06, bx1 + 0.06):
+            a.add(p_box((0.16, 0.34, 0.14), loc=(x, YF - 0.02, zl - 0.05), bevel=0.0), "stone_light")
+        plank_door(a, YW0 + 0.10, F - 0.02, w=0.58, h=1.18, x=(dx0 + dx1) / 2)
+        a.add(p_box((0.86, 0.36, 0.14), loc=((dx0 + dx1) / 2, YW0 - 0.14, 0.07), bevel=0.03), "stone_light")
+    _shell(a, zw, front)
+    # обвязка по верху стен под кровлей
+    a.add(p_box((2 * XW + 0.06, 0.32, 0.18), loc=(0.0, YF, zt - 0.09), bevel=0.03), BEAM)
+    a.add(p_box((0.32, 2.50, 0.18), loc=(1.56, 0.02, zt - 0.09), bevel=0.03), BEAM)
+    zr = gable_roof(a, 2 * XW, 2.56, zt, pitch_deg=34, ox=0.13, oy=0.24)
+    gable_front(a, 0.0, YF, 2 * XW, zt - 0.02, zr, depth=0.30, face=-1)
+    gable_front(a, 0.0, 1.09, 2 * XW, zt - 0.02, zr, depth=0.30, face=1, boards=False)
+    a.add(p_box((0.05, 0.05, 0.05), loc=(0, YW0 - 0.02, zt + 0.40), bevel=0.0), "black")
+    a.add(p_box((0.34, 0.06, 0.34), loc=(0, YW0 - 0.04, zt + 0.40), rot=(0, 45, 0), bevel=0.0), "black")
+    ridge_louver(a, 0.0, 0.18, zr, w=0.62, d=1.00, h=0.46)
+    _chimney_stack(a, zr + 0.55)
+
+    _hearth(a, zt_hood=zt)
+    _tool_wall(a)
+    _quench_tub(a)
+    _anvil_group(a, ax=-0.05, ay=-0.78)
+    _goods(a)
+    _sign(a, px=0.62, yf=YW0 - 0.08, zb=2.30)
+    wall_lamp(a, dx1 + 0.06, YW0 - 0.02, 1.80, out=(0.6, -0.8))
+
+
+def _l3(a):
+    """Оружейная кузня: два этажа. Низ — тёсаный камень, горн за большой аркой, дверь в каменном портале;
+    верх — фахверк по светлой штукатурке на выпуске вперёд, два окна со светом; кровля круче, фронтон тоже
+    фахверком, дымовой фонарь на коньке и сдвоенная труба горна."""
+    _floor(a)
+    zg = 2.02                               # верх каменного этажа
+    zt = 3.18                               # верх фахверка
+    ax0, ax1, zs = -1.30, 0.30, 1.08        # арка горна: пролёт 1.6, замок на 1.88
+    dx0, dx1 = 0.62, 1.22
+
+    def front(a, zw):
+        arched_wall(a, -1.37, dx0, YF, 0.30, ZB, zw, ax0, ax1, zs)
+        a.add(p_box((1.37 - dx1, 0.30, zw - ZB), loc=((dx1 + 1.37) / 2, YF, (ZB + zw) / 2), bevel=0.04), WALL)
+        a.add(p_box((dx1 - dx0, 0.30, zw - 1.56), loc=((dx0 + dx1) / 2, YF, (1.56 + zw) / 2), bevel=0.04), WALL)
+        plank_door(a, YW0 + 0.10, F - 0.02, w=0.58, h=1.20, x=(dx0 + dx1) / 2)
+        # портал двери: косяки и перемычка из светлого камня
+        for x in (dx0 - 0.07, dx1 + 0.07):
+            a.add(p_box((0.16, 0.12, 1.32), loc=(x, YW0 - 0.04, F + 0.64), bevel=0.0), "stone_light")
+        a.add(p_box((dx1 - dx0 + 0.34, 0.14, 0.18), loc=((dx0 + dx1) / 2, YW0 - 0.05, 1.56), bevel=0.0), "stone_light")
+        a.add(p_box((0.90, 0.40, 0.14), loc=((dx0 + dx1) / 2, YW0 - 0.16, 0.07), bevel=0.03), "stone_light")
+    _shell(a, zg, front, corners=((-1, -1), (1, -1)))
+
+    # второй этаж: выпуск 0.10 вперёд и вправо, штукатурка, брус фахверка, межэтажная балка
+    x0, x1, y0, y1 = -XW, XW + 0.06, YW0 - 0.10, 1.30
+    a.add(p_box((x1 - x0, y1 - y0, zt - zg), loc=((x0 + x1) / 2, (y0 + y1) / 2, (zg + zt) / 2), bevel=0.03), PLASTER)
+    a.add(p_box((x1 - x0 + 0.08, 0.20, 0.18), loc=((x0 + x1) / 2, y0 + 0.02, zg + 0.04), bevel=0.0), BEAM)
+    a.add(p_box((0.20, y1 - y0 + 0.04, 0.18), loc=(x1 - 0.02, (y0 + y1) / 2, zg + 0.04), bevel=0.0), BEAM)
+    for k in (-1.30, -0.40, 0.40, 1.30):     # консоли-кобылки под выпуском
+        a.add(p_box((0.12, 0.26, 0.12), loc=(k, YW0 - 0.04, zg - 0.08), rot=(-35, 0, 0), bevel=0.0), BEAM)
+    L = x1 - x0
+    xm = (x0 + x1) / 2
+    fr = Frame((xm, y0, 0))
+    wz = 2.62
+    fachwerk(a, fr, L - 0.06, zg + 0.10, zt, posts=(-1.20, -0.42, 0.42, 1.20), rails=(wz - 0.30,),
+             braces=((-1.72, zg + 0.16, -1.26, wz - 0.36), (1.72, zg + 0.16, 1.26, wz - 0.36)))
+    for x in (-0.81, 0.81):
+        win(a, Frame((x - xm + xm, y0 - 0.02, wz + 0.12)), w=0.42, h=0.46, lit=True, shutters="roof_dark",
+            sill=None)
+    gf = Shift(a, (xm, (y0 + y1) / 2, 0))
+    frs = Frame((x1, (y0 + y1) / 2, 0), rz=90)
+    fachwerk(a, frs, y1 - y0 - 0.06, zg + 0.10, zt, posts=(-0.40, 0.40), rails=(wz - 0.30,),
+             braces=((-1.20, zg + 0.16, -0.46, wz - 0.36),))
+
+    zr = gable_roof(gf, L, y1 - y0, zt, pitch_deg=40, ox=0.10, oy=0.22)
+    gable_front(gf, 0.0, -(y1 - y0) / 2 + 0.10, L, zt - 0.02, zr, col=PLASTER, depth=0.22, face=-1, boards=False)
+    gable_front(gf, 0.0, (y1 - y0) / 2 - 0.10, L, zt - 0.02, zr, col=PLASTER, depth=0.22, face=1, boards=False)
+    # фахверк фронтона: затяжка, две стойки, окошко со светом
+    yg = y0 - 0.01
+    a.add(p_box((L - 0.30, 0.12, 0.12), loc=(xm, yg, zt + 0.36), bevel=0.0), BEAM)
+    hg = (zr - zt) * 0.62
+    for x in (-0.62, 0.62):
+        a.add(p_box((0.12, 0.12, hg), loc=(xm + x, yg + 0.012, zt + hg / 2), bevel=0.0), BEAM)
+    win(a, Frame((xm, yg - 0.02, zt + 0.74)), w=0.34, h=0.34, lit=True, shutters=None, sill=None)
+    ridge_louver(a, xm, 0.30, zr, w=0.62, d=1.00, h=0.46, pitch=40)
+    _chimney_stack(a, zr + 0.50, flues=2)
+
+    _hearth(a, zt_hood=zg)
+    _tool_wall(a)
+    _quench_tub(a)
+    _anvil_group(a, ax=-0.42, ay=-0.74)
+    _goods(a)
+    _sign(a, px=1.14, yf=YW0 - 0.10, zb=1.92)
+    wall_lamp(a, dx0 - 0.10, YW0 - 0.04, 1.66, out=(-0.5, -0.85))
+
+
+def evolve(a, level):
+    """2: каменная кузня. 3: двухэтажная оружейная кузня."""
+    (_l2 if level == 2 else _l3)(a)

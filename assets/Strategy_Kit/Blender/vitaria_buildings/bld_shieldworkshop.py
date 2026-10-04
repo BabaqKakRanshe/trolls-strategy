@@ -12,7 +12,7 @@ from build_vitaria import p_box, by_normal, TM
 from vitaria_buildings.common import (Frame, gable_roof, gable_wall, stone_base, cornice, plank_door,
                                       barrel, bucket, round_shield, heater_shield,
                                       STONE_DARK_TOP, PLANK_TOP)
-from vitaria_buildings.levels import pennant, gold_ridge, wall_lantern
+from vitaria_buildings.levels import (Shift, quoins, win, fachwerk, stack, wall_lamp, WALL, BEAM, PLASTER, PLANKS)
 from build_vitaria import p_cyl, p_ico
 
 NAME = "Bld_ShieldWorkshop"
@@ -216,31 +216,119 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): сруб под шапкой -> щитовая мастерская -> мастерская гильдии
 # =========================================================================================
-def upgrade(a, level):
-    """2: флажок на правом скате, каменная труба сквозь левый скат (печь для клея и краски), стопка
-    железных ободов у верстака. 3: + золотой обод вокруг щита-героя и скрещённые копья за ним, золото
-    по коньку с навершиями, фонари по сторонам двери."""
-    p = math.radians(PITCH)
-    zr = ZT + 0.08 + (W / 2) * math.tan(p)
-    xp = 0.62
-    pennant(a, xp, Y0 - 0.55, zr - xp * math.tan(p) + 0.10, level, side=1)
-    xc = -0.72
-    zc = zr - abs(xc) * math.tan(p) - 0.30
-    a.add(p_box((0.40, 0.40, 1.20), loc=(xc, Y0 + 0.45, zc + 0.60), bevel=0.04), "stone_mid")
-    a.add(p_box((0.52, 0.52, 0.12), loc=(xc, Y0 + 0.45, zc + 1.16), bevel=0.04), "stone_dark")
-    a.add(p_box((0.26, 0.26, 0.03), loc=(xc, Y0 + 0.45, zc + 1.235), bevel=0.0), "black")
-    for k in range(3):
-        a.add(p_cyl(0.24, 0.24, 0.05, 12, loc=(0.42, -1.50, 0.02 + k * 0.055)),
-              lambda f: "iron_light" if f.normal.z > 0.5 else "iron")
-    if level < 3:
-        return
-    a.add(p_cyl(R_SH + 0.08, R_SH + 0.08, 0.05, 16, loc=(0, YSH + T_SH / 2 + 0.05, ZSH), rot=(90, 0, 0)), "gold")
-    for s in (-1, 1):
-        fr = Frame((0, YSH + T_SH / 2 + 0.10, ZSH), rot=(0, s * 42, 0))
-        fr.cyl(a, 0.04, 0.04, 2.30, 6, loc=(0, 0, -1.15), col="wood_mid")
-        fr.taper(a, (0.14, 0.04), (0.01, 0.01), 0.26, loc=(0, 0, 1.15), col="steel")
-    gold_ridge(a, D + 2 * OY + 0.14, zr, axis="y", y=Y0)
+def _horns2(s, zr, sy, pitch, Lh=0.52):
+    """Рога-причелины над коньком для кровли другого уклона."""
+    p = math.radians(pitch)
+    ridge = Vector((0, 0, zr))
+    yb = sy * (D / 2 + OY + 0.04)
     for sx in (-1, 1):
-        wall_lantern(a, sx * 0.70, YF - 0.06, 1.44, out=(sx * 0.3, -0.95))
+        nrm = Vector((sx * math.sin(p), 0, math.cos(p)))
+        up = Vector((-sx * math.cos(p), 0, math.sin(p)))
+        c = ridge + up * (Lh / 2) + nrm * 0.05
+        s.add(p_box((Lh, 0.12, 0.24), loc=(c.x, yb + sx * 0.015, c.z), rot=(0, sx * pitch, 0), bevel=0.0), "wood_dark")
+
+
+def _chimney_left(a, zr, pitch, xc=-0.74, yc=Y0 + 0.45):
+    """Каменная труба печи для клея и краски сквозь левый скат, выше конька."""
+    zc = zr - abs(xc) * math.tan(math.radians(pitch)) - 0.30
+    stack(a, xc, yc, zc, zr + 0.40 - zc, w=0.40)
+
+
+def _rims(a, x, y):
+    for k in range(3):
+        a.add(p_cyl(0.24, 0.24, 0.05, 12, loc=(x, y, 0.02 + k * 0.055)),
+              lambda f: "iron_light" if f.normal.z > 0.5 else "iron")
+
+
+def _yard(a):
+    _workbench(a, Frame((-1.18, -1.42, 0), rz=4))
+    _shield_rack(a, Frame((1.16, -1.36, 0), rz=-4))
+    _sawhorse(a, Frame((-1.5, -0.62, 0), rz=90))
+    _plank_pile(a, Frame((-1.5, 0.72, 0), rz=90))
+    barrel(a, (1.52, -0.40, 0.0))
+
+
+def _l2(a):
+    """Щитовая мастерская: сруб на высоком каменном цоколе — низ стен камень, верх дощатый на стойках, стены
+    выше на полметра, кровля круче; щит-герой поднят вместе с фронтоном, рога на коньке; по сторонам двери
+    два окна, сквозь левый скат — каменная труба печи; у верстака — стопка железных ободов."""
+    s = _Shift(a, TM((0, Y0, 0)))
+    f2, zs, zt, pitch = 0.36, 0.98, 2.22, 38.0
+    stone_base(s, W + 0.26, D + 0.26, h=f2, col=STONE_DARK_TOP)
+    s.add(p_box((W, D, zs - f2 + 0.02), loc=(0, 0, (f2 + zs) / 2), bevel=0.05), WALL)
+    s.add(p_box((W - 0.04, D - 0.04, zt - zs), loc=(0, 0, (zs + zt) / 2), bevel=0.03), "wood_mid")
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            s.add(p_box((0.22, 0.22, zt - zs), loc=(sx * W / 2, sy * D / 2, (zs + zt) / 2), bevel=0.0), BEAM)
+    s.add(p_box((W + 0.08, D + 0.08, 0.14), loc=(0, 0, zs + 0.02), bevel=0.0), BEAM)
+    cornice(s, W, D, zt, t=0.16, col="wood_dark")
+    zr = gable_roof(s, W, D, zt, pitch_deg=pitch, ox=OX - 0.02, oy=OY)
+    gable_wall(s, W, zt - 0.02, zr, D, col="wood_light", inset=0.05, depth=0.14)
+    for sy in (-1, 1):
+        _horns2(s, zr, sy, pitch)
+    plank_door(s, -D / 2, f2, w=0.78, h=1.06, col="wood_light", frame="wood_dark")
+    s.add(p_box((1.10, 0.44, 0.26), loc=(0, -D / 2 - 0.32, 0.09), bevel=0.04),
+          by_normal("stone_light", "stone_mid", "stone_dark", 0.8))
+    for x in (-0.86, 0.86):
+        _window(a, Frame((x, YF, 1.46)), w=0.34, h=0.34)
+    round_shield(a, Frame((0, YSH, zt + 0.46)), r=R_SH, t=T_SH, face="berry", paint="cream", pattern="quarters",
+                 rim="iron_dark", boss="gold", studs=10, seg=16)
+    a.add(p_box((0.22, 0.20, 0.22), loc=(0, YF - 0.11, zt + 0.61), bevel=0.0), "wood_dark")
+    _chimney_left(a, zr + 0.0, pitch)
+    _yard(a)
+    _rims(a, 0.42, -1.50)
+
+
+def _l3(a):
+    """Мастерская гильдии: низ — камень с квадрами, верх — фахверк по штукатурке на выпуске; над дверью —
+    галерея на консолях, на её перилах висят готовые щиты четырёх цветов; кровля выше, щит-герой на фронтоне,
+    рога, каменная труба; окна со светом, фонарь у двери."""
+    s = _Shift(a, TM((0, Y0, 0)))
+    f2, zg, zt, pitch = 0.36, 1.58, 2.86, 40.0
+    stone_base(s, W + 0.26, D + 0.26, h=f2, col=STONE_DARK_TOP)
+    s.add(p_box((W, D, zg - f2 + 0.02), loc=(0, 0, (f2 + zg) / 2), bevel=0.05), WALL)
+    quoins(s, 0, 0, W, D, f2, zg, corners=((-1, -1), (1, -1)))
+    j = 0.10
+    s.add(p_box((W + 0.04, D + j, zt - zg), loc=(0, -j / 2, (zg + zt) / 2), bevel=0.03), PLASTER)
+    s.add(p_box((W + 0.12, 0.20, 0.18), loc=(0, -D / 2 - j + 0.04, zg + 0.04), bevel=0.0), BEAM)
+    fachwerk(s, Frame((0, -D / 2 - j, 0)), W - 0.02, zg + 0.12, zt, posts=(-0.66, 0.66), rails=(2.22,),
+             braces=((-1.30, zg + 0.18, -0.72, 2.16), (1.30, zg + 0.18, 0.72, 2.16)))
+    for x in (-1.00, 0.0, 1.00):
+        win(s, Frame((x, -D / 2 - j - 0.02, 2.50)), w=0.30, h=0.30, lit=True, shutters=None, sill=None)
+    cornice(s, W + 0.04, D + j, zt, t=0.16, col="wood_dark")
+    zr = gable_roof(Shift(s, (0, -j / 2, 0)), W, D + j, zt, pitch_deg=pitch, ox=OX - 0.02, oy=OY)
+    gable_wall(Shift(s, (0, -j / 2, 0)), W, zt - 0.02, zr, D + j, col=PLASTER, inset=0.05, depth=0.14)
+    for sy in (-1, 1):
+        _horns2(Shift(s, (0, -j / 2 + sy * 0.0, 0)), zr, sy, pitch)
+    plank_door(s, -D / 2, f2, w=0.78, h=1.06, col="wood_light", frame="wood_dark")
+    s.add(p_box((1.10, 0.44, 0.26), loc=(0, -D / 2 - 0.32, 0.09), bevel=0.04),
+          by_normal("stone_light", "stone_mid", "stone_dark", 0.8))
+    # галерея: настил на консолях, перила, на перилах щиты
+    yg0 = YF - j
+    gy = yg0 - 0.40
+    a.add(p_box((2.30, 0.42, 0.08), loc=(0, yg0 - 0.21, zg + 0.02), bevel=0.0), PLANKS)
+    for x in (-1.0, 0.0, 1.0):
+        a.add(p_box((0.10, 0.44, 0.10), loc=(x, yg0 - 0.20, zg - 0.12), rot=(-30, 0, 0), bevel=0.0), BEAM)
+    for x in (-1.12, 1.12):
+        a.add(p_box((0.08, 0.08, 0.56), loc=(x, gy, zg + 0.30), bevel=0.0), BEAM)
+    a.add(p_box((2.32, 0.08, 0.08), loc=(0, gy, zg + 0.58), bevel=0.0), "wood_mid")
+    a.add(p_box((2.32, 0.06, 0.06), loc=(0, gy, zg + 0.24), bevel=0.0), "wood_mid")
+    for x, face, paint, pat, rim in ((-0.84, "roof", "cream", "cross", "iron_dark"),
+                                     (-0.28, "berry", "cream", "halves", "wood_dark"),
+                                     (0.28, "leaf_mid", "gold", "band", "iron_dark"),
+                                     (0.84, "cream", "berry", "ring", "wood_dark")):
+        round_shield(a, Frame((x, gy - 0.08, zg + 0.40)), r=0.25, face=face, paint=paint, pattern=pat, rim=rim,
+                     seg=12)
+    round_shield(a, Frame((0, YSH - j, zt + 0.50)), r=R_SH, t=T_SH, face="berry", paint="cream", pattern="quarters",
+                 rim="iron_dark", boss="gold", studs=10, seg=16)
+    a.add(p_box((0.22, 0.20, 0.22), loc=(0, YF - j - 0.11, zt + 0.65), bevel=0.0), "wood_dark")
+    _chimney_left(a, zr, pitch)
+    _yard(a)
+    wall_lamp(a, 0.56, YF - 0.04, 1.30, out=(0.3, -0.95))
+
+
+def evolve(a, level):
+    """2: щитовая мастерская. 3: мастерская гильдии с галереей щитов."""
+    (_l2 if level == 2 else _l3)(a)

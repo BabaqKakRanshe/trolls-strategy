@@ -13,7 +13,8 @@ import random
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, p_taper_box, by_normal
 from vitaria_buildings.common import (Frame, gable_roof, gable_wall, cornice, crate, bucket, lantern,
                                       STONE_TOP, PLANK_TOP)
-from vitaria_buildings.levels import pennant, gold_ridge, wall_banner, belfry, finial
+from vitaria_buildings.levels import (Shift, quoins, win, fachwerk, gable_y_at, gable_front, wall_lamp, PLASTER, BEAM,
+                                    PLANKS)
 
 NAME = "Bld_HaulersGuild"
 TITLE = "Гильдия носильщиков"
@@ -134,12 +135,12 @@ def _emblem(a, zr):
 # ---------------------------------------------------------------------------------------------
 # башенка
 # ---------------------------------------------------------------------------------------------
-def _tower(a):
+def _tower(a, TZ=TZ, flag=True, belts=(1.55, ZT + 0.02), win_z=2.90):
     a.add(p_box((TS + 0.16, TS + 0.16, F + 0.14), loc=(TX, TY, (F - 0.14) / 2), bevel=0.05),
           by_normal("stone_mid", "stone_dark", "stone_dark", 0.8))
     top = TS - 0.10
     a.add(p_taper_box((TS, TS), (top, top), TZ - F + 0.02, loc=(TX, TY, F - 0.02), bevel=0.05), WALL)
-    for z in (1.55, ZT + 0.02):                 # пояса: нижний вровень с подоконниками, верхний — с карнизом зала
+    for z in belts:                             # пояса: нижний вровень с подоконниками, верхний — с карнизом зала
         s = TS - 0.10 * (z - F) / (TZ - F) + 0.10
         a.add(p_box((s, s, 0.14), loc=(TX, TY, z), bevel=0.03), "stone_light")
     a.add(p_box((top + 0.20, top + 0.20, 0.18), loc=(TX, TY, TZ - 0.02), bevel=0.04), "wood_dark")
@@ -147,7 +148,7 @@ def _tower(a):
     yf = TY - TS / 2
     a.add(p_box((0.24, 0.10, 0.62), loc=(TX, yf - 0.01, 1.05), bevel=0.025), "stone_light")
     a.add(p_box((0.10, 0.08, 0.48), loc=(TX, yf - 0.05, 1.05), bevel=0.0), "black")
-    for fr in (Frame((TX, TY - top / 2 - 0.005, 2.90)), Frame((TX - top / 2 - 0.005, TY, 2.90), rz=-90)):
+    for fr in (Frame((TX, TY - top / 2 - 0.005, win_z)), Frame((TX - top / 2 - 0.005, TY, win_z), rz=-90)):
         fr.box(a, (0.46, 0.10, 0.50), (0, 0, -0.04), col="stone_light", bevel=0.03)
         fr.box(a, (0.28, 0.06, 0.34), (0, -0.04, -0.06), col="black", bevel=0.0)
         fr.cyl(a, 0.14, 0.14, 0.06, 8, loc=(0, -0.01, 0.11), rot=(90, 0, 0), col="black")
@@ -158,6 +159,9 @@ def _tower(a):
     a.add(p_cyl(r0, r0 * 0.6, 0.42, 4, loc=(TX, TY, zb), spin=45, bevel=0.03), "roof_dark")
     a.add(p_cyl(r0 * 0.6, 0.0, 0.58, 4, loc=(TX, TY, zb + 0.42), spin=45), "roof")
     apex = zb + 1.0
+    if not flag:
+        a.add(p_cyl(0.05, 0.0, 0.40, 6, loc=(TX, TY, apex - 0.06)), "iron_dark")
+        return
     # древко и флаг-ласточкин хвост: золотое полотно с синей полосой, вьётся вправо, над залом
     a.add(p_cyl(0.05, 0.045, 0.66, 6, loc=(TX, TY, apex - 0.12)), "wood_dark")
     a.add(p_ico(0.07, 1, loc=(TX, TY, apex + 0.56)), "gold")
@@ -264,32 +268,108 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): зал гильдии -> двор гильдии с портиком -> палата с часовой башней
 # =========================================================================================
-def upgrade(a, level):
-    """2: флажок на правом скате зала, тачка-тачанка с мешками перед правым углом, штабель ящиков
-    у левого угла зала. 3: + звонница с золотым колоколом на коньке, золото по коньку и навершия, знамя
-    на башенке, фонарь слева от портала, золотое навершие шатра башенки."""
-    rng = random.Random(43)
-    zr = ZT + 0.08 + (W / 2) * math.tan(math.radians(PITCH))
-    t = math.tan(math.radians(PITCH))
-    pennant(a, 0.72, -0.62, zr - 0.72 * t + 0.08, level, h=1.20, side=1)
-    for k, (x, y, z, rz) in enumerate(((-2.30, -0.80, 0.0, 6), (-2.28, -0.36, 0.0, -8), (-2.30, -0.58, 0.44, 14))):
-        crate(a, (x, y, z), s=0.44, rot=(0, 0, rz))
-    wb = Frame((1.95, -2.78, 0.0), rz=-20)
-    wb.prism(a, [(-0.30, 0.0), (0.12, 0.0), (0.36, 0.26), (-0.36, 0.26)], 0.46, loc=(0, 0, 0.22),
-             col=lambda f: "wood_dark" if f.normal.z < -0.5 else "wood_mid")
-    wb.cyl(a, 0.16, 0.16, 0.06, 10, loc=(0.40, 0.0, 0.16), rot=(90, 0, 0), col="wood_dark")
-    for sy in (-1, 1):
-        wb.box(a, (0.62, 0.05, 0.05), (-0.52, sy * 0.18, 0.28), rot=(0, -10, 0), col="wood_mid", bevel=0.0)
-    _sack(a, wb.sub((-0.02, 0.0, 0.30)), rng, s=0.8)
-    if level < 3:
-        return
-    belfry(a, 0.0, 0.55, zr - 0.10, level)
-    gold_ridge(a, D + 2 * 0.30 + 0.14, zr, axis="y")
+def _portico(a, z_top=2.12):
+    """Портик над аркой: два каменных столба на базах, балка-архитрав, двускатная крышечка фронтоном к
+    камере, в его тимпане — золотое колесо гильдии поменьше."""
+    y0, y1 = YF - 0.84, YF - 0.02
+    for sx in (-1, 1):
+        x = sx * 1.02
+        a.add(p_box((0.40, 0.40, 0.16), loc=(x, y0 + 0.12, 0.08), bevel=0.03), STONE_TOP)
+        a.add(p_box((0.28, 0.28, z_top - 0.16), loc=(x, y0 + 0.12, 0.16 + (z_top - 0.16) / 2), bevel=0.03), PORTAL)
+        a.add(p_box((0.36, 0.36, 0.10), loc=(x, y0 + 0.12, z_top - 0.02), bevel=0.0), "stone_light")
+    a.add(p_box((2.40, 0.36, 0.24), loc=(0, y0 + 0.12, z_top + 0.10), bevel=0.0), PORTAL)
+    for sx in (-1, 1):
+        a.add(p_box((0.20, y1 - y0, 0.20), loc=(sx * 1.02, (y0 + y1) / 2 + 0.06, z_top + 0.10), bevel=0.0), PORTAL)
+    zr = gable_y_at(a, 0.0, (y0 + y1) / 2 + 0.06, 2.40, y1 - y0 + 0.12, z_top + 0.22, pitch_deg=30, ox=0.10, oy=0.12,
+                    bands=1)
+    gable_front(a, 0.0, y0 + 0.08, 2.40, z_top + 0.20, zr, col="stone_light", depth=0.20, face=-1, boards=False)
+    fr = Frame((0, y0 - 0.04, z_top + 0.20 + (zr - z_top - 0.20) * 0.40))
+    fr.cyl(a, 0.20, 0.20, 0.05, 12, loc=(0, 0.02, 0), rot=(90, 0, 0), col="gold")
+    fr.cyl(a, 0.15, 0.15, 0.03, 12, loc=(0, -0.01, 0), rot=(90, 0, 0), col="roof")
+    for k in range(3):
+        fr.box(a, (0.24, 0.02, 0.04), (0, -0.04, 0), rot=(0, 60 * k, 0), col="gold", bevel=0.0)
+
+
+def _clock(a, z):
+    """Часы на лице башни: каменная рама, кремовый циферблат в золотом ободе, стрелки."""
     top = TS - 0.10
-    wall_banner(a, TX, TY - top / 2 - 0.06, 2.50, w=0.36, h=0.62)
-    a.add(p_box((0.10, 0.34, 0.10), loc=(-1.22, YF - 0.15, 1.92), bevel=0.0), "wood_dark")
-    lantern(a, Frame((-1.22, YF - 0.30, 1.56)))
-    zb = TZ + 0.06
-    finial(a, TX - 0.02, TY - 0.10, zb + 0.70, h=0.20)
+    y = TY - top / 2 - 0.02
+    fr = Frame((TX, y, z))
+    fr.box(a, (0.62, 0.06, 0.62), (0, 0.0, 0), col="stone_light", bevel=0.0)
+    fr.cyl(a, 0.26, 0.26, 0.05, 16, loc=(0, -0.02, 0), rot=(90, 0, 0), col="gold")
+    fr.cyl(a, 0.22, 0.22, 0.03, 16, loc=(0, -0.05, 0), rot=(90, 0, 0), col="cream")
+    fr.box(a, (0.03, 0.02, 0.18), (0.0, -0.075, 0.07), col="iron_dark", bevel=0.0)
+    fr.box(a, (0.13, 0.02, 0.03), (0.055, -0.08, 0.0), col="iron_dark", bevel=0.0)
+    for k in range(4):
+        ang = math.radians(90 * k)
+        fr.box(a, (0.03, 0.02, 0.05), (0.18 * math.cos(ang), -0.07, 0.18 * math.sin(ang)), col="iron_dark", bevel=0.0)
+
+
+def _props(a, rng, cart_x=1.56, rack_x=-1.62):
+    _cart(a, Frame((cart_x, YF - 1.08, 0.06), rz=155), rng)
+    _rack(a, Frame((rack_x, YF - 0.42, 0.06)))
+    for (x, y, rz, sc, col) in ((-2.22, -1.62 - 0.30, 10, 1.0, "burlap"), (-1.86, -1.92 - 0.30, -30, 0.9, "burlap_dark")):
+        _sack(a, Frame((x, y, 0.06), rz=rz), rng, s=sc, col=col)
+
+
+def _l2(a):
+    """Двор гильдии: перед аркой — каменный портик с крышечкой и малым гербом, башенка выше на 0.7 со вторым
+    ярусом окон и без флага, у левого угла зала штабель ящиков; двор шире, тележка и стойка — по краям."""
+    rng = random.Random(23)
+    a.add(p_box((W + 1.70, 1.80, 0.10), loc=(0.08, YF - 0.86, 0.01), bevel=0.03), STONE_TOP)
+    zr = _hall(a)
+    _arch_door(a)
+    _emblem(a, zr)
+    _tower(a, TZ=4.10, flag=False, belts=(1.55, ZT + 0.02, 3.30), win_z=3.60)
+    _portico(a)
+    for (x, y, z, rz) in ((-2.30, -0.86, 0.0, 6), (-2.28, -0.42, 0.0, -8), (-2.30, -0.64, 0.44, 14)):
+        crate(a, (x, y, z), s=0.44, rot=(0, 0, rz))
+    _props(a, rng)
+
+
+def _l3(a):
+    """Палата гильдии: зал в два этажа — над каменным низом фахверк по штукатурке с окнами в свете, кровля
+    выше; башня — часовая, выше конька, с часами на лице и шатром; портик перед аркой, фонари по сторонам."""
+    rng = random.Random(23)
+    a.add(p_box((W + 1.70, 1.80, 0.10), loc=(0.08, YF - 0.86, 0.01), bevel=0.03), STONE_TOP)
+    a.add(p_box((W + 0.26, D + 0.26, F + 0.14), loc=(0, 0, (F - 0.14) / 2), bevel=0.06),
+          by_normal("stone_mid", "stone_dark", "stone_dark", 0.8))
+    zg, zt = ZT, ZT + 1.20
+    a.add(p_box((W, D, zg - F + 0.02), loc=(0, 0, (F + zg) / 2 - 0.01), bevel=0.05), "stone_mid")
+    _quoins(a, -W / 2, W / 2, -D / 2, D / 2, F, zg, n=3)
+    j = 0.10
+    a.add(p_box((W + 2 * j, D + j, zt - zg), loc=(0, -j / 2, (zg + zt) / 2), bevel=0.03), PLASTER)
+    a.add(p_box((W + 2 * j + 0.08, 0.20, 0.18), loc=(0, YF - j + 0.03, zg + 0.04), bevel=0.0), BEAM)
+    fachwerk(a, Frame((0, YF - j, 0)), W + 2 * j - 0.04, zg + 0.12, zt, posts=(-1.00, -0.34, 0.34, 1.00),
+             rails=(zg + 0.50,), braces=((-1.70, zg + 0.16, -1.08, zg + 0.46), (1.70, zg + 0.16, 1.08, zg + 0.46)))
+    for x in (-0.67, 0.67):
+        win(a, Frame((x, YF - j - 0.02, zg + 0.74)), w=0.38, h=0.42, lit=True, shutters="roof_dark", sill=None)
+    fachwerk(a, Frame((W / 2 + j, -j / 2, 0), rz=90), D + j - 0.04, zg + 0.12, zt, posts=(-0.40, 0.40))
+    for y in (-0.45, 0.45):
+        _window(a, Frame((W / 2, y, 1.42), rz=90))
+    zr = gable_roof(Shift(a, (0, -j / 2, 0)), W + 2 * j, D + j, zt, pitch_deg=PITCH, ox=0.22, oy=0.26)
+    gable_wall(Shift(a, (0, -j / 2, 0)), W + 2 * j, zt - 0.02, zr, D + j, col=PLASTER, inset=0.05, depth=0.14)
+    yg = YF - j - 0.01
+    a.add(p_box((W - 0.40, 0.12, 0.12), loc=(0, yg, zt + 0.40), bevel=0.0), BEAM)
+    for x in (-0.70, 0.70):
+        hgt = (zr - zt) * (1 - abs(x) / ((W + 2 * j) / 2)) - 0.10
+        a.add(p_box((0.12, 0.12, hgt), loc=(x, yg + 0.012, zt + hgt / 2), bevel=0.0), BEAM)
+    _arch_door(a)
+    fr = Frame((0, YF - j - 0.06, zt + (zr - zt) * 0.42))
+    fr.cyl(a, 0.34, 0.34, 0.08, 16, loc=(0, 0.04, 0), rot=(90, 0, 0), col="gold")
+    fr.cyl(a, 0.28, 0.28, 0.03, 16, loc=(0, -0.035, 0), rot=(90, 0, 0), col="roof")
+    for k in range(3):
+        fr.box(a, (0.36, 0.03, 0.06), (0, -0.07, 0), rot=(0, 60 * k, 0), col="gold", bevel=0.0)
+    _tower(a, TZ=5.00, flag=False, belts=(1.55, ZT + 0.02, 3.70), win_z=4.50)
+    _clock(a, 3.20)
+    _portico(a)
+    for sx in (-1, 1):
+        wall_lamp(a, sx * 1.36, YF - 0.86, 1.86, out=(sx * 0.3, -0.95))
+    _props(a, rng)
+
+
+def evolve(a, level):
+    """2: двор гильдии с портиком. 3: палата гильдии с часовой башней."""
+    (_l2 if level == 2 else _l3)(a)

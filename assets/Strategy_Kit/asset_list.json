@@ -1432,49 +1432,49 @@
  {
   "asset": "Bld_Mine_L2",
   "category": "Buildings",
-  "tris": 4261,
+  "tris": 4589,
   "size_unity": [
    4.729,
-   4.21,
+   5.04,
    4.196
   ]
  },
  {
   "asset": "Bld_Mine_L3",
   "category": "Buildings",
-  "tris": 5553,
+  "tris": 5351,
   "size_unity": [
-   4.849,
-   4.3,
-   4.196
+   5.11,
+   6.11,
+   4.208
   ]
  },
  {
   "asset": "Bld_Market_L2",
   "category": "Buildings",
-  "tris": 4908,
+  "tris": 4636,
   "size_unity": [
-   4.492,
-   3.91,
-   3.52
+   5.16,
+   3.61,
+   3.509
   ]
  },
  {
   "asset": "Bld_Market_L3",
   "category": "Buildings",
-  "tris": 5270,
+  "tris": 5712,
   "size_unity": [
-   4.87,
-   3.91,
-   3.52
+   5.39,
+   4.826,
+   3.509
   ]
  },
  {
   "asset": "Bld_Smeltery_L2",
   "category": "Buildings",
-  "tris": 3790,
+  "tris": 4012,
   "size_unity": [
-   4.9,
+   5.054,
    4.1,
    4.3
   ]
@@ -1482,271 +1482,271 @@
  {
   "asset": "Bld_Smeltery_L3",
   "category": "Buildings",
-  "tris": 4378,
+  "tris": 5132,
   "size_unity": [
-   4.9,
-   4.1,
+   5.034,
+   5.0,
    4.3
   ]
  },
  {
   "asset": "Bld_Forge_L2",
   "category": "Buildings",
-  "tris": 3598,
+  "tris": 3850,
   "size_unity": [
-   3.52,
-   4.86,
-   3.52
+   3.483,
+   5.449,
+   3.21
   ]
  },
  {
   "asset": "Bld_Forge_L3",
   "category": "Buildings",
-  "tris": 4024,
+  "tris": 4426,
   "size_unity": [
-   3.52,
-   4.86,
-   3.52
+   3.512,
+   6.374,
+   3.21
   ]
  },
  {
   "asset": "Bld_Armory_L2",
   "category": "Buildings",
-  "tris": 3444,
+  "tris": 2648,
   "size_unity": [
-   3.52,
-   4.561,
-   3.174
+   3.418,
+   5.064,
+   3.134
   ]
  },
  {
   "asset": "Bld_Armory_L3",
   "category": "Buildings",
-  "tris": 3912,
+  "tris": 3188,
   "size_unity": [
-   3.52,
-   4.561,
-   3.244
+   3.441,
+   5.76,
+   3.305
   ]
  },
  {
   "asset": "Bld_Field_L2",
   "category": "Buildings",
-  "tris": 4863,
+  "tris": 5018,
   "size_unity": [
-   5.182,
-   2.38,
-   5.106
+   5.162,
+   2.275,
+   5.161
   ]
  },
  {
   "asset": "Bld_Field_L3",
   "category": "Buildings",
-  "tris": 5691,
+  "tris": 4990,
   "size_unity": [
-   5.287,
-   2.38,
-   5.106
+   5.383,
+   3.843,
+   5.26
   ]
  },
  {
   "asset": "Bld_Farm_L2",
   "category": "Buildings",
-  "tris": 4427,
+  "tris": 4811,
   "size_unity": [
-   5.125,
-   4.283,
-   4.421
+   5.3,
+   4.053,
+   4.911
   ]
  },
  {
   "asset": "Bld_Farm_L3",
   "category": "Buildings",
-  "tris": 5237,
+  "tris": 5507,
   "size_unity": [
-   5.125,
-   4.283,
-   4.491
+   5.424,
+   4.702,
+   5.359
   ]
  },
  {
   "asset": "Bld_Tannery_L2",
   "category": "Buildings",
-  "tris": 3556,
+  "tris": 2504,
   "size_unity": [
    3.52,
-   4.29,
-   3.384
+   3.628,
+   3.408
   ]
  },
  {
   "asset": "Bld_Tannery_L3",
   "category": "Buildings",
-  "tris": 4424,
+  "tris": 2834,
   "size_unity": [
    3.52,
-   4.29,
-   3.384
+   4.255,
+   3.448
   ]
  },
  {
   "asset": "Bld_LumberCamp_L2",
   "category": "Buildings",
-  "tris": 3686,
+  "tris": 3582,
   "size_unity": [
-   3.52,
-   3.67,
-   3.471
+   3.491,
+   2.994,
+   3.468
   ]
  },
  {
   "asset": "Bld_LumberCamp_L3",
   "category": "Buildings",
-  "tris": 4116,
+  "tris": 3784,
   "size_unity": [
-   3.52,
-   3.67,
-   3.471
+   3.491,
+   4.014,
+   3.461
   ]
  },
  {
   "asset": "Bld_LumberMill_L2",
   "category": "Buildings",
-  "tris": 3504,
+  "tris": 4736,
   "size_unity": [
-   5.45,
-   4.884,
-   3.876
+   5.481,
+   4.293,
+   4.945
   ]
  },
  {
   "asset": "Bld_LumberMill_L3",
   "category": "Buildings",
-  "tris": 3984,
+  "tris": 4704,
   "size_unity": [
    5.45,
-   4.884,
-   3.876
+   4.77,
+   4.82
   ]
  },
  {
   "asset": "Bld_ShieldWorkshop_L2",
   "category": "Buildings",
-  "tris": 3192,
+  "tris": 3024,
   "size_unity": [
-   3.52,
-   3.95,
+   3.505,
+   3.949,
    3.241
   ]
  },
  {
   "asset": "Bld_ShieldWorkshop_L3",
   "category": "Buildings",
-  "tris": 3624,
+  "tris": 4030,
   "size_unity": [
-   3.52,
-   3.95,
-   3.296
+   3.508,
+   4.677,
+   3.226
   ]
  },
  {
   "asset": "Bld_Enchanter_L2",
   "category": "Buildings",
-  "tris": 2622,
+  "tris": 3570,
   "size_unity": [
    3.52,
-   4.38,
+   4.6,
    3.52
   ]
  },
  {
   "asset": "Bld_Enchanter_L3",
   "category": "Buildings",
-  "tris": 3320,
+  "tris": 4022,
   "size_unity": [
    3.52,
-   4.38,
+   6.78,
    3.52
   ]
  },
  {
   "asset": "Bld_Tavern_L2",
   "category": "Buildings",
-  "tris": 4884,
+  "tris": 5068,
   "size_unity": [
-   5.105,
-   5.165,
-   4.44
+   5.075,
+   4.883,
+   4.5
   ]
  },
  {
   "asset": "Bld_Tavern_L3",
   "category": "Buildings",
-  "tris": 5336,
+  "tris": 5764,
   "size_unity": [
-   5.135,
-   5.165,
-   4.44
+   5.132,
+   6.025,
+   4.48
   ]
  },
  {
   "asset": "Bld_HaulersGuild_L2",
   "category": "Buildings",
-  "tris": 4920,
+  "tris": 5040,
   "size_unity": [
-   5.436,
-   5.23,
-   4.819
+   5.446,
+   5.64,
+   4.85
   ]
  },
  {
   "asset": "Bld_HaulersGuild_L3",
   "category": "Buildings",
-  "tris": 5416,
+  "tris": 5296,
   "size_unity": [
-   5.436,
-   5.413,
-   4.889
+   5.446,
+   6.54,
+   4.81
   ]
  },
  {
   "asset": "Bld_Barracks_L2",
   "category": "Buildings",
-  "tris": 3350,
+  "tris": 3826,
   "size_unity": [
-   5.52,
-   4.532,
+   5.434,
+   4.56,
    4.411
   ]
  },
  {
   "asset": "Bld_Barracks_L3",
   "category": "Buildings",
-  "tris": 4082,
+  "tris": 5480,
   "size_unity": [
-   5.52,
-   5.62,
-   4.411
+   5.434,
+   5.86,
+   4.531
   ]
  },
  {
   "asset": "Bld_Warehouse_L2",
   "category": "Buildings",
-  "tris": 3060,
+  "tris": 2872,
   "size_unity": [
-   5.379,
-   4.849,
-   4.843
+   5.305,
+   4.916,
+   4.84
   ]
  },
  {
   "asset": "Bld_Warehouse_L3",
   "category": "Buildings",
-  "tris": 3956,
+  "tris": 4996,
   "size_unity": [
-   5.379,
-   4.954,
-   4.947
+   5.353,
+   7.055,
+   4.86
   ]
  },
  {

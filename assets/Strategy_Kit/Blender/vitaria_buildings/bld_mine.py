@@ -14,9 +14,11 @@ import math
 import random
 
 from mathutils import Vector
-from build_vitaria import p_box, p_cyl, p_ico, by_normal, rock_face_color, ore_chunk, TM
+from build_vitaria import p_box, p_cyl, p_ico, p_prism, by_normal, rock_face_color, ore_chunk, TM
 from vitaria_buildings.common import Frame, lantern, STONE_TOP
-from vitaria_buildings.levels import pennant, wall_banner, wall_lantern, finial
+from vitaria_buildings.common import plank_door
+from vitaria_buildings.levels import (Shift, quoins, stack, win, arched_wall, gable_front, gable_x_at, gable_y_at,
+                                    porch_post, wall_lamp, WALL, BEAM, PLANKS)
 
 NAME = "Bld_Mine"
 TITLE = "Шахта"
@@ -219,59 +221,179 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): штольня -> штольня с копром -> рудник
 # =========================================================================================
-def _siding(a, rng, level):
-    """Запасной путь вправо от главного и вторая вагонетка на нём — шахта даёт больше руды."""
-    y0, y1 = -1.10, -1.95
+def _siding(a, rng, x=1.72, y0=-1.10, y1=-1.95, cart_y=-1.52):
+    """Запасной путь справа от главного и вторая вагонетка на нём — шахта даёт больше руды."""
     for sx in (-1, 1):
-        a.add(p_box((0.08, y0 - y1, 0.08), loc=(1.72 + sx * 0.26, (y0 + y1) / 2, 0.10), bevel=0.0),
+        a.add(p_box((0.08, y0 - y1, 0.08), loc=(x + sx * 0.26, (y0 + y1) / 2, 0.10), bevel=0.0),
               by_normal("iron_light", "rail"))
     for i in range(4):
         y = y1 + 0.12 + i * (y0 - y1 - 0.24) / 3
-        a.add(p_box((0.76, 0.17, 0.08), loc=(1.72, y, 0.035), bevel=0.0), "wood_dark")
-    _minecart(a, Frame((1.72, -1.52, 0), s=0.92), rng)
+        a.add(p_box((0.76, 0.17, 0.08), loc=(x, y, 0.035), bevel=0.0), "wood_dark")
+    _minecart(a, Frame((x, cart_y, 0), s=0.92), rng)
 
 
-def _windlass(a, level):
-    """Ворот над шурфом на вершине холма: две А-образные стойки, вал вдоль Y, колесо-штурвал на переднем
-    конце вала лицом к камере, верёвка в шурф. Сруб шурфа — рама из бруса вокруг тёмного проёма."""
-    cx, cy, z0 = -0.55, 0.58, 2.62
-    for sy in (-1, 1):
-        for sx in (-1, 1):
-            a.add(p_box((0.12, 0.12, 1.30), loc=(cx + sx * 0.24, cy + sy * 0.32, z0 + 0.58), rot=(0, -sx * 12, 0),
-                        bevel=0.0), "wood_mid")
-        a.add(p_box((0.62, 0.10, 0.10), loc=(cx, cy + sy * 0.32, z0 + 0.42), bevel=0.0), "wood_dark")
-    a.add(p_cyl(0.08, 0.08, 0.80, 8, loc=(cx, cy + 0.40, z0 + 1.18), rot=(90, 0, 0)), "wood_light")
-    fr = Frame((cx, cy - 0.44, z0 + 1.18))
-    fr.cyl(a, 0.44, 0.44, 0.07, 12, loc=(0, 0.035, 0), rot=(90, 0, 0), col="wood_light")
-    fr.cyl(a, 0.34, 0.34, 0.08, 12, loc=(0, 0.04, 0), rot=(90, 0, 0), col="wood_dark")
+def _sheave(a, fr, r=0.38):
+    """Шкив копра в плоскости XZ рамы (лицом к камере): обод, ступица, четыре спицы, ось вдоль Y."""
+    fr.cyl(a, r, r, 0.08, 14, loc=(0, 0.04, 0), rot=(90, 0, 0), col="iron_dark")
+    fr.cyl(a, r - 0.07, r - 0.07, 0.09, 14, loc=(0, 0.045, 0), rot=(90, 0, 0), col="wood_mid")
     for k in range(4):
-        fr.box(a, (0.06, 0.05, 0.80), (0, -0.03, 0), rot=(0, k * 45, 0), col="wood_mid", bevel=0.0)
-    fr.cyl(a, 0.07, 0.07, 0.10, 8, loc=(0, -0.02, 0), rot=(90, 0, 0), col="iron_dark")
-    a.add(p_box((0.03, 0.03, 0.82), loc=(cx, cy + 0.05, z0 + 0.74), bevel=0.0), "rope")
+        fr.box(a, (0.05, 0.05, 2 * r - 0.08), (0, -0.02, 0), rot=(0, k * 45, 0), col="iron", bevel=0.0)
+    fr.cyl(a, 0.07, 0.07, 0.30, 8, loc=(0, 0.15, 0), rot=(90, 0, 0), col="iron_dark")
+
+
+def _headframe(a, cx, cy, z0, h, r=0.38, roof=False):
+    """Копёр над шурфом на вершине холма: две А-рамы (передняя и задняя) из наклонных ног, ригели, наверху —
+    шкив лицом к камере, трос в шурф; у подножия — сруб шурфа. roof — наверху будка-шатёр (уровень 3)."""
     for sy in (-1, 1):
-        a.add(p_box((0.86, 0.12, 0.12), loc=(cx, cy + sy * 0.30, z0 + 0.04), bevel=0.0), "wood_dark")
+        y = cy + sy * 0.36
+        for sx in (-1, 1):
+            xb, xt = cx + sx * 0.62, cx + sx * 0.20
+            ln = math.hypot(xb - xt, h)
+            ang = math.degrees(math.atan2(xt - xb, h))
+            a.add(p_box((0.14, 0.14, ln + 0.10), loc=((xb + xt) / 2, y, z0 + h / 2), rot=(0, ang, 0), bevel=0.0),
+                  "wood_mid")
+        for t in (0.30, 0.62):
+            hw = 0.62 - (0.62 - 0.20) * t
+            a.add(p_box((2 * hw + 0.10, 0.10, 0.10), loc=(cx, y, z0 + h * t), bevel=0.0), BEAM)
     for sx in (-1, 1):
-        a.add(p_box((0.12, 0.48, 0.12), loc=(cx + sx * 0.37, cy, z0 + 0.04), bevel=0.0), "wood_dark")
-    a.add(p_box((0.60, 0.46, 0.03), loc=(cx, cy, z0 + 0.06), bevel=0.0), "black")
+        a.add(p_box((0.10, 0.82, 0.10), loc=(cx + sx * 0.36, cy, z0 + h * 0.46), bevel=0.0), BEAM)
+    a.add(p_box((0.60, 0.92, 0.14), loc=(cx, cy, z0 + h + 0.02), bevel=0.0), BEAM)
+    zc = z0 + h + 0.10 + r
+    for sy in (-1, 1):
+        a.add(p_box((0.10, 0.10, r + 0.12), loc=(cx, cy + sy * 0.20, z0 + h + 0.08 + (r + 0.12) / 2), bevel=0.0), BEAM)
+    _sheave(a, Frame((cx, cy - 0.06, zc)), r=r)
+    a.add(p_box((0.03, 0.03, zc - z0 + 0.10), loc=(cx - r + 0.03, cy - 0.06, (zc + z0 - 0.10) / 2), bevel=0.0), "rope")
+    # сруб шурфа
+    for sy in (-1, 1):
+        a.add(p_box((1.00, 0.12, 0.14), loc=(cx, cy + sy * 0.34, z0 + 0.02), bevel=0.0), BEAM)
+    for sx in (-1, 1):
+        a.add(p_box((0.12, 0.60, 0.14), loc=(cx + sx * 0.44, cy, z0 + 0.02), bevel=0.0), BEAM)
+    a.add(p_box((0.78, 0.56, 0.03), loc=(cx, cy, z0 + 0.06), bevel=0.0), "black")
+    if roof:
+        # будка лебёдки за шкивом: дощатый короб с окошком и своя кровля — копёр читается башней
+        zb = z0 + h + 0.09
+        hb = 0.62
+        a.add(p_box((0.62, 0.56, hb), loc=(cx, cy + 0.26, zb + hb / 2), bevel=0.0), PLANKS)
+        a.add(p_box((0.20, 0.03, 0.20), loc=(cx + 0.16, cy - 0.025, zb + hb * 0.62), bevel=0.0), "lantern_glow")
+        gable_y_at(a, cx, cy + 0.26, 0.62, 0.56, zb + hb, pitch_deg=40, ox=0.08, oy=0.10, bands=1)
 
 
-def upgrade(a, level):
-    """2: флажок на вершине холма, запасной путь со второй вагонеткой справа, фонари на стойках рамы.
-    3: + ворот над шурфом на вершине, знамёна на стойках рамы, золотая оправа вывески и золотые
-    навершия на концах перемычки, куча золотой руды у левого валуна."""
-    rng = random.Random(23)
-    pennant(a, 0.20, 0.10, 2.70, level, h=1.30, side=1)
-    _siding(a, rng, level)
+def _entry_shed(a, z_eave=2.30, stone=False, w=2.20, sign=True):
+    """Крытый вход: двускатная кровля коньком вдоль Y над рельсами, задний край уходит в скалу,
+    передние стойки на каменных подушках; фронтон дощатый с вывеской-кирками (stone — каменные столбы)."""
+    yf = -1.34
+    px = w / 2 - 0.16
     for sx in (-1, 1):
-        lantern(a, Frame((sx * (PX + 0.20), YP - 0.05, 1.30)))
-        a.add(p_box((0.30, 0.05, 0.05), loc=(sx * (PX + 0.10), YP - 0.05, 1.74), bevel=0.0), "iron_dark")
-    if level < 3:
-        return
-    _windlass(a, level)
+        if stone:
+            a.add(p_box((0.34, 0.34, z_eave), loc=(sx * px, yf, z_eave / 2), bevel=0.04), WALL)
+        else:
+            porch_post(a, sx * px, yf, 0.0, z_eave, s=0.20, col="wood_mid")
+    a.add(p_box((w + 0.10, 0.22, 0.22), loc=(0, yf, z_eave - 0.04), bevel=0.0), BEAM)
     for sx in (-1, 1):
-        wall_banner(a, sx * PX, YP - 0.17, ZL - 0.22, w=0.30, h=0.66)
-        finial(a, sx * 1.16, YP, ZL + 0.25, h=0.34)
-    a.add(p_box((0.94, 0.04, 0.38), loc=(0, YP - 0.19, ZL), bevel=0.0), "gold")
-    _ore_pile(a, -1.95, -0.55, 9)
+        a.add(p_box((0.18, yf - YP + 0.40, 0.18), loc=(sx * px, (yf + YP) / 2 + 0.10, z_eave - 0.04), bevel=0.0), BEAM)
+        a.add(p_box((0.12, 0.12, 0.56), loc=(sx * (px - 0.18), yf, z_eave - 0.30), rot=(0, sx * 45, 0), bevel=0.0),
+              BEAM)
+    d = 1.30
+    zr = gable_y_at(a, 0.0, yf + d / 2 - 0.06, w, d, z_eave + 0.06, pitch_deg=30, ox=0.10, oy=0.16, bands=2)
+    gable_front(a, 0.0, yf, w, z_eave + 0.06, zr, depth=0.16, face=-1)
+    if sign:
+        zs = z_eave + 0.06 + (zr - z_eave) * 0.36
+        a.add(p_box((0.70, 0.06, 0.28), loc=(0, yf - 0.11, zs), bevel=0.0), "wood_pale")
+        for sgn in (-1, 1):
+            fr = Frame((0, yf - 0.15, zs), rot=(0, sgn * 42, 0))
+            fr.box(a, (0.035, 0.03, 0.32), (0, 0, 0), col="wood_dark", bevel=0.0)
+            fr.box(a, (0.20, 0.035, 0.045), (0, -0.005, 0.14), col="iron_dark", bevel=0.0)
+    return zr
+
+
+def _winding_house(a, cx, cy):
+    """Машинный дом у копра: каменная коробка, кровля коньком вдоль X, труба, дверь и окно со светом."""
+    w, d, h = 1.16, 0.92, 1.36
+    a.add(p_box((w + 0.12, d + 0.12, 0.30), loc=(cx, cy, 0.01), bevel=0.04), "stone_dark")
+    a.add(p_box((w, d, h), loc=(cx, cy, 0.14 + h / 2), bevel=0.05), WALL)
+    quoins(a, cx, cy, w, d, 0.16, 0.14 + h, corners=((-1, -1), (1, -1)))
+    plank_door(Shift(a, (cx - 0.22, 0, 0)), cy - d / 2 + 0.06, 0.16, w=0.44, h=0.86)
+    win(a, Frame((cx + 0.30, cy - d / 2 - 0.03, 0.94)), w=0.28, h=0.30, lit=True, shutters="roof_dark", sill="stone_light")
+    zr = gable_x_at(a, cx, cy, w, d, 0.14 + h, pitch_deg=36, ox=0.12, oy=0.16, bands=1)
+    for s in (-1, 1):
+        a.add(p_prism([(-d / 2, 0.14 + h), (d / 2, 0.14 + h), (0, zr - 0.05)], 0.14, loc=(cx + s * (w / 2 - 0.07), cy, 0),
+                      rot=(0, 0, 90)), WALL)
+    stack(a, cx - 0.34, cy + 0.18, 1.20, zr + 0.55 - 1.20, w=0.30, d=0.30)
+
+
+def _hopper(a, cx, cy, z_top=2.10):
+    """Рудный бункер на ногах: короб с рудой, жёлоб вперёд над вагонеткой запасного пути."""
+    hb = 0.62
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            a.add(p_box((0.13, 0.13, z_top - hb + 0.05), loc=(cx + sx * 0.36, cy + sy * 0.34, (z_top - hb) / 2),
+                        bevel=0.0), BEAM)
+    a.add(p_box((0.08, 0.80, 0.08), loc=(cx + 0.36, cy, 0.62), rot=(48, 0, 0), bevel=0.0), BEAM)
+    a.add(p_box((0.08, 0.80, 0.08), loc=(cx - 0.36, cy, 0.62), rot=(-48, 0, 0), bevel=0.0), BEAM)
+    Frame((cx, cy, z_top - hb)).taper(a, (0.62, 0.62), (0.92, 0.88), hb, col=by_normal("wood_light", "wood_mid", "wood_dark", 0.8))
+    a.add(p_ico(0.42, 1, loc=(cx, cy, z_top - 0.04), scl=(1.0, 0.95, 0.40), jitter=0.10, rng=random.Random(5), cut=0.0),
+          by_normal("ore_rock", "ore_rock_dk", "ore_rock_dk", 0.3))
+    for k, (dx, dy) in enumerate(((-0.14, -0.10), (0.16, 0.04), (0.0, 0.18), (0.20, -0.16))):
+        ore_chunk(a, "gold", 50 + k, loc=(cx + dx, cy + dy, z_top + 0.06), size=0.12)
+    # жёлоб: наклонный лоток вперёд
+    ln = 0.80
+    a.add(p_box((0.40, ln, 0.05), loc=(cx, cy - 0.62, z_top - hb - 0.16), rot=(-28, 0, 0), bevel=0.0), "wood_mid")
+    for sx in (-1, 1):
+        a.add(p_box((0.05, ln, 0.14), loc=(cx + sx * 0.20, cy - 0.62, z_top - hb - 0.12), rot=(-28, 0, 0), bevel=0.0),
+              "wood_dark")
+
+
+def _gold_crate(a, rng, cx=1.28, cy=-1.38, s=0.50):
+    a.add(p_box((s, s, s * 0.84), loc=(cx, cy, s * 0.42), rot=(0, 0, 12), bevel=0.03),
+          by_normal("wood_pale", "wood_light", "wood_dark", 0.7))
+    fr = Frame((cx, cy, s * 0.84), rz=12)
+    for sy in (-1, 1):
+        fr.box(a, (s + 0.03, 0.06, 0.08), (0, sy * s / 2, -s * 0.42), col="wood_dark", bevel=0.012)
+    for k in range(6):
+        fr.ico(a, rng.uniform(0.07, 0.10), loc=(rng.uniform(-0.15, 0.15), rng.uniform(-0.15, 0.15), 0.02),
+               scl=(1, 0.85, 0.8), col=NUG)
+
+
+def _l2(a):
+    """Штольня с копром: на вершине холма — деревянный копёр со шкивом над шурфом; вход под двускатной
+    кровлей на столбах; справа запасной путь со второй вагонеткой. Холм, рама входа, вагонетка с золотом,
+    куча руды и инструмент — прежние."""
+    rng = random.Random(7)
+    _rock(a)
+    _adit(a)
+    _portal(a)
+    _entry_shed(a)
+    lantern(a, Frame((0.62, YF - 0.30, 1.40)))
+    _rails(a)
+    _minecart(a, Frame((0, -1.52, 0)), rng)
+    _headframe(a, -0.20, 0.66, 2.50, 1.62)
+    _siding(a, random.Random(23))
+    _ore_pile(a, -1.30, -1.30, 5)
+    _pickaxe(a, Frame((PX + 0.30, YP - 0.10, 0.0), rot=(12, -14, 0)))
+
+
+def _l3(a):
+    """Рудник: каменный портал с аркой и замком, над ним кровля входа на каменных столбах; на вершине — высокий
+    копёр с будкой-шатром; слева машинный дом с трубой, справа рудный бункер с жёлобом над вагонеткой
+    запасного пути; фонари у портала."""
+    rng = random.Random(7)
+    _rock(a)
+    _adit(a)
+    arched_wall(a, -1.22, 1.22, YP, 0.40, 0.0, 2.40, -0.70, 0.70, 1.26)
+    a.add(p_box((2.56, 0.50, 0.16), loc=(0, YP, 2.44), bevel=0.0), "stone_light")
+    _entry_shed(a, z_eave=2.62, stone=True, w=2.44)
+    for sx in (-1, 1):
+        wall_lamp(a, sx * 0.98, YP - 0.22, 1.86, out=(sx * 0.3, -0.95))
+    _rails(a)
+    _minecart(a, Frame((0, -1.52, 0)), rng)
+    _headframe(a, -0.20, 0.66, 2.50, 2.10, r=0.40, roof=True)
+    _winding_house(a, -1.90, -1.30)
+    _siding(a, random.Random(23), x=1.84, y0=-0.70, cart_y=-1.42)
+    _hopper(a, 1.84, -0.34, z_top=2.10)
+
+
+def evolve(a, level):
+    """2: штольня с копром. 3: рудник с машинным домом и бункером."""
+    (_l2 if level == 2 else _l3)(a)

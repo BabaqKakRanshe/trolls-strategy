@@ -12,7 +12,6 @@ import random
 import bmesh
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, by_normal, TM
 from vitaria_buildings.common import Frame, crystal, STONE_TOP, STONE_DARK_TOP
-from vitaria_buildings.levels import pennant, finial
 
 NAME = "Bld_Enchanter"
 TITLE = "Зачарователь"
@@ -196,37 +195,122 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3: открытый павильон -> святилище с обелисками -> башня чародея
 # =========================================================================================
-def _rune_stone(a, x, y, rz, h=0.92):
-    """Рунный камень: сужающийся столб, две светящиеся руны лицом к камере."""
-    fr = Frame((x, y, 0.16), rz=rz)
-    fr.taper(a, (0.34, 0.24), (0.22, 0.16), h, col=by_normal("stone_light", "stone_mid", "stone_dark", 0.8))
-    fr.cyl(a, 0.13, 0.0, 0.16, 4, loc=(0, 0, h), spin=45, col="stone_light")
-    for z, w in ((h * 0.62, 0.09), (h * 0.34, 0.12)):
-        fr.box(a, (w, 0.02, 0.16), (0, -0.115 + (z / h) * 0.04, z), col="rune", bevel=0.0)
+def _platform3(a):
+    """Три восьмигранные ступени: к двум прежним сверху добавлена третья — пол выше на 14 см."""
+    _platform(a)
+    a.add(p_cyl(_oct_r(2.40), _oct_r(2.40) * 0.99, 0.16, 8, loc=(0, 0, FL - 0.02), spin=22.5, bevel=0.04),
+          STONE_TOP)
+    return FL + 0.14
 
 
-def upgrade(a, level):
-    """2: флажок на кольце над задней правой колонной, рунные камни по сторонам арки, ещё три осколка
-    на орбите кристалла. 3: + второе, парящее кольцо вокруг кристалла (золото и магия), светящийся круг
-    рун по краю пола, золотые навершия на колоннах и на замке арки."""
-    pennant(a, CR * math.cos(math.radians(45)), CR * math.sin(math.radians(45)), ZRG + 0.12, level, h=1.25,
-            side=1, fl=0.78, fh=0.48)
-    for sx in (-1, 1):
-        _rune_stone(a, sx * 1.30, -1.20, sx * 18)
-    zc = FL + 1.68 + 0.31 + 0.25
-    for ang, dz, tilt in ((140, 0.10, -14), (20, 0.40, 16), (265, 0.70, -18)):
+def _obelisk(a, x, y, h=1.70):
+    """Рунный обелиск на углу участка: каменный цоколь, сужающийся ствол с рунами, кристалл наверху."""
+    a.add(p_box((0.44, 0.44, 0.22), loc=(x, y, 0.05), bevel=0.03), STONE_DARK_TOP)
+    Frame((x, y, 0.16)).taper(a, (0.30, 0.30), (0.17, 0.17), h, col=by_normal("stone_light", "stone_light", "stone_mid", 0.8))
+    for k in range(2):
+        a.add(p_box((0.07, 0.02, 0.28), loc=(x, y - 0.13 + k * 0.0 + 0.03 * (1 - k), 0.62 + k * 0.52), bevel=0.0), "rune")
+    a.add(p_box((0.22, 0.22, 0.05), loc=(x, y, 0.16 + h + 0.02), bevel=0.0), "gold")
+    crystal(a, Frame((x, y, 0.16 + h + 0.12), rz=20), r=0.10, h=0.42)
+
+
+def _upper_ring(a, z, r=0.92, tilt=8.0):
+    """Парящее кольцо над колоннадой: золото и светящиеся руны, чуть наклонено — «вращается»."""
+    _ring(a, r, r - 0.08, 0.06, 20, TM((0, 0, z), (tilt, 0, 0)), "gold")
+    _ring(a, r - 0.09, r - 0.13, 0.05, 20, TM((0, 0, z + 0.005), (tilt, 0, 0)), "arcane")
+
+
+def _l2(a):
+    """Святилище: третья ступень, вместо четырёх колонн — семь (фасад открыт под арку), над кольцом —
+    второе, парящее кольцо с рунами; кристалл крупнее, по углам участка — четыре рунных обелиска с
+    кристаллами. Арка, хоругви, руны пола — прежние."""
+    fl = _platform3(a)
+    for k in range(8):
+        if k == 6:                                    # фасад (к камере) открыт
+            continue
+        ang = math.radians(22.5 * 0 + 45 * k)
+        x, y = CR * math.cos(ang), CR * math.sin(ang)
+        a.add(p_cyl(0.19, 0.17, 0.12, 8, loc=(x, y, fl), spin=22.5), STONE_TOP)
+        a.add(p_cyl(0.105, 0.09, ZC0 - fl - 0.12, 8, loc=(x, y, fl + 0.12), spin=22.5), "stone_light")
+        a.add(p_cyl(0.10, 0.19, ZC1 - ZC0 - 0.05, 8, loc=(x, y, ZC0), spin=22.5), "stone_light")
+        a.add(p_cyl(0.21, 0.21, 0.06, 8, loc=(x, y, ZC1 - 0.055), spin=22.5), GOLD)
+    _halo(a)
+    for ang in (0, 90, 180):
+        t = math.radians(ang)
+        _banner(a, Frame((1.37 * math.cos(t), 1.37 * math.sin(t), ZRG + 0.10), rz=ang + 90))
+    ztop = _pedestal(a)
+    zc = ztop + 0.25
+    crystal(a, Frame((0, 0, zc)), r=0.50, h=1.86)
+    for ang, dz, tilt in ((205, 0.25, 18), (330, 0.55, -16), (85, 0.85, 20), (140, 0.10, -14), (20, 0.40, 16)):
         t = math.radians(ang)
         x, y = 0.74 * math.cos(t), 0.74 * math.sin(t)
-        crystal(a, Frame((x, y, zc + dz), rot=(tilt, 0, ang + 90)), r=0.065, h=0.26)
-    if level < 3:
-        return
-    zh = zc + 1.10
-    _ring(a, 0.62, 0.54, 0.06, 16, TM((0, 0, zh), (8, 0, 0)), "gold")
-    _ring(a, 0.53, 0.49, 0.05, 16, TM((0, 0, zh + 0.005), (8, 0, 0)), "arcane")
-    _ring(a, 1.52, 1.44, 0.02, 24, TM((0, 0, FL)), "rune")
-    for k in range(4):
-        ang = math.radians(45 + 90 * k)
-        finial(a, CR * math.cos(ang), CR * math.sin(ang), ZRG + 0.16 + 0.36, h=0.26)
-    finial(a, 0.0, YA, 2.95, h=0.34)
+        crystal(a, Frame((x, y, zc + dz), rot=(tilt, 0, ang + 90)), r=0.075, h=0.30)
+    _upper_ring(a, zc + 1.20)
+    _floor_runes(a)
+    _arch(a)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            _obelisk(a, sx * 1.48, sy * 1.48)
+
+
+def _tower(a, fl, zt):
+    """Башня чародея: восьмигранный каменный ствол с золотыми поясами, стрельчатые окна со светом рун,
+    наверху — галерея-венец с зубцами, из которой поднимается кристалл."""
+    r0, r1 = 0.66, 0.56
+    a.add(p_cyl(r0 + 0.08, r0 + 0.06, 0.24, 8, loc=(0, 0, fl), spin=22.5, bevel=0.03), STONE_TOP)
+    a.add(p_cyl(r0, r1, zt - fl - 0.24, 8, loc=(0, 0, fl + 0.24), spin=22.5),
+          by_normal("stone_light", "stone_light", "stone_mid", 0.8))
+    for z in (1.40, 2.60, 3.80):
+        rr = r0 - (r0 - r1) * (z - fl) / (zt - fl) + 0.02
+        a.add(p_cyl(rr, rr, 0.07, 8, loc=(0, 0, z), spin=22.5), "gold")
+    for k in range(8):
+        if k % 2:
+            continue
+        ang = math.radians(k * 45 - 90)
+        for z, h in ((1.00, 0.46), (2.10, 0.46), (3.24, 0.42)):
+            rr = r0 - (r0 - r1) * (z - fl) / (zt - fl)
+            fr = Frame((rr * math.cos(ang), rr * math.sin(ang), z), rz=k * 45)
+            fr.box(a, (0.03, 0.18, h), (0.0, 0, h / 2), col="stone_mid", bevel=0.0)
+            fr.box(a, (0.04, 0.12, h - 0.06), (0.01, 0, h / 2), col="arcane", bevel=0.0)
+            fr.cyl(a, 0.0, 0.07, 0.10, 4, loc=(0.0, 0, h + 0.02), rot=(180, 0, 0), spin=45, col="stone_mid")
+    # венец: карниз, зубцы, золотая кромка
+    a.add(p_cyl(r1 + 0.16, r1 + 0.16, 0.14, 8, loc=(0, 0, zt), spin=22.5), "stone_light")
+    a.add(p_cyl(r1 + 0.18, r1 + 0.18, 0.04, 8, loc=(0, 0, zt + 0.14), spin=22.5), "gold")
+    for k in range(8):
+        ang = math.radians(22.5 + k * 45)
+        a.add(p_box((0.16, 0.12, 0.22), loc=((r1 + 0.10) * math.cos(ang), (r1 + 0.10) * math.sin(ang), zt + 0.27),
+                    rot=(0, 0, k * 45 + 22.5 + 90), bevel=0.0), "stone_light")
+    a.add(p_cyl(r1, r1, 0.03, 8, loc=(0, 0, zt + 0.15), spin=22.5), "arcane")
+    return zt + 0.18
+
+
+def _l3(a):
+    """Башня чародея: на месте постамента — восьмигранная каменная башня с поясами золота и стрельчатыми
+    окнами в свете рун, наверху — венец с зубцами, над ним парит кристалл ещё крупнее и два кольца;
+    колоннада с кольцом обходит башню, по углам — обелиски, спереди — арка."""
+    fl = _platform3(a)
+    _columns(a)
+    _halo(a)
+    for ang in (0, 90, 180):
+        t = math.radians(ang)
+        _banner(a, Frame((1.37 * math.cos(t), 1.37 * math.sin(t), ZRG + 0.10), rz=ang + 90))
+    zt = _tower(a, fl, 4.30)
+    zc = zt + 0.30
+    crystal(a, Frame((0, 0, zc)), r=0.52, h=1.90)
+    for ang, dz, tilt in ((205, 0.25, 18), (330, 0.55, -16), (85, 0.85, 20)):
+        t = math.radians(ang)
+        x, y = 0.78 * math.cos(t), 0.78 * math.sin(t)
+        crystal(a, Frame((x, y, zc + dz), rot=(tilt, 0, ang + 90)), r=0.08, h=0.32)
+    _upper_ring(a, zc + 1.00, r=0.96, tilt=10)
+    _upper_ring(a, zc + 0.55, r=0.78, tilt=-12)
+    _floor_runes(a)
+    _arch(a)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            _obelisk(a, sx * 1.48, sy * 1.48, h=1.90)
+
+
+def evolve(a, level):
+    """2: святилище с обелисками. 3: башня чародея."""
+    (_l2 if level == 2 else _l3)(a)

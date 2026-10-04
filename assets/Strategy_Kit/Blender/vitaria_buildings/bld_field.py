@@ -8,8 +8,8 @@
 import math, random
 import bmesh
 from build_vitaria import p_box, p_cyl, p_ico, by_normal
-from vitaria_buildings.common import Frame, fence_line
-from vitaria_buildings.levels import pennant, lamp_post, finial, wall_banner
+from vitaria_buildings.common import Frame, fence_line, bucket
+from vitaria_buildings.levels import (Shift, gable_y_at, gable_front, porch_post, WALL, BEAM, PLANKS)
 
 NAME = "Bld_Field"
 TITLE = "Поле"
@@ -209,52 +209,147 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): делянка -> орошаемое поле с колодцем -> хлебное поле с мельницей
 # =========================================================================================
-def _gate(a, level):
-    """Въездные ворота делянки: два столба с золотыми навершиями, перекладина и вывеска со снопом."""
-    y = PY - PD / 2 - 0.10
-    for sx in (-1, 1):
-        a.add(p_box((0.16, 0.16, 1.70), loc=(sx * 0.62, y, 0.85), bevel=0.0), "wood_dark")
-        finial(a, sx * 0.62, y, 1.70, h=0.30)
-    a.add(p_box((1.56, 0.14, 0.14), loc=(0, y, 1.56), bevel=0.0), "wood_dark")
-    a.add(p_box((0.70, 0.06, 0.34), loc=(0, y - 0.04, 1.30), bevel=0.0), "wood_pale")
-    fr = Frame((0, y - 0.08, 1.30))
-    fr.cyl(a, 0.04, 0.06, 0.18, 6, loc=(0, 0, -0.14), col="wheat_dark")
-    fr.cyl(a, 0.06, 0.11, 0.12, 6, loc=(0, 0, 0.04), col="gold")
-    for k in (-1, 1):
-        fr.box(a, (0.04, 0.03, 0.18), (k * 0.10, 0, 0.06), rot=(0, k * 25, 0), col="gold", bevel=0.0)
+def _plot(a):
+    a.add(p_box((PW, PD, 0.19), loc=(0, PY, ZP - 0.095), bevel=0.06),
+          by_normal("soil_mid", "soil_dark", "soil_dark", 0.8))
 
 
-def upgrade(a, level):
-    """2: флажок у заднего левого угла изгороди, всходы на второй борозде, мешки зерна у снопов,
-    бочка с водой и лейка справа. 3: + всходы и на первой борозде, въездные ворота со снопом на вывеске,
-    фонарные столбы на передних углах, золотые колосья в заднем ряду."""
-    rng = random.Random(31)
-    yb = PY + PD / 2 + 0.14
-    pennant(a, -FX, yb, 0.62, level, h=1.55, side=1)
-    for k in range(14):
-        x = -2.0 + k * 0.308 + rng.uniform(-0.03, 0.03)
-        _sprout(a, x, ROWS[1] + rng.uniform(-0.03, 0.03), ZP + 0.08, rng, 0.26, n=3)
-    for x, y in ((-1.42, -2.30), (-1.20, -2.12)):
-        sk = Frame((x, y, 0.0), rz=rng.uniform(-30, 30))
-        sk.ico(a, 0.17, loc=(0, 0, 0.15), scl=(1.0, 0.85, 1.1), col="burlap", cut=-0.7)
-        sk.cyl(a, 0.07, 0.04, 0.10, 6, loc=(0, 0, 0.31), col="burlap_dark")
-    b = Frame((2.18, -2.02, 0.0))
-    b.cyl(a, 0.20, 0.20, 0.44, 10, col="wood_mid")
-    b.cyl(a, 0.215, 0.215, 0.05, 10, loc=(0, 0, 0.30), col="iron_dark")
-    b.cyl(a, 0.18, 0.18, 0.02, 10, loc=(0, 0, 0.42), col="water")
-    if level < 3:
-        return
-    for k in range(13):
-        x = -2.0 + k * 0.32 + rng.uniform(-0.03, 0.03)
-        _sprout(a, x, ROWS[0] + rng.uniform(-0.03, 0.03), ZP + 0.10, rng, 0.20, n=3)
-    _gate(a, level)
+def _rows(a, rng, skip=lambda x, y: False):
+    """Посадки уровней 2-3: на месте голых борозд — всходы (пахоты больше нет), дальше как у уровня 1;
+    skip(x, y) — куст не ставится (место под мельницу)."""
+    for i, h in ((0, 0.20), (1, 0.28), (2, 0.24), (3, 0.36)):
+        _ridge(a, -RX, RX, ROWS[i])
+        for k in range(14):
+            x = -2.0 + k * 0.308 + rng.uniform(-0.03, 0.03)
+            if skip(x, ROWS[i]):
+                continue
+            _sprout(a, x, ROWS[i] + rng.uniform(-0.03, 0.03), ZP + 0.08, rng, h, n=3 if i < 2 else 4)
+    for i, hmax in ((4, 0.78), (5, 0.88), (6, 0.96)):
+        _ridge(a, -RX if not skip(RX, ROWS[i]) else -RX, RX if not skip(RX, ROWS[i]) else 1.30, ROWS[i])
+        for k in range(13):
+            x = -2.0 + k * 0.333 + rng.uniform(-0.03, 0.03)
+            y = ROWS[i] + rng.uniform(-0.04, 0.04)
+            if i in (4, 5) and abs(x - SC[0]) < 0.24:
+                continue
+            if skip(x, y):
+                continue
+            _wheat_bush(a, x, y, ZP + 0.06, rng, hmax, 4 if (k + i) % 2 else 3)
+
+
+def _irrigation(a, x_end=None):
+    """Оросительные канавки с водой между гребнями и магистральная канава с каменной обкладкой слева."""
+    x1 = RX if x_end is None else x_end
+    for i in range(6):
+        y = ROWS[i] + 0.2775
+        a.add(p_box((x1 + RX, 0.11, 0.02), loc=((x1 - RX) / 2, y, ZP + 0.004), bevel=0.0), "water")
+    xm = -RX - 0.13
+    a.add(p_box((0.16, PD - 0.30, 0.02), loc=(xm, PY - 0.05, ZP + 0.006), bevel=0.0), "water")
     for sx in (-1, 1):
-        lamp_post(a, sx * 2.32, PY - PD / 2 - 0.10, 0.0, h=1.45)
-    for k in range(5):
-        x = -1.8 + k * 0.9
-        y = ROWS[6] + 0.08
-        for j in range(3):
-            fr = Frame((x + (j - 1) * 0.07, y, ZP + 0.85), rot=(0, (j - 1) * 14, 0))
-            fr.cyl(a, 0.035, 0.05, 0.16, 5, col="gold")
+        a.add(p_box((0.08, PD - 0.30, 0.06), loc=(xm + sx * 0.12, PY - 0.05, ZP + 0.02), bevel=0.0), "stone_light")
+
+
+def _well(a, x, y):
+    """Колодец: каменный сруб, ворот с верёвкой, двускатная крышечка на двух стойках."""
+    a.add(p_cyl(0.36, 0.36, 0.56, 8, loc=(x, y, 0.0), spin=22.5), by_normal("stone_light", "stone_mid", "stone_dark", 0.8))
+    a.add(p_cyl(0.30, 0.30, 0.02, 8, loc=(x, y, 0.53), spin=22.5), "water")
+    for sx in (-1, 1):
+        a.add(p_box((0.09, 0.09, 1.10), loc=(x + sx * 0.34, y, 0.55 + 0.42), bevel=0.0), BEAM)
+    a.add(p_cyl(0.06, 0.06, 0.74, 6, loc=(x - 0.37, y, 1.06), rot=(0, 90, 0)), "wood_light")
+    a.add(p_box((0.03, 0.03, 0.34), loc=(x, y, 0.88), bevel=0.0), "rope")
+    a.add(p_cyl(0.09, 0.10, 0.14, 6, loc=(x, y, 0.64)), "wood_mid")
+    gable_y_at(a, x, y, 0.80, 0.70, 1.48, pitch_deg=40, ox=0.06, oy=0.08, bands=1)
+
+
+def _windmill(a, cx, cy):
+    """Ветряная мельница-башня: гранёный каменный ствол, деревянная шапка цвета кровли, четыре крыла
+    крестом (X) лицом к камере — решётка с холстом, дверь и окошко."""
+    st = by_normal("stone_light", "stone_mid", "stone_dark", 0.8)
+    a.add(p_cyl(0.60, 0.60, 0.20, 8, loc=(cx, cy, -0.02), spin=22.5), "stone_dark")
+    a.add(p_cyl(0.56, 0.42, 2.50, 8, loc=(cx, cy, 0.16), spin=22.5), st)
+    a.add(p_cyl(0.48, 0.48, 0.10, 8, loc=(cx, cy, 2.62), spin=22.5), "wood_dark")
+    a.add(p_cyl(0.52, 0.0, 0.80, 8, loc=(cx, cy, 2.70), spin=22.5), by_normal("roof", "roof", "roof_dark", 0.2))
+    a.add(p_ico(0.07, 1, loc=(cx, cy, 3.54)), "wood_dark")
+    a.add(p_box((0.34, 0.10, 0.60), loc=(cx - 0.02, cy - 0.55, 0.46), rot=(8, 0, 0), bevel=0.0), "wood_mid")
+    a.add(p_box((0.16, 0.06, 0.20), loc=(cx + 0.02, cy - 0.48, 1.56), bevel=0.0), "glass")
+    hub = (cx, cy - 0.64, 2.66)
+    a.add(p_cyl(0.07, 0.07, 0.36, 8, loc=(cx, cy - 0.30, 2.66), rot=(90, 0, 0)), "wood_dark")
+    a.add(p_cyl(0.11, 0.11, 0.10, 8, loc=(cx, cy - 0.64, 2.66), rot=(90, 0, 0)), "iron_dark")
+    for k in range(4):
+        fr = Frame(hub, rot=(0, 45 + 90 * k, 0))
+        fr.box(a, (0.07, 0.06, 1.30), (0, -0.04, 0.68), col="wood_mid", bevel=0.0)
+        fr.box(a, (0.26, 0.025, 0.92), (0.15, -0.02, 0.82), col="cream", bevel=0.0)
+        for z in (0.46, 0.76, 1.06):
+            fr.box(a, (0.32, 0.04, 0.035), (0.13, -0.05, z), col="wood_dark", bevel=0.0)
+        fr.box(a, (0.035, 0.04, 0.92), (0.29, -0.05, 0.82), col="wood_dark", bevel=0.0)
+
+
+def _stone_wall(a, p0, p1, h=0.50):
+    """Сухая каменная ограда вместо жердей: тело и светлая шапка."""
+    L = math.hypot(p1[0] - p0[0], p1[1] - p0[1])
+    rz = math.degrees(math.atan2(p1[1] - p0[1], p1[0] - p0[0]))
+    fr = Frame(((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2, 0.0), rz=rz)
+    fr.box(a, (L, 0.26, h), (0, 0, h / 2 - 0.04), col=by_normal("stone_mid", "stone_mid", "stone_dark", 0.8),
+           bevel=0.0)
+    fr.box(a, (L + 0.04, 0.32, 0.08), (0, 0, h - 0.02), col="stone_light", bevel=0.0)
+
+
+def _gate(a, y, stone=False):
+    """Въездные ворота делянки посередине фасада: столбы, перекладина, вывеска-сноп."""
+    for sx in (-1, 1):
+        if stone:
+            a.add(p_box((0.28, 0.28, 1.50), loc=(sx * 0.66, y, 0.71), bevel=0.0), WALL)
+            a.add(p_box((0.34, 0.34, 0.08), loc=(sx * 0.66, y, 1.48), bevel=0.0), "stone_light")
+        else:
+            a.add(p_box((0.16, 0.16, 1.62), loc=(sx * 0.62, y, 0.77), bevel=0.0), BEAM)
+    a.add(p_box((1.60, 0.14, 0.14), loc=(0, y, 1.56), bevel=0.0), BEAM)
+    a.add(p_box((0.66, 0.06, 0.32), loc=(0, y - 0.05, 1.30), bevel=0.0), "wood_pale")
+    _sheaf(a, Frame((0, y - 0.09, 1.16), s=0.55))
+
+
+def _l2(a):
+    """Орошаемое поле: пахоты больше нет — всходы на всех передних гребнях, между гребнями канавки с водой,
+    слева магистральная канава в каменной обкладке; спереди слева колодец под крышечкой, посередине —
+    въездные ворота с вывеской-снопом. Пшеница, пугало, изгородь, тачка и снопы — прежние."""
+    rng = random.Random(7)
+    _plot(a)
+    _irrigation(a)
+    _rows(a, rng)
+    _scarecrow(a, Frame((SC[0], SC[1], ZP), rz=-8, s=0.94))
+    yb, yf = PY + PD / 2 + 0.14, PY - PD / 2 + 0.05
+    fence_line(a, (-FX, yf), (-FX, yb), h=0.62, posts=4, rails=(0.24, 0.46), post_s=0.12)
+    fence_line(a, (-FX, yb), (FX, yb), h=0.62, posts=4, rails=(0.24, 0.46), post_s=0.12, end_posts=(False, False))
+    fence_line(a, (FX, yb), (FX, yf), h=0.62, posts=4, rails=(0.24, 0.46), post_s=0.12)
+    _gate(a, PY - PD / 2 - 0.10)
+    _well(a, -1.92, -2.18)
+    _wheelbarrow(a, Frame((1.75, -2.2, 0.0), rz=-150, s=0.9))
+    _sheaf(a, Frame((-1.22, -2.32, 0.0), rot=(0, 10, 0), s=1.12))
+
+
+def _l3(a):
+    """Хлебное поле с мельницей: в правом заднем углу — ветряная мельница-башня (каменный ствол, шапка,
+    крылья крестом к камере), ограда из сухого камня, каменные столбы ворот; канавки, колодец, всходы и
+    пшеница — как на уровне 2."""
+    rng = random.Random(7)
+    mx, my = 1.58, 1.84
+    skip = lambda x, y: math.hypot(x - mx, y - my) < 0.80
+    _plot(a)
+    _irrigation(a, x_end=0.80)
+    _rows(a, rng, skip=skip)
+    _scarecrow(a, Frame((SC[0], SC[1], ZP), rz=-8, s=0.94))
+    yb, yf = PY + PD / 2 + 0.14, PY - PD / 2 + 0.05
+    _stone_wall(a, (-FX, yf), (-FX, yb))
+    _stone_wall(a, (-FX, yb), (0.90, yb))
+    _stone_wall(a, (FX, yb), (FX, yf))
+    _windmill(a, mx, my)
+    _gate(a, PY - PD / 2 - 0.10, stone=True)
+    _well(a, -1.92, -2.18)
+    _wheelbarrow(a, Frame((1.75, -2.2, 0.0), rz=-150, s=0.9))
+    _sheaf(a, Frame((-1.22, -2.32, 0.0), rot=(0, 10, 0), s=1.12))
+    _sheaf(a, Frame((-0.92, -2.38, 0.0), rot=(0, -10, 8), s=1.12))
+
+
+def evolve(a, level):
+    """2: орошаемое поле с колодцем и воротами. 3: хлебное поле с мельницей."""
+    (_l2 if level == 2 else _l3)(a)

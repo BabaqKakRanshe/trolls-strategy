@@ -15,8 +15,8 @@ Blender GUI:  открыть vitaria_kit.blend > Scripting > Open > add_building
   2. собирает здания из vitaria_buildings и кладёт в Vitaria_Kit/Kit_Buildings как ассеты.
      Если здание уже есть — меняется только геометрия его меша, поэтому все копии в сцене
      обновятся сами, а объект набора останется там, где стоит;
-     затем уровни улучшения <имя>_L2 и <имя>_L3 каждого здания поля (upgrade(a, level) модуля,
-     у казармы и склада — vitaria_buildings/ref_levels.py; их уровень 1 по-прежнему из build_colony.py);
+     затем уровни улучшения <имя>_L2 и <имя>_L3 каждого здания поля — перестройка здания (evolve(a, level)
+     модуля, у казармы и склада — vitaria_buildings/ref_levels.py; их уровень 1 по-прежнему из build_colony.py);
   3. то же для ресурсов vitaria_resources.RESOURCES -> Vitaria_Kit/Kit_Resources;
   4. перестраивает строки зданий и ресурсов в витрине так же, как build_vitaria.py (с подписями);
      уровни 2 и 3 — две строки за строкой зданий (y +7 и +14), каждый под своим уровнем 1;
@@ -252,9 +252,9 @@ def main():
 
     V.BEVEL_MIN = 0.0
 
-    # уровни 2 и 3: сборка уровня 1 + upgrade(a, level), доводка уровня 1 (vitaria_buildings.build_level)
+    # уровни 2 и 3: перестройка evolve(a, level), доводка уровня 1 (vitaria_buildings.build_level)
     level_objs = []
-    bases = [m.NAME for m in mods if hasattr(m, "upgrade")]
+    bases = [m.NAME for m in mods if hasattr(m, "evolve")]
     bases += [n for n in ref_names if not only or n in only]
     for base in bases:
         for lv in VB.LEVELS[1:]:

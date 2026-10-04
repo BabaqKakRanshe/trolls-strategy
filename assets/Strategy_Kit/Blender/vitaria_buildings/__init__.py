@@ -49,9 +49,10 @@ FIT = {}                   # имя -> (сжатие по X, по Y) после�
 
 # ---------------------------------------------------------------------------------------------
 # Уровни улучшения: у каждого здания поля три модели — <имя> (уровень 1), <имя>_L2 и <имя>_L3.
-# Уровень 2 и 3 — та же сборка build(a) плюс upgrade(a, level) модуля: здание прежнее, сверху
-# добавляются детали. Они ставятся тем же сдвигом и сжатием, что уровень 1 (XFORM), поэтому при
-# замене модели в игре здание не сдвигается; габарит уровней обязан влезать в тот же след.
+# Уровень 2 и 3 — перестройка здания, а не уровень 1 с украшениями: evolve(a, level) модуля собирает
+# модель целиком (своя коробка, материалы, этажность, производство; реквизит уровня 1 переиспользуется).
+# Язык перестройки — vitaria_buildings/levels.py. Уровни ставятся тем же сдвигом и сжатием, что уровень 1
+# (XFORM), поэтому при замене модели в игре здание не сдвигается; габарит обязан влезать в тот же след.
 # ---------------------------------------------------------------------------------------------
 LEVELS = (1, 2, 3)
 LEVEL_TRI = {1: 1.0, 2: 1.15, 3: 1.3}    # бюджет уровня — доля TRI_BUDGET
@@ -156,32 +157,33 @@ REF_PLAYER = ("bld_barracks", "bld_warehouse")
 
 
 def builder(name):
-    """(build, upgrade) здания по имени уровня 1: модуль пакета или модуль Ref_Buildings (parts в sys.path),
-    уровни казармы и склада — в ref_levels.py (модули Ref_Buildings не меняются)."""
+    """(build, evolve) здания по имени уровня 1: модуль пакета или модуль Ref_Buildings (parts в sys.path);
+    перестройка казармы и склада — в ref_levels.EVOLVE (модули Ref_Buildings не меняются)."""
     for m in load():
         if m.NAME == name:
-            return m.build, getattr(m, "upgrade", None)
+            return m.build, getattr(m, "evolve", None)
     for mod in REF_PLAYER:
         m = importlib.import_module("parts." + mod)
         if m.NAME == name:
             rl = importlib.import_module(__name__ + ".ref_levels")
-            return m.build, rl.UPGRADE.get(name)
+            return m.build, rl.EVOLVE.get(name)
     raise KeyError(name)
 
 
 def build_level(V, name, level, mat, build_mesh):
     """Меш здания name нужного уровня по контракту поля (finish). Уровень 2-3 собирается после уровня 1:
     берёт его доводку (XFORM); если уровня 1 в этом запуске ещё не было — собирает и его."""
-    build, upgrade = builder(name)
-    if level > 1 and upgrade is None:
-        raise RuntimeError("%s: у здания нет upgrade(a, level)" % name)
+    build, evolve = builder(name)
+    if level > 1 and evolve is None:
+        raise RuntimeError("%s: у здания нет evolve(a, level)" % name)
     if level > 1 and name not in XFORM:
         build_level(V, name, 1, mat, build_mesh)
 
     def fn(a):
-        build(a)
-        if level > 1:
-            upgrade(a, level)
+        if level == 1:
+            build(a)
+        else:
+            evolve(a, level)
 
     prev = V.BEVEL_MIN
     V.BEVEL_MIN = BEVEL_MIN

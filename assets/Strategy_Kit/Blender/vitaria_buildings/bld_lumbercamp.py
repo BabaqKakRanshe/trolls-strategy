@@ -7,7 +7,9 @@ import math, random
 from mathutils import Vector
 from build_vitaria import p_box, p_cyl, p_ico, p_prism
 from vitaria_buildings.common import Frame, axe, brace, STONE_TOP
-from vitaria_buildings.levels import pennant, wall_banner, wall_lantern, finial
+from vitaria_buildings.common import plank_door
+from vitaria_buildings.levels import (Shift, plinth, log_box, win, gable_x_at, gable_y_at, gable_end, gable_front,
+                                    stovepipe, stack, shed_roof, porch_post, log_ends, RUBBLE, BEAM, PLANKS)
 
 NAME = "Bld_LumberCamp"
 TITLE = "Лесозаготовка"
@@ -246,7 +248,7 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): шатёр -> изба лесорубов -> двухэтажная артель
 # =========================================================================================
 def _sawhorse_log(a, fr):
     """Козлы с бревном и лучковой пилой: бревно вдоль X рамы, пила воткнута в пропил."""
@@ -263,38 +265,104 @@ def _sawhorse_log(a, fr):
     fr.box(a, (0.02, 0.28, 0.06), (0.10, 0, 0.78), col="iron", bevel=0.0)
 
 
-def _tripod(a, x, y, h=2.55):
-    """Тренога-подъёмник над штабелем: три ноги, цепь с крюком и бревно на стропе."""
-    top = (x, y, h)
-    for ang in (90, 210, 330):
-        bx, by = x + 0.62 * math.cos(math.radians(ang)), y + 0.62 * math.sin(math.radians(ang))
-        dx, dy, dz = top[0] - bx, top[1] - by, h
-        L = math.sqrt(dx * dx + dy * dy + dz * dz)
-        tilt = math.degrees(math.acos(dz / L))
-        rz = math.degrees(math.atan2(dy, dx))
-        a.add(p_cyl(0.06, 0.05, L, 6, loc=(bx, by, 0.0), rot=(0, tilt, rz)), "wood_mid")
-    a.add(p_box((0.03, 0.03, 0.80), loc=(x, y, h - 0.42), bevel=0.0), "iron_dark")
-    a.add(p_box((0.10, 0.04, 0.08), loc=(x, y, h - 0.84), bevel=0.0), "iron_dark")
-    a.add(p_cyl(0.13, 0.13, 1.10, 8, loc=(x - 0.55, y, h - 1.02), rot=(0, 90, 0)),
-          lambda f: "wood_pale" if abs(f.normal.x) > 0.7 else "bark")
+def _firewood(a, x0, y0, z0=0.0, cols=3, rows=3, r=0.09, L=0.44):
+    """Поленница торцами к камере: поленья вдоль Y от y0 вглубь, ряды вперевязку."""
+    a.add(p_box((cols * 2 * r * 1.02 + 0.06, 0.08, 0.06), loc=(x0 + (cols - 1) * r * 1.02, y0 + L * 0.2, z0 + 0.03),
+                bevel=0.0), "wood_dark")
+    for row in range(rows):
+        n = cols - (row % 2)
+        for k in range(n):
+            x = x0 + (k + 0.5 * (row % 2)) * 2 * r * 1.02
+            z = z0 + 0.06 + r + row * 2 * r * 0.86
+            a.add(p_cyl(r, r, L, 6, loc=(x, y0, z), rot=(-90, 0, 0), spin=30),
+                  lambda f: "wood_pale" if abs(f.normal.y) > 0.7 else "bark")
 
 
-def upgrade(a, level):
-    """2: флажок над правым передним столбом шатра, козлы с бревном и пилой перед штабелем, ещё
-    поленница у ели. 3: + тренога с подвешенным бревном над штабелем, знамя под передней обвязкой
-    шатра, золотое навершие шатра, фонари на передних столбах, топор в пне с золотым обухом."""
-    pennant(a, XT + PX, YT - PY, ZE - 0.10, level, h=1.40, side=1)
-    _sawhorse_log(a, Frame((0.42, -1.42, 0.0), rz=4))
-    for k in range(2):
-        a.add(p_cyl(0.11, 0.11, 0.62, 7, loc=(1.62 - k * 0.24, 0.40, 0.11), rot=(-90, 0, 0)),
-              lambda f: "wood_pale" if abs(f.normal.y) > 0.7 else "bark")
-    a.add(p_cyl(0.11, 0.11, 0.62, 7, loc=(1.50, 0.40, 0.31), rot=(-90, 0, 0)),
-          lambda f: "wood_pale" if abs(f.normal.y) > 0.7 else "bark")
-    if level < 3:
-        return
-    _tripod(a, 0.92, -0.55, h=2.60)
-    wall_banner(a, XT, YT - PY - 0.12, ZE - 0.22, w=0.40, h=0.66)
-    zt = ZE + 0.02 + 0.72
-    finial(a, XT, YT, zt + 0.28, h=0.30)
-    for sx in (-1, 1):
-        wall_lantern(a, XT + sx * PX, YT - PY - 0.10, 1.70, out=(sx * 0.3, -0.95))
+def _l2(a):
+    """Изба лесорубов: сруб на месте шатра (конёк вдоль X, соломенная кровля к камере), дверь и окно,
+    печная труба; у избы поленница, перед ней — пень с топором, штабель и козлы с бревном."""
+    cx, cy, w, d, r = -0.72, 0.72, 2.30, 1.40, 0.12
+    z0 = 0.10
+    plinth(a, cx, cy, w + 0.14, d + 0.14, h=z0)
+    yf = cy - d / 2
+    door_x, win_x = -0.02, -1.22
+    top = log_box(a, cx, cy, w, d, z0, 7, r=r,
+                  openings={"-y": [(door_x - 0.34, door_x + 0.34, z0, z0 + 1.20),
+                                   (win_x - 0.22, win_x + 0.22, 0.74, 1.16)]})
+    ze = z0 + r + 6 * 2 * r * 0.88 + r                  # верх венцов вдоль X — на них ложится кровля
+    plank_door(a, yf, z0 + 0.02, w=0.60, h=1.10, x=door_x)
+    win(a, Frame((win_x, yf - 0.06, 0.95)), w=0.40, h=0.38, shutters="wood_light", sill="wood_dark")
+    zr = gable_x_at(a, cx, cy, w, d, ze, pitch_deg=38, ox=0.18, oy=0.18, bands=3)
+    for s in (-1, 1):
+        gable_end(a, cx + s * w / 2, cy, d, top - 0.04, zr, face=s)
+    stovepipe(a, cx - 0.55, cy + 0.34, ze + 0.30, zr + 0.40 - ze - 0.30)
+    _firewood(a, 0.58, yf - 0.02, cols=3, rows=3)
+
+    _stump(a, SX_, SY_)
+    _stuck_axe(a, (SX_ + 0.18, SY_ + 0.02, 0.56), rz=165)
+    _chips(a, SX_, SY_, 7, 0.72, 1.02, 150, 350, seed=21)
+    _log_stack(a, Frame((1.12, -0.86, 0), rz=-8), L=1.70)
+    _chop_block(a, 0.36, -0.38)
+    _fir(a, 1.50, 1.12)
+
+
+def _l3(a):
+    """Артель: двухэтажный сруб фронтоном к камере (конёк вдоль Y), галерея-балкон над дверью, окна со
+    светом, каменная труба; брёвна — под навесом торцами к камере; пень с топором и ель — прежние."""
+    cx, cy, w, d, r = -0.66, 0.74, 2.40, 1.50, 0.12
+    z0 = 0.12
+    plinth(a, cx, cy, w + 0.16, d + 0.16, h=z0)
+    yf = cy - d / 2
+    door_x = 0.02
+    wl = (-1.28, 0.80, 1.20)                           # окно низа: x, z0, z1
+    up = ((-1.30, 1.86, 2.28), (-0.20, 1.86, 2.28))    # окна верха
+    ops = [(door_x - 0.34, door_x + 0.34, z0, z0 + 1.22), (wl[0] - 0.22, wl[0] + 0.22, wl[1], wl[2])]
+    ops += [(x - 0.22, x + 0.22, z_0, z_1) for x, z_0, z_1 in up]
+    top = log_box(a, cx, cy, w, d, z0, 11, r=r, openings={"-y": ops})
+    zx = z0 + r + 10 * 2 * r * 0.88 + r                # верх венцов фасада: от него фронтон
+    plank_door(a, yf, z0 + 0.02, w=0.62, h=1.12, x=door_x)
+    win(a, Frame((wl[0], yf - 0.06, (wl[1] + wl[2]) / 2)), w=0.40, h=0.36, lit=True, shutters="wood_light",
+        sill="wood_dark")
+    for x, z_0, z_1 in up:
+        win(a, Frame((x, yf - 0.06, (z_0 + z_1) / 2)), w=0.40, h=0.36, lit=True, shutters="wood_light",
+            sill=None)
+    # межэтажный пояс по фасаду: доска с тёмной кромкой делит сруб на два этажа
+    a.add(p_box((w + 0.40, 0.10, 0.12), loc=(cx, yf - 0.14, 1.50), bevel=0.0), BEAM)
+    zr = gable_y_at(a, cx, cy, w, d, top, pitch_deg=36, ox=0.16, oy=0.14, bands=3)
+    for s in (-1, 1):
+        gable_front(a, cx, cy + s * d / 2, w, zx - 0.02, zr, face=s, boards=(s < 0))
+    win(a, Frame((cx, yf - 0.08, zx + 0.42)), w=0.34, h=0.30, lit=True, shutters=None, sill=None, cross=True)
+    # причелины: доски по кромке фронтона и «полотенце» под коньком
+    a.add(p_box((0.14, 0.06, 0.40), loc=(cx, yf - 0.26, zr - 0.30), bevel=0.0), "wood_pale")
+    a.add(p_box((0.20, 0.06, 0.20), loc=(cx, yf - 0.26, zr - 0.52), rot=(0, 45, 0), bevel=0.0), "wood_pale")
+    # галерея над дверью: настил на консолях, перила со стойками
+    gx0, gx1, gy = -1.70, 0.40, yf - 0.36
+    a.add(p_box((gx1 - gx0, 0.40, 0.10), loc=((gx0 + gx1) / 2, yf - 0.18, 1.42), bevel=0.0), PLANKS)
+    for x in (gx0 + 0.12, (gx0 + gx1) / 2, gx1 - 0.12):
+        a.add(p_box((0.10, 0.36, 0.10), loc=(x, yf - 0.16, 1.32), rot=(-28, 0, 0), bevel=0.0), BEAM)
+    for k in range(8):
+        x = gx0 + 0.05 + k * (gx1 - gx0 - 0.10) / 7
+        a.add(p_box((0.06, 0.06, 0.46), loc=(x, gy + 0.04, 1.70), bevel=0.0), "wood_light")
+    a.add(p_box((gx1 - gx0, 0.10, 0.08), loc=((gx0 + gx1) / 2, gy + 0.04, 1.95), bevel=0.0), "wood_mid")
+    for x in (gx0, gx1):
+        a.add(p_box((0.10, 0.40, 0.08), loc=(x, yf - 0.16, 1.95), bevel=0.0), "wood_mid")
+    stack(a, 0.18, cy + 0.36, 2.30, zr + 0.30 - 2.30, w=0.46)
+
+    # навес для брёвен: штабель торцами к камере
+    sx0, sx1, sy0, sy1 = 0.14, 1.84, -1.48, -0.42
+    for x in (sx0, sx1):
+        for y, h in ((sy0, 1.40), (sy1, 1.74)):
+            porch_post(a, x, y, 0.0, h, s=0.15)
+    shed_roof(a, (sx0 + sx1) / 2, (sy0 + sy1) / 2, sx1 - sx0, sy1 - sy0, 1.80, 1.44, face=-1, ox=0.12, oy=0.14)
+    log_ends(a, (sx0 + sx1) / 2, sy0 + 0.06, sy1 - sy0 - 0.12, rows=(5, 4, 3), r=0.15)
+
+    _stump(a, SX_, SY_)
+    _stuck_axe(a, (SX_ + 0.18, SY_ + 0.02, 0.56), rz=165)
+    _chips(a, SX_, SY_, 7, 0.72, 1.02, 150, 350, seed=21)
+    _fir(a, 1.50, 1.12)
+    _firewood(a, 0.70, yf + 0.10, cols=2, rows=3)
+
+
+def evolve(a, level):
+    """2: изба лесорубов. 3: двухэтажная артель с навесом для брёвен."""
+    (_l2 if level == 2 else _l3)(a)

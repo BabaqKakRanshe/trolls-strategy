@@ -9,9 +9,10 @@ import math
 import random
 
 from build_vitaria import p_box, p_cyl, p_ico, p_prism, by_normal
-from vitaria_buildings.common import (Frame, gable_roof_x, gable_wall_x, cornice, plank_door,
+from vitaria_buildings.common import (Frame, gable_roof, gable_roof_x, gable_wall_x, cornice, plank_door,
                                       barrel, log_pyramid, STONE_TOP, PLANK_TOP)
-from vitaria_buildings.levels import pennant, gold_ridge, wall_banner, wall_lantern, dormer
+from vitaria_buildings.levels import (Shift, quoins, win, fachwerk, dormer, shed_roof, cross_gable, wall_lamp,
+                                    porch_post, WALL as AWALL, BEAM, PLASTER, PLANKS)
 
 NAME = "Bld_Tavern"
 TITLE = "Таверна"
@@ -87,10 +88,10 @@ def _timber_floor(a):
     cornice(a, W2, D2, Z2, t=0.18, col="wood_dark")
 
 
-def _chimney(a, rng):
+def _chimney(a, rng, zr=None):
     """Широкая каменная труба у правого торца: очаг-выступ до второго этажа, ствол выше конька,
     в устье жар (как у горна кузницы — грани ember/glow уходят в слот Vitaria_FX)."""
-    zr = _ridge()
+    zr = zr if zr is not None else _ridge()
     # нижний выступ очага и ствол — с завалом, уступ-«плечо» между ними
     a.add(p_box((0.62, 1.10, 2.10), loc=(CX, CY, 1.03), bevel=0.06), WALL)
     a.add(p_prism([(-0.55, 2.08), (0.55, 2.08), (0.30, 2.42), (-0.30, 2.42)], 0.56, loc=(CX, CY, 0),
@@ -223,10 +224,28 @@ def build(a):
 
 
 # =========================================================================================
-# Уровни 2 и 3 (vitaria_buildings/levels.py)
+# Уровни 2 и 3 (vitaria_buildings/levels.py): трактир -> постоялый двор -> гостиница в три этажа
 # =========================================================================================
-def _flower_box(a, x, y, z, w=0.62, rng=None):
-    """Ящик с цветами под окном второго этажа: доска и пёстрые шапки цветов."""
+def _base(a, rng):
+    """Терраса, цоколь, каменный этаж с дверью и тёплыми окнами, бревенчатый этаж — как у уровня 1."""
+    a.add(p_box((W2 + 0.10, 1.50, 0.14), loc=(0, YF1 - 0.75, 0.03), bevel=0.04), STONE_TOP)
+    a.add(p_box((W + 0.24, D + 0.24, F + 0.14), loc=(0, Y1, (F - 0.14) / 2), bevel=0.06),
+          by_normal("stone_mid", "stone_dark", "stone_dark", 0.8))
+    for x in (-0.55, 0.55):
+        a.add(p_box((0.05, 1.40, 0.02), loc=(x, YF1 - 0.75, 0.105), bevel=0.0), "stone_dark")
+    a.add(p_box((W, D, Z1 - F + 0.04), loc=(0, Y1, (F + Z1) / 2), bevel=0.05), "stone_mid")
+    _quoins(a)
+    plank_door(a, YF1, F, w=0.70, h=1.22, col="wood_light", frame="wood_dark")
+    a.add(p_box((1.00, 0.36, 0.12), loc=(0, YF1 - 0.18, F - 0.06), bevel=0.03), "stone_light")
+    for x in (-1.02, 1.02):
+        _window(a, Frame((x, YF1, 0.98)), w=0.52, h=0.50, glass="lantern_glow", shutters=False)
+    _timber_floor(a)
+    for x in (-1.05, 1.05):
+        _window(a, Frame((x, YF2, 2.38)), w=0.44, h=0.50, sill=False)
+
+
+def _flower_box(a, x, y, z, w=0.62):
+    """Ящик с цветами под окном: доска и пёстрые шапки цветов."""
     a.add(p_box((w, 0.20, 0.16), loc=(x, y - 0.10, z), bevel=0.0), "wood_dark")
     for k in range(5):
         xx = x - w / 2 + 0.08 + k * (w - 0.16) / 4
@@ -234,27 +253,94 @@ def _flower_box(a, x, y, z, w=0.62, rng=None):
         a.add(p_ico(0.08, 0, loc=(xx, y - 0.12, z + 0.11), scl=(1.0, 1.0, 0.8)), col)
 
 
-def upgrade(a, level):
-    """2: флажок на переднем скате, ящики с цветами под окнами второго этажа, пирамида бочек у правого
-    угла террасы. 3: + слуховое окно со светом на переднем скате,
-    золото по коньку с навершиями, знамя над дверью, фонари по сторонам двери, золотая рамка вывески."""
-    rng = random.Random(41)
-    zr = Z2 + 0.08 + (D2 / 2) * math.tan(math.radians(PITCH))
-    t = math.tan(math.radians(PITCH))
-    pennant(a, -0.85, -0.70, zr - 0.70 * t + 0.06, level, h=1.25, side=-1)
-    for x in (-1.05, 1.05):
-        _flower_box(a, x, YF2, 2.38 - 0.36, rng=rng)
-    for k, (dx, dz) in enumerate(((-0.24, 0.0), (0.24, 0.0), (0.0, 0.40))):
-        barrel(a, (2.25 + dx, YF1 - 0.95 + (0.0 if k < 2 else 0.0), 0.10 + dz), r=0.20, h=0.42)
-    if level < 3:
+def _wing(a, two_storey=False):
+    """Пристройка-кухня у левого торца: каменная коробка с окном, односкатная кровля от стены
+    (two_storey — второй этаж фахверком и своя двускатная кровля коньком вдоль Y)."""
+    x0, x1, y0, y1 = -2.48, -W / 2, -0.70, 1.20
+    zw = 1.70
+    a.add(p_box((x1 - x0, y1 - y0, zw), loc=((x0 + x1) / 2, (y0 + y1) / 2, zw / 2 - 0.04), bevel=0.04), AWALL)
+    quoins(a, (x0 + x1) / 2, (y0 + y1) / 2, x1 - x0, y1 - y0, 0.0, zw, corners=((-1, -1),))
+    _window(a, Frame(((x0 + x1) / 2, y0, 1.00)), w=0.40, h=0.40, glass="lantern_glow", shutters=False)
+    if not two_storey:
+        shed_roof(Shift(a, ((x0 + x1) / 2, (y0 + y1) / 2, 0), rz=-90), 0, 0, y1 - y0, x1 - x0, 2.40, zw + 0.10,
+                  face=-1, ox=0.14, oy=0.08)
         return
-    ye = -D2 / 2 - 0.26
-    xd = 0.95
-    yd = -1.02
-    dormer(a, xd, yd, zr + yd * t + 0.18, PITCH, level)
-    gold_ridge(a, W2 + 2 * 0.22 + 0.14, zr, axis="x")
-    wall_banner(a, 0.0, YF2 - 0.06, 2.80, w=0.44, h=0.66)
+    z2 = 2.86
+    a.add(p_box((x1 - x0 + 0.02, y1 - y0 + 0.08, z2 - zw), loc=((x0 + x1) / 2, (y0 + y1) / 2, (zw + z2) / 2),
+                bevel=0.03), PLASTER)
+    fachwerk(a, Frame(((x0 + x1) / 2, y0 - 0.04, 0)), x1 - x0 - 0.04, zw + 0.06, z2, posts=(),
+             braces=((-0.30, zw + 0.10, 0.20, z2 - 0.10),))
+    win(a, Frame(((x0 + x1) / 2 + 0.16, y0 - 0.06, 2.34)), w=0.30, h=0.34, lit=True, shutters=None, sill=None)
+    gable_y = gable_roof(Shift(a, ((x0 + x1) / 2, (y0 + y1) / 2, 0)), x1 - x0, y1 - y0 + 0.08, z2, pitch_deg=40,
+                         ox=0.08, oy=0.16)
+    a.add(p_prism([(-(x1 - x0) / 2, z2), ((x1 - x0) / 2, z2), (0, gable_y - 0.05)], 0.12,
+                  loc=((x0 + x1) / 2, y0 + 0.02, 0)), PLASTER)
+
+
+def _l2(a):
+    """Постоялый двор: на переднем скате два слуховых окна со светом — комнаты для постояльцев, слева
+    каменная пристройка-кухня под односкатной кровлей, под окнами второго этажа ящики с цветами; на
+    террасе второй стол и бочки. Дом, труба с жаром и вывеска — прежние."""
+    rng = random.Random(11)
+    _base(a, rng)
+    zr = gable_roof_x(a, W2, D2, Z2, pitch_deg=PITCH, ox=0.22, oy=0.26)
+    gable_wall_x(a, W2, D2, Z2 - 0.02, zr, col="wood_mid", inset=0.05, depth=0.14)
+    tp = math.tan(math.radians(PITCH))
+    for x in (-0.82, 0.82):
+        yd = -D2 / 2 + 0.36
+        dormer(a, x, yd, zr - (0 - yd) * tp, w=0.60, h=0.54, depth=0.70, pitch=PITCH, lit=True)
+    _chimney(a, rng)
+    _sign(a)
+    _wing(a)
+    for x in (-1.05, 1.05):
+        _flower_box(a, x, YF2, 2.04)
+    _table(a, Frame((-1.12, YF1 - 0.80, 0.10)))
+    _table(a, Frame((0.70, YF1 - 0.92, 0.10)))
+    barrel(a, (1.62, YF1 - 0.36, 0.10), r=0.23, h=0.50)
+    _lying_barrel(a, Frame((1.70, YF1 - 1.00, 0.10), rz=-80))
+    log_pyramid(a, Frame((2.21, -0.62, 0.0), rz=90), L=0.74, r=0.11, rows=(2, 1), stakes=False)
+
+
+def _l3(a):
+    """Гостиница в три этажа: над бревенчатым этажом — третий, фахверк по штукатурке с выносом, окна со
+    светом; посередине фасада — фронтон-ризалит с балконом; труба выше конька; пристройка слева в два
+    этажа под своей кровлей; фонари у двери, на террасе столы и бочки."""
+    rng = random.Random(11)
+    _base(a, rng)
+    z3 = Z2 + 1.10
+    j = 0.10
+    a.add(p_box((W2 + 2 * j, D2 + j, z3 - Z2), loc=(0, -j / 2, (Z2 + z3) / 2), bevel=0.03), PLASTER)
+    a.add(p_box((W2 + 2 * j + 0.08, 0.20, 0.18), loc=(0, -D2 / 2 - j + 0.03, Z2 + 0.04), bevel=0.0), BEAM)
+    fachwerk(a, Frame((0, -D2 / 2 - j, 0)), W2 + 2 * j - 0.04, Z2 + 0.12, z3, posts=(-1.20, -0.42, 0.42, 1.20),
+             rails=(Z2 + 0.50,), braces=((-1.82, Z2 + 0.16, -1.30, Z2 + 0.46), (1.82, Z2 + 0.16, 1.30, Z2 + 0.46)))
+    for x in (-1.62, -0.81, 0.81, 1.62):
+        win(a, Frame((x, -D2 / 2 - j - 0.02, Z2 + 0.72)), w=0.30, h=0.36, lit=True, shutters=None, sill=None)
+    pitch = 40.0
+    yc = -j / 2
+    zr = gable_roof_x(Shift(a, (0, yc, 0)), W2 + 2 * j, D2 + j, z3, pitch_deg=pitch, ox=0.18, oy=0.24)
+    gable_wall_x(Shift(a, (0, yc, 0)), W2 + 2 * j, D2 + j, z3 - 0.02, zr, col=PLASTER, inset=0.05, depth=0.14)
+    yf3 = -D2 / 2 - j
+    zr2 = cross_gable(a, 0.0, yf3, 1.30, z3, z3 + 0.34, zr, yc, pitch)
+    plank_door(a, yf3 + 0.08, z3 - 0.30, w=0.52, h=0.86)
+    a.add(p_box((1.10, 0.40, 0.08), loc=(0, yf3 - 0.20, z3 - 0.34), bevel=0.0), PLANKS)
+    for x in (-0.52, 0.52):
+        a.add(p_box((0.06, 0.06, 0.46), loc=(x, yf3 - 0.38, z3 - 0.10), bevel=0.0), BEAM)
+    a.add(p_box((1.12, 0.06, 0.06), loc=(0, yf3 - 0.38, z3 + 0.12), bevel=0.0), "wood_mid")
+    for x in (-0.36, -0.12, 0.12, 0.36):
+        a.add(p_box((0.04, 0.04, 0.40), loc=(x, yf3 - 0.38, z3 - 0.10), bevel=0.0), "wood_light")
+    win(a, Frame((0.0, yf3 - 0.02, z3 + 0.62)), w=0.28, h=0.28, lit=True, shutters=None, sill=None)
+    _chimney(a, rng, zr=zr)
+    _sign(a)
+    _wing(a, two_storey=True)
     for sx in (-1, 1):
-        wall_lantern(a, sx * 0.62, YF1 - 0.06, 1.62, out=(sx * 0.3, -0.95))
-    xs = -W2 / 2 - 0.31
-    a.add(p_box((0.62, 0.08, 0.52), loc=(xs, YF2 - 0.02 + 0.03, 2.62 - 0.44), bevel=0.0), "gold")
+        wall_lamp(a, sx * 0.52, YF1 - 0.04, 1.52, out=(sx * 0.3, -0.95))
+    _table(a, Frame((-1.12, YF1 - 0.80, 0.10)))
+    _table(a, Frame((0.70, YF1 - 0.92, 0.10)))
+    barrel(a, (1.62, YF1 - 0.36, 0.10), r=0.23, h=0.50)
+    _lying_barrel(a, Frame((1.70, YF1 - 1.00, 0.10), rz=-80))
+    log_pyramid(a, Frame((2.21, -0.62, 0.0), rz=90), L=0.74, r=0.11, rows=(2, 1), stakes=False)
+
+
+def evolve(a, level):
+    """2: постоялый двор. 3: гостиница в три этажа."""
+    (_l2 if level == 2 else _l3)(a)
