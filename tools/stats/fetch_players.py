@@ -19,6 +19,10 @@ It signs in with a Unity service account, never with a person's login:
 SQL Data Explorer has no documented API: this calls the endpoint the dashboard page itself uses
 (live-ops/composer/v2/.../charts/sql_de, then .../jobs/<id>), so Unity may change it without notice. The dashboard
 export (docs/analytics.md) keeps working when it does.
+
+As of 2026-10-04 that endpoint refuses service accounts: the key is taken (environments, token exchange), but the
+SQL endpoint answers 401 to the key and "Untrusted issuer" to the exchanged token, trusting only a person's dashboard
+login. The fetch stops at that refusal until Unity opens it.
 """
 import argparse
 import base64
@@ -122,9 +126,11 @@ class Session:
     def _exchange(self):
         url = f"{PUBLIC_API}/auth/v1/token-exchange?projectId={self.project}&environmentId={self.environment}"
         status, payload = self.call("POST", url, self.basic, {})
-        if status != 200 or not (payload or {}).get("accessToken"):
-            raise FetchError(f"token exchange: {status} {detail(payload)}")
-        return "Bearer " + payload["accessToken"]
+        token = (payload or {}).get("accessToken")
+        if status not in (200, 201) or not token:
+            # never print the payload itself: it may carry a token
+            raise FetchError(f"token exchange: {status} {(payload or {}).get('detail') or (payload or {}).get('title') or ''}")
+        return "Bearer " + token
 
     def query(self, sql):
         """Rows of a SQL Data Explorer query, as dicts by column name."""

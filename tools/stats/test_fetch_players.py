@@ -31,7 +31,7 @@ class FakeUnity:
         if url.endswith(f"/projects/{PROJECT}/environments"):
             return 200, {"results": [{"name": "development", "id": "env-dev"}, {"name": "production", "id": ENV}]}
         if "/auth/v1/token-exchange" in url:
-            return 200, {"accessToken": "token"}
+            return 201, {"accessToken": "token"}  # the real service answers 201 Created
         if url.endswith("/charts/sql_de"):
             if auth.startswith("Basic") and not self.basic_works_for_sql:
                 return 401, {"detail": "unauthorized"}
