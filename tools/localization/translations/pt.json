@@ -825,5 +825,13 @@
  "Ступени по уровню здания": "Etapas por nível do edifício",
  "Уровень {0}: {1} из {2}": "Nível {0}: {1} de {2}",
  "Крепкие бараки": "Um quartel firme",
- "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "O nível de um edifício abre as próximas etapas das suas melhorias. Escolha o quartel no mapa e clique em “Melhorar”: no nível 2, cada uma das quatro melhorias do quartel — “Mais combatentes”, “Têmpera”, “Descanso” e “Glória da arena” — abre mais uma etapa."
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "O nível de um edifício abre as próximas etapas das suas melhorias. Escolha o quartel no mapa e clique em “Melhorar”: no nível 2, cada uma das quatro melhorias do quartel — “Mais combatentes”, “Têmpera”, “Descanso” e “Glória da arena” — abre mais uma etapa.",
+ "Найти: товар, здание, существо": "Buscar: bem, edifício, criatura",
+ "Хранит трофеи арены": "Guarda os troféus da arena",
+ "Хранит сырьё": "Armazena matérias-primas",
+ "Продаёт товары": "Vende bens",
+ "Снаряжение отряда": "Equipamento do esquadrão",
+ "{0}×{1}, до {2} рабочих": "{0}×{1}, até {2} trabalhadores",
+ "рабочих": "trabalhadores",
+ "Рецепты": "Receitas"
 }

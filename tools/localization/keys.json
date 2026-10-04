@@ -2691,5 +2691,29 @@
  ],
  "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.": [
   "Content/Definitions/Unit_Troll.asset"
+ ],
+ "Найти: товар, здание, существо": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Хранит трофеи арены": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Хранит сырьё": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Продаёт товары": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "Снаряжение отряда": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "{0}×{1}, до {2} рабочих": [
+  "Runtime/Application/GameSession.cs"
+ ],
+ "рабочих": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Рецепты": [
+  "Runtime/UI/Colony/WikiPanel.cs"
  ]
 }

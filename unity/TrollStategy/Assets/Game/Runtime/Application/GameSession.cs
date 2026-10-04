@@ -663,24 +663,36 @@ namespace TrollStrategy.Application
             return (recipe.Inputs.Length > 0 ? FormatAmounts(recipe.Inputs) + " → " : "") + FormatAmounts(recipe.Outputs);
         }
 
-        public string DescribeBuilding(BuildingDefinition building, bool recipes = true)
+        /// <summary>What a building that keeps or sells goods is for, as one phrase; null for the others.</summary>
+        public string DescribeRole(BuildingDefinition building)
         {
-            string text = $"{building.Width}×{building.Height}";
-            if (building.MaxWorkers > 0) text += $", до {building.MaxWorkers} рабочих";
             switch (building.StorageRole)
             {
                 case StorageRole.Stockpile:
-                    text += ", хранит сырьё";
-                    break;
+                    return "Хранит сырьё";
                 case StorageRole.Market:
-                    text += ", продаёт товары";
-                    break;
+                    return "Продаёт товары";
                 case StorageRole.Armory:
-                    text += ", снаряжение отряда";
-                    break;
+                    return "Снаряжение отряда";
+                default:
+                    return null;
             }
+        }
+
+        // whole phrases a line each, so every line of it is one translation key
+        public string DescribeBuilding(BuildingDefinition building, bool recipes = true)
+        {
+            var lines = new List<string>
+            {
+                building.MaxWorkers > 0
+                    ? $"{building.Width}×{building.Height}, до {building.MaxWorkers} рабочих"
+                    : $"{building.Width}×{building.Height}"
+            };
+            string role = DescribeRole(building);
+            if (role != null) lines.Add(role);
             string list = recipes ? DescribeRecipes(building) : string.Empty;
-            return string.IsNullOrEmpty(list) ? text : text + "\n" + list;
+            if (!string.IsNullOrEmpty(list)) lines.Add(list);
+            return string.Join("\n", lines);
         }
 
         private string UnitName(UnitKind kind) => (TryUnit(kind)?.DisplayName ?? kind.ToString()).ToLowerInvariant();

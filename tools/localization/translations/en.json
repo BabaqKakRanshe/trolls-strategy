@@ -825,5 +825,13 @@
  "Ступени по уровню здания": "Steps by building level",
  "Уровень {0}: {1} из {2}": "Level {0}: {1} of {2}",
  "Крепкие бараки": "Sturdy barracks",
- "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "A building's level opens the next steps of its upgrades. Select the barracks on the map and click “Upgrade”: at level 2, each of the four barracks upgrades — “More fighters”, “Toughening”, “Rest” and “Arena glory” — opens one more step."
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "A building's level opens the next steps of its upgrades. Select the barracks on the map and click “Upgrade”: at level 2, each of the four barracks upgrades — “More fighters”, “Toughening”, “Rest” and “Arena glory” — opens one more step.",
+ "Найти: товар, здание, существо": "Find: a good, a building, a creature",
+ "Хранит трофеи арены": "Keeps arena trophies",
+ "Хранит сырьё": "Stores raw goods",
+ "Продаёт товары": "Sells goods",
+ "Снаряжение отряда": "The squad's gear",
+ "{0}×{1}, до {2} рабочих": "{0}×{1}, up to {2} workers",
+ "рабочих": "workers",
+ "Рецепты": "Recipes"
 }

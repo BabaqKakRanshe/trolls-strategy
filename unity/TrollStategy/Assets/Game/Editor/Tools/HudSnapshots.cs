@@ -82,6 +82,8 @@ namespace TrollStrategy.Editor.Tools
             Directory.CreateDirectory(s_folder);
             EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
             var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath);
+            // the bootstrap hands the game its translations; here the shots do
+            Localization.Use(AssetDatabase.LoadAssetAtPath<LanguageTable>(TrollStrategy.Editor.Setup.UiSetup.LanguagesPath));
             var world = UnityEngine.Object.FindAnyObjectByType<TilemapWorldView>();
             var layout = SceneBuildingPlacements.Collect(world, catalog).Select(p => p.Building).ToList();
             var session = new GameSession(catalog, layout, campaign: true);
@@ -96,6 +98,11 @@ namespace TrollStrategy.Editor.Tools
 
             var hud = UnityEngine.Object.FindAnyObjectByType<ColonyHud>(FindObjectsInactive.Include);
             if (hud == null) throw new InvalidOperationException("The scene has no ColonyHud");
+            // the support corner is built only in play (its tech panel would stand open over the shots)
+            var support = UnityEngine.Object.FindAnyObjectByType<SupportHud>(FindObjectsInactive.Include);
+            var supportDocument = support != null ? support.GetComponent<UIDocument>() : null;
+            if (supportDocument != null && supportDocument.rootVisualElement != null)
+                supportDocument.rootVisualElement.style.display = DisplayStyle.None;
             var document = hud.GetComponent<UIDocument>();
             s_panel = document.panelSettings;
             s_originalTarget = s_panel.targetTexture;
@@ -121,12 +128,17 @@ namespace TrollStrategy.Editor.Tools
                 view = new ColonyHudView(hud.CollectRoots(d => d.rootVisualElement), context);
             }
 
-            foreach (string language in Languages)
+            // -hudLanguages ru,en limits the run to those languages
+            var args = Environment.GetCommandLineArgs();
+            int only = Array.IndexOf(args, "-hudLanguages");
+            var languages = only >= 0 && only + 1 < args.Length ? args[only + 1].Split(',') : Languages;
+            foreach (string language in languages)
             {
                 string code = language;
                 Pending.Enqueue(new Shot { Name = $"{code}-colony", Setup = () =>
                 {
                     Ensure();
+                    view.Wiki?.Close();
                     Localization.Select(code);
                     view.Refresh(session.CurrentSnapshot);
                 } });
@@ -161,9 +173,23 @@ namespace TrollStrategy.Editor.Tools
                 Pending.Enqueue(new Shot { Name = $"{code}-catalog", Setup = () =>
                 {
                     interaction.CancelOrClear();
-                    interaction.CancelOrClear();
+                    interaction.CloseInspect();
+                    var buildings = view.Root.Q<Button>("tab-buildings");
+                    if (buildings != null) UiFeel.Press(buildings);
                     view.Refresh(session.CurrentSnapshot);
                 } });
+                Pending.Enqueue(new Shot { Name = $"{code}-catalog-page2", Setup = () => view.Catalog.BuildingPages.Turn(1) });
+                Pending.Enqueue(new Shot { Name = $"{code}-wiki-creatures", Setup = () =>
+                {
+                    view.Catalog.BuildingPages.Turn(-1);
+                    view.Wiki?.Open();
+                    view.Wiki?.Go(WikiSection.Creatures, UnitKind.Dwarf.ToString());
+                } });
+                Pending.Enqueue(new Shot { Name = $"{code}-wiki-buildings", Setup = () => view.Wiki?.Go(WikiSection.Buildings, BuildingKind.Forge.ToString()) });
+                Pending.Enqueue(new Shot { Name = $"{code}-wiki-goods", Setup = () => view.Wiki?.Go(WikiSection.Goods, ResourceKind.Leather.ToString()) });
+                Pending.Enqueue(new Shot { Name = $"{code}-wiki-upgrades", Setup = () => view.Wiki?.Show(WikiSection.Upgrades) });
+                Pending.Enqueue(new Shot { Name = $"{code}-wiki-arena", Setup = () => view.Wiki?.Go(WikiSection.Arena, "11") });
+                Pending.Enqueue(new Shot { Name = $"{code}-wiki-search", Setup = () => view.Wiki?.Search(Localization.T("Кожа").Substring(0, Math.Min(3, Localization.T("Кожа").Length))) });
             }
         }
 

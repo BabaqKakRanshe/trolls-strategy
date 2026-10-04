@@ -3275,6 +3275,38 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Trabalha mais rápido que o goblin e leva mais, mas anda devagar. Forte na batalha."
+},
+{
+"k": "Найти: товар, здание, существо",
+"v": "Buscar: bem, edifício, criatura"
+},
+{
+"k": "Хранит трофеи арены",
+"v": "Guarda os troféus da arena"
+},
+{
+"k": "Хранит сырьё",
+"v": "Armazena matérias-primas"
+},
+{
+"k": "Продаёт товары",
+"v": "Vende bens"
+},
+{
+"k": "Снаряжение отряда",
+"v": "Equipamento do esquadrão"
+},
+{
+"k": "{0}×{1}, до {2} рабочих",
+"v": "{0}×{1}, até {2} trabalhadores"
+},
+{
+"k": "рабочих",
+"v": "trabalhadores"
+},
+{
+"k": "Рецепты",
+"v": "Receitas"
 }
 ]
 }

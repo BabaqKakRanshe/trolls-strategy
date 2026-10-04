@@ -825,5 +825,13 @@
  "Ступени по уровню здания": "Bina seviyesine göre basamaklar",
  "Уровень {0}: {1} из {2}": "Seviye {0}: {1}/{2}",
  "Крепкие бараки": "Sağlam kışla",
- "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Binanın seviyesi geliştirmelerinin sonraki basamaklarını açar. Haritada kışlayı seç ve «Geliştir»e bas: ikinci seviyede kışlanın dört geliştirmesinin her birinde — «Daha çok savaşçı», «Sertleşme», «Dinlenme» ve «Arena şöhreti» — bir basamak daha açılır."
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Binanın seviyesi geliştirmelerinin sonraki basamaklarını açar. Haritada kışlayı seç ve «Geliştir»e bas: ikinci seviyede kışlanın dört geliştirmesinin her birinde — «Daha çok savaşçı», «Sertleşme», «Dinlenme» ve «Arena şöhreti» — bir basamak daha açılır.",
+ "Найти: товар, здание, существо": "Ara: mal, bina, yaratık",
+ "Хранит трофеи арены": "Arena ganimetlerini saklar",
+ "Хранит сырьё": "Ham madde saklar",
+ "Продаёт товары": "Mal satar",
+ "Снаряжение отряда": "Takımın teçhizatı",
+ "{0}×{1}, до {2} рабочих": "{0}×{1}, en fazla {2} işçi",
+ "рабочих": "işçi",
+ "Рецепты": "Tarifler"
 }

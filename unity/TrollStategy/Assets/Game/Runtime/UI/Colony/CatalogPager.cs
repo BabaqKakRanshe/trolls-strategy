@@ -14,8 +14,8 @@ namespace TrollStrategy.UI
     public sealed class CatalogPager
     {
         public const int MaxPerPage = 8;
-        // .token: 139 px and 13 px margins; .catalog keeps 300 px clear at both ends of the band
-        private const float TokenWidth = 165f;
+        // a catalog token: 139 px and 10 px margins (.catalog-pager .token); .catalog keeps 300 px clear at both ends
+        private const float TokenWidth = 159f;
         private const float BandEnds = 600f;
 
         private readonly VisualElement _band;
@@ -108,6 +108,8 @@ namespace TrollStrategy.UI
             for (int i = 0; i < _listed.Count; i++) Ui.Show(_listed[i], i / _perPage == _page);
 
             bool paged = HasPages;
+            // a short last page keeps the full row's width, so the arrows stay where they were
+            _tray.style.minWidth = paged ? new StyleLength(_perPage * TokenWidth) : new StyleLength(StyleKeyword.Null);
             Ui.Show(_prev, paged);
             Ui.Show(_next, paged);
             UiFeel.SetAvailable(_prev, _page > 0);
@@ -135,7 +137,8 @@ namespace TrollStrategy.UI
         {
             float width = _band.resolvedStyle.width;
             if (float.IsNaN(width) || width <= 0f) return;
-            int perPage = Mathf.Clamp(Mathf.FloorToInt((width - BandEnds) / TokenWidth), 3, MaxPerPage);
+            // a pixel of slack: a 1920 px band resolves a hair narrower and must still hold eight
+            int perPage = Mathf.Clamp(Mathf.FloorToInt((width - BandEnds + 2f) / TokenWidth), 3, MaxPerPage);
             if (perPage == _perPage) return;
             int first = _page * _perPage;
             _perPage = perPage;

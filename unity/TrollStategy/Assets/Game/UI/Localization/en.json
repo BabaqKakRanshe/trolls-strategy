@@ -3275,6 +3275,38 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Works faster than a goblin and carries more, but walks slowly. Strong in battle."
+},
+{
+"k": "Найти: товар, здание, существо",
+"v": "Find: a good, a building, a creature"
+},
+{
+"k": "Хранит трофеи арены",
+"v": "Keeps arena trophies"
+},
+{
+"k": "Хранит сырьё",
+"v": "Stores raw goods"
+},
+{
+"k": "Продаёт товары",
+"v": "Sells goods"
+},
+{
+"k": "Снаряжение отряда",
+"v": "The squad's gear"
+},
+{
+"k": "{0}×{1}, до {2} рабочих",
+"v": "{0}×{1}, up to {2} workers"
+},
+{
+"k": "рабочих",
+"v": "workers"
+},
+{
+"k": "Рецепты",
+"v": "Recipes"
 }
 ]
 }

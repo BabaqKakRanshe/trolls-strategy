@@ -825,5 +825,13 @@
  "Ступени по уровню здания": "Stopnie według poziomu budynku",
  "Уровень {0}: {1} из {2}": "Poziom {0}: {1} z {2}",
  "Крепкие бараки": "Solidne koszary",
- "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Poziom budynku otwiera kolejne stopnie jego ulepszeń. Wybierz koszary na mapie i kliknij „Ulepsz”: na drugim poziomie każde z czterech ulepszeń koszar — „Więcej wojowników”, „Hartowanie”, „Odpoczynek” i „Sława areny” — otworzy kolejny stopień."
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Poziom budynku otwiera kolejne stopnie jego ulepszeń. Wybierz koszary na mapie i kliknij „Ulepsz”: na drugim poziomie każde z czterech ulepszeń koszar — „Więcej wojowników”, „Hartowanie”, „Odpoczynek” i „Sława areny” — otworzy kolejny stopień.",
+ "Найти: товар, здание, существо": "Szukaj: towar, budynek, stworzenie",
+ "Хранит трофеи арены": "Przechowuje trofea z areny",
+ "Хранит сырьё": "Przechowuje surowce",
+ "Продаёт товары": "Sprzedaje towary",
+ "Снаряжение отряда": "Ekwipunek oddziału",
+ "{0}×{1}, до {2} рабочих": "{0}×{1}, do {2} pracowników",
+ "рабочих": "pracowników",
+ "Рецепты": "Przepisy"
 }

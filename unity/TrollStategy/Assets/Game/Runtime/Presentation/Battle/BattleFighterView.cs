@@ -23,8 +23,8 @@ namespace TrollStrategy.Presentation.Battle
         // how high a fighter the player drags floats over the ground
         private const float CarryLift = .3f;
         private const float BarHeight = .13f / 1.6f;
-        // the gear row pads the 14 px bar by 11 px above and below (WorldUi.uss .hp-bar__row)
-        private const float GearPadding = BarHeight * 11f / 14f;
+        // the gear row pads the 14 px bar by 13 px above and below (WorldUi.uss .hp-bar__row)
+        private const float GearPadding = BarHeight * 13f / 14f;
         private const float IdleFrame = .2f;
         private const float WalkFrame = .1f;
         private const float ActionFrame = .1f;
@@ -520,10 +520,12 @@ namespace TrollStrategy.Presentation.Battle
             _barLabel = _bar.AddLabel("world-label hp-bar__label");
             // the gear hangs at the bar's sides, so the bar stays centred over the fighter however much it wears
             var row = BarPart(_bar.Content, "hp-bar__row");
-            var track = BarPart(row, "hp-bar__track");
-            _gearLeft = BarPart(row, "hp-bar__gear");
+            // the gear hangs from the bar's own frame: the row's padding only makes room in the panel
+            var frame = BarPart(row, "hp-bar__frame");
+            var track = BarPart(frame, "hp-bar__track");
+            _gearLeft = BarPart(frame, "hp-bar__gear");
             _gearLeft.AddToClassList("hp-bar__gear--left");
-            _gearRight = BarPart(row, "hp-bar__gear");
+            _gearRight = BarPart(frame, "hp-bar__gear");
             _gearRight.AddToClassList("hp-bar__gear--right");
             var inside = BarPart(track, "hp-bar__inside");
             _barChip = BarPart(inside, "hp-bar__chip");

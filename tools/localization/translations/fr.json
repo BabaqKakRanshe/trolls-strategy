@@ -825,5 +825,13 @@
  "Ступени по уровню здания": "Étapes selon le niveau du bâtiment",
  "Уровень {0}: {1} из {2}": "Niveau {0} : {1} sur {2}",
  "Крепкие бараки": "Une caserne solide",
- "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Le niveau d'un bâtiment ouvre les étapes suivantes de ses améliorations. Choisis la caserne sur la carte et clique sur « Améliorer » : au niveau 2, chacune des quatre améliorations de la caserne — « Plus de combattants », « Endurcissement », « Repos » et « Gloire de l'arène » — ouvre une étape de plus."
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Le niveau d'un bâtiment ouvre les étapes suivantes de ses améliorations. Choisis la caserne sur la carte et clique sur « Améliorer » : au niveau 2, chacune des quatre améliorations de la caserne — « Plus de combattants », « Endurcissement », « Repos » et « Gloire de l'arène » — ouvre une étape de plus.",
+ "Найти: товар, здание, существо": "Chercher : bien, bâtiment, créature",
+ "Хранит трофеи арены": "Garde les trophées de l'arène",
+ "Хранит сырьё": "Stocke les matières premières",
+ "Продаёт товары": "Vend les biens",
+ "Снаряжение отряда": "Équipement de l'escouade",
+ "{0}×{1}, до {2} рабочих": "{0}×{1}, jusqu'à {2} ouvriers",
+ "рабочих": "ouvriers",
+ "Рецепты": "Recettes"
 }

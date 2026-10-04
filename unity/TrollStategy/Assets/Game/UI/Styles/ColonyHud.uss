@@ -917,6 +917,12 @@
     flex-shrink: 0;
 }
 
+/* eight tokens a page fill the band's 1272 px middle on a 1920 px screen (CatalogPager.TokenWidth) */
+.catalog-pager .token {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .catalog-arrow {
     position: absolute;
     top: 30px;
@@ -939,6 +945,11 @@
 .catalog-arrow__glyph {
     width: 24px;
     height: 24px;
+}
+
+/* nowhere to turn: the arrow fades, a press still answers with the refusal */
+.catalog-arrow.is-unavailable {
+    opacity: 0.35;
 }
 
 .catalog-arrow--prev > .catalog-arrow__glyph {

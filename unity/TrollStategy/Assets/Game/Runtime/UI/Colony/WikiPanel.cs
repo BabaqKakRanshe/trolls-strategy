@@ -70,6 +70,15 @@ namespace TrollStrategy.UI
             _detail = Ui.Require<ScrollView>(root, "wiki-detail");
             _search = Ui.Require<TextField>(root, "wiki-search");
             _search.RegisterValueChangedCallback(evt => Search(evt.newValue));
+            // the theme draws no scroll bars: the lists scroll by the wheel and by touch, as the arena's rail
+            foreach (var list in new[] { _rows, _detail })
+            {
+                list.mode = ScrollViewMode.Vertical;
+                list.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+                list.verticalScrollerVisibility = ScrollerVisibility.Hidden;
+                // the lists are rebuilt on every section; a group transform on their content drew them displaced
+                list.contentContainer.usageHints = UsageHints.None;
+            }
             UiFeel.Bind(Ui.Require<Button>(root, "wiki-close"), Close, Sfx.UiBack);
             var nav = Ui.Require<VisualElement>(root, "wiki-nav");
             foreach (var (section, title) in Sections)
@@ -141,6 +150,8 @@ namespace TrollStrategy.UI
         public void Open()
         {
             if (IsOpen) return;
+            // the hint in the empty search, in the language chosen since the HUD was made
+            _search.textEdition.placeholder = Localization.T("Найти: товар, здание, существо");
             Build();
             Ui.Show(_overlay, true);
             UiMotion.PopIn(_overlay, .18f);
@@ -395,12 +406,21 @@ namespace TrollStrategy.UI
                     row.Add(NameCell(building.DisplayName, null, cols[0]));
                     row.Add(Num($"{building.Width}×{building.Height}", cols[1]));
                     row.Add(Num(building.MaxWorkers > 0 ? building.MaxWorkers.ToString() : "—", cols[2]));
-                    row.Add(main != null ? Recipe(main, cols[3]) : Ui.Text(session.DescribeBuilding(building, recipes: false), "wiki-cell t-muted " + cols[3]));
+                    row.Add(main != null ? Recipe(main, cols[3]) : Ui.Text(session.DescribeRole(building) ?? string.Empty, "wiki-cell t-muted " + cols[3]));
                     row.Add(Price(price, cols[4]));
                 },
                 Detail = page =>
                 {
-                    page.Add(Para(session.DescribeBuilding(building)));
+                    var facts = new List<(string, string, string)> { ("grid", $"{building.Width}×{building.Height}", null) };
+                    if (building.MaxWorkers > 0) facts.Add(("idle", building.MaxWorkers.ToString(), "рабочих"));
+                    page.Add(Chips(facts.ToArray()));
+                    string role = session.DescribeRole(building);
+                    if (role != null) page.Add(Para(role));
+                    if (building.Recipes.Count > 0)
+                    {
+                        page.Add(Caption("Рецепты"));
+                        foreach (var recipe in building.Recipes) page.Add(RecipeLine(recipe));
+                    }
                     if (workers.Count > 0)
                     {
                         page.Add(Caption("Быстрее работают"));
@@ -509,15 +529,18 @@ namespace TrollStrategy.UI
             }
             var opens = mission.UnlockUnit is UnitKind kind ? _context.Catalog.GetUnit(kind) : null;
             string reward = $"{mission.FirstWinGold}–{mission.FirstWinGoldMax}";
+            string title = mission.DisplayName ?? string.Empty;
+            string number = $"{mission.Level}. ";
+            if (title.StartsWith(number, StringComparison.Ordinal)) title = title.Substring(number.Length);
             var cols = Columns(WikiSection.Arena);
             return new Entry
             {
-                Section = WikiSection.Arena, Key = mission.Level.ToString(), Name = mission.DisplayName,
+                Section = WikiSection.Arena, Key = mission.Level.ToString(), Name = title,
                 Picture = counts.Count > 0 ? RewardArt.Tight(_context.Catalog.GetUnit(counts[0].Kind).PortraitSprite) : null,
                 Pixel = true,
                 Cells = row =>
                 {
-                    row.Add(NameCell(mission.DisplayName, $"уровень {mission.Level}", cols[0]));
+                    row.Add(NameCell(title, $"уровень {mission.Level}", cols[0]));
                     var foes = Ui.Box("wiki-cell wiki-icons " + cols[1]);
                     foreach (var (foe, count) in counts)
                     {
@@ -577,7 +600,8 @@ namespace TrollStrategy.UI
             disc.pickingMode = PickingMode.Ignore;
             if (sprite == null) return disc;
             var art = new Image { sprite = sprite, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
-            art.AddToClassList(pixel ? "wiki-art wiki-art--pixel" : "wiki-art");
+            art.AddToClassList("wiki-art");
+            if (pixel) art.AddToClassList("wiki-art--pixel");
             disc.Add(art);
             return disc;
         }
@@ -613,7 +637,7 @@ namespace TrollStrategy.UI
             foreach (var kind in unit.FavoredBuildings)
             {
                 var building = Find(kind);
-                if (building != null) cell.Add(Picture(RewardArt.BuildingIcon(building), false, "wiki-icon"));
+                if (building != null) cell.Add(Picture(RewardArt.BuildingIcon(building), false, "wiki-icon wiki-icon--small"));
             }
             cell.Add(Ui.Text($"+{unit.FavoredWorkPercent}%", "wiki-bonus t-black"));
             return cell;
@@ -644,6 +668,22 @@ namespace TrollStrategy.UI
         }
 
         private static Label Caption(string text) => Ui.Text(text, "wiki-caption t-bold");
+
+        // a recipe on the building's page: pictures and numbers, the level it opens at, chances and spoilage
+        private VisualElement RecipeLine(ProductionRecipe recipe)
+        {
+            var line = Recipe(recipe, "wiki-recipe");
+            if (recipe.MinLevel > 1) line.Add(Ui.Text($"с {recipe.MinLevel} уровня", "wiki-note t-muted wiki-recipe__note"));
+            foreach (var extra in recipe.Extras)
+            {
+                line.Add(Ui.Text("+", "wiki-count t-black wiki-recipe__plus"));
+                line.Add(Picture(_context.Catalog.TryGetResource(extra.Output.Resource)?.Icon, false, "wiki-icon"));
+                line.Add(Ui.Text($"{extra.ChancePercent}%", "wiki-bonus t-black"));
+            }
+            if (recipe.FailChancePercent > 0)
+                line.Add(Ui.Text($"брак {recipe.FailChancePercent}%", "wiki-note t-muted wiki-recipe__note"));
+            return line;
+        }
 
         private static Label Para(string text)
         {

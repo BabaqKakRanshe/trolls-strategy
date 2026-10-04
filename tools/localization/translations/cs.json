@@ -825,5 +825,13 @@
  "Ступени по уровню здания": "Stupně podle úrovně budovy",
  "Уровень {0}: {1} из {2}": "Úroveň {0}: {1} z {2}",
  "Крепкие бараки": "Pevná kasárna",
- "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Úroveň budovy otevírá další stupně jejích vylepšení. Vyber kasárna na mapě a stiskni „Vylepšit“: na druhé úrovni se všem čtyřem vylepšením kasáren — „Víc bojovníků“, „Otužilost“, „Odpočinek“ a „Sláva arény“ — otevře další stupeň."
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Úroveň budovy otevírá další stupně jejích vylepšení. Vyber kasárna na mapě a stiskni „Vylepšit“: na druhé úrovni se všem čtyřem vylepšením kasáren — „Víc bojovníků“, „Otužilost“, „Odpočinek“ a „Sláva arény“ — otevře další stupeň.",
+ "Найти: товар, здание, существо": "Hledat: zboží, budovu, tvora",
+ "Хранит трофеи арены": "Uchovává trofeje z arény",
+ "Хранит сырьё": "Skladuje suroviny",
+ "Продаёт товары": "Prodává zboží",
+ "Снаряжение отряда": "Výbava oddílu",
+ "{0}×{1}, до {2} рабочих": "{0}×{1}, až {2} dělníků",
+ "рабочих": "dělníků",
+ "Рецепты": "Recepty"
 }
