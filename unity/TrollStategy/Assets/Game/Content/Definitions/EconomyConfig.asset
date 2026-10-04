@@ -36,3 +36,11 @@ MonoBehaviour:
   _landPriceStep: 150
   _landClearSeconds: 10
   _landClearGold: 0
+  _trailsEnabled: 1
+  _trailTrampledAt: 10
+  _trailPathAt: 40
+  _trailRoadAt: 80
+  _trailPathSpeed: 1.15
+  _trailRoadSpeed: 1.3
+  _trailGraceSeconds: 60
+  _trailDecaySeconds: 3

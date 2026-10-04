@@ -151,6 +151,7 @@ MonoBehaviour:
   _strength: 9
   _speed: 2
   _stamina: 150
+  _trailWear: 2
   _favoredBuildings: 
   _favoredWorkPercent: 0
   _hireable: 1

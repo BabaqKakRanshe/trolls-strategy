@@ -131,13 +131,16 @@ namespace TrollStrategy.Application
         public LandSnapshot Land { get; }
         /// <summary>Every colony upgrade of the catalog with its level and next price, in catalog order.</summary>
         public IReadOnlyList<UpgradeSnapshot> Upgrades { get; }
+        /// <summary>How trodden every cell is; null when the colony has no trails.</summary>
+        public TrailSnapshot Trails { get; }
 
         public GameSnapshot(int revision, int gold, int soldGoods, int totalOre,
             IReadOnlyList<BuildingSnapshot> buildings, IReadOnlyList<UnitSnapshot> units,
             IReadOnlyList<EquipmentSnapshot> equipment = null, ProgressSnapshot progress = null,
             BattleRewardSnapshot battleReward = null, LandSnapshot land = null,
-            IReadOnlyList<UpgradeSnapshot> upgrades = null)
+            IReadOnlyList<UpgradeSnapshot> upgrades = null, TrailSnapshot trails = null)
         {
+            Trails = trails;
             BattleReward = battleReward;
             Land = land;
             Upgrades = Copy(upgrades);
@@ -210,6 +213,46 @@ namespace TrollStrategy.Application
     /// The colony's land as the island and the HUD show it: every block (index = y * BlocksPerSide + x), the price
     /// of the next block and what a clearing costs.
     /// </summary>
+    /// <summary>How trodden every cell of the colony is (index y * Width + x) and the wear each stage starts at.</summary>
+    public sealed class TrailSnapshot
+    {
+        private readonly byte[] _wear;
+
+        public TrailSnapshot(int width, int height, byte[] wear, int maxWear, int trampledAt, int pathAt, int roadAt)
+        {
+            Width = width;
+            Height = height;
+            _wear = wear ?? new byte[width * height];
+            MaxWear = maxWear;
+            TrampledAt = trampledAt;
+            PathAt = pathAt;
+            RoadAt = roadAt;
+        }
+
+        public int Width { get; }
+        public int Height { get; }
+        /// <summary>The most wear a cell can take.</summary>
+        public int MaxWear { get; }
+        public int TrampledAt { get; }
+        public int PathAt { get; }
+        public int RoadAt { get; }
+
+        public int Wear(int x, int y) =>
+            x >= 0 && y >= 0 && x < Width && y < Height && y * Width + x < _wear.Length ? _wear[y * Width + x] : 0;
+
+        public TrailStage Stage(int x, int y)
+        {
+            int wear = Wear(x, y);
+            return wear >= RoadAt ? TrailStage.Road
+                : wear >= PathAt ? TrailStage.Path
+                : wear >= TrampledAt ? TrailStage.Trampled
+                : TrailStage.Grass;
+        }
+
+        public void CopyWear(byte[] target) =>
+            System.Array.Copy(_wear, target, System.Math.Min(_wear.Length, target.Length));
+    }
+
     public sealed class LandSnapshot
     {
         private readonly LandBlockSnapshot[] _blocks;

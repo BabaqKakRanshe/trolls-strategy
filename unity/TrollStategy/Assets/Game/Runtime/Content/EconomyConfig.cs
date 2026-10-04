@@ -54,6 +54,24 @@ namespace TrollStrategy.Content
         [Tooltip("Сколько золота стоит расчистка блока.")]
         [SerializeField, Min(0)] private int _landClearGold;
 
+        [Header("Тропы")]
+        [Tooltip("Существа протаптывают тропы, по тропам ходят быстрее, без шагов тропы зарастают. Выключено: земля не меняется.")]
+        [SerializeField] private bool _trailsEnabled;
+        [Tooltip("С какой протоптанности (из 100) трава выглядит примятой. Меняет только вид.")]
+        [SerializeField, Range(1, 100)] private int _trailTrampledAt = 10;
+        [Tooltip("С какой протоптанности (из 100) клетка становится тропой.")]
+        [SerializeField, Range(1, 100)] private int _trailPathAt = 40;
+        [Tooltip("С какой протоптанности (из 100) тропа становится дорогой.")]
+        [SerializeField, Range(1, 100)] private int _trailRoadAt = 80;
+        [Tooltip("Во сколько раз быстрее ходят по тропе.")]
+        [SerializeField, Min(1f)] private float _trailPathSpeed = 1.15f;
+        [Tooltip("Во сколько раз быстрее ходят по дороге.")]
+        [SerializeField, Min(1f)] private float _trailRoadSpeed = 1.3f;
+        [Tooltip("Сколько секунд клетка без шагов держится, прежде чем начать зарастать.")]
+        [SerializeField, Min(0f)] private float _trailGraceSeconds = 60f;
+        [Tooltip("Раз в сколько секунд зарастающая клетка теряет единицу протоптанности.")]
+        [SerializeField, Min(.25f)] private float _trailDecaySeconds = 3f;
+
         public int GridWidth => _gridWidth;
         public int GridHeight => _gridHeight;
         public float CellSize => _cellSize;
@@ -75,6 +93,15 @@ namespace TrollStrategy.Content
         public int LandPriceStep => Mathf.Max(0, _landPriceStep);
         public float LandClearSeconds => Mathf.Max(0f, _landClearSeconds);
         public int LandClearGold => Mathf.Max(0, _landClearGold);
+        // wear runs 0..100 (TrailState.Max); stages and speeds never go backwards
+        public bool TrailsEnabled => _trailsEnabled;
+        public int TrailTrampledAt => Mathf.Clamp(_trailTrampledAt, 1, 100);
+        public int TrailPathAt => Mathf.Clamp(_trailPathAt, TrailTrampledAt, 100);
+        public int TrailRoadAt => Mathf.Clamp(_trailRoadAt, TrailPathAt, 100);
+        public float TrailPathSpeed => Mathf.Max(1f, _trailPathSpeed);
+        public float TrailRoadSpeed => Mathf.Max(TrailPathSpeed, _trailRoadSpeed);
+        public float TrailGraceSeconds => Mathf.Max(0f, _trailGraceSeconds);
+        public float TrailDecaySeconds => Mathf.Max(.25f, _trailDecaySeconds);
 
         /// <param name="transferTimeSeconds">Both loading and unloading time; see <see cref="SetHauling"/>.</param>
         public void Init(int gridWidth, int gridHeight, float cellSize, int startingGold, int maxUnitsPerCell, float tickIntervalSeconds, float workPerStrengthSecond, float transferTimeSeconds)
@@ -114,6 +141,19 @@ namespace TrollStrategy.Content
             _landPriceStep = Mathf.Max(0, priceStep);
             _landClearSeconds = Mathf.Max(0f, clearSeconds);
             _landClearGold = Mathf.Max(0, clearGold);
+        }
+
+        public void SetTrails(bool enabled, int trampledAt = 10, int pathAt = 40, int roadAt = 80,
+            float pathSpeed = 1.15f, float roadSpeed = 1.3f, float graceSeconds = 60f, float decaySeconds = 3f)
+        {
+            _trailsEnabled = enabled;
+            _trailTrampledAt = Mathf.Clamp(trampledAt, 1, 100);
+            _trailPathAt = Mathf.Clamp(pathAt, 1, 100);
+            _trailRoadAt = Mathf.Clamp(roadAt, 1, 100);
+            _trailPathSpeed = Mathf.Max(1f, pathSpeed);
+            _trailRoadSpeed = Mathf.Max(1f, roadSpeed);
+            _trailGraceSeconds = Mathf.Max(0f, graceSeconds);
+            _trailDecaySeconds = Mathf.Max(.25f, decaySeconds);
         }
     }
 }

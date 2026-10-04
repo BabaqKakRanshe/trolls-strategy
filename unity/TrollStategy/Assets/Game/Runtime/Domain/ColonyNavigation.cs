@@ -20,8 +20,9 @@ namespace TrollStrategy.Domain
         private const float CrowdJitterRatio = 0.2f;
         private const float CrowdSpreadRadians = 1.3f;
         private static readonly double GoldenAngle = Math.PI * (3 - Math.Sqrt(5));
-        private const int StraightCost = 10;
-        private const int DiagonalCost = 14;
+        // Step costs are walking times: a lawn step costs this much, a step onto a trail less (TrailRules.PaceMap).
+        private const int StraightCost = 1000;
+        private const int DiagonalCost = 1400;
 
         /// <summary>Where a building is entered: the door, the open point in front of it and the facade normal.</summary>
         public readonly struct Doorway
@@ -166,14 +167,19 @@ namespace TrollStrategy.Domain
         private static List<WorldPosition> OpenPath(GameState state, WorldPosition start, WorldPosition target,
             GameContentCatalog catalog)
         {
-            float cs = catalog.Economy.CellSize;
-            var cells = FindCellPath(state, CellAt(start, cs), CellAt(target, cs), catalog);
+            var economy = catalog.Economy;
+            float cs = economy.CellSize;
+            // trails make some cells quicker to cross; without them every lawn step costs the same
+            var pace = TrailRules.PaceMap(state, economy);
+            var cells = FindCellPath(state, CellAt(start, cs), CellAt(target, cs), catalog, pace);
             if (cells == null) return null;
 
             var points = new List<WorldPosition>(cells.Count + 1) { start };
             for (int i = 1; i < cells.Count - 1; i++)
                 points.Add(new WorldPosition((cells[i].X + 0.5f) * cs, (cells[i].Y + 0.5f) * cs));
             points.Add(target);
+            // with trails a straight cut may not be slower than the trodden way it replaces
+            var along = pace != null ? WalkTimes(points, pace, economy) : null;
 
             var result = new List<WorldPosition>();
             int at = 0;
@@ -183,6 +189,8 @@ namespace TrollStrategy.Domain
                 for (int j = points.Count - 1; j > next; j--)
                 {
                     if (!IsSegmentClear(state, points[at], points[j], catalog)) continue;
+                    if (along != null && WalkTime(points[at], points[j], pace, economy) > along[j] - along[at] + 1e-4)
+                        continue;
                     next = j;
                     break;
                 }
@@ -193,7 +201,9 @@ namespace TrollStrategy.Domain
         }
 
         // A* over walkable cells with 8 neighbours; diagonals never cut a blocked corner. Ties break by cell index.
-        private static List<Cell> FindCellPath(GameState state, Cell start, Cell goal, GameContentCatalog catalog)
+        // A step costs its walking time at the pace of the cell stepped into (all lawn when pace is null).
+        private static List<Cell> FindCellPath(GameState state, Cell start, Cell goal, GameContentCatalog catalog,
+            int[] pace)
         {
             var economy = catalog.Economy;
             int width = economy.GridWidth, height = economy.GridHeight;
@@ -214,6 +224,10 @@ namespace TrollStrategy.Domain
             for (int i = 0; i < count; i++) { cost[i] = int.MaxValue; previous[i] = -1; }
             int startIndex = start.Y * width + start.X, goalIndex = goal.Y * width + goal.X;
             cost[startIndex] = 0;
+            // the estimate counts every step at the quickest pace there is, so it never overshoots
+            int maxPace = pace != null ? TrailRules.MaxPace(economy) : TrailRules.LawnPace;
+            int fastStraight = StraightCost * TrailRules.LawnPace / maxPace;
+            int fastDiagonal = DiagonalCost * TrailRules.LawnPace / maxPace;
             var open = new List<int> { startIndex };
 
             while (open.Count > 0)
@@ -222,7 +236,8 @@ namespace TrollStrategy.Domain
                 for (int i = 1; i < open.Count; i++)
                 {
                     int a = open[i], b = open[bestSlot];
-                    int fa = cost[a] + Heuristic(a, goalIndex, width), fb = cost[b] + Heuristic(b, goalIndex, width);
+                    int fa = cost[a] + Heuristic(a, goalIndex, width, fastStraight, fastDiagonal);
+                    int fb = cost[b] + Heuristic(b, goalIndex, width, fastStraight, fastDiagonal);
                     if (fa < fb || (fa == fb && a < b)) bestSlot = i;
                 }
                 int current = open[bestSlot];
@@ -241,7 +256,8 @@ namespace TrollStrategy.Domain
                     int neighbour = ny * width + nx;
                     if (!walkable[neighbour] || closed[neighbour]) continue;
                     if (dx != 0 && dy != 0 && (!walkable[cy * width + nx] || !walkable[ny * width + cx])) continue;
-                    int candidate = cost[current] + (dx != 0 && dy != 0 ? DiagonalCost : StraightCost);
+                    int step = dx != 0 && dy != 0 ? DiagonalCost : StraightCost;
+                    int candidate = cost[current] + (pace != null ? step * TrailRules.LawnPace / pace[neighbour] : step);
                     if (candidate >= cost[neighbour]) continue;
                     cost[neighbour] = candidate;
                     previous[neighbour] = current;
@@ -257,11 +273,45 @@ namespace TrollStrategy.Domain
             return path;
         }
 
-        private static int Heuristic(int from, int to, int width)
+        private static int Heuristic(int from, int to, int width, int straight, int diagonal)
         {
             int dx = Math.Abs(from % width - to % width), dy = Math.Abs(from / width - to / width);
-            return StraightCost * Math.Max(dx, dy) + (DiagonalCost - StraightCost) * Math.Min(dx, dy);
+            return straight * Math.Max(dx, dy) + (diagonal - straight) * Math.Min(dx, dy);
         }
+
+        // Walking time from the first point to each point of the polyline, in lawn cells.
+        private static double[] WalkTimes(List<WorldPosition> points, int[] pace, EconomyConfig economy)
+        {
+            var along = new double[points.Count];
+            for (int i = 1; i < points.Count; i++)
+                along[i] = along[i - 1] + WalkTime(points[i - 1], points[i], pace, economy);
+            return along;
+        }
+
+        // Walking time of a straight leg in lawn cells: each cell's share of the leg at that cell's pace.
+        private static double WalkTime(WorldPosition a, WorldPosition b, int[] pace, EconomyConfig economy)
+        {
+            float cs = economy.CellSize;
+            double dx = b.X - a.X, dy = b.Y - a.Y;
+            double length = Math.Sqrt(dx * dx + dy * dy) / cs;
+            if (length <= 0) return 0;
+            var walk = new CellWalk(a, b, cs);
+            var cell = walk.Start;
+            double time = 0, at = 0;
+            while (walk.Next(out var next, out float enteredAt))
+            {
+                time += (enteredAt - at) / PaceAt(cell, pace, economy);
+                at = enteredAt;
+                cell = next;
+            }
+            time += (1 - at) / PaceAt(cell, pace, economy);
+            return time * length * TrailRules.LawnPace;
+        }
+
+        private static double PaceAt(Cell cell, int[] pace, EconomyConfig economy) =>
+            Inside(cell, economy.GridWidth, economy.GridHeight)
+                ? pace[cell.Y * economy.GridWidth + cell.X]
+                : TrailRules.LawnPace;
 
         /// <summary>True when the segment keeps the wall clearance from every footprint.</summary>
         public static bool IsSegmentClear(GameState state, WorldPosition a, WorldPosition b, GameContentCatalog catalog)

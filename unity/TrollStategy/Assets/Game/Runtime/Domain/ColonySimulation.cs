@@ -41,6 +41,7 @@ namespace TrollStrategy.Domain
         public static void TickColony(GameState state, float deltaSeconds, GameContentCatalog catalog)
         {
             LandRules.Tick(state, deltaSeconds);
+            TrailRules.Tick(state, deltaSeconds, catalog);
             ProduceGoods(state, deltaSeconds, catalog);
 
             for (int i = 0; i < state.Units.Count; i++)
@@ -1042,19 +1043,25 @@ namespace TrollStrategy.Domain
                 unit.RouteLayoutVersion = state.LayoutVersion;
             }
 
-            float budget = speed * deltaSeconds;
+            // a trail underfoot speeds the creature up; every cell it steps into wears (heavy creatures more)
+            var economy = catalog.Economy;
+            float budget = speed * deltaSeconds * TrailRules.SpeedAt(state, unit.Position, economy);
+            int wear = state.Trails != null ? catalog.GetUnit(unit.Kind)?.TrailWear ?? 1 : 0;
             while (unit.Route.Count > 0)
             {
                 var next = unit.Route[0];
-                float dx = next.X - unit.Position.X;
-                float dy = next.Y - unit.Position.Y;
+                var from = unit.Position;
+                float dx = next.X - from.X;
+                float dy = next.Y - from.Y;
                 float dist = (float)Math.Sqrt(dx * dx + dy * dy);
                 if (dist > budget)
                 {
-                    unit.Position = new WorldPosition(unit.Position.X + dx / dist * budget, unit.Position.Y + dy / dist * budget);
+                    unit.Position = new WorldPosition(from.X + dx / dist * budget, from.Y + dy / dist * budget);
+                    TrailRules.Walk(state, from, unit.Position, wear, economy);
                     return false;
                 }
                 unit.Position = next;
+                TrailRules.Walk(state, from, next, wear, economy);
                 budget -= dist;
                 unit.Route.RemoveAt(0);
             }

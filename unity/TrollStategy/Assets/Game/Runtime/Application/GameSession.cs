@@ -48,6 +48,7 @@ namespace TrollStrategy.Application
             _state = GameState.CreateInitialState(_catalog.Economy.StartingGold);
             // land first: the starting buildings must stand on the cleared start land
             _state.Land = LandRules.CreateStart(_catalog.Economy);
+            _state.Trails = TrailRules.CreateStart(_catalog.Economy);
             var ids = new string[startingBuildings.Count];
             for (int i = 0; i < startingBuildings.Count; i++)
             {
@@ -409,7 +410,9 @@ namespace TrollStrategy.Application
                     u.Position,
                     u.Assignment,
                     FormatAssignmentStatus(u.Assignment, u.Position, buildingSnapshots),
-                    ColonySimulation.UnitMovementSpeed(_state, def, _catalog)));
+                    // the view walks as fast as the creature does, a trail underfoot included
+                    ColonySimulation.UnitMovementSpeed(_state, def, _catalog) *
+                    TrailRules.SpeedAt(_state, u.Position, _catalog.Economy)));
             }
 
             var equipmentSnapshots = new List<EquipmentSnapshot>(_state.Equipment.Count);
@@ -428,7 +431,8 @@ namespace TrollStrategy.Application
                 CreateProgressSnapshot(),
                 CreateBattleRewardSnapshot(),
                 CreateLandSnapshot(),
-                CreateUpgradeSnapshots());
+                CreateUpgradeSnapshots(),
+                CreateTrailSnapshot());
         }
 
         private List<UpgradeSnapshot> CreateUpgradeSnapshots()
@@ -447,6 +451,17 @@ namespace TrollStrategy.Application
 
         /// <summary>Whether the colony may raise this upgrade now, and why not.</summary>
         public CommandResult CanBuyUpgrade(string upgradeId) => UpgradeRules.Validate(_state, upgradeId, _catalog);
+
+        private TrailSnapshot CreateTrailSnapshot()
+        {
+            var trails = _state.Trails;
+            if (trails == null) return null;
+            var wear = new byte[trails.Width * trails.Height];
+            trails.CopyWear(wear);
+            var economy = _catalog.Economy;
+            return new TrailSnapshot(trails.Width, trails.Height, wear, TrailState.Max, economy.TrailTrampledAt,
+                economy.TrailPathAt, economy.TrailRoadAt);
+        }
 
         private LandSnapshot CreateLandSnapshot()
         {
