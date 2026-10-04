@@ -818,5 +818,12 @@
  "Первая победа: {0}–{1} золота. Повтор: {2}–{3}.": "First win: {0}–{1} gold. Repeat: {2}–{3}.",
  "Отряд до {0} бойцов, отдых после боя {1} с.": "Squad of up to {0} fighters, rest after a battle {1} s.",
  "Победа открывает": "Victory unlocks",
- "везде одинаково": "same everywhere"
+ "везде одинаково": "same everywhere",
+ "Сначала улучшите до уровня {0}: {1}": "Upgrade to level {0} first: {1}",
+ "Новый уровень здания открывает следующие ступени его улучшений.": "Each new building level opens the next steps of its upgrades.",
+ "Дальше — когда здание станет {0}-го уровня": "Next one when the building reaches level {0}",
+ "Ступени по уровню здания": "Steps by building level",
+ "Уровень {0}: {1} из {2}": "Level {0}: {1} of {2}",
+ "Крепкие бараки": "Sturdy barracks",
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "A building's level opens the next steps of its upgrades. Select the barracks on the map and click “Upgrade”: at level 2, each of the four barracks upgrades — “More fighters”, “Toughening”, “Rest” and “Arena glory” — opens one more step."
 }

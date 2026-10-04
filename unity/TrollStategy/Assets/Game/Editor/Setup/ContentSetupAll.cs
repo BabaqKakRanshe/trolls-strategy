@@ -17,13 +17,17 @@ namespace TrollStrategy.Editor.Setup
             Debug.Log("[ContentSetupAll] Content rewritten.");
         }
 
-        /// <summary>Icon atlases, content, the models of the newer buildings, the graphics levels and the HUD prefab, in that order.</summary>
+        /// <summary>
+        /// Icon atlases, content, the models of the newer buildings, every building's level models, the graphics
+        /// levels and the HUD prefab, in that order.
+        /// </summary>
         [MenuItem("TrollStrategy/Dev/Setup Everything (atlases, content, models, UI)")]
         public static void ApplyEverything()
         {
             ResourceAtlasImporter.Import();
             Apply();
             BuildingModelSetup.Apply();
+            BuildingLevelModelSetup.Apply();
             GraphicsQualitySetup.Apply();
             UiSetup.SetupColonyScene();
             AssetDatabase.SaveAssets();

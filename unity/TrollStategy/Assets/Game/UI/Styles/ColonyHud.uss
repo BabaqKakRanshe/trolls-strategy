@@ -199,6 +199,16 @@
     white-space: normal;
 }
 
+/* Four actions (the barracks: move, upgrade and two hires) go two by two: four in a row break their words. */
+.actions--grid {
+    flex-wrap: wrap;
+}
+
+.actions--grid > .action {
+    flex-basis: 40%;
+    margin-bottom: 8px;
+}
+
 /*
  * Catalog: a tray of round tokens across the bottom. The band runs the full width: the tabs stand at its
  * left end, the tokens in the middle of the screen, and the status line takes the right end, so the tray

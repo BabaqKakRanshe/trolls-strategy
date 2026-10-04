@@ -825,6 +825,10 @@
 "v": "Önce şunu inşa et: {0}"
 },
 {
+"k": "Сначала улучшите до уровня {0}: {1}",
+"v": "Önce {0}. seviyeye geliştir: {1}"
+},
+{
 "k": "Раб: {0}/{1}",
 "v": "İşçi: {0}/{1}"
 },
@@ -1501,6 +1505,10 @@
 "v": "Lonca geliştirmeleri koloninin tüm taşıyıcılarını aynı anda etkiler."
 },
 {
+"k": "Новый уровень здания открывает следующие ступени его улучшений.",
+"v": "Binanın her yeni seviyesi geliştirmelerinin sonraki basamaklarını açar."
+},
+{
 "k": "Перенести",
 "v": "Taşı"
 },
@@ -1509,20 +1517,20 @@
 "v": "haritada göster"
 },
 {
-"k": "Нанять: ",
-"v": "İşe al:"
-},
-{
-"k": "закрыто",
-"v": "kapalı"
-},
-{
 "k": "Улучшить",
 "v": "Geliştir"
 },
 {
 "k": "макс. уровень",
 "v": "en yüksek seviye"
+},
+{
+"k": "Нанять: ",
+"v": "İşe al:"
+},
+{
+"k": "закрыто",
+"v": "kapalı"
 },
 {
 "k": "Снести",
@@ -1599,6 +1607,10 @@
 {
 "k": "{0}: {1} из {2}",
 "v": "{0}: {1}/{2}"
+},
+{
+"k": "Дальше — когда здание станет {0}-го уровня",
+"v": "Sonraki, bina {0}. seviyeye ulaşınca"
 },
 {
 "k": "максимум",
@@ -2153,6 +2165,14 @@
 "v": "Satın alındığı yer"
 },
 {
+"k": "Ступени по уровню здания",
+"v": "Bina seviyesine göre basamaklar"
+},
+{
+"k": "Уровень {0}: {1} из {2}",
+"v": "Seviye {0}: {1}/{2}"
+},
+{
 "k": "уровень {0}",
 "v": "seviye {0}"
 },
@@ -2369,14 +2389,6 @@
 "v": "Yerleşimin savaşçıları daha dayanıklı: her seviyede +%15 sağlık."
 },
 {
-"k": "Оружейная выучка",
-"v": "Silah eğitimi"
-},
-{
-"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
-"v": "Yerleşim savaşçısının her vuruşu her seviyede 1 hasar daha verir."
-},
-{
 "k": "Отдых",
 "v": "Dinlenme"
 },
@@ -2391,6 +2403,14 @@
 {
 "k": "Победы на арене приносят на 15% больше золота за уровень.",
 "v": "Arena zaferleri her seviyede %15 daha fazla altın getirir."
+},
+{
+"k": "Оружейная выучка",
+"v": "Silah eğitimi"
+},
+{
+"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
+"v": "Yerleşim savaşçısının her vuruşu her seviyede 1 hasar daha verir."
 },
 {
 "k": "Первый работник",
@@ -2627,6 +2647,14 @@
 {
 "k": "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.",
 "v": "Efsuncu kılıç ile kristali birleştirip büyülü kılıç yapar. Onu kur ve bir işçi ata."
+},
+{
+"k": "Крепкие бараки",
+"v": "Sağlam kışla"
+},
+{
+"k": "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.",
+"v": "Binanın seviyesi geliştirmelerinin sonraki basamaklarını açar. Haritada kışlayı seç ve «Geliştir»e bas: ikinci seviyede kışlanın dört geliştirmesinin her birinde — «Daha çok savaşçı», «Sertleşme», «Dinlenme» ve «Arena şöhreti» — bir basamak daha açılır."
 },
 {
 "k": "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.",
@@ -3231,10 +3259,6 @@
 {
 "k": "30. Хозяева арены",
 "v": "30. Arenanın efendileri"
-},
-{
-"k": "В гильдии учат носильщиков: быстрее ходить, больше поднимать, скорее грузиться. Построй её и купи в гильдии или бараках два уровня улучшений.",
-"v": "Lonca taşıyıcıları eğitir: daha hızlı yürümek, daha çok kaldırmak, daha çabuk yüklemek. Onu kur ve lonca veya kışladan iki seviye geliştirme satın al."
 },
 {
 "k": "Гоблин",

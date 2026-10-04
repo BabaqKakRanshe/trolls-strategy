@@ -825,6 +825,10 @@
 "v": "Najpierw zbuduj: {0}"
 },
 {
+"k": "Сначала улучшите до уровня {0}: {1}",
+"v": "Najpierw ulepsz do poziomu {0}: {1}"
+},
+{
 "k": "Раб: {0}/{1}",
 "v": "Rob.: {0}/{1}"
 },
@@ -1501,6 +1505,10 @@
 "v": "Ulepszenia gildii działają na wszystkich tragarzy kolonii naraz."
 },
 {
+"k": "Новый уровень здания открывает следующие ступени его улучшений.",
+"v": "Każdy nowy poziom budynku otwiera kolejne stopnie jego ulepszeń."
+},
+{
 "k": "Перенести",
 "v": "Przenieś"
 },
@@ -1509,20 +1517,20 @@
 "v": "wskaż na mapie"
 },
 {
-"k": "Нанять: ",
-"v": "Zatrudnij: "
-},
-{
-"k": "закрыто",
-"v": "zamknięte"
-},
-{
 "k": "Улучшить",
 "v": "Ulepsz"
 },
 {
 "k": "макс. уровень",
 "v": "maks. poziom"
+},
+{
+"k": "Нанять: ",
+"v": "Zatrudnij: "
+},
+{
+"k": "закрыто",
+"v": "zamknięte"
 },
 {
 "k": "Снести",
@@ -1599,6 +1607,10 @@
 {
 "k": "{0}: {1} из {2}",
 "v": "{0}: {1} z {2}"
+},
+{
+"k": "Дальше — когда здание станет {0}-го уровня",
+"v": "Dalej, gdy budynek osiągnie poziom {0}"
 },
 {
 "k": "максимум",
@@ -2153,6 +2165,14 @@
 "v": "Kupowane w"
 },
 {
+"k": "Ступени по уровню здания",
+"v": "Stopnie według poziomu budynku"
+},
+{
+"k": "Уровень {0}: {1} из {2}",
+"v": "Poziom {0}: {1} z {2}"
+},
+{
 "k": "уровень {0}",
 "v": "poziom {0}"
 },
@@ -2369,14 +2389,6 @@
 "v": "Wojownicy osady są wytrzymalsi: +15% zdrowia za poziom."
 },
 {
-"k": "Оружейная выучка",
-"v": "Wyszkolenie bojowe"
-},
-{
-"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
-"v": "Każdy cios wojownika osady zadaje o 1 obrażenie więcej za poziom."
-},
-{
 "k": "Отдых",
 "v": "Odpoczynek"
 },
@@ -2391,6 +2403,14 @@
 {
 "k": "Победы на арене приносят на 15% больше золота за уровень.",
 "v": "Zwycięstwa na arenie przynoszą o 15% więcej złota za poziom."
+},
+{
+"k": "Оружейная выучка",
+"v": "Wyszkolenie bojowe"
+},
+{
+"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
+"v": "Każdy cios wojownika osady zadaje o 1 obrażenie więcej za poziom."
 },
 {
 "k": "Первый работник",
@@ -2627,6 +2647,14 @@
 {
 "k": "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.",
 "v": "Zaklinacz łączy miecz i kryształ w zaczarowany miecz. Zbuduj go i przydziel robotnika."
+},
+{
+"k": "Крепкие бараки",
+"v": "Solidne koszary"
+},
+{
+"k": "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.",
+"v": "Poziom budynku otwiera kolejne stopnie jego ulepszeń. Wybierz koszary na mapie i kliknij „Ulepsz”: na drugim poziomie każde z czterech ulepszeń koszar — „Więcej wojowników”, „Hartowanie”, „Odpoczynek” i „Sława areny” — otworzy kolejny stopień."
 },
 {
 "k": "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.",
@@ -3231,10 +3259,6 @@
 {
 "k": "30. Хозяева арены",
 "v": "30. Władcy areny"
-},
-{
-"k": "В гильдии учат носильщиков: быстрее ходить, больше поднимать, скорее грузиться. Построй её и купи в гильдии или бараках два уровня улучшений.",
-"v": "W gildii uczą tragarzy: szybciej chodzić, więcej podnosić, szybciej się ładować. Zbuduj ją i kup w gildii lub koszarach dwa poziomy ulepszeń."
 },
 {
 "k": "Гоблин",

@@ -825,6 +825,10 @@
 "v": "Build first: {0}"
 },
 {
+"k": "Сначала улучшите до уровня {0}: {1}",
+"v": "Upgrade to level {0} first: {1}"
+},
+{
 "k": "Раб: {0}/{1}",
 "v": "Staff: {0}/{1}"
 },
@@ -1501,6 +1505,10 @@
 "v": "Guild upgrades apply to all the colony's carriers at once."
 },
 {
+"k": "Новый уровень здания открывает следующие ступени его улучшений.",
+"v": "Each new building level opens the next steps of its upgrades."
+},
+{
 "k": "Перенести",
 "v": "Move"
 },
@@ -1509,20 +1517,20 @@
 "v": "pick on the map"
 },
 {
-"k": "Нанять: ",
-"v": "Hire: "
-},
-{
-"k": "закрыто",
-"v": "locked"
-},
-{
 "k": "Улучшить",
 "v": "Upgrade"
 },
 {
 "k": "макс. уровень",
 "v": "max level"
+},
+{
+"k": "Нанять: ",
+"v": "Hire: "
+},
+{
+"k": "закрыто",
+"v": "locked"
 },
 {
 "k": "Снести",
@@ -1599,6 +1607,10 @@
 {
 "k": "{0}: {1} из {2}",
 "v": "{0}: {1} of {2}"
+},
+{
+"k": "Дальше — когда здание станет {0}-го уровня",
+"v": "Next one when the building reaches level {0}"
 },
 {
 "k": "максимум",
@@ -2153,6 +2165,14 @@
 "v": "Bought at"
 },
 {
+"k": "Ступени по уровню здания",
+"v": "Steps by building level"
+},
+{
+"k": "Уровень {0}: {1} из {2}",
+"v": "Level {0}: {1} of {2}"
+},
+{
 "k": "уровень {0}",
 "v": "level {0}"
 },
@@ -2369,14 +2389,6 @@
 "v": "The colony's fighters are hardier: +15% health per level."
 },
 {
-"k": "Оружейная выучка",
-"v": "Weapon training"
-},
-{
-"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
-"v": "Each hit by a colony fighter deals 1 more damage per level."
-},
-{
 "k": "Отдых",
 "v": "Rest"
 },
@@ -2391,6 +2403,14 @@
 {
 "k": "Победы на арене приносят на 15% больше золота за уровень.",
 "v": "Arena wins bring 15% more gold per level."
+},
+{
+"k": "Оружейная выучка",
+"v": "Weapon training"
+},
+{
+"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
+"v": "Each hit by a colony fighter deals 1 more damage per level."
 },
 {
 "k": "Первый работник",
@@ -2627,6 +2647,14 @@
 {
 "k": "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.",
 "v": "The enchanter combines a sword and a crystal into an enchanted sword. Build it and put a worker on it."
+},
+{
+"k": "Крепкие бараки",
+"v": "Sturdy barracks"
+},
+{
+"k": "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.",
+"v": "A building's level opens the next steps of its upgrades. Select the barracks on the map and click “Upgrade”: at level 2, each of the four barracks upgrades — “More fighters”, “Toughening”, “Rest” and “Arena glory” — opens one more step."
 },
 {
 "k": "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.",
@@ -3231,10 +3259,6 @@
 {
 "k": "30. Хозяева арены",
 "v": "30. Masters of the arena"
-},
-{
-"k": "В гильдии учат носильщиков: быстрее ходить, больше поднимать, скорее грузиться. Построй её и купи в гильдии или бараках два уровня улучшений.",
-"v": "The guild trains carriers: walk faster, lift more, load sooner. Build it and buy two upgrade levels in the guild or the barracks."
 },
 {
 "k": "Гоблин",

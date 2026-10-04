@@ -818,5 +818,12 @@
  "Первая победа: {0}–{1} золота. Повтор: {2}–{3}.": "Première victoire : {0}–{1} or. Répétition : {2}–{3}.",
  "Отряд до {0} бойцов, отдых после боя {1} с.": "Escouade jusqu'à {0} combattants, repos après le combat {1} s.",
  "Победа открывает": "La victoire débloque",
- "везде одинаково": "pareil partout"
+ "везде одинаково": "pareil partout",
+ "Сначала улучшите до уровня {0}: {1}": "Améliore d'abord au niveau {0} : {1}",
+ "Новый уровень здания открывает следующие ступени его улучшений.": "Chaque nouveau niveau du bâtiment ouvre les étapes suivantes de ses améliorations.",
+ "Дальше — когда здание станет {0}-го уровня": "La suite quand le bâtiment sera au niveau {0}",
+ "Ступени по уровню здания": "Étapes selon le niveau du bâtiment",
+ "Уровень {0}: {1} из {2}": "Niveau {0} : {1} sur {2}",
+ "Крепкие бараки": "Une caserne solide",
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Le niveau d'un bâtiment ouvre les étapes suivantes de ses améliorations. Choisis la caserne sur la carte et clique sur « Améliorer » : au niveau 2, chacune des quatre améliorations de la caserne — « Plus de combattants », « Endurcissement », « Repos » et « Gloire de l'arène » — ouvre une étape de plus."
 }

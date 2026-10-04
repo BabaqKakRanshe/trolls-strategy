@@ -4,8 +4,9 @@ using TrollStrategy.Content;
 namespace TrollStrategy.Domain
 {
     /// <summary>
-    /// Colony improvements bought level by level in a host building (the haulers' guild, the barracks). An
-    /// upgrade is colony-wide: every level adds its effect to every creature or battle it concerns.
+    /// Colony improvements bought level by level in a host building (the haulers' guild, the barracks, the
+    /// armory). An upgrade is colony-wide: every level adds its effect to every creature or battle it concerns.
+    /// Its deeper levels open with the level of the colony's highest host building.
     /// </summary>
     public static class UpgradeRules
     {
@@ -26,6 +27,16 @@ namespace TrollStrategy.Domain
         /// <summary>A time scaled down by a percent effect, never below a tenth of it.</summary>
         public static float Shorten(float value, int percent) => value * Math.Max(0.1f, 1f - Math.Max(0, percent) / 100f);
 
+        /// <summary>The highest level among the colony's buildings of this kind; 0 while it has none.</summary>
+        public static int HostLevel(GameState state, BuildingKind kind)
+        {
+            int level = 0;
+            if (state == null) return level;
+            foreach (var building in state.Buildings)
+                if (building.Kind == kind) level = Math.Max(level, building.Level);
+            return level;
+        }
+
         public static CommandResult Validate(GameState state, string upgradeId, GameContentCatalog catalog)
         {
             var upgrade = catalog.TryGetUpgrade(upgradeId);
@@ -35,8 +46,12 @@ namespace TrollStrategy.Domain
                 string host = TryHostName(catalog, upgrade.Host);
                 return CommandResult.Fail($"Сначала постройте: {host}");
             }
-            int cost = upgrade.CostFrom(state.UpgradeLevel(upgrade.Id));
+            int level = state.UpgradeLevel(upgrade.Id);
+            int cost = upgrade.CostFrom(level);
             if (cost < 0) return CommandResult.Fail("Достигнут максимальный уровень");
+            int needs = upgrade.HostLevelFrom(level);
+            if (HostLevel(state, upgrade.Host) < needs)
+                return CommandResult.Fail($"Сначала улучшите до уровня {needs}: {TryHostName(catalog, upgrade.Host)}");
             if (state.Gold < cost) return CommandResult.Fail("Недостаточно золота");
             return CommandResult.Success();
         }

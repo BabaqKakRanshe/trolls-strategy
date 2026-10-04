@@ -898,6 +898,40 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void BuyUpgrade_DeeperLevelsWaitForABiggerHost()
+        {
+            _catalog.GetBuilding(BuildingKind.Barracks).SetUpgrades(new[] { 100, 200 }, 0, 0, 0);
+            _catalog.SetUpgrades(new[]
+            {
+                new UpgradeDefinition("squad", "Больше бойцов", "", BuildingKind.Barracks, UpgradeEffect.SquadSize, 1,
+                    new[] { 10, 20, 30 }, new[] { 1, 2, 3 })
+            });
+            var state = TestColony.NewState(_catalog);
+            state.Gold = 1000;
+            Assert.That(ColonySimulation.PlaceStartingBuilding(state, BuildingKind.Barracks, new Cell(1, 1), _catalog,
+                out string barracks).Ok, Is.True);
+            CommandResult Buy() => ColonySimulation.ApplyCommand(state, new BuyUpgradeCommand("squad"), _catalog);
+            CommandResult Raise() => ColonySimulation.ApplyCommand(state, new UpgradeBuildingCommand(barracks), _catalog);
+
+            Assert.That(Buy().Ok, Is.True, "The first level opens with the building");
+            Assert.That(Buy().Error, Is.EqualTo("Сначала улучшите до уровня 2: бараки"));
+            Assert.That(state.UpgradeLevel("squad"), Is.EqualTo(1));
+            Assert.That(state.Gold, Is.EqualTo(990), "A refused level costs nothing");
+
+            Assert.That(Raise().Ok, Is.True);
+            Assert.That(UpgradeRules.HostLevel(state, BuildingKind.Barracks), Is.EqualTo(2));
+            Assert.That(Buy().Ok, Is.True);
+            Assert.That(Buy().Error, Is.EqualTo("Сначала улучшите до уровня 3: бараки"));
+
+            Assert.That(Raise().Ok, Is.True);
+            Assert.That(Buy().Ok, Is.True);
+            Assert.That(Buy().Error, Is.EqualTo("Достигнут максимальный уровень"));
+            Assert.That(Raise().Error, Is.EqualTo("Достигнут максимальный уровень"));
+            Assert.That(state.UpgradeLevel("squad"), Is.EqualTo(3));
+            Assert.That(state.Gold, Is.EqualTo(1000 - 60 - 300));
+        }
+
+        [Test]
         public void FavoredBuilding_GetsMoreWorkFromItsCreature()
         {
             var state = StateWithMineAndHauler(HaulPhase.Loading, carried: 0);

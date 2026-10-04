@@ -96,17 +96,20 @@ namespace TrollStrategy.Bots
             _hands.Haul(_hands.Building(built.Id), market, 2, null, "рост: носильщики");
         }
 
-        // The cheapest upgrade of each building the profile invests in, once spare gold covers it (and the
-        // building, while the colony has none) the growth factor times.
+        // The cheapest open upgrade of each building the profile invests in, once spare gold covers it the growth
+        // factor times: with the building's price while the colony has none, or the building's next level when
+        // every next upgrade level waits for it.
         private void GrowUpgrades()
         {
             foreach (var host in _profile.UpgradeHosts)
             {
-                var next = _hands.Snapshot.Upgrades.Where(u => u.Host == host && !u.IsMaxed)
-                    .OrderBy(u => u.NextCost).FirstOrDefault();
-                if (next == null || (!next.HostBuilt && !_hands.IsUnlocked(host))) continue;
-                int cost = next.NextCost + (next.HostBuilt ? 0 : _hands.Session.BuildingPrice(host));
-                if (_hands.SpendLimit < cost * _profile.GrowthGoldFactor) continue;
+                var left = _hands.Snapshot.Upgrades.Where(u => u.Host == host && !u.IsMaxed).ToList();
+                if (left.Count == 0 || (!left[0].HostBuilt && !_hands.IsUnlocked(host))) continue;
+                var open = left.Where(u => u.IsOpen).OrderBy(u => u.NextCost).FirstOrDefault();
+                int cost = open != null ? open.NextCost
+                    : !left[0].HostBuilt ? _hands.Session.BuildingPrice(host) + left.Min(u => u.NextCost)
+                    : _hands.HostOf(host)?.UpgradeCost ?? -1;
+                if (cost < 0 || _hands.SpendLimit < cost * _profile.GrowthGoldFactor) continue;
                 _hands.BuyUpgrade(null, "рост", host);
             }
         }

@@ -818,5 +818,12 @@
  "Первая победа: {0}–{1} золота. Повтор: {2}–{3}.": "První výhra: {0}–{1} zlata. Opakování: {2}–{3}.",
  "Отряд до {0} бойцов, отдых после боя {1} с.": "Oddíl až {0} bojovníků, odpočinek po boji {1} s.",
  "Победа открывает": "Výhra odemyká",
- "везде одинаково": "všude stejně"
+ "везде одинаково": "všude stejně",
+ "Сначала улучшите до уровня {0}: {1}": "Nejdřív vylepši na úroveň {0}: {1}",
+ "Новый уровень здания открывает следующие ступени его улучшений.": "Každá nová úroveň budovy otevírá další stupně jejích vylepšení.",
+ "Дальше — когда здание станет {0}-го уровня": "Další až s budovou na úrovni {0}",
+ "Ступени по уровню здания": "Stupně podle úrovně budovy",
+ "Уровень {0}: {1} из {2}": "Úroveň {0}: {1} z {2}",
+ "Крепкие бараки": "Pevná kasárna",
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Úroveň budovy otevírá další stupně jejích vylepšení. Vyber kasárna na mapě a stiskni „Vylepšit“: na druhé úrovni se všem čtyřem vylepšením kasáren — „Víc bojovníků“, „Otužilost“, „Odpočinek“ a „Sláva arény“ — otevře další stupeň."
 }

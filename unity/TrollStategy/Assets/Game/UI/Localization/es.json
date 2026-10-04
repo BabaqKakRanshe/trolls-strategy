@@ -825,6 +825,10 @@
 "v": "Primero construye: {0}"
 },
 {
+"k": "Сначала улучшите до уровня {0}: {1}",
+"v": "Primero mejora al nivel {0}: {1}"
+},
+{
 "k": "Раб: {0}/{1}",
 "v": "Trab.: {0}/{1}"
 },
@@ -1501,6 +1505,10 @@
 "v": "Las mejoras del gremio afectan a todos los porteadores de la colonia a la vez."
 },
 {
+"k": "Новый уровень здания открывает следующие ступени его улучшений.",
+"v": "Cada nuevo nivel del edificio abre los siguientes pasos de sus mejoras."
+},
+{
 "k": "Перенести",
 "v": "Trasladar"
 },
@@ -1509,20 +1517,20 @@
 "v": "indicar en el mapa"
 },
 {
-"k": "Нанять: ",
-"v": "Contratar:"
-},
-{
-"k": "закрыто",
-"v": "cerrado"
-},
-{
 "k": "Улучшить",
 "v": "Mejorar"
 },
 {
 "k": "макс. уровень",
 "v": "nivel máx."
+},
+{
+"k": "Нанять: ",
+"v": "Contratar:"
+},
+{
+"k": "закрыто",
+"v": "cerrado"
 },
 {
 "k": "Снести",
@@ -1599,6 +1607,10 @@
 {
 "k": "{0}: {1} из {2}",
 "v": "{0}: {1} de {2}"
+},
+{
+"k": "Дальше — когда здание станет {0}-го уровня",
+"v": "El siguiente, cuando el edificio llegue al nivel {0}"
 },
 {
 "k": "максимум",
@@ -2153,6 +2165,14 @@
 "v": "Se compra en"
 },
 {
+"k": "Ступени по уровню здания",
+"v": "Pasos según el nivel del edificio"
+},
+{
+"k": "Уровень {0}: {1} из {2}",
+"v": "Nivel {0}: {1} de {2}"
+},
+{
 "k": "уровень {0}",
 "v": "nivel {0}"
 },
@@ -2369,14 +2389,6 @@
 "v": "Los combatientes del asentamiento son más resistentes: +15% de salud por nivel."
 },
 {
-"k": "Оружейная выучка",
-"v": "Instrucción con armas"
-},
-{
-"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
-"v": "Cada golpe de un combatiente del asentamiento hace 1 de daño más por nivel."
-},
-{
 "k": "Отдых",
 "v": "Descanso"
 },
@@ -2391,6 +2403,14 @@
 {
 "k": "Победы на арене приносят на 15% больше золота за уровень.",
 "v": "Las victorias en la arena dan un 15% más de oro por nivel."
+},
+{
+"k": "Оружейная выучка",
+"v": "Instrucción con armas"
+},
+{
+"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
+"v": "Cada golpe de un combatiente del asentamiento hace 1 de daño más por nivel."
 },
 {
 "k": "Первый работник",
@@ -2627,6 +2647,14 @@
 {
 "k": "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.",
 "v": "El encantador une una espada y un cristal en una espada encantada. Constrúyelo y pon un trabajador."
+},
+{
+"k": "Крепкие бараки",
+"v": "Un cuartel firme"
+},
+{
+"k": "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.",
+"v": "El nivel de un edificio abre los siguientes pasos de sus mejoras. Elige el cuartel en el mapa y pulsa «Mejorar»: en el nivel 2, cada una de las cuatro mejoras del cuartel —«Más combatientes», «Temple», «Descanso» y «Gloria de la arena»— abre un paso más."
 },
 {
 "k": "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.",
@@ -3231,10 +3259,6 @@
 {
 "k": "30. Хозяева арены",
 "v": "30. Amos de la arena"
-},
-{
-"k": "В гильдии учат носильщиков: быстрее ходить, больше поднимать, скорее грузиться. Построй её и купи в гильдии или бараках два уровня улучшений.",
-"v": "El gremio enseña a los porteadores a caminar más rápido, cargar más y cargar antes. Constrúyelo y compra dos niveles de mejoras en el gremio o en el cuartel."
 },
 {
 "k": "Гоблин",

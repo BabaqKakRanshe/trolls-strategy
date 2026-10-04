@@ -167,7 +167,7 @@ namespace TrollStrategy.Application
     public sealed class UpgradeSnapshot
     {
         public UpgradeSnapshot(string id, string name, string description, BuildingKind host, UpgradeEffect effect,
-            int amountPerLevel, int level, int maxLevel, int nextCost, bool hostBuilt)
+            int amountPerLevel, int level, int maxLevel, int nextCost, int hostLevel, int nextHostLevel)
         {
             Id = id;
             Name = name;
@@ -178,7 +178,8 @@ namespace TrollStrategy.Application
             Level = level;
             MaxLevel = maxLevel;
             NextCost = nextCost;
-            HostBuilt = hostBuilt;
+            HostLevel = hostLevel;
+            NextHostLevel = nextHostLevel;
         }
 
         public string Id { get; }
@@ -191,8 +192,16 @@ namespace TrollStrategy.Application
         public int MaxLevel { get; }
         /// <summary>Gold for the next level; -1 at the top.</summary>
         public int NextCost { get; }
-        public bool HostBuilt { get; }
+        /// <summary>The level of the colony's highest host building; 0 while it has none.</summary>
+        public int HostLevel { get; }
+        /// <summary>The host level the next level needs; 0 at the top.</summary>
+        public int NextHostLevel { get; }
+        public bool HostBuilt => HostLevel > 0;
         public bool IsMaxed => Level >= MaxLevel;
+        /// <summary>The next level is for sale: the colony's host building is big enough for it.</summary>
+        public bool IsOpen => !IsMaxed && HostBuilt && HostLevel >= NextHostLevel;
+        /// <summary>The host stands, but the next level waits for it to grow.</summary>
+        public bool WaitsForHost => !IsMaxed && HostBuilt && HostLevel < NextHostLevel;
         /// <summary>The whole effect bought so far, in the effect's own unit (percent or count).</summary>
         public int Total => Level * AmountPerLevel;
     }

@@ -364,19 +364,26 @@ namespace TrollStrategy.Bots
             return true;
         }
 
-        /// <summary>Raises the cheapest colony upgrade not at its top, building its host first when the colony has none.</summary>
+        /// <summary>
+        /// Raises the cheapest colony upgrade whose next level is open. While none is, it builds the host of the
+        /// cheapest one, or raises that host when its next level waits for a bigger building.
+        /// </summary>
         public bool BuyUpgrade(BotWait wait, string why, BuildingKind? host = null)
         {
-            var next = Snapshot.Upgrades.Where(u => !u.IsMaxed && (host == null || u.Host == host))
-                .OrderBy(u => u.NextCost).FirstOrDefault();
-            if (next == null)
+            var left = Snapshot.Upgrades.Where(u => !u.IsMaxed && (host == null || u.Host == host)).ToList();
+            if (left.Count == 0)
             {
                 wait?.Note("все улучшения куплены");
                 return false;
             }
-            if (!next.HostBuilt)
+            var next = left.Where(u => u.IsOpen).OrderBy(u => u.NextCost).FirstOrDefault();
+            if (next == null)
             {
-                Build(next.Host, wait, $"{Def(next.Host).DisplayName} для улучшений");
+                var first = left.OrderBy(u => u.NextCost).First();
+                if (!first.HostBuilt)
+                    Build(first.Host, wait, $"{Def(first.Host).DisplayName} для улучшений");
+                else
+                    Upgrade(HostOf(first.Host), wait, $"{why}: {Def(first.Host).DisplayName} открывает «{first.Name}»");
                 return false;
             }
             if (!Affordable(next.NextCost, wait, $"{why}: {next.Name}")) return false;
@@ -384,6 +391,9 @@ namespace TrollStrategy.Bots
             Spent(next.NextCost);
             return true;
         }
+
+        /// <summary>The colony's highest building of a kind: its level opens the upgrades it hosts.</summary>
+        public BuildingSnapshot HostOf(BuildingKind kind) => BuildingsOf(kind).OrderByDescending(b => b.Level).FirstOrDefault();
 
         /// <summary>Buys one more block of land next to the colony's own, nearest the core.</summary>
         public bool BuyLandBlock(BotWait wait, string why)

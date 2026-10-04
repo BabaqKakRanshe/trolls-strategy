@@ -172,6 +172,11 @@ namespace TrollStrategy.Editor.Setup
                         "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.",
                         Goals(QuestGoal.OwnBuildings(BuildingKind.Enchanter), QuestGoal.AnyWorkAt(BuildingKind.Enchanter, 1)),
                         Rewards(QuestReward.Coins(400))),
+                    // before the sixth arena level: the barracks' level opens the deeper steps of their upgrades
+                    Quest("barracks-upgrade", "Крепкие бараки",
+                        "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.",
+                        Goals(QuestGoal.UpgradeBuilding(BuildingKind.Barracks, 2)),
+                        Rewards(QuestReward.Coins(400))),
                     Quest("arena-six", "Слава арены",
                         "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.",
                         Goals(QuestGoal.ReachArenaLevel(6)),

@@ -27,8 +27,9 @@ namespace TrollStrategy.Content
     }
 
     /// <summary>
-    /// A colony improvement bought level by level in its host building (the haulers' guild, the barracks).
-    /// Each level adds <see cref="AmountPerLevel"/> of its effect for the whole colony.
+    /// A colony improvement bought level by level in its host building (the haulers' guild, the barracks, the
+    /// armory). Each level adds <see cref="AmountPerLevel"/> of its effect for the whole colony; the deeper levels
+    /// wait for a host building of a higher level (<see cref="HostLevelFrom"/>).
     /// </summary>
     [Serializable]
     public sealed class UpgradeDefinition
@@ -43,12 +44,14 @@ namespace TrollStrategy.Content
         [SerializeField] private int _amountPerLevel = 1;
         [Tooltip("Gold for each level, in order; the count is the highest level.")]
         [SerializeField] private int[] _costs = Array.Empty<int>();
+        [Tooltip("Level of the host building each upgrade level needs, in order; a missing entry needs level 1.")]
+        [SerializeField] private int[] _hostLevels = Array.Empty<int>();
 
         // for the serializer
         private UpgradeDefinition() { }
 
         public UpgradeDefinition(string id, string displayName, string description, BuildingKind host,
-            UpgradeEffect effect, int amountPerLevel, int[] costs)
+            UpgradeEffect effect, int amountPerLevel, int[] costs, int[] hostLevels = null)
         {
             _id = id;
             _displayName = displayName;
@@ -57,6 +60,7 @@ namespace TrollStrategy.Content
             _effect = effect;
             _amountPerLevel = amountPerLevel;
             _costs = costs ?? Array.Empty<int>();
+            _hostLevels = hostLevels ?? Array.Empty<int>();
         }
 
         public string Id => _id ?? string.Empty;
@@ -69,5 +73,20 @@ namespace TrollStrategy.Content
 
         /// <summary>Gold for raising the upgrade from <paramref name="level"/> to the next one; -1 at the top.</summary>
         public int CostFrom(int level) => level >= 0 && level < MaxLevel ? _costs[level] : -1;
+
+        /// <summary>Level of the host building that raising the upgrade from <paramref name="level"/> needs; 0 at the top.</summary>
+        public int HostLevelFrom(int level)
+        {
+            if (level < 0 || level >= MaxLevel) return 0;
+            return _hostLevels != null && level < _hostLevels.Length ? Math.Max(1, _hostLevels[level]) : 1;
+        }
+
+        /// <summary>How many levels, counted from the first, a host building of <paramref name="hostLevel"/> opens.</summary>
+        public int OpenLevels(int hostLevel)
+        {
+            int open = 0;
+            while (open < MaxLevel && HostLevelFrom(open) <= hostLevel) open++;
+            return open;
+        }
     }
 }

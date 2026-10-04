@@ -630,6 +630,9 @@
  "Сначала постройте: {0}": [
   "Runtime/Domain/Upgrades.cs"
  ],
+ "Сначала улучшите до уровня {0}: {1}": [
+  "Runtime/Domain/Upgrades.cs"
+ ],
  "Раб: {0}/{1}": [
   "Runtime/Presentation/Buildings/BuildingView.cs"
  ],
@@ -1165,22 +1168,25 @@
  "Улучшения гильдии действуют на всех носильщиков колонии сразу.": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
+ "Новый уровень здания открывает следующие ступени его улучшений.": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
  "Перенести": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "указать на карте": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
- "Нанять: ": [
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
- "закрыто": [
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
  "Улучшить": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "макс. уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Нанять: ": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "закрыто": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "Снести": [
@@ -1239,6 +1245,9 @@
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "{0}: {1} из {2}": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Дальше — когда здание станет {0}-го уровня": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "максимум": [
@@ -1672,6 +1681,12 @@
  "Покупается в": [
   "Runtime/UI/Colony/WikiPanel.cs"
  ],
+ "Ступени по уровню здания": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Уровень {0}: {1} из {2}": [
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
  "уровень {0}": [
   "Runtime/UI/Colony/WikiPanel.cs"
  ],
@@ -1880,14 +1895,6 @@
   "Editor/Setup/ProductionContentSetup.cs",
   "Content/Definitions/GameContentCatalog.asset"
  ],
- "Оружейная выучка": [
-  "Editor/Setup/ProductionContentSetup.cs",
-  "Content/Definitions/GameContentCatalog.asset"
- ],
- "Каждый удар бойца поселения наносит на 1 урона больше за уровень.": [
-  "Editor/Setup/ProductionContentSetup.cs",
-  "Content/Definitions/GameContentCatalog.asset"
- ],
  "Отдых": [
   "Editor/Setup/ProductionContentSetup.cs",
   "Content/Definitions/GameContentCatalog.asset"
@@ -1903,6 +1910,14 @@
   "Content/Definitions/Progression.asset"
  ],
  "Победы на арене приносят на 15% больше золота за уровень.": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Оружейная выучка": [
+  "Editor/Setup/ProductionContentSetup.cs",
+  "Content/Definitions/GameContentCatalog.asset"
+ ],
+ "Каждый удар бойца поселения наносит на 1 урона больше за уровень.": [
   "Editor/Setup/ProductionContentSetup.cs",
   "Content/Definitions/GameContentCatalog.asset"
  ],
@@ -2142,6 +2157,13 @@
  "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.": [
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
+ ],
+ "Крепкие бараки": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
  ],
  "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.": [
   "Editor/Setup/ProgressionContentSetup.cs",
@@ -2657,9 +2679,6 @@
  ],
  "30. Хозяева арены": [
   "Content/Definitions/Mission_30.asset"
- ],
- "В гильдии учат носильщиков: быстрее ходить, больше поднимать, скорее грузиться. Построй её и купи в гильдии или бараках два уровня улучшений.": [
-  "Content/Definitions/Progression.asset"
  ],
  "Гоблин": [
   "Content/Definitions/Unit_Goblin.asset"

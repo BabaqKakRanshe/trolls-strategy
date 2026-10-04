@@ -818,5 +818,12 @@
  "Первая победа: {0}–{1} золота. Повтор: {2}–{3}.": "Primeira vitória: {0}–{1} de ouro. Repetição: {2}–{3}.",
  "Отряд до {0} бойцов, отдых после боя {1} с.": "Esquadrão de até {0} lutadores, descanso após a luta {1} s.",
  "Победа открывает": "A vitória desbloqueia",
- "везде одинаково": "igual em todo lugar"
+ "везде одинаково": "igual em todo lugar",
+ "Сначала улучшите до уровня {0}: {1}": "Primeiro melhore até o nível {0}: {1}",
+ "Новый уровень здания открывает следующие ступени его улучшений.": "Cada novo nível do edifício abre as próximas etapas das suas melhorias.",
+ "Дальше — когда здание станет {0}-го уровня": "O próximo quando o edifício chegar ao nível {0}",
+ "Ступени по уровню здания": "Etapas por nível do edifício",
+ "Уровень {0}: {1} из {2}": "Nível {0}: {1} de {2}",
+ "Крепкие бараки": "Um quartel firme",
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "O nível de um edifício abre as próximas etapas das suas melhorias. Escolha o quartel no mapa e clique em “Melhorar”: no nível 2, cada uma das quatro melhorias do quartel — “Mais combatentes”, “Têmpera”, “Descanso” e “Glória da arena” — abre mais uma etapa."
 }

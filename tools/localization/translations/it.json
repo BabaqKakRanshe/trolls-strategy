@@ -818,5 +818,12 @@
  "Первая победа: {0}–{1} золота. Повтор: {2}–{3}.": "Prima vittoria: {0}–{1} d'oro. Ripetizione: {2}–{3}.",
  "Отряд до {0} бойцов, отдых после боя {1} с.": "Squadra fino a {0} combattenti, riposo dopo la battaglia {1} s.",
  "Победа открывает": "La vittoria sblocca",
- "везде одинаково": "ovunque uguale"
+ "везде одинаково": "ovunque uguale",
+ "Сначала улучшите до уровня {0}: {1}": "Prima potenzia al livello {0}: {1}",
+ "Новый уровень здания открывает следующие ступени его улучшений.": "Ogni nuovo livello dell'edificio sblocca i gradini successivi dei suoi potenziamenti.",
+ "Дальше — когда здание станет {0}-го уровня": "Il prossimo quando l'edificio arriva al livello {0}",
+ "Ступени по уровню здания": "Gradini per livello dell'edificio",
+ "Уровень {0}: {1} из {2}": "Livello {0}: {1} su {2}",
+ "Крепкие бараки": "Una caserma solida",
+ "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.": "Il livello di un edificio sblocca i gradini successivi dei suoi potenziamenti. Scegli la caserma sulla mappa e premi «Potenzia»: al livello 2 ognuno dei quattro potenziamenti della caserma — «Più combattenti», «Tempra», «Riposo» e «Gloria dell'arena» — sblocca un gradino in più."
 }

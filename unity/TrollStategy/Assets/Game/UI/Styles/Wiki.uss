@@ -183,6 +183,11 @@
     width: 90px;
 }
 
+/* bought levels of an upgrade, "3 / 5", under a title wider than a number */
+.wiki-cell--level {
+    width: 96px;
+}
+
 .wiki-cell--wide {
     flex-grow: 1;
     flex-shrink: 1;

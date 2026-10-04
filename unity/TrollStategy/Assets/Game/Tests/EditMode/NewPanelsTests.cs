@@ -287,6 +287,36 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void BarracksCard_RaisesTheBuilding_WhoseLevelOpensTheNextStepOfItsUpgrades()
+        {
+            Assert.That(_session.DebugAddGold(20000).Ok, Is.True);
+            var hud = TestUi.Colony(_session, _interaction);
+            var barracks = _session.CurrentSnapshot.Buildings.Single(b => b.Kind == BuildingKind.Barracks);
+            _interaction.SelectBuilding(barracks.Id);
+            hud.Refresh(_session.CurrentSnapshot);
+            Assert.That(hud.Inspect.Actions, Has.Count.EqualTo(4), "Move, upgrade and a hire for goblins and trolls");
+            Assert.That(hud.Inspect.Actions[0].parent.ClassListContains("actions--grid"), Is.True,
+                "Four actions go two by two, so their words do not break");
+
+            var hosted = _catalog.Upgrades.Where(u => u.Host == BuildingKind.Barracks).ToList();
+            var squad = hosted.First(u => u.HostLevelFrom(1) == 2);
+            int row = hosted.IndexOf(squad);
+            Assert.That(_session.Dispatch(new BuyUpgradeCommand(squad.Id)).Ok, Is.True);
+            hud.Refresh(_session.CurrentSnapshot);
+            Assert.That(UiFeel.IsAvailable(hud.Inspect.UpgradeButtons[row]), Is.False, "The next step waits for the barracks' level 2");
+            Assert.That(hud.Inspect.UpgradeInfos[row], Does.Contain("2-го уровня"), "The row says what opens it");
+            Assert.That(hud.Inspect.Note, Does.Contain("Новый уровень здания открывает"));
+
+            UiFeel.Press(hud.Inspect.Actions[1]);
+            hud.Refresh(_session.CurrentSnapshot);
+            Assert.That(_session.CurrentSnapshot.Buildings.Single(b => b.Id == barracks.Id).Level, Is.EqualTo(2),
+                "The second action raises the barracks");
+            Assert.That(UiFeel.IsAvailable(hud.Inspect.UpgradeButtons[row]), Is.True);
+            UiFeel.Press(hud.Inspect.UpgradeButtons[row]);
+            Assert.That(_session.CurrentSnapshot.Upgrades.Single(u => u.Id == squad.Id).Level, Is.EqualTo(2));
+        }
+
+        [Test]
         public void Localization_TranslatesTexts_TemplatesAndTheNamesInside()
         {
             string chosen = GameSettings.Language;

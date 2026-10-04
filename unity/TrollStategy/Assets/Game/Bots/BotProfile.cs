@@ -94,7 +94,7 @@ namespace TrollStrategy.Bots
         public static readonly BotProfile Warlord = new("warlord", "Воитель",
             "Нанимает самых сильных, а не самых выгодных, ходит на арену при каждой возможности ради золота и вкладывается в казарму.",
             thinkSeconds: 10f, grows: true, workerKind: UnitKind.Troll, squadTrolls: 3, fightsForGold: true,
-            roleHiring: 0.65f, upgradeHosts: new[] { BuildingKind.Barracks, BuildingKind.HaulersGuild });
+            roleHiring: 0.65f, upgradeHosts: new[] { BuildingKind.Barracks, BuildingKind.Armory, BuildingKind.HaulersGuild });
 
         public static IReadOnlyList<BotProfile> All { get; } = new[] { Human, Passive, Typical, Active, Warlord };
     }

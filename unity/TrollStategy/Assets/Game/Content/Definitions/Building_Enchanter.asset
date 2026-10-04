@@ -22,7 +22,7 @@ MonoBehaviour:
   _crowdSpacing: 0.2
   _capacity: 10
   _maxWorkers: 3
-  _upgradeCosts: c4090000i
+  _upgradeCosts: c4090000a00f0000i
   _capacityPerLevel: 5
   _workersPerLevel: 1
   _saleBonusPerLevel: 0

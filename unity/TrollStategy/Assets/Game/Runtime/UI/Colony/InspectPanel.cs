@@ -16,7 +16,8 @@ namespace TrollStrategy.UI
     /// </summary>
     public sealed class InspectPanel
     {
-        private const int ActionCount = 3;
+        // the barracks shows the most: move, upgrade and two hires
+        private const int ActionCount = 4;
 
         private sealed class Row
         {
@@ -82,6 +83,7 @@ namespace TrollStrategy.UI
         private readonly List<UpgradeRow> _upgradePool = new();
         private readonly StaffList _staff;
         private readonly ActionButton[] _actions = new ActionButton[ActionCount];
+        private readonly VisualElement _actionRow;
         private int _rowCount;
         private int _actionCount;
         private string _shownId;
@@ -99,7 +101,7 @@ namespace TrollStrategy.UI
             _note = Ui.Require<Label>(root, "inspect-note");
             _slotsHeader = Ui.Require<Label>(root, "inspect-slots-header");
             _slots = Ui.Require<VisualElement>(root, "inspect-slots");
-            // the guild's and the barracks' colony upgrades, one row each, under the facts
+            // the colony upgrades of the guild, the barracks and the armory, one row each, under the facts
             _upgrades = Ui.Box("upgrades");
             _rows.parent.Insert(_rows.parent.IndexOf(_rows) + 1, _upgrades);
             var staffScroll = Ui.Require<ScrollView>(root, "inspect-staff-scroll");
@@ -108,7 +110,7 @@ namespace TrollStrategy.UI
             _staff = new StaffList(Ui.Require<VisualElement>(root, "inspect-staff"), context);
             UiFeel.Bind(Ui.Require<Button>(root, "inspect-close"), () => context.Interaction.CloseInspect(), Sfx.UiBack);
 
-            var actions = Ui.Require<VisualElement>(root, "inspect-actions");
+            var actions = _actionRow = Ui.Require<VisualElement>(root, "inspect-actions");
             for (int i = 0; i < ActionCount; i++)
             {
                 var button = Ui.StackButton("action", out var title, out var hint);
@@ -134,6 +136,20 @@ namespace TrollStrategy.UI
                 return visible;
             }
         }
+
+        /// <summary>The line under each shown upgrade: what a level gives, or what opens the next one.</summary>
+        public IReadOnlyList<string> UpgradeInfos
+        {
+            get
+            {
+                var visible = new List<string>();
+                foreach (var row in _upgradePool)
+                    if (Ui.IsShown(row.Root)) visible.Add(row.Info.text);
+                return visible;
+            }
+        }
+
+        public string Note => _note.text;
 
         /// <summary>The visible action buttons, left to right.</summary>
         public IReadOnlyList<Button> Actions
@@ -226,6 +242,9 @@ namespace TrollStrategy.UI
                 note = "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене.";
             if (building.Kind == BuildingKind.HaulersGuild)
                 note = "Улучшения гильдии действуют на всех носильщиков колонии сразу.";
+            // the deeper levels of the colony upgrades it hosts wait for this building's own level
+            if (building.UpgradeCost >= 0 && HostsUpgrades(building.Kind, snapshot))
+                note = (note != null ? note + "\n" : string.Empty) + "Новый уровень здания открывает следующие ступени его улучшений.";
             EndRows();
             SetNote(note);
             RenderUpgrades(building.Kind, snapshot);
@@ -235,6 +254,11 @@ namespace TrollStrategy.UI
             BeginActions();
             var interaction = _context.Interaction;
             AddAction("Перенести", "указать на карте", "", true, interaction.BeginMoveInspectedBuilding);
+            bool maxed = building.UpgradeCost < 0;
+            // every building of the game has three levels; one without them would show no upgrade at all
+            if (definition.MaxLevel > 1)
+                AddAction("Улучшить", maxed ? "макс. уровень" : Ui.Gold(building.UpgradeCost), "btn--primary",
+                    !maxed && snapshot.Gold >= building.UpgradeCost, interaction.UpgradeInspectedBuilding);
             if (building.Kind == BuildingKind.Barracks)
             {
                 foreach (var unit in catalog.Units)
@@ -250,11 +274,6 @@ namespace TrollStrategy.UI
             }
             else
             {
-                bool maxed = building.UpgradeCost < 0;
-                // a building without levels (the guild, the armory) shows no upgrade at all
-                if (definition.MaxLevel > 1)
-                    AddAction("Улучшить", maxed ? "макс. уровень" : Ui.Gold(building.UpgradeCost), "btn--primary",
-                        !maxed && snapshot.Gold >= building.UpgradeCost, interaction.UpgradeInspectedBuilding);
                 bool removable = definition.Constructible;
                 AddAction("Снести", removable ? "вернуть " + Ui.Gold(building.RefundGold) : "нельзя снести", "btn--danger",
                     removable, interaction.DemolishInspectedBuilding);
@@ -455,13 +474,23 @@ namespace TrollStrategy.UI
                 row.Id = upgrade.Id;
                 Ui.Show(row.Root, true);
                 Ui.SetText(row.Title, $"{upgrade.Name}: {upgrade.Level} из {upgrade.MaxLevel}");
-                Ui.SetText(row.Info, EffectText(upgrade));
+                // a level the building is still too small for says what opens it, in place of what it gives
+                Ui.SetText(row.Info, upgrade.WaitsForHost
+                    ? $"Дальше — когда здание станет {upgrade.NextHostLevel}-го уровня"
+                    : EffectText(upgrade));
                 row.Description = upgrade.Description;
                 Ui.SetCaption(row.Buy, upgrade.IsMaxed ? "максимум" : Ui.Gold(upgrade.NextCost));
-                UiFeel.SetAvailable(row.Buy, !upgrade.IsMaxed && upgrade.HostBuilt && snapshot.Gold >= upgrade.NextCost);
+                UiFeel.SetAvailable(row.Buy, upgrade.IsOpen && snapshot.Gold >= upgrade.NextCost);
             }
             for (int i = shown; i < _upgradePool.Count; i++) Ui.Show(_upgradePool[i].Root, false);
             Ui.Show(_upgrades, shown > 0);
+        }
+
+        private static bool HostsUpgrades(BuildingKind kind, GameSnapshot snapshot)
+        {
+            foreach (var upgrade in snapshot.Upgrades)
+                if (upgrade.Host == kind) return true;
+            return false;
         }
 
         private void HideUpgrades()
@@ -505,6 +534,8 @@ namespace TrollStrategy.UI
         private void EndActions()
         {
             for (int i = _actionCount; i < ActionCount; i++) Ui.Show(_actions[i].Button, false);
+            // four in a row would break their words; four go two by two
+            _actionRow.EnableInClassList("actions--grid", _actionCount > 3);
         }
 
         private static BuildingSnapshot FindBuilding(GameSnapshot snapshot, string id)

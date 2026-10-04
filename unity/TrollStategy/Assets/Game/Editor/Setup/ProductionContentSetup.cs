@@ -10,8 +10,9 @@ namespace TrollStrategy.Editor.Setup
     /// <summary>
     /// Writes the production chains and their prices into the content assets: goods with their sale prices,
     /// icons and kit models,
-    /// building prices, capacities, workers, recipes with their by-products, building levels and the colony
-    /// upgrades of the haulers' guild and the barracks. The numbers come from the balance passes in
+    /// building prices, capacities, workers, recipes with their by-products, building levels (three for every
+    /// building, one for each kit model) and the colony upgrades of the haulers' guild, the barracks and the armory,
+    /// whose deeper levels open with the level of their building. The numbers come from the balance passes in
     /// docs/economy-balance.md (summary in docs/GDD.md §5.3); edit them here or directly in the assets, then
     /// re-run to reset.
     /// </summary>
@@ -85,22 +86,27 @@ namespace TrollStrategy.Editor.Setup
             // Raw producers stay cheap, so another copy is always a sensible way to grow. A processing building
             // pays back in about 7 minutes against putting the same goblins on raw work. Capacities are small
             // since 2026-10-02: a buffer fills up and asks for carriers. Every producer has levels: more places,
-            // more room, and from level 2 or 3 a new recipe or by-product.
+            // more room, and from level 2 or 3 a new recipe or by-product. Since 2026-10-02 (evening) every building
+            // has three levels, one for each model of the kit: the fourth levels went, the rest got a third.
             Producer(BuildingKind.Mine, 200, 50, 5,
                 Recipe(1f, null, Out(ResourceKind.IronOre, 1),
                     Extra(ResourceKind.VioletCrystal, 1, 4),
                     Extra(ResourceKind.Coal, 1, 20, 2),
                     Extra(ResourceKind.GoldNugget, 1, 2, 3)));
-            Upgrades(BuildingKind.Mine, new[] { 600, 900, 1300 }, capacityPerLevel: 25, workersPerLevel: 3, saleBonusPerLevel: 0);
+            Upgrades(BuildingKind.Mine, new[] { 600, 900 }, capacityPerLevel: 25, workersPerLevel: 3, saleBonusPerLevel: 0);
             Storage(BuildingKind.Warehouse, StorageRole.Stockpile, RawAndIntermediateGoods);
+            Upgrades(BuildingKind.Warehouse, new[] { 120, 200 }, capacityPerLevel: 250, workersPerLevel: 0, saleBonusPerLevel: 0);
             Storage(BuildingKind.Market, StorageRole.Market);
-            Upgrades(BuildingKind.Market, new[] { 1000, 2000, 3000 }, capacityPerLevel: 0, workersPerLevel: 0, saleBonusPerLevel: 1);
+            Upgrades(BuildingKind.Market, new[] { 1000, 2000 }, capacityPerLevel: 0, workersPerLevel: 0, saleBonusPerLevel: 1);
+            // the armory's level opens the deeper drill of the colony's fighters (Hosted below)
             Storage(BuildingKind.Armory, StorageRole.Armory);
             Price(BuildingKind.Armory, 600);
+            Upgrades(BuildingKind.Armory, new[] { 800, 1800 }, 0, 0, 0);
             // the tutorial's last building before the first battle: about a minute and a half of income by then;
-            // its upgrades (squad, health, damage, rest, glory) are bought inside it
+            // its upgrades (squad, health, rest, glory) are bought inside it, the deeper ones with its level
             Storage(BuildingKind.Barracks, StorageRole.None);
             Price(BuildingKind.Barracks, 300);
+            Upgrades(BuildingKind.Barracks, new[] { 800, 2000 }, 0, 0, 0);
             Producer(BuildingKind.Smeltery, 700, 25, 4,
                 Recipe(3f, In(ResourceKind.IronOre, 2, ResourceKind.Coal, 1), Out(ResourceKind.IronIngot, 2)),
                 Recipe(2f, In(ResourceKind.IronOre, 2), Out(ResourceKind.IronIngot, 1)),
@@ -143,48 +149,51 @@ namespace TrollStrategy.Editor.Setup
                     Out(ResourceKind.EnchantedSword, 1), minLevel: 2), 5),
                 Spoils(Recipe(6f, In(ResourceKind.IronSword, 1, ResourceKind.VioletCrystal, 1),
                     Out(ResourceKind.EnchantedSword, 1)), 15));
-            Upgrades(BuildingKind.Enchanter, new[] { 2500 }, 5, 1, 0);
+            Upgrades(BuildingKind.Enchanter, new[] { 2500, 4000 }, 5, 1, 0);
             // four goods in, one feast out; a golden ear makes a double feast from level 2
             Producer(BuildingKind.Tavern, 2000, 15, 4,
                 Recipe(6f, In(ResourceKind.GoldenWheat, 1, ResourceKind.Meat, 1, ResourceKind.Milk, 1, ResourceKind.Logs, 1),
                     Out(ResourceKind.Feast, 2), minLevel: 2),
                 Recipe(6f, In(ResourceKind.Wheat, 2, ResourceKind.Meat, 1, ResourceKind.Milk, 1, ResourceKind.Logs, 1),
                     Out(ResourceKind.Feast, 1)));
-            Upgrades(BuildingKind.Tavern, new[] { 2000 }, 10, 2, 0);
+            Upgrades(BuildingKind.Tavern, new[] { 2000, 3000 }, 10, 2, 0);
             Storage(BuildingKind.HaulersGuild, StorageRole.None);
             Price(BuildingKind.HaulersGuild, 1200);
+            Upgrades(BuildingKind.HaulersGuild, new[] { 1000, 2500 }, 0, 0, 0);
 
+            // a host building's level opens the levels of its upgrades a third at a time (Hosted)
             catalog.SetUpgrades(new[]
             {
                 // the haulers' guild: every carrier of the colony at once
-                new UpgradeDefinition("guild-step", "Лёгкий шаг",
+                Hosted("guild-step", "Лёгкий шаг",
                     "Все существа ходят по колонии на 10% быстрее за уровень.", BuildingKind.HaulersGuild,
                     UpgradeEffect.WalkSpeedPercent, 10, new[] { 300, 500, 800, 1200, 1800 }),
-                new UpgradeDefinition("guild-backs", "Крепкие спины",
+                Hosted("guild-backs", "Крепкие спины",
                     "Носильщики поднимают больше: +25% к выносливости за уровень, то есть лишняя единица груза каждые четыре ходки.",
                     BuildingKind.HaulersGuild, UpgradeEffect.CarryPercent, 25, new[] { 400, 700, 1100, 1600 }),
-                new UpgradeDefinition("guild-hands", "Быстрые руки",
+                Hosted("guild-hands", "Быстрые руки",
                     "Погрузка и выгрузка идут на 20% быстрее за уровень: меньше ожидания у дверей.",
                     BuildingKind.HaulersGuild, UpgradeEffect.HandlingTimePercent, 20, new[] { 300, 600, 1000 }),
-                new UpgradeDefinition("guild-doors", "Широкие двери",
+                Hosted("guild-doors", "Широкие двери",
                     "У двери каждого здания грузится на одного носильщика больше: очередь тает быстрее.",
                     BuildingKind.HaulersGuild, UpgradeEffect.LoadersPerDoor, 1, new[] { 250, 450, 700, 1000 }),
                 // the barracks: the squad that goes to the arena
-                new UpgradeDefinition("barracks-squad", "Больше бойцов",
+                Hosted("barracks-squad", "Больше бойцов",
                     "В бой идёт на одного бойца больше.", BuildingKind.Barracks,
                     UpgradeEffect.SquadSize, 1, new[] { 800, 1600, 3000 }),
-                new UpgradeDefinition("barracks-health", "Закалка",
+                Hosted("barracks-health", "Закалка",
                     "Бойцы поселения выносливее: +15% здоровья за уровень.", BuildingKind.Barracks,
                     UpgradeEffect.FighterHealthPercent, 15, new[] { 500, 900, 1400, 2000 }),
-                new UpgradeDefinition("barracks-damage", "Оружейная выучка",
-                    "Каждый удар бойца поселения наносит на 1 урона больше за уровень.", BuildingKind.Barracks,
-                    UpgradeEffect.FighterDamage, 1, new[] { 600, 1200, 2000 }),
-                new UpgradeDefinition("barracks-rest", "Отдых",
+                Hosted("barracks-rest", "Отдых",
                     "Арена восстанавливается после боя на 20% быстрее за уровень.", BuildingKind.Barracks,
                     UpgradeEffect.BattleCooldownPercent, 20, new[] { 400, 800, 1200 }),
-                new UpgradeDefinition("barracks-glory", "Слава арены",
+                Hosted("barracks-glory", "Слава арены",
                     "Победы на арене приносят на 15% больше золота за уровень.", BuildingKind.Barracks,
-                    UpgradeEffect.BattleRewardPercent, 15, new[] { 700, 1400, 2400 })
+                    UpgradeEffect.BattleRewardPercent, 15, new[] { 700, 1400, 2400 }),
+                // the armory: the drill with the colony's weapons, moved here from the barracks on 2026-10-02
+                Hosted("armory-drill", "Оружейная выучка",
+                    "Каждый удар бойца поселения наносит на 1 урона больше за уровень.", BuildingKind.Armory,
+                    UpgradeEffect.FighterDamage, 1, new[] { 600, 1200, 2000 })
             });
             EditorUtility.SetDirty(catalog);
 
@@ -240,6 +249,22 @@ namespace TrollStrategy.Editor.Setup
             var definition = LoadBuilding(kind);
             definition.SetUpgrades(costs, capacityPerLevel, workersPerLevel, saleBonusPerLevel);
             EditorUtility.SetDirty(definition);
+        }
+
+        // An upgrade whose levels open a third at a time with its host's level, rounding up: five levels open two
+        // at level 1, four at level 2 and all at level 3; three open one by one.
+        private static UpgradeDefinition Hosted(string id, string name, string description, BuildingKind host,
+            UpgradeEffect effect, int amountPerLevel, int[] costs)
+        {
+            int hostLevels = LoadBuilding(host).MaxLevel;
+            var needs = new int[costs.Length];
+            for (int i = 0; i < costs.Length; i++)
+            {
+                int level = 1;
+                while (level < hostLevels && (costs.Length * level + hostLevels - 1) / hostLevels < i + 1) level++;
+                needs[i] = level;
+            }
+            return new UpgradeDefinition(id, name, description, host, effect, amountPerLevel, costs, needs);
         }
 
         private static void Storage(BuildingKind kind, StorageRole role, params ResourceKind[] stored)

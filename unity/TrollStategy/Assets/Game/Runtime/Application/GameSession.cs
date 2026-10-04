@@ -440,7 +440,7 @@ namespace TrollStrategy.Application
                 int level = _state.UpgradeLevel(upgrade.Id);
                 upgrades.Add(new UpgradeSnapshot(upgrade.Id, upgrade.DisplayName, upgrade.Description, upgrade.Host,
                     upgrade.Effect, upgrade.AmountPerLevel, level, upgrade.MaxLevel, upgrade.CostFrom(level),
-                    _state.Buildings.Exists(b => b.Kind == upgrade.Host)));
+                    UpgradeRules.HostLevel(_state, upgrade.Host), upgrade.HostLevelFrom(level)));
             }
             return upgrades;
         }

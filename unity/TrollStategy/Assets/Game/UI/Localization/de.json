@@ -825,6 +825,10 @@
 "v": "Baue zuerst: {0}"
 },
 {
+"k": "Сначала улучшите до уровня {0}: {1}",
+"v": "Verbessere zuerst auf Stufe {0}: {1}"
+},
+{
 "k": "Раб: {0}/{1}",
 "v": "Team: {0}/{1}"
 },
@@ -1501,6 +1505,10 @@
 "v": "Gilden-Verbesserungen wirken auf alle Träger der Kolonie zugleich."
 },
 {
+"k": "Новый уровень здания открывает следующие ступени его улучшений.",
+"v": "Jede neue Stufe des Gebäudes schaltet die nächsten Stufen seiner Verbesserungen frei."
+},
+{
 "k": "Перенести",
 "v": "Versetzen"
 },
@@ -1509,20 +1517,20 @@
 "v": "auf der Karte zeigen"
 },
 {
-"k": "Нанять: ",
-"v": "Anheuern: "
-},
-{
-"k": "закрыто",
-"v": "gesperrt"
-},
-{
 "k": "Улучшить",
 "v": "Verbessern"
 },
 {
 "k": "макс. уровень",
 "v": "Höchststufe"
+},
+{
+"k": "Нанять: ",
+"v": "Anheuern: "
+},
+{
+"k": "закрыто",
+"v": "gesperrt"
 },
 {
 "k": "Снести",
@@ -1599,6 +1607,10 @@
 {
 "k": "{0}: {1} из {2}",
 "v": "{0}: {1} von {2}"
+},
+{
+"k": "Дальше — когда здание станет {0}-го уровня",
+"v": "Weiter, sobald das Gebäude Stufe {0} hat"
 },
 {
 "k": "максимум",
@@ -2153,6 +2165,14 @@
 "v": "Gekauft in"
 },
 {
+"k": "Ступени по уровню здания",
+"v": "Stufen nach Gebäudestufe"
+},
+{
+"k": "Уровень {0}: {1} из {2}",
+"v": "Stufe {0}: {1} von {2}"
+},
+{
 "k": "уровень {0}",
 "v": "Stufe {0}"
 },
@@ -2369,14 +2389,6 @@
 "v": "Die Kämpfer der Kolonie halten mehr aus: +15% Gesundheit pro Stufe."
 },
 {
-"k": "Оружейная выучка",
-"v": "Waffenübung"
-},
-{
-"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
-"v": "Jeder Schlag eines Kämpfers der Kolonie richtet pro Stufe 1 Schaden mehr an."
-},
-{
 "k": "Отдых",
 "v": "Erholung"
 },
@@ -2391,6 +2403,14 @@
 {
 "k": "Победы на арене приносят на 15% больше золота за уровень.",
 "v": "Arenasiege bringen pro Stufe 15% mehr Gold."
+},
+{
+"k": "Оружейная выучка",
+"v": "Waffenübung"
+},
+{
+"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
+"v": "Jeder Schlag eines Kämpfers der Kolonie richtet pro Stufe 1 Schaden mehr an."
 },
 {
 "k": "Первый работник",
@@ -2627,6 +2647,14 @@
 {
 "k": "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.",
 "v": "Der Verzauberer verbindet Schwert und Kristall zu einem verzauberten Schwert. Baue ihn und stelle einen Arbeiter dazu."
+},
+{
+"k": "Крепкие бараки",
+"v": "Starke Kaserne"
+},
+{
+"k": "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.",
+"v": "Die Stufe eines Gebäudes schaltet die nächsten Stufen seiner Verbesserungen frei. Wähle die Kaserne auf der Karte und klicke auf „Verbessern“: Auf Stufe 2 öffnet sich bei allen vier Verbesserungen der Kaserne – „Mehr Kämpfer“, „Abhärtung“, „Erholung“ und „Arenaruhm“ – eine weitere Stufe."
 },
 {
 "k": "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.",
@@ -3231,10 +3259,6 @@
 {
 "k": "30. Хозяева арены",
 "v": "30. Herren der Arena"
-},
-{
-"k": "В гильдии учат носильщиков: быстрее ходить, больше поднимать, скорее грузиться. Построй её и купи в гильдии или бараках два уровня улучшений.",
-"v": "In der Gilde lernen Träger, schneller zu laufen, mehr zu heben und schneller zu laden. Baue sie und kaufe in der Gilde oder der Kaserne zwei Verbesserungsstufen."
 },
 {
 "k": "Гоблин",

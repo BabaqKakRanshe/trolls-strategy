@@ -825,6 +825,10 @@
 "v": "Prima costruisci: {0}"
 },
 {
+"k": "Сначала улучшите до уровня {0}: {1}",
+"v": "Prima potenzia al livello {0}: {1}"
+},
+{
 "k": "Раб: {0}/{1}",
 "v": "Lav.: {0}/{1}"
 },
@@ -1501,6 +1505,10 @@
 "v": "I potenziamenti della gilda valgono per tutti i portatori della colonia insieme."
 },
 {
+"k": "Новый уровень здания открывает следующие ступени его улучшений.",
+"v": "Ogni nuovo livello dell'edificio sblocca i gradini successivi dei suoi potenziamenti."
+},
+{
 "k": "Перенести",
 "v": "Sposta"
 },
@@ -1509,20 +1517,20 @@
 "v": "indica sulla mappa"
 },
 {
-"k": "Нанять: ",
-"v": "Assumere:"
-},
-{
-"k": "закрыто",
-"v": "chiuso"
-},
-{
 "k": "Улучшить",
 "v": "Potenzia"
 },
 {
 "k": "макс. уровень",
 "v": "liv. massimo"
+},
+{
+"k": "Нанять: ",
+"v": "Assumere:"
+},
+{
+"k": "закрыто",
+"v": "chiuso"
 },
 {
 "k": "Снести",
@@ -1599,6 +1607,10 @@
 {
 "k": "{0}: {1} из {2}",
 "v": "{0}: {1} su {2}"
+},
+{
+"k": "Дальше — когда здание станет {0}-го уровня",
+"v": "Il prossimo quando l'edificio arriva al livello {0}"
 },
 {
 "k": "максимум",
@@ -2153,6 +2165,14 @@
 "v": "Si compra in"
 },
 {
+"k": "Ступени по уровню здания",
+"v": "Gradini per livello dell'edificio"
+},
+{
+"k": "Уровень {0}: {1} из {2}",
+"v": "Livello {0}: {1} su {2}"
+},
+{
 "k": "уровень {0}",
 "v": "livello {0}"
 },
@@ -2369,14 +2389,6 @@
 "v": "I combattenti dell'insediamento sono più resistenti: +15% di salute per livello."
 },
 {
-"k": "Оружейная выучка",
-"v": "Addestramento alle armi"
-},
-{
-"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
-"v": "Ogni colpo di un combattente dell'insediamento fa 1 danno in più per livello."
-},
-{
 "k": "Отдых",
 "v": "Riposo"
 },
@@ -2391,6 +2403,14 @@
 {
 "k": "Победы на арене приносят на 15% больше золота за уровень.",
 "v": "Le vittorie nell'arena portano il 15% di oro in più per livello."
+},
+{
+"k": "Оружейная выучка",
+"v": "Addestramento alle armi"
+},
+{
+"k": "Каждый удар бойца поселения наносит на 1 урона больше за уровень.",
+"v": "Ogni colpo di un combattente dell'insediamento fa 1 danno in più per livello."
 },
 {
 "k": "Первый работник",
@@ -2627,6 +2647,14 @@
 {
 "k": "Зачарователь соединяет меч и кристалл в зачарованный меч. Построй его и поставь рабочего.",
 "v": "L'incantatore unisce una spada e un cristallo in una spada incantata. Costruiscilo e metti un lavoratore."
+},
+{
+"k": "Крепкие бараки",
+"v": "Una caserma solida"
+},
+{
+"k": "Уровень здания открывает следующие ступени его улучшений. Выбери бараки на карте и нажми «Улучшить»: на втором уровне у всех четырёх улучшений бараков — «Больше бойцов», «Закалка», «Отдых» и «Слава арены» — откроется ещё одна ступень.",
+"v": "Il livello di un edificio sblocca i gradini successivi dei suoi potenziamenti. Scegli la caserma sulla mappa e premi «Potenzia»: al livello 2 ognuno dei quattro potenziamenti della caserma — «Più combattenti», «Tempra», «Riposo» e «Gloria dell'arena» — sblocca un gradino in più."
 },
 {
 "k": "Дойди до шестого уровня арены. Улучшения бараков делают отряд сильнее.",
@@ -3231,10 +3259,6 @@
 {
 "k": "30. Хозяева арены",
 "v": "30. Padroni dell'arena"
-},
-{
-"k": "В гильдии учат носильщиков: быстрее ходить, больше поднимать, скорее грузиться. Построй её и купи в гильдии или бараках два уровня улучшений.",
-"v": "La gilda insegna ai portatori a camminare più veloci, sollevare di più e caricare prima. Costruiscila e compra due livelli di potenziamenti nella gilda o nella caserma."
 },
 {
 "k": "Гоблин",

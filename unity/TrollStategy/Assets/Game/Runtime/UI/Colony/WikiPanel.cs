@@ -248,7 +248,7 @@ namespace TrollStrategy.UI
             WikiSection.Enemies => new[] { "wiki-cell--name", "wiki-cell--num", "wiki-cell--num", "wiki-cell--num", "wiki-cell--wide" },
             WikiSection.Buildings => new[] { "wiki-cell--name", "wiki-cell--num", "wiki-cell--num", "wiki-cell--wide", "wiki-cell--price" },
             WikiSection.Goods => new[] { "wiki-cell--name", "wiki-cell--price", "wiki-cell--wide", "wiki-cell--wide" },
-            WikiSection.Upgrades => new[] { "wiki-cell--name", "wiki-cell--host", "wiki-cell--num", "wiki-cell--wide" },
+            WikiSection.Upgrades => new[] { "wiki-cell--name", "wiki-cell--host", "wiki-cell--level", "wiki-cell--wide" },
             WikiSection.Arena => new[] { "wiki-cell--name", "wiki-cell--wide", "wiki-cell--reward", "wiki-cell--host" },
             _ => new[] { "wiki-cell--name", "wiki-cell--text" }
         };
@@ -484,6 +484,15 @@ namespace TrollStrategy.UI
                     {
                         page.Add(Caption("Покупается в"));
                         page.Add(BuildingChips(new[] { host.Kind }));
+                    }
+                    // the deeper levels wait for a bigger building: how many each of its levels opens
+                    if (host != null && upgrade.OpenLevels(1) < upgrade.MaxLevel)
+                    {
+                        page.Add(Caption("Ступени по уровню здания"));
+                        var steps = new List<string>();
+                        for (int hostLevel = 1; hostLevel <= host.MaxLevel; hostLevel++)
+                            steps.Add($"Уровень {hostLevel}: {upgrade.OpenLevels(hostLevel)} из {upgrade.MaxLevel}");
+                        page.Add(Para(string.Join("\n", steps)));
                     }
                 }
             };

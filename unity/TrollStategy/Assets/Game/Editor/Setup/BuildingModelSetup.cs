@@ -11,7 +11,8 @@ namespace TrollStrategy.Editor.Setup
     /// Puts the kit model of a building added after the first kit (Tavern, HaulersGuild) into its BuildingBase
     /// variant: the stand-in's Kit* model instance is replaced by Assets/Vitaria/Models/Buildings/Bld_&lt;Kind&gt;.fbx
     /// at the same place, the catalog icon and the product shown over it are set from the icon atlases. Run after
-    /// TrollStrategy/Dev/Import Icon Atlases. Idempotent.
+    /// TrollStrategy/Dev/Import Icon Atlases, and before BuildingLevelModelSetup, which puts the level models next to
+    /// the new one. Idempotent.
     /// </summary>
     public static class BuildingModelSetup
     {
@@ -43,7 +44,8 @@ namespace TrollStrategy.Editor.Setup
                     var model = root.GetComponentInChildren<BuildingModel>(true)
                         ?? throw new InvalidOperationException(prefabPath + " has no BuildingModel");
                     var old = model.GetComponentsInChildren<Transform>(true)
-                        .FirstOrDefault(t => t != model.transform && t.name.StartsWith("Kit", StringComparison.Ordinal))
+                        .FirstOrDefault(t => t != model.transform && t.name.StartsWith("Kit", StringComparison.Ordinal) &&
+                                             !BuildingLevelModelSetup.IsLevelModel(t.name))
                         ?? throw new InvalidOperationException(prefabPath + " has no Kit* model to replace");
                     if (PrefabUtility.GetCorrespondingObjectFromSource(old.gameObject) != fbx)
                     {
@@ -59,18 +61,9 @@ namespace TrollStrategy.Editor.Setup
                     var bar = root.transform.Find("ProductionProgress");
                     if (bar != null)
                     {
-                        float top = 0f;
                         var kit = model.transform.GetComponentsInChildren<Transform>(true)
                             .First(t => t.name == "Kit" + kind);
-                        foreach (var filter in kit.GetComponentsInChildren<MeshFilter>(true))
-                        {
-                            if (filter.sharedMesh == null) continue;
-                            var bounds = filter.sharedMesh.bounds;
-                            var toRoot = root.transform.worldToLocalMatrix * filter.transform.localToWorldMatrix;
-                            for (int c = 0; c < 8; c++)
-                                top = Mathf.Max(top, -toRoot.MultiplyPoint3x4(bounds.center + Vector3.Scale(bounds.extents,
-                                    new Vector3((c & 1) == 0 ? -1 : 1, (c & 2) == 0 ? -1 : 1, (c & 4) == 0 ? -1 : 1))).z);
-                        }
+                        float top = BuildingLevelModelSetup.Top(root.transform, kit);
                         var position = bar.localPosition;
                         position.z = -Mathf.Max(-position.z, Mathf.Max(2.1f, top + .3f));
                         bar.localPosition = position;

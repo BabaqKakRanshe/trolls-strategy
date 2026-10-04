@@ -29,12 +29,16 @@ namespace TrollStrategy.Presentation.Buildings
 
         // gap between the top of the model and the bottom of its label, m
         private const float LabelGap = .3f;
+        // gap between the roof of the shown level and the production bar, m (as BuildingModelSetup places it)
+        private const float BarGap = .3f;
 
         private BuildingSnapshot _snapshot;
         private TilemapWorldView _worldView;
         private Label _labelTitle;
         private Label _labelInfo;
         private MeshRenderer[] _modelMeshes = Array.Empty<MeshRenderer>();
+        private Vector3 _barPlace;
+        private int _shownLevel;
 
         public BuildingKind Kind => _kind;
         public string BuildingId => _snapshot?.Id;
@@ -88,6 +92,9 @@ namespace TrollStrategy.Presentation.Buildings
 
             if (_productionProgress == null)
                 Debug.LogError($"{name} has no production progress bar", this);
+            else
+                _barPlace = _productionProgress.transform.localPosition;
+            _shownLevel = 0;
 
             // the label stands on the roof and grows upwards as the camera backs off
             if (_label != null) _label.Pivot = Pivot.BottomCenter;
@@ -280,10 +287,27 @@ namespace TrollStrategy.Presentation.Buildings
             if (supportsProduction) _productionProgress.SetProgress(snapshot.ProductionProgress);
         }
 
+        // The model of the building's level. The production bar keeps the prefab's place unless that roof rises
+        // over it: a taller level lifts it, a lower one never drops it under the place the prefab gave it.
+        private void ShowLevel(int level)
+        {
+            if (_model == null || _model.LevelCount == 0) return;
+            int shown = _model.ModelLevel(level);
+            if (shown == _shownLevel) return;
+            _shownLevel = shown;
+            _model.ShowLevel(shown);
+            if (_productionProgress == null) return;
+            var place = _barPlace;
+            // the building lies in the map plane with its local -z pointing up from the ground
+            place.z = -Mathf.Max(-_barPlace.z, _model.LevelTop(shown) + BarGap);
+            _productionProgress.transform.localPosition = place;
+        }
+
         public void UpdateVisuals(BuildingSnapshot snapshot, bool isTarget)
         {
             _snapshot = snapshot;
             _isTarget = isTarget;
+            ShowLevel(snapshot.Level);
 
             EnsureHighlightVisuals();
 
