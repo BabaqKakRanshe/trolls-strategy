@@ -2,6 +2,8 @@
 .env
 .env.*
 !.env.example
+# Unity service account key for tools/stats/fetch_players.py: never commit it, the repository is public
+tools/stats/unity-service-account.json
 .idea/
 .vscode/
 *.log

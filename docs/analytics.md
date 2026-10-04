@@ -117,7 +117,28 @@
 | `players/history.jsonl` | по строке на каждую сборку с новыми данными |
 | `players/exports/` | сюда кладутся выгрузки из Unity |
 
-**Обновить:**
+**Обновить автоматически:** `python tools/stats/players.py --fetch` (с `--open` откроет общую страницу).
+Скрипт `tools/stats/fetch_players.py` сам гоняет запрос по дням через SQL Data Explorer и кладёт по CSV на
+день в `players/exports` (`fetched-ГГГГ-ММ-ДД.csv`); сегодня и вчера каждый раз перекачиваются, более старые
+дни берутся из уже скачанного. `--days 30` — сколько дней назад.
+
+Входит он сервисным аккаунтом, не логином человека. Завести один раз:
+
+1. Unity Dashboard → Administration → Service accounts → New.
+2. Дать ему доступ к проекту TrollStategy с ролью, которой можно читать Analytics.
+3. Add key — получить Key ID и Secret key.
+4. Положить их в `tools/stats/unity-service-account.json` как `{"keyId": "…", "secretKey": "…"}` (файл в
+   `.gitignore`: репозиторий публичный) или в переменные `UNITY_SERVICE_ACCOUNT_KEY_ID` и
+   `UNITY_SERVICE_ACCOUNT_SECRET`.
+
+У SQL Data Explorer нет описанного API: загрузчик зовёт тот же адрес, что и сама страница дашборда
+(`live-ops/composer/v2/…/charts/sql_de`, затем `…/jobs/<id>`), сначала с ключом, а если тот не подошёл —
+с токеном, обменянным на ключ. Unity может поменять этот адрес; тогда остаётся выгрузка руками.
+Проверено 2026-10-04: адреса существуют и отвечают «нет доступа» без ключа; с настоящим ключом ещё не
+запускалось. Официальный автоматический путь — Data Access (`docs.unity.com/analytics/data-access`): свой
+аккаунт Snowflake в GCP EU-WEST4 или US-CENTRAL1, его подключает владелец организации.
+
+**Обновить руками:**
 
 1. Unity Dashboard → Analytics → SQL Data Explorer, окружение `production`.
 2. Вставить запрос из `tools/stats/players-export.sql`, Run, затем Export (CSV).

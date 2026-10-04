@@ -87,8 +87,8 @@
   <div class="grid2" id="app"></div>
   <footer>
     Боты: <code>TrollStrategy → Bots → Run Campaign Bots</code> или <code>tools/bots/run-bots.ps1</code>, папка <code>bots</code>.
-    Игроки: выгрузка <code>tools/stats/players-export.sql</code> в <code>players/exports</code>, затем
-    <code>python tools/stats/players.py</code>, папка <code>players</code>. Описание — <code>docs/campaign-bots.md</code> и
+    Игроки: <code>python tools/stats/players.py --fetch</code> (или выгрузка <code>tools/stats/players-export.sql</code>
+    руками в <code>players/exports</code> и <code>python tools/stats/players.py</code>), папка <code>players</code>. Описание — <code>docs/campaign-bots.md</code> и
     <code>docs/analytics.md</code>.
   </footer>
 </main>
@@ -139,8 +139,9 @@ function playersCard() {
     data ? el("span", { class: "when" }, "собрано " + when(data.info.generatedAt)) : null);
   const link = el("a", { class: "open", href: "players/index.html" }, "Открыть страницу игроков →");
   if (!data || !data.totals.sessions) return el("section", { class: "card" }, head,
-    el("p", { class: "empty" }, "Данных ещё нет. Выгрузите ", el("code", {}, "tools/stats/players-export.sql"),
-      " из SQL Data Explorer в ", el("code", {}, "players/exports"), " и запустите ", el("code", {}, "python tools/stats/players.py"), "."),
+    el("p", { class: "empty" }, "Данных ещё нет. Запустите ", el("code", {}, "python tools/stats/players.py --fetch"),
+      " или выгрузите ", el("code", {}, "tools/stats/players-export.sql"), " из SQL Data Explorer в ",
+      el("code", {}, "players/exports"), " и запустите скрипт без флага."),
     data && data.info.excludedSessions ? el("p", { class: "empty" }, `Тестовых сессий отсеяно: ${data.info.excludedSessions}.`) : null,
     link);
   const t = data.totals, quests = data.quests;

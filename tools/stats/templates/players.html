@@ -144,8 +144,8 @@
   <div id="app"></div>
 
   <footer>
-    Страницу пишет <code>python tools/stats/players.py</code> из выгрузок SQL Data Explorer в
-    <code>Builds/Stats/players/exports</code> (запрос — <code>tools/stats/players-export.sql</code>). Время — минуты
+    Страницу пишет <code>python tools/stats/players.py</code> (с <code>--fetch</code> сам скачивает события) из выгрузок
+    SQL Data Explorer в <code>Builds/Stats/players/exports</code> (запрос — <code>tools/stats/players-export.sql</code>). Время — минуты
     колонии: в бою, на паузе и без фокуса окна оно не идёт. Тестовые установки из <code>tools/stats/test-users.txt</code>
     не считаются.
   </footer>
@@ -532,6 +532,8 @@ function emptyState(info) {
   return el("section", { class: "card" }, el("h2", {}, "Данных об игроках пока нет"),
     el("div", { class: "empty" },
       info && info.excludedSessions ? el("p", {}, `Тестовых сессий отсеяно: ${info.excludedSessions} (установки из tools/stats/test-users.txt).`) : null,
+      el("p", {}, "Автоматически: ", el("code", {}, "python tools/stats/players.py --fetch"),
+        " (нужен ключ сервисного аккаунта, см. docs/analytics.md). Или руками:"),
       el("ol", {},
         el("li", {}, "Unity Dashboard → Analytics → SQL Data Explorer, окружение production."),
         el("li", {}, "Вставить запрос из ", el("code", {}, "tools/stats/players-export.sql"), ", нажать Run, затем Export."),

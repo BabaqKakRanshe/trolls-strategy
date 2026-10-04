@@ -1,8 +1,10 @@
 """Player statistics page from Unity Analytics exports, next to the bots' page.
 
-    python tools/stats/players.py [--exports DIR] [--out DIR] [--since YYYY-MM-DD] [--include-test-users] [--open]
+    python tools/stats/players.py [--fetch [--days 30]] [--exports DIR] [--out DIR] [--since YYYY-MM-DD]
+                                  [--include-test-users] [--open]
 
-Reads every CSV in the exports folder (SQL Data Explorer -> run tools/stats/players-export.sql -> Export), merges
+With --fetch it first downloads the events itself (fetch_players.py, a Unity service account key). Then it
+reads every CSV in the exports folder (SQL Data Explorer -> run tools/stats/players-export.sql -> Export), merges
 them (an event exported twice counts once), drops the developers' own installs listed in tools/stats/test-users.txt
 and writes the page:
 
@@ -376,9 +378,19 @@ def main(argv=None):
     parser.add_argument("--include-test-users", action="store_true",
                         help="keep the installs listed in tools/stats/test-users.txt")
     parser.add_argument("--open", action="store_true", help="open the stats page when done")
+    parser.add_argument("--fetch", action="store_true",
+                        help="download the events from Unity Analytics first (fetch_players.py)")
+    parser.add_argument("--days", type=int, default=30, help="with --fetch: how many days back")
     args = parser.parse_args(argv)
 
     args.exports.mkdir(parents=True, exist_ok=True)
+    if args.fetch:
+        import fetch_players
+        try:
+            fetch_players.fetch(args.exports, args.days)
+        except fetch_players.FetchError as error:
+            print(f"fetch failed: {error}", file=sys.stderr)
+            return 1
     events, files = read_exports(args.exports)
     data = build(events, files, read_test_users(), args.since, args.include_test_users)
     page = write_page(data, args.out)
