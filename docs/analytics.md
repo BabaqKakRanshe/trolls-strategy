@@ -122,31 +122,24 @@
 день в `players/exports` (`fetched-ГГГГ-ММ-ДД.csv`); сегодня и вчера каждый раз перекачиваются, более старые
 дни берутся из уже скачанного. `--days 30` — сколько дней назад.
 
-Входит он сервисным аккаунтом, не логином человека. Завести один раз:
+Входит он вашим логином Unity, но в своём браузере: Chromium из Playwright (`pip install playwright`,
+`python -m playwright install chromium`) с отдельным профилем в `~/.trollstrategy/unity-browser`, не
+вашим обычным браузером. Один раз:
 
-1. Unity Dashboard → Administration → Service accounts → New
-   (`cloud.unity.com/organizations/18968377466176/settings/service-accounts`).
-2. Manage project roles → проект TrollStategy → в группе Admin роли `Unity Project Viewer` и
-   `Unity Environments Viewer`. Отдельной роли на чтение Analytics у сервисных аккаунтов нет (проверено
-   2026-10-04: в группе Analytics организации есть только `Analytics Event Manager`, это управление схемой
-   событий), поэтому пустит ли SQL Data Explorer такой аккаунт, видно только по первому запуску.
-3. Add key — получить Key ID и Secret key.
-4. `python tools/stats/fetch_players.py --save-key`: спросит оба значения (секрет не печатается),
-   сохранит их в `tools/stats/unity-service-account.json` (файл в `.gitignore`: репозиторий публичный) и сразу
-   проверит, что Unity принял ключ. Вместо файла можно задать переменные `UNITY_SERVICE_ACCOUNT_KEY_ID` и
-   `UNITY_SERVICE_ACCOUNT_SECRET`.
+1. `python tools/stats/fetch_players.py --login` — откроется окно; войти в Unity. Окно закроется само,
+   когда загрузится дашборд.
 
-У SQL Data Explorer нет описанного API: загрузчик зовёт тот же адрес, что и сама страница дашборда
-(`live-ops/composer/v2/…/charts/sql_de`, затем `…/jobs/<id>`), сначала с ключом, а если тот не подошёл —
-с токеном, обменянным на ключ.
+Дальше `--fetch` работает невидимо: открывает SQL Data Explorer, берёт сессию, с которой ходит сама
+страница, и тем же адресом (`live-ops/composer/v2/…/charts/sql_de`, затем `…/jobs/<id>`) гоняет запрос.
+Сессия живёт только в профиле этого браузера: в репозиторий и на экран она не попадает. Когда Unity её
+отзовёт, скрипт попросит снова сделать `--login`. Описанного API у SQL Data Explorer нет, так что Unity может
+поменять страницу или адрес; тогда остаётся выгрузка руками.
 
-**Проверено 2026-10-04 с настоящим ключом: Unity этот адрес сервисному аккаунту не открывает.** Ключ
-принимается (окружения находятся, обмен на токен проходит), но SQL Data Explorer на ключ отвечает 401, а на
-обменянный токен — `JWT validation failed. Untrusted issuer in token claims: https://services.unity.com`:
-он доверяет только токенам входа человека в дашборд. Пока Unity этого не изменит, `--fetch` останавливается
-на этом отказе, а данные берутся выгрузкой руками. Официальный автоматический путь — Data Access
-(`docs.unity.com/analytics/data-access`): свой аккаунт Snowflake в GCP EU-WEST4 или US-CENTRAL1, его
-подключает владелец организации.
+Сервисный аккаунт для этого не годится (проверено 2026-10-04 с настоящим ключом): ключ Unity принимает, но
+SQL Data Explorer отвечает на него 401, а на обменянный токен — `JWT validation failed. Untrusted issuer in
+token claims: https://services.unity.com`; отдельной роли на чтение Analytics у сервисных аккаунтов нет.
+Официальный автоматический путь без браузера — Data Access (`docs.unity.com/analytics/data-access`): свой
+аккаунт Snowflake в GCP EU-WEST4 или US-CENTRAL1, его подключает владелец организации.
 
 **Обновить руками:**
 

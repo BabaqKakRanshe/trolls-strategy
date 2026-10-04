@@ -1,72 +1,52 @@
-"""Downloads player events from Unity Analytics into the players page's exports folder.
+"""Downloads player events from Unity Analytics into the players page's exports folder, through your Unity login.
 
-    python tools/stats/players.py --fetch [--days 30]      download, then build the page
-    python tools/stats/fetch_players.py [--days 30]         download only
+    python tools/stats/fetch_players.py --login          once: sign in to Unity in the window that opens
+    python tools/stats/players.py --fetch [--days 30]    download, then build the page
+    python tools/stats/fetch_players.py [--days 30]      download only
 
-Runs tools/stats/players-export.sql one day at a time through the SQL Data Explorer service and writes one CSV
-per day (exports/fetched-YYYY-MM-DD.csv) in the same four columns as a dashboard export. Today and yesterday are
-fetched again on every run (events keep arriving); older days are kept once fetched.
+It drives a browser of its own (Playwright's Chromium, `pip install playwright` and `python -m playwright install
+chromium`) with a profile in ~/.trollstrategy/unity-browser, apart from your everyday browser. --login opens it in a
+window for you to sign in; later runs are headless: the script opens SQL Data Explorer, takes the session the page
+itself uses and runs tools/stats/players-export.sql one day at a time through the service the page calls
+(live-ops/composer/v2/.../charts/sql_de, then .../jobs/<id>). The login stays in that profile: nothing about it is
+printed or written into the repository. Each day lands in exports/fetched-YYYY-MM-DD.csv in the four columns of a
+dashboard export; today and yesterday are fetched again on every run (events keep arriving), older days once.
 
-It signs in with a Unity service account, never with a person's login:
-  Unity Dashboard -> Administration -> Service accounts -> New
-  (https://cloud.unity.com/organizations/<org>/settings/service-accounts), give it the project roles Unity Project
-  Viewer and Unity Environments Viewer (service accounts have no role made for reading Analytics), then Add key.
-  Save the key with
-      python tools/stats/fetch_players.py --save-key
-  which asks for the key id and secret and writes tools/stats/unity-service-account.json (git-ignored), or put them
-  into the environment variables UNITY_SERVICE_ACCOUNT_KEY_ID and UNITY_SERVICE_ACCOUNT_SECRET.
-
-SQL Data Explorer has no documented API: this calls the endpoint the dashboard page itself uses
-(live-ops/composer/v2/.../charts/sql_de, then .../jobs/<id>), so Unity may change it without notice. The dashboard
-export (docs/analytics.md) keeps working when it does.
-
-As of 2026-10-04 that endpoint refuses service accounts: the key is taken (environments, token exchange), but the
-SQL endpoint answers 401 to the key and "Untrusted issuer" to the exchanged token, trusting only a person's dashboard
-login. The fetch stops at that refusal until Unity opens it.
+SQL Data Explorer has no documented API, so Unity may change the page or the service without notice; the export by
+hand (docs/analytics.md) keeps working when it does. Service accounts cannot do this at all: as of 2026-10-04 the
+service answers their key with 401 and their exchanged token with "Untrusted issuer".
 """
 import argparse
-import base64
 import csv
 import datetime as dt
 import json
-import os
 import re
 import sys
 import time
-import urllib.error
-import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 PROJECT_SETTINGS = REPO / "unity" / "TrollStategy" / "ProjectSettings" / "ProjectSettings.asset"
-CREDENTIALS = HERE / "unity-service-account.json"
 EXPORTS = REPO / "unity" / "TrollStategy" / "Builds" / "Stats" / "players" / "exports"
-ENVIRONMENT = "production"
+PROFILE = Path.home() / ".trollstrategy" / "unity-browser"
 
-PUBLIC_API = "https://services.api.unity.com"
+# The dashboard's ids for the project's organization and its production environment (not secrets: they are in every
+# dashboard address).
+ORGANIZATION = "18968377466176"
+ENVIRONMENT = "7e43d0a8-0052-48a7-b6b5-b46134e73b29"
+SQL_PAGE = ("https://cloud.unity.com/organizations/{organization}/projects/{project}/environments/{environment}"
+            "/analytics/v2/sql-data-explorer")
 COMPOSER = "https://services.unity.com/api/live-ops/composer/v2/projects/{project}/environments/{environment}"
 COLUMNS = ("EVENT_TIMESTAMP", "EVENT_NAME", "USER_ID", "EVENT_JSON")
 EVENTS = ("questStarted", "questCompleted", "campaignCompleted", "battleFinished", "progressHeartbeat")
 POLL_SECONDS = 2
 QUERY_TIMEOUT = 300
+LOGIN_SECONDS = 600
 
 
 class FetchError(Exception):
     pass
-
-
-def credentials(path=CREDENTIALS):
-    key_id = os.environ.get("UNITY_SERVICE_ACCOUNT_KEY_ID")
-    secret = os.environ.get("UNITY_SERVICE_ACCOUNT_SECRET")
-    if not (key_id and secret) and Path(path).exists():
-        data = json.loads(Path(path).read_text(encoding="utf-8"))
-        key_id, secret = data.get("keyId"), data.get("secretKey")
-    if not (key_id and secret):
-        raise FetchError(
-            f"no service account key: put {{\"keyId\": ..., \"secretKey\": ...}} into {path} or set "
-            "UNITY_SERVICE_ACCOUNT_KEY_ID and UNITY_SERVICE_ACCOUNT_SECRET (see the top of this file)")
-    return "Basic " + base64.b64encode(f"{key_id}:{secret}".encode()).decode()
 
 
 def project_id(path=PROJECT_SETTINGS):
@@ -76,86 +56,102 @@ def project_id(path=PROJECT_SETTINGS):
     return match.group(1)
 
 
-def request(method, url, auth, body=None):
-    """(status, parsed JSON) of one call; HTTP errors come back as their status instead of raising."""
-    data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(url, data=data, method=method, headers={
-        "Authorization": auth, "Accept": "application/json", "Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=60) as res:
-            text = res.read().decode("utf-8")
-            return res.status, json.loads(text) if text else None
-    except urllib.error.HTTPError as error:
-        text = error.read().decode("utf-8", "replace")
-        try:
-            return error.code, json.loads(text)
-        except json.JSONDecodeError:
-            return error.code, {"detail": text[:300]}
-
-
 def detail(payload):
-    return (payload or {}).get("detail") or (payload or {}).get("title") or json.dumps(payload)[:300]
+    if not isinstance(payload, dict):
+        return str(payload)[:300]
+    return payload.get("detail") or payload.get("title") or json.dumps(payload)[:300]
 
 
-class Session:
-    """A service account's way into the project: the environment id and an authorization that the SQL endpoint
-    takes, the key itself or the access token exchanged for it."""
+def run_query(call, base, sql, sleep=time.sleep):
+    """Rows of a SQL Data Explorer query, as dicts by column name. <call>(method, url, body) -> (status, payload)."""
+    status, payload = call("POST", f"{base}/charts/sql_de", {"sql": sql})
+    if status in (401, 403):
+        raise FetchError(f"Unity refused the session ({status}): {detail(payload)}. "
+                         "Sign in again: python tools/stats/fetch_players.py --login")
+    if status != 200:
+        raise FetchError(f"query: {status} {detail(payload)}")
+    job = (payload or {}).get("job") or {}
+    deadline = time.monotonic() + QUERY_TIMEOUT
+    while job.get("status") not in ("COMPLETE", "FAILED", "ERROR", "CANCELLED"):
+        if time.monotonic() > deadline:
+            raise FetchError(f"the query did not finish in {QUERY_TIMEOUT} s")
+        sleep(POLL_SECONDS)
+        status, job = call("GET", f"{base}/jobs/{job['jobId']}", None)
+        if status not in (200, 202):
+            raise FetchError(f"job: {status} {detail(job)}")
+    if job.get("status") != "COMPLETE":
+        raise FetchError(f"the query failed: {json.dumps(job)[:300]}")
+    return rows_of(job.get("results") or {})
 
-    def __init__(self, basic, project, environment_name=ENVIRONMENT, call=request):
-        self.call = call
-        self.basic = basic
-        self.project = project
-        self.environment = self._environment_id(environment_name)
-        self.auth = basic
-        self.base = COMPOSER.format(project=project, environment=self.environment)
 
-    def _environment_id(self, name):
-        status, payload = self.call("GET", f"{PUBLIC_API}/unity/v1/projects/{self.project}/environments", self.basic)
-        if status == 401:
-            raise FetchError(f"Unity did not take the key (check keyId and secretKey): {detail(payload)}")
-        if status == 403:
-            raise FetchError(f"the service account may not read the project's environments: {detail(payload)}. "
-                             "Give it access to the project.")
-        if status != 200:
-            raise FetchError(f"environments: {status} {detail(payload)}")
-        for env in payload.get("results", []):
-            if env.get("name") == name:
-                return env["id"]
-        raise FetchError(f"no environment named {name!r} in the project")
+class BrowserSession:
+    """The fetch browser signed in to Unity: it opens SQL Data Explorer, keeps the session the page sends with its own
+    calls and makes the same calls with it."""
 
-    def _exchange(self):
-        url = f"{PUBLIC_API}/auth/v1/token-exchange?projectId={self.project}&environmentId={self.environment}"
-        status, payload = self.call("POST", url, self.basic, {})
-        token = (payload or {}).get("accessToken")
-        if status not in (200, 201) or not token:
-            # never print the payload itself: it may carry a token
-            raise FetchError(f"token exchange: {status} {(payload or {}).get('detail') or (payload or {}).get('title') or ''}")
-        return "Bearer " + token
+    def __init__(self, project, headless=True, wait_seconds=60, log=print):
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            raise FetchError("Playwright is missing: pip install playwright, then python -m playwright install chromium")
+        self._playwright = sync_playwright().start()
+        self._context = None
+        try:
+            PROFILE.mkdir(parents=True, exist_ok=True)
+            self._context = self._playwright.chromium.launch_persistent_context(
+                str(PROFILE), headless=headless, viewport={"width": 1400, "height": 900})
+            page = self._context.pages[0] if self._context.pages else self._context.new_page()
+            seen = {}
+
+            def watch(request):
+                if request.url.startswith("https://services.unity.com/api/"):
+                    auth = request.headers.get("authorization", "")
+                    if auth.lower().startswith("bearer "):
+                        seen["auth"] = auth
+
+            page.on("request", watch)
+            page.goto(SQL_PAGE.format(organization=ORGANIZATION, project=project, environment=ENVIRONMENT),
+                      wait_until="domcontentloaded")
+            if not headless:
+                log("fetch: sign in to Unity in the window that opened; it closes by itself once the dashboard loads")
+            deadline = time.monotonic() + wait_seconds
+            while "auth" not in seen and time.monotonic() < deadline:
+                page.wait_for_timeout(500)
+            if "auth" not in seen:
+                raise FetchError("the fetch browser is not signed in to Unity: run python tools/stats/fetch_players.py --login")
+            self._auth = seen["auth"]
+            self.base = COMPOSER.format(project=project, environment=ENVIRONMENT)
+        except BaseException:
+            self.close()
+            raise
+
+    def call(self, method, url, body=None):
+        response = self._context.request.fetch(url, method=method, data=json.dumps(body) if body is not None else None,
+                                               headers={"Authorization": self._auth, "Accept": "application/json",
+                                                        "Content-Type": "application/json",
+                                                        "X-Client-ID": "unity-dashboard"})
+        text = response.text()
+        try:
+            payload = json.loads(text) if text else None
+        except json.JSONDecodeError:
+            payload = {"detail": text[:300]}
+        return response.status, payload
 
     def query(self, sql):
-        """Rows of a SQL Data Explorer query, as dicts by column name."""
-        status, payload = self.call("POST", f"{self.base}/charts/sql_de", self.auth, {"sql": sql})
-        if status in (401, 403) and self.auth == self.basic:
-            self.auth = self._exchange()
-            status, payload = self.call("POST", f"{self.base}/charts/sql_de", self.auth, {"sql": sql})
-        if status in (401, 403):
-            raise FetchError(f"SQL Data Explorer refused the service account ({status}): {detail(payload)}. "
-                             "Service accounts have no role made for reading Analytics; when Unity Project Viewer is "
-                             "not enough, export by hand or use Data Access (docs/analytics.md).")
-        if status != 200:
-            raise FetchError(f"query: {status} {detail(payload)}")
-        job = payload.get("job") or {}
-        deadline = time.monotonic() + QUERY_TIMEOUT
-        while job.get("status") not in ("COMPLETE", "FAILED", "ERROR", "CANCELLED"):
-            if time.monotonic() > deadline:
-                raise FetchError(f"the query did not finish in {QUERY_TIMEOUT} s")
-            time.sleep(POLL_SECONDS)
-            status, job = self.call("GET", f"{self.base}/jobs/{job['jobId']}", self.auth)
-            if status not in (200, 202):
-                raise FetchError(f"job: {status} {detail(job)}")
-        if job.get("status") != "COMPLETE":
-            raise FetchError(f"the query failed: {json.dumps(job)[:300]}")
-        return rows_of(job.get("results") or {})
+        return run_query(self.call, self.base, sql)
+
+    def close(self):
+        if self._context is not None:
+            self._context.close()
+            self._context = None
+        if self._playwright is not None:
+            self._playwright.stop()
+            self._playwright = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        self.close()
 
 
 def rows_of(results):
@@ -197,52 +193,49 @@ def fetch(exports=EXPORTS, days=30, today=None, session=None, log=print):
     """Downloads the last <days> days into <exports>; returns how many events came down."""
     exports = Path(exports)
     exports.mkdir(parents=True, exist_ok=True)
-    session = session or Session(credentials(), project_id())
     today = today or dt.datetime.now(dt.timezone.utc).date()
-    total = 0
+    wanted = []
     for back in range(days - 1, -1, -1):
         day = today - dt.timedelta(days=back)
         path = exports / f"fetched-{day.isoformat()}.csv"
-        if path.exists() and back > 1:
-            continue
-        rows = session.query(day_sql(day))
-        write_day(path, rows)
-        total += len(rows)
-        if rows or back <= 1:
-            log(f"fetch: {day} {len(rows)} events")
-    return total
+        if not (path.exists() and back > 1):
+            wanted.append((back, day, path))
+    if not wanted:
+        return 0
+    own = session is None
+    session = session or BrowserSession(project_id(), log=log)
+    try:
+        total = 0
+        for back, day, path in wanted:
+            rows = session.query(day_sql(day))
+            write_day(path, rows)
+            total += len(rows)
+            if rows or back <= 1:
+                log(f"fetch: {day} {len(rows)} events")
+        return total
+    finally:
+        if own:
+            session.close()
 
 
-def save_key(path=CREDENTIALS, ask=input, ask_secret=None):
-    """Asks for the service account's key id and secret and writes them where credentials() looks."""
-    import getpass
-    ask_secret = ask_secret or getpass.getpass
-    key_id = ask("Key ID: ").strip()
-    secret = ask_secret("Secret key (not shown): ").strip()
-    if not (key_id and secret):
-        raise FetchError("both the key id and the secret are needed")
-    Path(path).write_text(json.dumps({"keyId": key_id, "secretKey": secret}) + "\n", encoding="utf-8")
-    return Path(path)
+def login(log=print):
+    """Opens the fetch browser in a window until the person has signed in to Unity."""
+    with BrowserSession(project_id(), headless=False, wait_seconds=LOGIN_SECONDS, log=log):
+        pass
+    log(f"fetch: signed in; the session is kept in {PROFILE}")
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--days", type=int, default=30, help="how many days back to download (UTC)")
     parser.add_argument("--exports", type=Path, default=EXPORTS, help="where the daily CSVs go")
-    parser.add_argument("--save-key", action="store_true",
-                        help=f"ask for the service account key and save it to {CREDENTIALS.name}, then check it")
+    parser.add_argument("--login", action="store_true", help="sign in to Unity in the fetch browser (once)")
     args = parser.parse_args(argv)
-    if args.save_key:
-        try:
-            path = save_key()
-            session = Session(credentials(path), project_id())
-        except FetchError as error:
-            print(f"key not saved or not taken: {error}", file=sys.stderr)
-            return 1
-        print(f"saved to {path}; Unity took it (environment {ENVIRONMENT} = {session.environment})")
-        return 0
     try:
-        fetch(args.exports, args.days)
+        if args.login:
+            login()
+        else:
+            fetch(args.exports, args.days)
     except FetchError as error:
         print(f"fetch failed: {error}", file=sys.stderr)
         return 1

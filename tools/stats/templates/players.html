@@ -533,7 +533,7 @@ function emptyState(info) {
     el("div", { class: "empty" },
       info && info.excludedSessions ? el("p", {}, `Тестовых сессий отсеяно: ${info.excludedSessions} (установки из tools/stats/test-users.txt).`) : null,
       el("p", {}, "Автоматически: ", el("code", {}, "python tools/stats/players.py --fetch"),
-        " (нужен ключ сервисного аккаунта, см. docs/analytics.md). Или руками:"),
+        " (один раз войти в Unity: ", el("code", {}, "python tools/stats/fetch_players.py --login"), "). Или руками:"),
       el("ol", {},
         el("li", {}, "Unity Dashboard → Analytics → SQL Data Explorer, окружение production."),
         el("li", {}, "Вставить запрос из ", el("code", {}, "tools/stats/players-export.sql"), ", нажать Run, затем Export."),

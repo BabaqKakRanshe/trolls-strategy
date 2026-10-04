@@ -3,7 +3,8 @@
     python tools/stats/players.py [--fetch [--days 30]] [--exports DIR] [--out DIR] [--since YYYY-MM-DD]
                                   [--include-test-users] [--open]
 
-With --fetch it first downloads the events itself (fetch_players.py, a Unity service account key). Then it
+With --fetch it first downloads the events itself (fetch_players.py, through your Unity login in a browser of its
+own; once: fetch_players.py --login). Then it
 reads every CSV in the exports folder (SQL Data Explorer -> run tools/stats/players-export.sql -> Export), merges
 them (an event exported twice counts once), drops the developers' own installs listed in tools/stats/test-users.txt
 and writes the page:
