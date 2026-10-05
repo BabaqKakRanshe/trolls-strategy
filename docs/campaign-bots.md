@@ -72,7 +72,8 @@
 
 - **Прогон не старше правил.** `tools/stats/code_state.py` пишет в `Builds/Stats/code-state.js` последние
   коммиты, которые меняли правила (`BotMenu.RulePaths`: `Runtime/Domain`, `Runtime/Application`,
-  `Runtime/Content`, `Content/Definitions`, код ботов). Скрипт запускают `players.py` и
+  `Runtime/Content`, `Content/Definitions` и код, по которому боты играют; отчёты и проверки ботов не
+  считаются). Скрипт запускают `players.py` и
   `tools/bots/run-bots.ps1`. Если коммиты новее прогона, страница пишет «Прогон старше правил»: цифры
   относятся к прошлой версии игры.
 - **Прогон шёл на закоммиченном коде.** Бот играет то, что лежит в рабочей папке. Если в ней чужие

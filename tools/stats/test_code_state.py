@@ -30,6 +30,7 @@ class CodeStateTests(unittest.TestCase):
         self.commit("unity/TrollStategy/Assets/Game/Runtime/Domain/Rules.cs", "a", "rules: cheaper mines")
         self.commit("docs/readme.md", "b", "docs only")
         self.commit("unity/TrollStategy/Assets/Game/Bots/Dashboard/page.html", "c", "bots page only")
+        self.commit("unity/TrollStategy/Assets/Game/Bots/BotInGame.cs", "e", "bots: the in-game check only")
         self.commit("unity/TrollStategy/Assets/Game/Content/Definitions/Mine.asset", "d", "content: mine output")
         (self.repo / "unity/TrollStategy/Assets/Game/Runtime/Domain/Rules.cs").write_text("changed", encoding="utf-8")
 

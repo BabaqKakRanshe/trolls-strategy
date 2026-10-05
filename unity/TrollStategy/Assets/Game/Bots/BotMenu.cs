@@ -31,7 +31,8 @@ namespace TrollStrategy.Bots
         private const int HistoryLength = 50;
         /// <summary>
         /// Where the rules the bots measure live (git pathspecs from the repository root): the domain, the
-        /// application, content code and data, and the bots themselves. tools/stats/code_state.py keeps the same list.
+        /// application, content code and data, and the bots' play. The files that only report on the bots or check
+        /// them are left out: changing them changes no result. tools/stats/code_state.py keeps the same list.
         /// </summary>
         public static readonly string[] RulePaths =
         {
@@ -39,7 +40,13 @@ namespace TrollStrategy.Bots
             "unity/TrollStategy/Assets/Game/Runtime/Application",
             "unity/TrollStategy/Assets/Game/Runtime/Content",
             "unity/TrollStategy/Assets/Game/Content/Definitions",
-            "unity/TrollStategy/Assets/Game/Bots/*.cs"
+            "unity/TrollStategy/Assets/Game/Bots/*.cs",
+            ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotMenu.cs",
+            ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotReport.cs",
+            ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotReportData.cs",
+            ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotInGame.cs",
+            ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotParity.cs",
+            ":(exclude)unity/TrollStategy/Assets/Game/Bots/SnapshotDigest.cs"
         };
 
         [MenuItem("TrollStrategy/Bots/Run Campaign Bots")]

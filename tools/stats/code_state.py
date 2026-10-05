@@ -14,13 +14,20 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 STATS = REPO / "unity" / "TrollStategy" / "Builds" / "Stats"
-# BotMenu.RulePaths keeps the same list: the domain, the application, content code and data, the bots.
+# BotMenu.RulePaths keeps the same list: the domain, the application, content code and data, the bots' play
+# (not the files that only report on the bots or check them).
 RULE_PATHS = [
     "unity/TrollStategy/Assets/Game/Runtime/Domain",
     "unity/TrollStategy/Assets/Game/Runtime/Application",
     "unity/TrollStategy/Assets/Game/Runtime/Content",
     "unity/TrollStategy/Assets/Game/Content/Definitions",
     "unity/TrollStategy/Assets/Game/Bots/*.cs",
+    ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotMenu.cs",
+    ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotReport.cs",
+    ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotReportData.cs",
+    ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotInGame.cs",
+    ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotParity.cs",
+    ":(exclude)unity/TrollStategy/Assets/Game/Bots/SnapshotDigest.cs",
 ]
 COMMITS = 30
 
