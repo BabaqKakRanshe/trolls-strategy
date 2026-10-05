@@ -96,6 +96,22 @@ class PlayersTests(unittest.TestCase):
         data = self.build(GAMES, test_users={"u2"})
         self.assertEqual((data["totals"]["sessions"], data["info"]["excludedSessions"]), (2, 1))
 
+    def test_a_game_split_into_two_analytics_sessions_is_one_game(self):
+        resumed = [
+            event("questStarted", "u9", "a", 1, time="2026-10-05 09:00:00.000", activeSeconds=0),
+            event("questCompleted", "u9", "a", 1, time="2026-10-05 09:01:00.000", questSeconds=60, activeSeconds=60),
+            event("questStarted", "u9", "a", 2, time="2026-10-05 09:01:00.001", activeSeconds=60),
+            # the tab was away: the service opened session b, the colony clock goes on
+            event("progressHeartbeat", "u9", "b", 2, time="2026-10-05 09:40:00.000", activeSeconds=120, gold=5),
+            # a new game later starts from 0
+            event("questStarted", "u9", "c", 1, time="2026-10-05 10:00:00.000", activeSeconds=0),
+        ]
+        data = self.build(resumed)
+        self.assertEqual(data["totals"]["sessions"], 2)
+        self.assertEqual(data["totals"]["returningPlayers"], 1)
+        game = data["sessions"][-1]
+        self.assertEqual((game["lastLevel"], game["minutes"]), (2, 2.0))
+
     def test_campaign_end_is_its_own_ending(self):
         done = GAMES[4:8] + [event("campaignCompleted", "u2", "s2", None, time="2026-10-05 11:05:00.001",
                                    activeSeconds=300)]

@@ -146,11 +146,14 @@ function playersCard() {
     link);
   const t = data.totals, quests = data.quests;
   // the quest most games end on: the biggest step down the funnel
-  let worst = null;
+  // (only a clear one: at least two games and more than on any other quest)
+  let worst = null, tie = false;
   for (const q of quests) {
     const ended = q.endedStuck + q.endedCompleted;
-    if (ended > 0 && (!worst || ended > worst.ended)) worst = { level: q.level, id: q.id, ended, reached: q.reached };
+    if (ended > 0 && (!worst || ended > worst.ended)) { worst = { level: q.level, id: q.id, ended, reached: q.reached }; tie = false; }
+    else if (worst && ended === worst.ended) tie = true;
   }
+  if (worst && (tie || worst.ended < 2)) worst = null;
   const title = (level, id) => {
     const runs = window.BOT_DATA && window.BOT_DATA.latest ? window.BOT_DATA.latest.runs : [];
     for (const r of runs) { const q = r.quests.find(o => o.level === level); if (q) return q.title; }

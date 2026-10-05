@@ -441,7 +441,9 @@ function endingsChart(rows, parts, opts) {
     const width = Math.max(300, box.clientWidth || 700);
     const { m, rowH, height } = rowFrame(rows, { right: 60 }, width);
     const total = r => parts.reduce((a, p) => a + r[p.key], 0);
-    const ticks = niceTicks(Math.max(...rows.map(total), 1), 5), maxV = ticks[ticks.length - 1];
+    // counts of games: whole ticks only
+    const top = Math.max(...rows.map(total), 1);
+    const ticks = top <= 5 ? Array.from({ length: top + 1 }, (_, i) => i) : niceTicks(top, 5), maxV = ticks[ticks.length - 1];
     const sx = v => (v / maxV) * (width - m.left - m.right);
     const root = svg("svg", { viewBox: `0 0 ${width} ${height}`, height, role: "img", "aria-label": opts.label });
     box.appendChild(root);
@@ -570,11 +572,14 @@ function render() {
   const quests = data.quests.map(q => ({ ...q, label: questTitle(q.level, q.id), n: q.level }));
 
   // the quest most games end on: the biggest step down the funnel
-  let markIndex = -1, worst = 0;
+  // (only a clear one: at least two games and more than on any other quest)
+  let markIndex = -1, worst = 0, tie = false;
   quests.forEach((q, i) => {
     const ended = q.endedStuck + q.endedCompleted;
-    if (ended > worst) { worst = ended; markIndex = i; }
+    if (ended > worst) { worst = ended; markIndex = i; tie = false; }
+    else if (ended === worst && ended > 0) tie = true;
   });
+  if (tie || worst < 2) markIndex = -1;
 
   const kpis = el("div", { class: "kpis" },
     tile("Игроков", nf0.format(totals.players), totals.returningPlayers ? `вернулись ${totals.returningPlayers}` : "никто не вернулся"),

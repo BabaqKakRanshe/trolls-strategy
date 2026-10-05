@@ -151,11 +151,30 @@ def read_test_users(path=TEST_USERS):
 # ---------- one game: a session
 
 def sessions_of(events):
-    """Events grouped by session in time order; a session without an id falls back to its player."""
-    sessions = defaultdict(list)
+    """One entry per game in time order. Events group by analytics session (a session without an id falls back to its
+    player), and a session that goes on with the colony clock of the player's previous one is the same game: the
+    analytics service starts a new session when a tab or window has been away long enough, a new game starts its
+    clock from 0."""
+    groups = defaultdict(list)
     for e in events:
-        sessions[e["session"] or e["user"]].append(e)
-    return [summarize(key, evs) for key, evs in sessions.items()]
+        groups[e["session"] or e["user"]].append(e)
+    by_user = defaultdict(list)
+    for key, evs in groups.items():
+        by_user[evs[0]["user"]].append((key, evs))
+    games = []
+    for parts in by_user.values():
+        parts.sort(key=lambda part: part[1][0]["time"] or "")
+        own = []
+        for key, evs in parts:
+            clock = [e["activeSeconds"] for e in evs if e["activeSeconds"] is not None]
+            first = clock[0] if clock else 0
+            if own and first > 0 and first >= own[-1][2]:
+                own[-1][1].extend(evs)
+                own[-1][2] = max(clock + [own[-1][2]])
+            else:
+                own.append([key, list(evs), max(clock) if clock else 0])
+        games.extend(own)
+    return [summarize(key, sorted(evs, key=lambda e: e["time"] or "")) for key, evs, _ in games]
 
 
 def summarize(key, events):
