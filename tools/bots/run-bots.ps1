@@ -60,5 +60,9 @@ for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
 }
 if ($attempt -gt $Attempts) { throw "Bots: Unity never got its licence; see $log" }
 
+# the hub compares the run with the rules as they stand
+$codeState = Join-Path $PSScriptRoot '..\stats\code_state.py'
+try { & python $codeState | Out-Host } catch { Write-Host "Bots: no python for $codeState; the hub cannot tell whether the run is current." }
+
 Write-Host "Bots: statistics page $page"
 if (-not $NoOpen) { Start-Process $page }

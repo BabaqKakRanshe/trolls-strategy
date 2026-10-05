@@ -5,9 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Статистика TrollStrategy</title>
 <!-- Written by TrollStrategy/Bots/Run Campaign Bots and tools/stats/players.py from tools/stats/templates/index.html.
-     It reads bots/bots-data.js and players/players-data.js and reloads them on its own. -->
+     It reads bots/bots-data.js, bots/in-game-data.js (TrollStrategy/Bots/Play Bot In Game), players/players-data.js
+     and code-state.js (tools/stats/code_state.py) and reloads them on its own. -->
 <script src="bots/bots-data.js"></script>
+<script src="bots/in-game-data.js"></script>
 <script src="players/players-data.js"></script>
+<script src="code-state.js"></script>
 <style>
   :root {
     color-scheme: light;
@@ -65,6 +68,12 @@
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .key { display: inline-block; width: 16px; height: 3px; border-radius: 2px; margin-right: 8px; vertical-align: middle; }
   .bad { color: var(--critical); font-weight: 600; }
+  .checks { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; color: var(--ink-2); }
+  .checks li { padding-left: 18px; position: relative; }
+  .checks li::before { content: ""; position: absolute; left: 2px; top: 0.5em; width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
+  .checks li.warn { color: var(--ink); }
+  .checks li.warn::before { background: var(--critical); }
+  .checks li.unknown::before { background: var(--muted); }
   .empty { color: var(--ink-2); margin: 0; }
   .open { margin-top: auto; font-weight: 600; }
   code { font: 12px ui-monospace, Consolas, monospace; background: var(--hover); padding: 1px 4px; border-radius: 4px; }
@@ -86,7 +95,8 @@
   </header>
   <div class="grid2" id="app"></div>
   <footer>
-    Боты: <code>TrollStrategy → Bots → Run Campaign Bots</code> или <code>tools/bots/run-bots.ps1</code>, папка <code>bots</code>.
+    Боты: <code>TrollStrategy → Bots → Run Campaign Bots</code> или <code>tools/bots/run-bots.ps1</code>, папка <code>bots</code>;
+    проверка в игре — <code>TrollStrategy → Bots → Play Bot In Game</code>.
     Игроки: <code>python tools/stats/players.py --fetch</code> (или выгрузка <code>tools/stats/players-export.sql</code>
     руками в <code>players/exports</code> и <code>python tools/stats/players.py</code>), папка <code>players</code>. Описание — <code>docs/campaign-bots.md</code> и
     <code>docs/analytics.md</code>.
@@ -130,7 +140,51 @@ function botsCard() {
   return el("section", { class: "card" }, head,
     el("div", { class: "big" }, big(`${done} из ${runs.length}`, "профилей прошли кампанию"), big(nf0.format(info.chainLength), "заданий в цепочке")),
     el("table", {}, el("thead", {}, el("tr", {}, el("th", {}, "Профиль"), el("th", { class: "num" }, "Кампания"), el("th", {}, "Заданий"))), el("tbody", {}, rows)),
+    el("ul", { class: "checks" }, trust(info)),
     el("a", { class: "open", href: "bots/index.html" }, "Открыть отчёт ботов →"));
+}
+
+// Rule commits made after a moment: what a run or a check made then does not know about.
+function commitsAfter(iso) {
+  const code = window.CODE_STATE;
+  if (!code || !iso) return null;
+  const at = new Date(iso);
+  return code.commits.filter(c => new Date(c.date) > at);
+}
+
+const plural = (n, one, few, many) => {
+  const t = n % 10, h = n % 100;
+  return t === 1 && h !== 11 ? one : t >= 2 && t <= 4 && (h < 12 || h > 14) ? few : many;
+};
+
+// How far the bots' numbers can be trusted: the run against the rules as they stand, and the check in the game.
+function trust(info) {
+  const items = [];
+  const newer = commitsAfter(info.generatedAt);
+  if (newer == null) items.push(el("li", { class: "unknown" }, "Свежесть прогона неизвестна: нет code-state.js (",
+    el("code", {}, "python tools/stats/code_state.py"), ")."));
+  else if (newer.length) items.push(el("li", { class: "warn" }, `Прогон старше правил: после него ${newer.length} ${plural(newer.length, "коммит менял", "коммита меняли", "коммитов меняли")} правила, последний — «${newer[0].subject}» (${when(newer[0].date)}). Цифры выше — о прошлой версии игры.`));
+  else items.push(el("li", {}, `Прогон на текущих правилах (коммит ${info.commit || "?"}).`));
+  if (info.uncommitted && info.uncommitted.length)
+    items.push(el("li", { class: "warn" }, `Прогон шёл на незакоммиченных правках правил (${info.uncommitted.length} ${plural(info.uncommitted.length, "файл", "файла", "файлов")}): это чья-то работа в процессе, а не коммит ${info.commit || "?"}.`));
+
+  const check = window.BOT_IN_GAME;
+  if (!check || !check.runs.length) items.push(el("li", { class: "unknown" }, "Проверки в игре ещё не было: ",
+    el("code", {}, "TrollStrategy → Bots → Play Bot In Game"), "."));
+  else {
+    const failed = check.runs.filter(r => !r.same);
+    const looks = check.runs.reduce((sum, r) => sum + r.looks, 0);
+    const names = check.runs.map(r => `«${r.title}»`).join(", ");
+    if (failed.length) items.push(el("li", { class: "warn" }, `Проверка в игре (${when(check.generatedAt)}): у ${failed.map(r => `«${r.title}»`).join(", ")} колония в сцене и без неё разошлась — `,
+      el("code", {}, (failed[0].difference || "").split("\n")[0]), ". Подробности — bots/in-game.md."));
+    else items.push(el("li", {}, `Проверка в игре (${when(check.generatedAt)}): ${names} — ${nf0.format(looks)} ${plural(looks, "взгляд", "взгляда", "взглядов")}, колония в сцене игры и без неё совпала на каждом.`));
+    const noisy = check.runs.filter(r => r.foreignCount || r.errorCount);
+    if (noisy.length) items.push(el("li", { class: "warn" }, "Во время проверки сцена сама отправила команд: " +
+      `${noisy.reduce((s, r) => s + (r.foreignCount || 0), 0)}, ошибок в консоли: ${noisy.reduce((s, r) => s + (r.errorCount || 0), 0)} (bots/in-game.md).`));
+    const stale = commitsAfter(check.generatedAt);
+    if (stale && stale.length) items.push(el("li", { class: "warn" }, `Проверка в игре старше правил на ${stale.length} ${plural(stale.length, "коммит", "коммита", "коммитов")}.`));
+  }
+  return items;
 }
 
 function playersCard() {
@@ -171,9 +225,14 @@ function playersCard() {
 }
 
 let shownAt = null;
+// what the page shows was made at these moments; a new one redraws it
+function stamp() {
+  const bots = window.BOT_DATA, players = window.PLAYER_DATA, check = window.BOT_IN_GAME, code = window.CODE_STATE;
+  return [bots && bots.latest ? bots.latest.info.generatedAt : "", players ? players.info.generatedAt : "",
+    check ? check.generatedAt : "", code ? code.checkedAt : ""].join("|");
+}
 function render() {
-  const bots = window.BOT_DATA, players = window.PLAYER_DATA;
-  shownAt = (bots && bots.latest ? bots.latest.info.generatedAt : "") + "|" + (players ? players.info.generatedAt : "");
+  shownAt = stamp();
   document.getElementById("app").replaceChildren(botsCard(), playersCard());
 }
 
@@ -208,10 +267,10 @@ function reload(src) {
 }
 async function poll() {
   await reload("bots/bots-data.js");
+  await reload("bots/in-game-data.js");
   await reload("players/players-data.js");
-  const bots = window.BOT_DATA, players = window.PLAYER_DATA;
-  const at = (bots && bots.latest ? bots.latest.info.generatedAt : "") + "|" + (players ? players.info.generatedAt : "");
-  if (at !== shownAt) render();
+  await reload("code-state.js");
+  if (stamp() !== shownAt) render();
 }
 render();
 setInterval(poll, 5000);

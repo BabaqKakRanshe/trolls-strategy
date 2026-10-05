@@ -414,6 +414,9 @@ def main(argv=None):
     events, files = read_exports(args.exports)
     data = build(events, files, read_test_users(), args.since, args.include_test_users)
     page = write_page(data, args.out)
+    # the hub compares the bots' run with the rules as they stand
+    import code_state
+    code_state.write(args.out.parent)
     totals, info = data["totals"], data["info"]
     print(f"players: {len(files)} export(s), {info['events']} events, {totals['sessions']} sessions, "
           f"{totals['players']} players; test sessions left out: {info['excludedSessions']}")
