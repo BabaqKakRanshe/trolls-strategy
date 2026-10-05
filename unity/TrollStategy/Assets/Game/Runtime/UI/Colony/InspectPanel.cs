@@ -280,6 +280,15 @@ namespace TrollStrategy.UI
             if (definition.MaxLevel > 1)
                 AddAction("Улучшить", maxed ? "макс. уровень" : Ui.Gold(building.UpgradeCost), "btn--primary",
                     !maxed && snapshot.Gold >= building.UpgradeCost, interaction.UpgradeInspectedBuilding);
+            // one press hires the building's best worker for the price and sends it here
+            if (building.IsWorkplace && _context.Session.SuggestedWorker(building.Kind) is UnitKind worker)
+            {
+                int price = _context.Session.HirePrice(worker);
+                bool room = building.WorkerCount < building.MaxWorkers;
+                string who = catalog.GetUnit(worker).DisplayName.ToLowerInvariant();
+                AddAction($"Нанять сюда: {who}", room ? Ui.Gold(price) : "мест нет", "",
+                    room && snapshot.Gold >= price, interaction.HireWorkerForInspected);
+            }
             if (building.Kind == BuildingKind.Barracks)
             {
                 foreach (var unit in catalog.Units)

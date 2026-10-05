@@ -137,6 +137,10 @@
 "v": "In diesem Spiel sind schon alle Gebäude freigeschaltet"
 },
 {
+"k": "В этой игре вся арена уже открыта",
+"v": "In diesem Spiel ist die ganze Arena schon offen"
+},
+{
 "k": "Сумма должна быть больше нуля",
 "v": "Der Betrag muss größer als null sein"
 },
@@ -521,6 +525,14 @@
 "v": "{0} hat in der Kolonie angeheuert!"
 },
 {
+"k": "Нанять некого: откройте существ заданиями",
+"v": "Niemand zum Anheuern: Schalte Wesen mit Aufgaben frei"
+},
+{
+"k": "{0} нанят и идёт на работу: {1}.",
+"v": "{0} angeheuert, geht zur Arbeit: {1}."
+},
+{
 "k": "Награда за бой: +{0} зол.",
 "v": "Kampfbelohnung: +{0} Gold"
 },
@@ -735,6 +747,10 @@
 {
 "k": "Работать можно только на производстве",
 "v": "Arbeiten kann man nur in einem Produktionsgebäude"
+},
+{
+"k": "Свободных мест для рабочих нет",
+"v": "Keine freien Plätze für Arbeiter"
 },
 {
 "k": "Здание не найдено",
@@ -1707,6 +1723,14 @@
 {
 "k": "макс. уровень",
 "v": "Höchststufe"
+},
+{
+"k": "Нанять сюда: {0}",
+"v": "Hierher anheuern: {0}"
+},
+{
+"k": "мест нет",
+"v": "keine Plätze frei"
 },
 {
 "k": "Нанять: ",

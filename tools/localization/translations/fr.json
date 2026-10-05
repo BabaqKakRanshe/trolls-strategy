@@ -917,5 +917,11 @@
  "Веха арены": "Étape de l'arène",
  "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.": "Gagne à la prochaine étape de l'arène. Un champion t'y attend, et à chaque tour l'étape est plus haute.",
  "трофеи придут в бараки": "les trophées iront à la caserne",
- "ставка": "mise"
+ "ставка": "mise",
+ "Нанять сюда: {0}": "Recruter ici : {0}",
+ "мест нет": "aucune place",
+ "Свободных мест для рабочих нет": "Aucune place libre pour des ouvriers",
+ "Нанять некого: откройте существ заданиями": "Personne à recruter : débloquez des créatures avec des quêtes",
+ "{0} нанят и идёт на работу: {1}.": "{0} recruté, va travailler : {1}.",
+ "В этой игре вся арена уже открыта": "Dans cette partie, toute l'arène est déjà ouverte"
 }

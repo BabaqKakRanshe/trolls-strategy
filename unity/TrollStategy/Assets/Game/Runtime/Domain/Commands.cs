@@ -93,6 +93,21 @@ namespace TrollStrategy.Domain
         }
     }
 
+    /// <summary>Hires one creature at the cell and sends it to work at the building: a workplace card's "hire here".</summary>
+    public class HireWorkerCommand : IGameCommand
+    {
+        public UnitKind UnitKind { get; }
+        public string BuildingId { get; }
+        public Cell Cell { get; }
+
+        public HireWorkerCommand(UnitKind unitKind, string buildingId, Cell cell)
+        {
+            UnitKind = unitKind;
+            BuildingId = buildingId;
+            Cell = cell;
+        }
+    }
+
     public class AssignWorkCommand : IGameCommand
     {
         public IReadOnlyList<string> UnitIds { get; }

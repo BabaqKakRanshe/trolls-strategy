@@ -59,6 +59,7 @@ namespace TrollStrategy.Presentation.Feel
                     GameAudio.Play(Sfx.Build);
                     break;
                 case BuyUnitsCommand _:
+                case HireWorkerCommand _:
                     GameAudio.Play(Sfx.Spawn);
                     break;
                 case MoveBuildingCommand _:
@@ -129,6 +130,8 @@ namespace TrollStrategy.Presentation.Feel
                     return TryBuilding(demolish.BuildingId, out position);
                 case AssignWorkCommand work:
                     return TryBuilding(work.BuildingId, out position);
+                case HireWorkerCommand hire:
+                    return TryBuilding(hire.BuildingId, out position);
                 case AssignHaulCommand haul:
                     return TryBuilding(haul.DestinationId, out position);
                 case BuyLandCommand buyLand:

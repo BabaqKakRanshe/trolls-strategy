@@ -507,6 +507,28 @@ namespace TrollStrategy.Application
             Emit();
         }
 
+        /// <summary>
+        /// A workplace card's "hire here": the inspected building's best worker for the price, hired and sent there
+        /// in one order.
+        /// </summary>
+        public void HireWorkerForInspected()
+        {
+            var building = FindBuilding(_inspectedBuildingId);
+            if (building == null) return;
+            var kind = _session.SuggestedWorker(building.Kind);
+            if (kind == null)
+            {
+                Refuse("Нанять некого: откройте существ заданиями");
+                return;
+            }
+            var result = _session.Dispatch(new HireWorkerCommand(kind.Value, building.Id, _session.FindSpawnCell()));
+            if (result.Ok)
+                _message = $"{_session.Catalog.GetUnit(kind.Value).DisplayName} нанят и идёт на работу: {building.Name}.";
+            else
+                Refuse(result.Error);
+            Emit();
+        }
+
         /// <summary>Takes a won battle's gold into the treasury.</summary>
         public CommandResult ClaimBattleReward()
         {

@@ -251,9 +251,27 @@ namespace TrollStrategy.Bots
             if (building == null || !building.IsWorkplace) return 0;
             int take = Math.Min(amount, building.MaxWorkers - building.WorkerCount);
             if (take <= 0) return 0;
+            kind = Hireable(kind);
+            // one worker and nobody idle to send: the card's "hire here", when it offers this very creature
+            if (take == 1 && Idle(kind).Count == 0 && Session.SuggestedWorker(building.Kind) == kind &&
+                HireHere(building, kind, wait, why))
+                return 1;
             var ids = Obtain(kind, take, wait, why);
             if (ids.Count == 0) return 0;
             return Dispatch(new AssignWorkCommand(ids, building.Id)) ? ids.Count : 0;
+        }
+
+        // A workplace card's "hire here": one press hires the worker and sends it to the building.
+        private bool HireHere(BuildingSnapshot building, UnitKind kind, BotWait wait, string why)
+        {
+            int cost = Session.HirePrice(kind);
+            if (!Affordable(cost, wait, why)) return false;
+            var cell = Session.FindSpawnCell();
+            if (!Session.CanBuyUnits(kind, 1, cell).Ok) return false;
+            if (!Dispatch(new HireWorkerCommand(kind, building.Id, cell))) return false;
+            Spent(cost);
+            _run.Hired++;
+            return true;
         }
 
         public int Haul(BuildingSnapshot source, BuildingSnapshot destination, int amount, BotWait wait, string why,

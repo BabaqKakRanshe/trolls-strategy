@@ -917,5 +917,11 @@
  "Веха арены": "Arena dönüm noktası",
  "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.": "Arenanın sonraki dönüm noktasında kazan. Orada bir şampiyon bekler ve her turda dönüm noktası yükselir.",
  "трофеи придут в бараки": "ganimetler kışlaya gelir",
- "ставка": "bahis"
+ "ставка": "bahis",
+ "Нанять сюда: {0}": "Buraya işe al: {0}",
+ "мест нет": "yer yok",
+ "Свободных мест для рабочих нет": "İşçiler için boş yer yok",
+ "Нанять некого: откройте существ заданиями": "İşe alınacak kimse yok: yaratıkları görevlerle açın",
+ "{0} нанят и идёт на работу: {1}.": "{0} işe alındı, işe gidiyor: {1}.",
+ "В этой игре вся арена уже открыта": "Bu oyunda arenanın tamamı zaten açık"
 }

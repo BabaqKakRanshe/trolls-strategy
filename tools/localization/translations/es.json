@@ -917,5 +917,11 @@
  "Веха арены": "Hito de la arena",
  "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.": "Gana en el próximo hito de la arena. Allí espera un campeón, y en cada ronda el hito está más alto.",
  "трофеи придут в бараки": "los trofeos irán al cuartel",
- "ставка": "apuesta"
+ "ставка": "apuesta",
+ "Нанять сюда: {0}": "Contratar aquí: {0}",
+ "мест нет": "no hay plazas",
+ "Свободных мест для рабочих нет": "No hay plazas libres para obreros",
+ "Нанять некого: откройте существ заданиями": "No hay a quién contratar: desbloquea criaturas con tareas",
+ "{0} нанят и идёт на работу: {1}.": "{0} contratado, va a trabajar: {1}.",
+ "В этой игре вся арена уже открыта": "En esta partida toda la arena ya está abierta"
 }

@@ -137,6 +137,10 @@
 "v": "Nesta partida todos os edifícios já estão abertos"
 },
 {
+"k": "В этой игре вся арена уже открыта",
+"v": "Neste jogo, toda a arena já está aberta"
+},
+{
 "k": "Сумма должна быть больше нуля",
 "v": "O valor deve ser maior que zero"
 },
@@ -521,6 +525,14 @@
 "v": "{0} contratado no assentamento!"
 },
 {
+"k": "Нанять некого: откройте существ заданиями",
+"v": "Ninguém para contratar: libere criaturas com tarefas"
+},
+{
+"k": "{0} нанят и идёт на работу: {1}.",
+"v": "{0} contratado, vai trabalhar: {1}."
+},
+{
 "k": "Награда за бой: +{0} зол.",
 "v": "Recompensa da batalha: +{0} de ouro"
 },
@@ -735,6 +747,10 @@
 {
 "k": "Работать можно только на производстве",
 "v": "Só se pode trabalhar na produção"
+},
+{
+"k": "Свободных мест для рабочих нет",
+"v": "Não há vagas livres para trabalhadores"
 },
 {
 "k": "Здание не найдено",
@@ -1707,6 +1723,14 @@
 {
 "k": "макс. уровень",
 "v": "nív. máximo"
+},
+{
+"k": "Нанять сюда: {0}",
+"v": "Contratar aqui: {0}"
+},
+{
+"k": "мест нет",
+"v": "sem vagas"
 },
 {
 "k": "Нанять: ",

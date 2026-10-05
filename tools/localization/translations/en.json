@@ -917,5 +917,11 @@
  "Веха арены": "Arena milestone",
  "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.": "Win at the next arena milestone. A champion stands there, and every round the milestone is higher.",
  "трофеи придут в бараки": "trophies go to the barracks",
- "ставка": "stake"
+ "ставка": "stake",
+ "Нанять сюда: {0}": "Hire here: {0}",
+ "мест нет": "no free places",
+ "Свободных мест для рабочих нет": "No free places for workers",
+ "Нанять некого: откройте существ заданиями": "Nobody to hire: unlock creatures with quests",
+ "{0} нанят и идёт на работу: {1}.": "{0} hired and heading to work: {1}.",
+ "В этой игре вся арена уже открыта": "The whole arena is already open in this game"
 }

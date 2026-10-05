@@ -917,5 +917,11 @@
  "Веха арены": "Kamień milowy areny",
  "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.": "Wygraj na następnym kamieniu milowym areny. Czeka tam czempion, a z każdą rundą kamień jest wyżej.",
  "трофеи придут в бараки": "trofea trafią do koszar",
- "ставка": "stawka"
+ "ставка": "stawka",
+ "Нанять сюда: {0}": "Zatrudnij tutaj: {0}",
+ "мест нет": "brak miejsc",
+ "Свободных мест для рабочих нет": "Brak wolnych miejsc dla pracowników",
+ "Нанять некого: откройте существ заданиями": "Nie ma kogo zatrudnić: odblokuj stworzenia zadaniami",
+ "{0} нанят и идёт на работу: {1}.": "{0} zatrudniony, idzie do pracy: {1}.",
+ "В этой игре вся арена уже открыта": "W tej grze cała arena jest już otwarta"
 }

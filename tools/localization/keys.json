@@ -105,6 +105,9 @@
  "В этой игре все постройки уже открыты": [
   "Runtime/Application/GameSession.cs"
  ],
+ "В этой игре вся арена уже открыта": [
+  "Runtime/Application/GameSession.cs"
+ ],
  "Сумма должна быть больше нуля": [
   "Runtime/Application/GameSession.cs"
  ],
@@ -398,6 +401,12 @@
  "{0} нанят в поселение!": [
   "Runtime/Application/InteractionController.cs"
  ],
+ "Нанять некого: откройте существ заданиями": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "{0} нанят и идёт на работу: {1}.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
  "Награда за бой: +{0} зол.": [
   "Runtime/Application/InteractionController.cs"
  ],
@@ -563,6 +572,9 @@
   "Runtime/Domain/ColonySimulation.cs"
  ],
  "Работать можно только на производстве": [
+  "Runtime/Domain/ColonySimulation.cs"
+ ],
+ "Свободных мест для рабочих нет": [
   "Runtime/Domain/ColonySimulation.cs"
  ],
  "Здание не найдено": [
@@ -1327,6 +1339,12 @@
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "макс. уровень": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Нанять сюда: {0}": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "мест нет": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "Нанять: ": [

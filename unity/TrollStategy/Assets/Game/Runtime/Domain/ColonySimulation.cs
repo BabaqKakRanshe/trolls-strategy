@@ -26,6 +26,7 @@ namespace TrollStrategy.Domain
                 DemolishBuildingCommand c => DemolishBuilding(state, c.BuildingId, catalog),
                 MoveBuildingCommand c => MoveBuilding(state, c.BuildingId, c.Cell, catalog),
                 BuyUnitsCommand c => BuyUnits(state, c.UnitKind, c.Amount, c.Cell, catalog),
+                HireWorkerCommand c => HireWorker(state, c.UnitKind, c.BuildingId, c.Cell, catalog),
                 AssignWorkCommand c => AssignWork(state, c.UnitIds, c.BuildingId, catalog),
                 AssignHaulCommand c => AssignHaul(state, c.UnitIds, c.SourceId, c.DestinationId, c.Cargo, catalog),
                 ReleaseUnitsCommand c => ReleaseUnits(state, c.UnitIds, catalog),
@@ -242,7 +243,12 @@ namespace TrollStrategy.Domain
         }
 
         // How many units of a good the building can still take; markets and armories never fill up.
-        public static int Room(BuildingState building, ResourceKind resource, GameContentCatalog catalog)
+        public static int Room(BuildingState building, ResourceKind resource, GameContentCatalog catalog) =>
+            Room(building, building.Stock, resource, catalog);
+
+        // The same against a given stock: the building's own, or its stock with the goods on their way to it.
+        private static int Room(BuildingState building, IReadOnlyDictionary<ResourceKind, int> stock, ResourceKind resource,
+            GameContentCatalog catalog)
         {
             var definition = catalog.GetBuilding(building.Kind);
             if (!Accepts(definition, resource, catalog)) return 0;
@@ -251,11 +257,28 @@ namespace TrollStrategy.Domain
             int capacity = definition.Capacity(building.Level);
             if (definition.StorageRole == StorageRole.Stockpile)
             {
-                return definition.SlotStackSize > 0
-                    ? StorageSlots.Room(building.Stock, resource, capacity, definition.SlotStackSize)
-                    : Math.Max(0, capacity - building.TotalStock);
+                if (definition.SlotStackSize > 0) return StorageSlots.Room(stock, resource, capacity, definition.SlotStackSize);
+                int total = 0;
+                foreach (int amount in stock.Values) total += amount;
+                return Math.Max(0, capacity - total);
             }
-            return Math.Max(0, capacity - building.GetStock(resource));
+            return Math.Max(0, capacity - (stock.TryGetValue(resource, out int held) ? held : 0));
+        }
+
+        // The building's stock once the goods haulers carry to it arrive; null when nobody carries anything there.
+        private static Dictionary<ResourceKind, int> StockWithDeliveries(GameState state, BuildingState building)
+        {
+            Dictionary<ResourceKind, int> stock = null;
+            foreach (var unit in state.Units)
+            {
+                var assignment = unit.Assignment;
+                if (assignment == null || assignment.Kind != AssignmentKind.Haul || assignment.Carried <= 0 ||
+                    assignment.DestinationId != building.Id) continue;
+                stock ??= new Dictionary<ResourceKind, int>(building.Stock);
+                stock[assignment.CarriedResource] =
+                    (stock.TryGetValue(assignment.CarriedResource, out int held) ? held : 0) + assignment.Carried;
+            }
+            return stock;
         }
 
         public static int SalePrice(GameContentCatalog catalog, ResourceKind resource, int marketLevel) =>
@@ -425,6 +448,36 @@ namespace TrollStrategy.Domain
             }
 
             return CommandResult.Success();
+        }
+
+        // A workplace card's "hire here": one creature hired at the cell and sent to work at the building in the
+        // same order. Refused whole when the building has no free place or the hire itself would be refused.
+        private static CommandResult HireWorker(GameState state, UnitKind kind, string buildingId, Cell cell,
+            GameContentCatalog catalog)
+        {
+            var building = state.Buildings.Find(b => b.Id == buildingId);
+            if (building == null || !catalog.GetBuilding(building.Kind).IsWorkplace)
+                return CommandResult.Fail("Работать можно только на производстве");
+            if (FreeWorkerPlaces(state, building, catalog) <= 0)
+                return CommandResult.Fail("Свободных мест для рабочих нет");
+            var hired = BuyUnits(state, kind, 1, cell, catalog);
+            if (!hired.Ok) return hired;
+            state.Units[state.Units.Count - 1].Assignment = Assignment.ToWork(buildingId);
+            return CommandResult.Success();
+        }
+
+        /// <summary>Places for workers the building still has: its capacity less those working or on their way.</summary>
+        public static int FreeWorkerPlaces(GameState state, BuildingState building, GameContentCatalog catalog)
+        {
+            int assigned = 0;
+            foreach (var unit in state.Units)
+            {
+                var assignment = unit.Assignment;
+                if ((assignment.Kind == AssignmentKind.ToWork || assignment.Kind == AssignmentKind.Work) &&
+                    assignment.BuildingId == building.Id)
+                    assigned++;
+            }
+            return Math.Max(0, catalog.GetBuilding(building.Kind).WorkerCapacity(building.Level) - assigned);
         }
 
         private static CommandResult AssignHaul(
@@ -814,7 +867,7 @@ namespace TrollStrategy.Domain
             var assignment = unit.Assignment;
             float loadTime = LoadSeconds(state, catalog);
             if (assignment.PhaseElapsedSeconds < loadTime) return;
-            if (!TryPickCargo(source, destination, assignment, catalog, out var resource, out int destinationRoom))
+            if (!TryPickCargo(state, source, destination, assignment, catalog, out var resource, out int destinationRoom))
             {
                 if (HasSourceQueue(state, source.Id))
                 {
@@ -863,11 +916,15 @@ namespace TrollStrategy.Domain
 
         // Of the goods the hauler may take, the source holds and the destination still has room for, the one the
         // source holds most of (ties in ResourceKind order): a mine's crystals leave as surely as its ore, so a
-        // by-product never fills the building up behind the main good.
-        private static bool TryPickCargo(BuildingState source, BuildingState destination, Assignment assignment,
-            GameContentCatalog catalog, out ResourceKind resource, out int destinationRoom)
+        // by-product never fills the building up behind the main good. Goods other haulers already carry to the
+        // destination count as delivered: otherwise several haulers load for its last free place at once, those
+        // who arrive to a full building stand at its door with their load, and a workshop full of one input never
+        // gets the other (a farm full of wheat waits for straw while its haulers hold wheat).
+        private static bool TryPickCargo(GameState state, BuildingState source, BuildingState destination,
+            Assignment assignment, GameContentCatalog catalog, out ResourceKind resource, out int destinationRoom)
         {
             var sourceDef = catalog.GetBuilding(source.Kind);
+            var promised = StockWithDeliveries(state, destination);
             resource = default;
             destinationRoom = 0;
             int most = 0;
@@ -876,7 +933,9 @@ namespace TrollStrategy.Domain
                 int held = source.GetStock(candidate);
                 if (held <= most || !assignment.MayCarry(candidate) || !Provides(sourceDef, candidate))
                     continue;
-                int room = Room(destination, candidate, catalog);
+                int room = promised != null
+                    ? Room(destination, promised, candidate, catalog)
+                    : Room(destination, candidate, catalog);
                 if (room <= 0) continue;
                 resource = candidate;
                 destinationRoom = room;

@@ -917,5 +917,11 @@
  "Веха арены": "Arena-Meilenstein",
  "Победи на следующей вехе арены. На вехе стоит чемпион, а каждый круг веха выше.": "Siege am nächsten Meilenstein der Arena. Dort wartet ein Champion, und jede Runde liegt der Meilenstein höher.",
  "трофеи придут в бараки": "Trophäen kommen in die Kaserne",
- "ставка": "Einsatz"
+ "ставка": "Einsatz",
+ "Нанять сюда: {0}": "Hierher anheuern: {0}",
+ "мест нет": "keine Plätze frei",
+ "Свободных мест для рабочих нет": "Keine freien Plätze für Arbeiter",
+ "Нанять некого: откройте существ заданиями": "Niemand zum Anheuern: Schalte Wesen mit Aufgaben frei",
+ "{0} нанят и идёт на работу: {1}.": "{0} angeheuert, geht zur Arbeit: {1}.",
+ "В этой игре вся арена уже открыта": "In diesem Spiel ist die ganze Arena schon offen"
 }

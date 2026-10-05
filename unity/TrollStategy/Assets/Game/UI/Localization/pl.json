@@ -137,6 +137,10 @@
 "v": "W tej grze wszystkie budynki są już odblokowane"
 },
 {
+"k": "В этой игре вся арена уже открыта",
+"v": "W tej grze cała arena jest już otwarta"
+},
+{
 "k": "Сумма должна быть больше нуля",
 "v": "Kwota musi być większa od zera"
 },
@@ -521,6 +525,14 @@
 "v": "{0} dołącza do osady!"
 },
 {
+"k": "Нанять некого: откройте существ заданиями",
+"v": "Nie ma kogo zatrudnić: odblokuj stworzenia zadaniami"
+},
+{
+"k": "{0} нанят и идёт на работу: {1}.",
+"v": "{0} zatrudniony, idzie do pracy: {1}."
+},
+{
 "k": "Награда за бой: +{0} зол.",
 "v": "Nagroda za walkę: +{0} złota"
 },
@@ -735,6 +747,10 @@
 {
 "k": "Работать можно только на производстве",
 "v": "Pracować można tylko w produkcji"
+},
+{
+"k": "Свободных мест для рабочих нет",
+"v": "Brak wolnych miejsc dla pracowników"
 },
 {
 "k": "Здание не найдено",
@@ -1707,6 +1723,14 @@
 {
 "k": "макс. уровень",
 "v": "maks. poziom"
+},
+{
+"k": "Нанять сюда: {0}",
+"v": "Zatrudnij tutaj: {0}"
+},
+{
+"k": "мест нет",
+"v": "brak miejsc"
 },
 {
 "k": "Нанять: ",

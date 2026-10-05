@@ -376,6 +376,19 @@ namespace TrollStrategy.Application
         /// <summary>Gold for hiring a group now; every creature in the colony makes the next one dearer.</summary>
         public int HirePrice(UnitKind kind, int amount = 1) => ColonySimulation.HirePrice(_state, kind, amount, _catalog);
 
+        /// <summary>
+        /// Whom a workplace card's "hire here" hires for the building: of the creatures the colony may hire, the
+        /// best worker there for the price (<see cref="HireAdvice"/>); null when nobody may be hired.
+        /// </summary>
+        public UnitKind? SuggestedWorker(BuildingKind building)
+        {
+            var candidates = new List<UnitDefinition>();
+            foreach (var unit in _catalog.Units)
+                if (unit != null && unit.Hireable && IsUnitUnlocked(unit.Kind)) candidates.Add(unit);
+            return HireAdvice.Best(candidates, u => HirePrice(u.Kind), u => HireAdvice.Work(u, building),
+                HireAdvice.CardShare)?.Kind;
+        }
+
         public CommandResult CanBuyLand(int blockX, int blockY) => LandRules.ValidateBuy(_state, blockX, blockY, _catalog);
 
         public CommandResult CanClearLand(int blockX, int blockY) =>

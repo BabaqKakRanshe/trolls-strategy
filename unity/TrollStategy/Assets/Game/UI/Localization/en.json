@@ -137,6 +137,10 @@
 "v": "All buildings are already unlocked in this game"
 },
 {
+"k": "В этой игре вся арена уже открыта",
+"v": "The whole arena is already open in this game"
+},
+{
 "k": "Сумма должна быть больше нуля",
 "v": "The amount must be above zero"
 },
@@ -521,6 +525,14 @@
 "v": "{0} joined the colony!"
 },
 {
+"k": "Нанять некого: откройте существ заданиями",
+"v": "Nobody to hire: unlock creatures with quests"
+},
+{
+"k": "{0} нанят и идёт на работу: {1}.",
+"v": "{0} hired and heading to work: {1}."
+},
+{
 "k": "Награда за бой: +{0} зол.",
 "v": "Battle reward: +{0} gold"
 },
@@ -735,6 +747,10 @@
 {
 "k": "Работать можно только на производстве",
 "v": "You can only work at a production building"
+},
+{
+"k": "Свободных мест для рабочих нет",
+"v": "No free places for workers"
 },
 {
 "k": "Здание не найдено",
@@ -1707,6 +1723,14 @@
 {
 "k": "макс. уровень",
 "v": "max level"
+},
+{
+"k": "Нанять сюда: {0}",
+"v": "Hire here: {0}"
+},
+{
+"k": "мест нет",
+"v": "no free places"
 },
 {
 "k": "Нанять: ",
