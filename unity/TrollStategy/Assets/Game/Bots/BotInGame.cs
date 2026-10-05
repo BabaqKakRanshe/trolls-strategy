@@ -90,7 +90,9 @@ namespace TrollStrategy.Bots
             var layout = BotMenu.SceneLayout(catalog);
 
             Directory.CreateDirectory(ResultFolder);
-            foreach (string file in Directory.GetFiles(ResultFolder, "*.json")) File.Delete(file);
+            // a profile's result and its report line come from this job only
+            foreach (string file in Directory.GetFiles(ResultFolder, "*.json").Concat(Directory.GetFiles(ResultFolder, "*.md")))
+                File.Delete(file);
             SessionState.SetString(Key + "Profiles", string.Join(",", ids));
             SessionState.SetInt(Key + "Index", 0);
             SessionState.SetFloat(Key + "Speed", Mathf.Clamp(speed, 1f, 100f));
