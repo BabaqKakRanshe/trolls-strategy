@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using TrollStrategy.Application;
-using TrollStrategy.Content;
-using TrollStrategy.Domain;
 
 namespace TrollStrategy.Bots
 {
@@ -39,168 +35,25 @@ namespace TrollStrategy.Bots
         /// </summary>
         public int StopAfterLevel { get; set; }
 
+        /// <summary>Plays to the end on the session's own clock: a look, then the think and click time pass.</summary>
         public BotRun Run()
         {
-            int chain = _session.Catalog.Progression.Quests.Count;
-            int goal = StopAfterLevel > 0 ? StopAfterLevel : chain;
-            var run = new BotRun(_profile, goal);
-            var hands = new BotHands(_session, run, _profile);
-            var battles = new BattlePlanner(hands, run, _profile);
-            var planner = new QuestPlanner(hands, battles, _profile);
-            var keeper = new EconomyKeeper(hands, battles, _profile);
-            int thinkMs = (int)Math.Round(_profile.ThinkSeconds * 1000f);
-
-            var record = StartRecord(hands);
-            var hireable = Hireable(hands);
-            string progressKey = null;
-            int progressAt = 0, bestGold = 0, nextSampleMs = 0;
-
-            while (true)
+            var play = Start();
+            while (play.Look())
             {
-                hands.Refresh();
-                run.Decisions++;
-                int commandsAtLook = run.CommandsAccepted, questsAtLook = run.Quests.Count;
-                Settle(hands);
                 int now = _session.ActiveTimeMs;
-
-                while (hands.Snapshot.Progress.Quest is { IsComplete: true } done && done.Level <= goal)
-                {
-                    int questGold = done.Rewards.Where(r => r.Reward.Kind == QuestRewardKind.Gold).Sum(r => r.Reward.Gold);
-                    if (!hands.Dispatch(new ClaimQuestRewardCommand())) break;
-                    run.QuestGold += questGold;
-                    record.DoneMs = now;
-                    record.GoldAfterClaim = hands.Gold;
-                    record.Population = hands.Snapshot.Units.Count;
-                    record.Buildings = hands.Snapshot.Buildings.Count;
-                    run.Quests.Add(record);
-                    record = StartRecord(hands);
-                }
-
-                NoteUnlocks(run, hands, hireable);
-                if (now >= nextSampleMs)
-                {
-                    Sample(run, hands);
-                    nextSampleMs = now + 60000;
-                }
-                var quest = hands.Snapshot.Progress.Quest;
-                if (quest == null || hands.Snapshot.Progress.Level > goal)
-                {
-                    run.Outcome = BotOutcome.Completed;
-                    break;
-                }
-
-                var wait = planner.Pursue(quest);
-                keeper.Keep(wait);
-                if (_profile.Grows) keeper.Grow(wait);
-                if (_profile.FightsForGold) keeper.FightForGold(wait);
-                hands.Refresh();
-
-                // a stall is a quest whose goals do not move while the treasury does not grow toward its step
-                string key = $"{quest.Level}:{string.Join(",", hands.Snapshot.Progress.Quest?.Goals.Select(g => g.Current) ?? Array.Empty<int>())}";
-                if (key != progressKey || (wait.Kind == BotWaitKind.Gold && hands.Gold > bestGold))
-                {
-                    if (key != progressKey) bestGold = 0;
-                    progressKey = key;
-                    progressAt = now;
-                    bestGold = Math.Max(bestGold, hands.Gold);
-                }
-                else if (now - progressAt >= _stallMs)
-                {
-                    run.Outcome = BotOutcome.Stalled;
-                    run.StopReason = $"«{quest.Title}» (уровень {quest.Level}): {wait.Reason ?? "цели не двигаются"}";
-                    break;
-                }
-                if (now >= _limitMs)
-                {
-                    run.Outcome = BotOutcome.TimeLimit;
-                    run.StopReason = $"«{quest.Title}» (уровень {quest.Level}): {wait.Reason ?? "не успел"}";
-                    break;
-                }
-
-                switch (wait.Kind)
-                {
-                    case BotWaitKind.Gold: record.GoldWaitMs += thinkMs; break;
-                    case BotWaitKind.Time: record.TimeWaitMs += thinkMs; break;
-                    default: record.FlowWaitMs += thinkMs; break;
-                }
-
-                Settle(hands);
-                // the player's clicks take time: the colony runs on and the next look comes later
-                float busySeconds = (run.CommandsAccepted - commandsAtLook) * _profile.ActionSeconds +
-                                    (run.Quests.Count - questsAtLook) * _profile.QuestReadSeconds;
-                record.BusyMs += (int)Math.Round(busySeconds * 1000f);
-                _session.Advance(_profile.ThinkSeconds + busySeconds);
+                _session.Advance(play.WaitSeconds);
                 if (_session.ActiveTimeMs == now)
                     throw new InvalidOperationException($"Колония не идёт: {SessionDigest.Describe(_session)}");
             }
-
-            hands.Refresh();
-            run.EndMs = _session.ActiveTimeMs;
-            run.FinalGold = hands.Gold;
-            run.SalesGold = _session.SalesGold;
-            run.FinalPopulation = hands.Snapshot.Units.Count;
-            run.FinalBuildings = hands.Snapshot.Buildings.Count;
-            run.ArenaLevel = hands.ArenaLevel();
-            foreach (var group in hands.Snapshot.Units.GroupBy(u => u.UnitKind))
-                run.Units[hands.Catalog.GetUnit(group.Key).DisplayName] = group.Count();
-            foreach (var upgrade in hands.Snapshot.Upgrades.Where(u => u.Level > 0))
-                run.Upgrades[upgrade.Name] = upgrade.Level;
-            Sample(run, hands);
-            return run;
+            return play.Finish();
         }
 
-        private static List<UnitKind> Hireable(BotHands hands) => hands.Catalog.Units
-            .Where(u => u != null && u.Hireable && hands.IsUnlocked(u.Kind)).Select(u => u.Kind).ToList();
-
-        // Creatures that became hireable since the last look: the folk join after their arena level is won.
-        private void NoteUnlocks(BotRun run, BotHands hands, List<UnitKind> known)
+        /// <summary>The game a look at a time, for a driver that runs the colony clock itself.</summary>
+        public BotPlay Start()
         {
-            foreach (var kind in Hireable(hands))
-            {
-                if (known.Contains(kind)) continue;
-                known.Add(kind);
-                run.Unlocks.Add(new UnlockRecord
-                {
-                    Name = hands.Catalog.GetUnit(kind).DisplayName,
-                    AtMs = _session.ActiveTimeMs,
-                    QuestLevel = hands.Snapshot.Progress.Level
-                });
-            }
-        }
-
-        private QuestRecord StartRecord(BotHands hands)
-        {
-            var quest = hands.Snapshot.Progress.Quest;
-            return new QuestRecord
-            {
-                Level = quest?.Level ?? hands.Snapshot.Progress.Level,
-                Id = quest?.Id,
-                Title = quest?.Title,
-                StartMs = _session.ActiveTimeMs
-            };
-        }
-
-        // A finished battle is closed and its gold taken before anything else, as the HUD makes the player do.
-        private static void Settle(BotHands hands)
-        {
-            if (hands.Session.ActiveBattle != null) hands.Dispatch(new AcknowledgeBattleCommand());
-            if (hands.Snapshot.BattleReward != null) hands.Dispatch(new ClaimBattleRewardCommand());
-        }
-
-        private void Sample(BotRun run, BotHands hands)
-        {
-            var land = hands.Snapshot.Land;
-            run.Samples.Add(new BotSample
-            {
-                AtMs = _session.ActiveTimeMs,
-                QuestLevel = hands.Snapshot.Progress.Level,
-                Gold = hands.Gold,
-                SoldGoods = hands.Snapshot.SoldGoods,
-                Population = hands.Snapshot.Units.Count,
-                Buildings = hands.Snapshot.Buildings.Count,
-                LandBlocks = land?.Blocks.Count(b => b.Owned) ?? 0,
-                ArenaLevel = hands.ArenaLevel()
-            });
+            int chain = _session.Catalog.Progression.Quests.Count;
+            return new BotPlay(_session, _profile, StopAfterLevel > 0 ? StopAfterLevel : chain, _limitMs, _stallMs);
         }
     }
 }

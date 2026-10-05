@@ -29,6 +29,18 @@ namespace TrollStrategy.Bots
         /// <summary>The page over the bots' and the players' statistics, kept with the players' script.</summary>
         public const string HubTemplatePath = "../../tools/stats/templates/index.html";
         private const int HistoryLength = 50;
+        /// <summary>
+        /// Where the rules the bots measure live (git pathspecs from the repository root): the domain, the
+        /// application, content code and data, and the bots themselves. tools/stats/code_state.py keeps the same list.
+        /// </summary>
+        public static readonly string[] RulePaths =
+        {
+            "unity/TrollStategy/Assets/Game/Runtime/Domain",
+            "unity/TrollStategy/Assets/Game/Runtime/Application",
+            "unity/TrollStategy/Assets/Game/Runtime/Content",
+            "unity/TrollStategy/Assets/Game/Content/Definitions",
+            "unity/TrollStategy/Assets/Game/Bots/*.cs"
+        };
 
         [MenuItem("TrollStrategy/Bots/Run Campaign Bots")]
         public static void RunAll()
@@ -110,7 +122,7 @@ namespace TrollStrategy.Bots
             var (commit, branch) = GitHead();
             var info = new BotReportInfo(DateTime.Now, commit, branch,
                 string.Join(", ", layout.Select(b => $"{b.Kind} ({b.Cell.X}, {b.Cell.Y})")),
-                catalog.Progression.Quests.Count, stopAfterLevel);
+                catalog.Progression.Quests.Count, stopAfterLevel, UncommittedRules());
             WritePage(runs, info, folder);
             return runs;
         }
@@ -145,21 +157,67 @@ namespace TrollStrategy.Bots
 
         private static string PagePath(string folder) => Path.GetFullPath(Path.Combine(folder, "index.html"));
 
-        // The commit and branch the project is checked out at, read from .git; nulls outside a repository.
-        private static (string Commit, string Branch) GitHead()
+        /// <summary>
+        /// Rule files (<see cref="RulePaths"/>) changed and not committed: a run on them measures work in progress,
+        /// not the commit it names. Null when git cannot be asked.
+        /// </summary>
+        public static List<string> UncommittedRules()
+        {
+            var root = RepositoryRoot();
+            if (root == null) return null;
+            try
+            {
+                var start = new System.Diagnostics.ProcessStartInfo("git",
+                    "status --porcelain -- " + string.Join(" ", RulePaths.Select(p => $"\"{p}\"")))
+                {
+                    WorkingDirectory = root.FullName,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                using var git = System.Diagnostics.Process.Start(start);
+                string output = git.StandardOutput.ReadToEnd();
+                if (!git.WaitForExit(10000) || git.ExitCode != 0) return null;
+                return output.Split('\n').Where(line => line.Length > 3).Select(line => line.Substring(3).Trim()).ToList();
+            }
+            catch (Exception exception) when (exception is System.ComponentModel.Win32Exception or IOException
+                                                  or InvalidOperationException)
+            {
+                return null;
+            }
+        }
+
+        // The folder that holds .git (a folder, or a file in a worktree); null outside a repository.
+        private static DirectoryInfo RepositoryRoot()
+        {
+            var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, ".git")) &&
+                   !File.Exists(Path.Combine(dir.FullName, ".git")))
+                dir = dir.Parent;
+            return dir;
+        }
+
+        /// <summary>The commit and branch the project is checked out at, read from .git; nulls outside a repository.</summary>
+        internal static (string Commit, string Branch) GitHead()
         {
             try
             {
-                var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
-                while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, ".git"))) dir = dir.Parent;
+                var dir = RepositoryRoot();
                 if (dir == null) return (null, null);
                 string git = Path.Combine(dir.FullName, ".git");
+                // a worktree's .git is a file that names its own git folder
+                if (File.Exists(git))
+                    git = Path.GetFullPath(Path.Combine(dir.FullName,
+                        File.ReadAllText(git).Trim().Substring("gitdir:".Length).Trim()));
                 string head = File.ReadAllText(Path.Combine(git, "HEAD")).Trim();
                 if (!head.StartsWith("ref: ", StringComparison.Ordinal)) return (Short(head), null);
                 string reference = head.Substring(5);
                 string branch = reference.StartsWith("refs/heads/", StringComparison.Ordinal)
                     ? reference.Substring(11)
                     : reference;
+                // a worktree keeps the branches in the main repository's git folder
+                string common = Path.Combine(git, "commondir");
+                if (File.Exists(common)) git = Path.GetFullPath(Path.Combine(git, File.ReadAllText(common).Trim()));
                 string loose = Path.Combine(git, reference.Replace('/', Path.DirectorySeparatorChar));
                 if (File.Exists(loose)) return (Short(File.ReadAllText(loose).Trim()), branch);
                 string packed = Path.Combine(git, "packed-refs");

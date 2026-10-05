@@ -10,8 +10,9 @@ namespace TrollStrategy.Bots
     public sealed class BotReportInfo
     {
         public BotReportInfo(DateTime generatedAt, string commit, string branch, string layout, int chainLength,
-            int stopAfterLevel)
+            int stopAfterLevel, IReadOnlyList<string> uncommitted = null)
         {
+            Uncommitted = uncommitted;
             GeneratedAt = generatedAt;
             Commit = commit;
             Branch = branch;
@@ -28,6 +29,8 @@ namespace TrollStrategy.Bots
         public int ChainLength { get; }
         /// <summary>0 when the runs played the whole chain.</summary>
         public int StopAfterLevel { get; }
+        /// <summary>Rule files changed but not committed when the runs played; null when unknown.</summary>
+        public IReadOnlyList<string> Uncommitted { get; }
     }
 
     /// <summary>
@@ -73,7 +76,8 @@ namespace TrollStrategy.Bots
             ("branch", Str(info.Branch)),
             ("layout", Str(info.Layout)),
             ("chainLength", Num(info.ChainLength)),
-            ("stopAfterLevel", Num(info.StopAfterLevel)));
+            ("stopAfterLevel", Num(info.StopAfterLevel)),
+            ("uncommitted", info.Uncommitted == null ? "null" : Arr(info.Uncommitted, Str)));
 
         private static string Run(BotRun run) => Obj(
             ("id", Str(run.Profile.Id)),
@@ -141,13 +145,13 @@ namespace TrollStrategy.Bots
                 ("arenaLevel", Num(s.ArenaLevel))))),
             ("refusals", Arr(run.Refusals, r => Obj(("message", Str(r.Key)), ("count", Num(r.Value))))));
 
-        private static string Obj(params (string Key, string Value)[] fields) =>
+        internal static string Obj(params (string Key, string Value)[] fields) =>
             "{" + string.Join(",", fields.Select(f => Str(f.Key) + ":" + f.Value)) + "}";
 
-        private static string Arr<T>(IEnumerable<T> items, Func<T, string> item) =>
+        internal static string Arr<T>(IEnumerable<T> items, Func<T, string> item) =>
             "[" + string.Join(",", items.Select(item)) + "]";
 
-        private static string Num(double value) => value.ToString("0.###", Invariant);
+        internal static string Num(double value) => value.ToString("0.###", Invariant);
         private static string Bool(bool value) => value ? "true" : "false";
 
         public static string Str(string value)
