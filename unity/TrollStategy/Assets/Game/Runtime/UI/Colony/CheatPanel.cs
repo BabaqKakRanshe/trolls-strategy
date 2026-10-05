@@ -11,6 +11,8 @@ namespace TrollStrategy.UI
     public sealed class CheatPanel
     {
         private const int GoldGrant = 1000;
+        // three of every item: the battle's gear row then holds every kind, as a late campaign fills it
+        private const int GearGrant = 3;
 
         private readonly ColonyHudContext _context;
         private readonly VisualElement _overlay;
@@ -33,6 +35,9 @@ namespace TrollStrategy.UI
             var gold = Ui.Require<Button>(root, "cheat-gold");
             gold.text = $"+{GoldGrant} золота";
             UiFeel.Bind(gold, () => Report(_context.Session.DebugAddGold(GoldGrant)));
+            var gear = Ui.Require<Button>(root, "cheat-gear");
+            Ui.SetText(gear, $"Снаряжение: по {GearGrant} каждого");
+            UiFeel.Bind(gear, () => Report(_context.Session.DebugGrantGear(GearGrant)));
             Hide();
         }
 

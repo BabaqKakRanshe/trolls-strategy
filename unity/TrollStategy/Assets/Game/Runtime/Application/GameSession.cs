@@ -150,6 +150,33 @@ namespace TrollStrategy.Application
             return CommandResult.Success();
         }
 
+        /// <summary>
+        /// Development shortcut: <paramref name="each"/> of every item in the catalog, plain and enchanted, into the
+        /// colony's inventory, so the battle's gear row can be seen as full as a late campaign makes it.
+        /// </summary>
+        public CommandResult DebugGrantGear(int each)
+        {
+            if (each <= 0) throw new ArgumentOutOfRangeException(nameof(each));
+            if (_state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
+            var candidate = _state.Clone();
+            foreach (var definition in _catalog.Equipment)
+            {
+                if (definition == null) continue;
+                for (int i = 0; i < each; i++)
+                    candidate.Equipment.Add(new EquipmentState
+                    {
+                        Id = ColonySimulation.NextEquipmentId(candidate),
+                        DefinitionId = definition.ItemId
+                    });
+            }
+            // gear goals count it at once, as gold goals count the gold shortcut
+            Progression.Update(candidate, _catalog);
+            _state = candidate;
+            _revision++;
+            Emit();
+            return CommandResult.Success();
+        }
+
         /// <summary>Development shortcut: every block of land becomes the colony's, wild where it was not owned.</summary>
         public CommandResult DebugOwnAllLand() => DebugLand(LandBlock.Wild);
 

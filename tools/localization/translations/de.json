@@ -923,5 +923,6 @@
  "Свободных мест для рабочих нет": "Keine freien Plätze für Arbeiter",
  "Нанять некого: откройте существ заданиями": "Niemand zum Anheuern: Schalte Wesen mit Aufgaben frei",
  "{0} нанят и идёт на работу: {1}.": "{0} angeheuert, geht zur Arbeit: {1}.",
- "В этой игре вся арена уже открыта": "In diesem Spiel ist die ganze Arena schon offen"
+ "В этой игре вся арена уже открыта": "In diesem Spiel ist die ganze Arena schon offen",
+ "Снаряжение: по {0} каждого": "Ausrüstung: je {0}"
 }

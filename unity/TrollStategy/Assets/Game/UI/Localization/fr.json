@@ -1413,6 +1413,10 @@
 "v": "Verrouillé pour l'instant."
 },
 {
+"k": "Снаряжение: по {0} каждого",
+"v": "Équipement : {0} de chaque"
+},
+{
 "k": "Не хватает золота для тестового отряда",
 "v": "Pas assez d'or pour une escouade de test"
 },

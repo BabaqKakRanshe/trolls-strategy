@@ -19,8 +19,14 @@
                     <ui:Label name="battle-armor-value" class="battle-stat__value t-black" picking-mode="Ignore" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <!-- the inventory, one round button per item, built by GearPanel -->
-            <ui:VisualElement name="battle-items" class="battle-items" picking-mode="Ignore" />
+            <!-- the inventory, one round button per kind of item, built by GearPanel; a page at a time with
+                 arrows at its ends and a dot per page over it (CatalogPager) -->
+            <ui:VisualElement class="battle-items-pager" picking-mode="Ignore">
+                <ui:Button name="battle-items-prev" class="btn-disc battle-items__arrow battle-items__arrow--prev"><ui:VisualElement class="glyph glyph--chevron battle-items__arrow-glyph" picking-mode="Ignore" /></ui:Button>
+                <ui:VisualElement name="battle-items" class="battle-items" picking-mode="Ignore" />
+                <ui:Button name="battle-items-next" class="btn-disc battle-items__arrow battle-items__arrow--next"><ui:VisualElement class="glyph glyph--chevron battle-items__arrow-glyph" picking-mode="Ignore" /></ui:Button>
+                <ui:VisualElement name="battle-items-dots" class="battle-items__dots" picking-mode="Ignore" />
+            </ui:VisualElement>
             <ui:Button name="battle-remove" text="×" class="btn btn-disc battle-remove" />
         </ui:VisualElement>
         <!-- who to put on the board: one round button per kind with how many are left, built by SquadPanel;

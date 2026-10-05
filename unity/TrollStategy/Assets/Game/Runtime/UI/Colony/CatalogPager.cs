@@ -9,7 +9,8 @@ namespace TrollStrategy.UI
     /// One tray of catalog tokens shown a page at a time: as many whole tokens as the band holds (eight on a
     /// 1920 px screen), so the band's edge never cuts one. Round arrows at the tray's ends and the mouse wheel
     /// turn the page, a dot per page shows where the player is. The arrow towards the quest's token and that
-    /// page's dot wear the accent, and a new quest turns to its page once.
+    /// page's dot wear the accent, and a new quest turns to its page once. The battle's gear row pages the same
+    /// way, its room measured by its owner (<see cref="Fit"/>).
     /// </summary>
     public sealed class CatalogPager
     {
@@ -17,6 +18,7 @@ namespace TrollStrategy.UI
         // a catalog token: 139 px and 10 px margins (.catalog-pager .token); .catalog keeps 300 px clear at both ends
         private const float TokenWidth = 159f;
         private const float BandEnds = 600f;
+        private const int MinPerPage = 3;
 
         private readonly VisualElement _band;
         private readonly VisualElement _tray;
@@ -29,23 +31,41 @@ namespace TrollStrategy.UI
         private readonly List<VisualElement> _listed = new();
         private VisualElement _focus;
         private int _page;
-        private int _perPage = MaxPerPage;
+        private int _perPage;
+        private readonly int _maxPerPage;
+        private readonly float _tokenWidth;
+        private readonly string _dotClass;
 
         /// <summary>The page turned: the panel lays out what depends on the arrows (the hire stepper).</summary>
         public event System.Action Turned;
 
         public CatalogPager(VisualElement band, VisualElement tray, Button prev, Button next, VisualElement dots)
+            : this(tray, prev, next, dots, MaxPerPage, TokenWidth, "catalog-dot")
         {
             _band = band;
+            _band?.RegisterCallback<GeometryChangedEvent>(_ => Measure());
+        }
+
+        /// <summary>
+        /// A tray whose owner measures its room and hands it to <see cref="Fit"/>: a token takes
+        /// <paramref name="tokenWidth"/> with its margins, a page holds up to <paramref name="maxPerPage"/>, the
+        /// dots wear <paramref name="dotClass"/>.
+        /// </summary>
+        public CatalogPager(VisualElement tray, Button prev, Button next, VisualElement dots, int maxPerPage,
+            float tokenWidth, string dotClass)
+        {
             _tray = tray;
             _dots = dots;
+            _maxPerPage = maxPerPage;
+            _perPage = maxPerPage;
+            _tokenWidth = tokenWidth;
+            _dotClass = dotClass;
             _prev = UiFeel.Bind(prev, () => Turn(-1), Sfx.UiClick);
             _next = UiFeel.Bind(next, () => Turn(1), Sfx.UiClick);
             _prevPip = Pip(_prev);
             _nextPip = Pip(_next);
             // the wheel over the tokens bubbles up to the tray
             _tray.RegisterCallback<WheelEvent>(OnWheel);
-            _band?.RegisterCallback<GeometryChangedEvent>(_ => Measure());
         }
 
         public int Page => _page;
@@ -109,7 +129,7 @@ namespace TrollStrategy.UI
 
             bool paged = HasPages;
             // a short last page keeps the full row's width, so the arrows stay where they were
-            _tray.style.minWidth = paged ? new StyleLength(_perPage * TokenWidth) : new StyleLength(StyleKeyword.Null);
+            _tray.style.minWidth = paged ? new StyleLength(_perPage * _tokenWidth) : new StyleLength(StyleKeyword.Null);
             Ui.Show(_prev, paged);
             Ui.Show(_next, paged);
             UiFeel.SetAvailable(_prev, _page > 0);
@@ -124,7 +144,7 @@ namespace TrollStrategy.UI
                 for (int i = 0; i < PageCount; i++)
                 {
                     var dot = new VisualElement { pickingMode = PickingMode.Ignore };
-                    dot.AddToClassList("catalog-dot");
+                    dot.AddToClassList(_dotClass);
                     dot.EnableInClassList("is-on", i == _page);
                     dot.EnableInClassList("is-quest", i == focusPage && i != _page);
                     _dots.Add(dot);
@@ -138,7 +158,17 @@ namespace TrollStrategy.UI
             float width = _band.resolvedStyle.width;
             if (float.IsNaN(width) || width <= 0f) return;
             // a pixel of slack: a 1920 px band resolves a hair narrower and must still hold eight
-            int perPage = Mathf.Clamp(Mathf.FloorToInt((width - BandEnds + 2f) / TokenWidth), 3, MaxPerPage);
+            Fit(width - BandEnds + 2f);
+        }
+
+        /// <summary>
+        /// The tray has <paramref name="room"/> px: a page holds as many whole tokens as fit, at least three. The
+        /// first token shown stays on the page shown.
+        /// </summary>
+        public void Fit(float room)
+        {
+            if (float.IsNaN(room)) return;
+            int perPage = Mathf.Clamp(Mathf.FloorToInt(room / _tokenWidth), MinPerPage, _maxPerPage);
             if (perPage == _perPage) return;
             int first = _page * _perPage;
             _perPage = perPage;

@@ -1090,6 +1090,9 @@
  "Пока закрыто.": [
   "Runtime/UI/Colony/CatalogPanel.cs"
  ],
+ "Снаряжение: по {0} каждого": [
+  "Runtime/UI/Colony/CheatPanel.cs"
+ ],
  "Не хватает золота для тестового отряда": [
   "Runtime/UI/Colony/CheatPanel.cs"
  ],

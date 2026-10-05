@@ -129,6 +129,33 @@ namespace TrollStrategy.Editor.Tools
                 view = new ColonyHudView(hud.CollectRoots(d => d.rootVisualElement), context);
             }
 
+            // the battle's gear row with every item of the catalog, as a late campaign fills it (playtest item 26)
+            var battleHud = UnityEngine.Object.FindAnyObjectByType<BattleHud>(FindObjectsInactive.Include);
+            var mission = catalog.Missions.FirstOrDefault(candidate => candidate != null);
+            BattleHudView battle = null;
+            void ShowBattle(bool shown)
+            {
+                if (battle == null) return;
+                battle.Root.style.display = shown ? DisplayStyle.Flex : DisplayStyle.None;
+                view.Root.style.display = shown ? DisplayStyle.None : DisplayStyle.Flex;
+            }
+            void EnsureBattle()
+            {
+                if (battle != null) return;
+                var gearSession = new GameSession(catalog, layout, campaign: true);
+                gearSession.EnableDebugBattleAccess();
+                gearSession.DebugAddGold(20000);
+                gearSession.Dispatch(new BuyUnitsCommand(UnitKind.Troll, 2, gearSession.FindSpawnCell()));
+                gearSession.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 2, gearSession.FindSpawnCell()));
+                gearSession.DebugGrantGear(3);
+                var board = mission.CreateBoard();
+                var deployment = new BattleDeployment(gearSession, mission, board);
+                battle = new BattleHudView(battleHud.CollectRoots(document => document.rootVisualElement));
+                battle.Open(deployment);
+                deployment.ClickCell(mission.PlayerDeployment.First(cell =>
+                    board.CanPlace(cell) && deployment.UnitAt(cell) == null));
+            }
+
             // -hudLanguages ru,en limits the run to those languages
             var args = Environment.GetCommandLineArgs();
             int only = Array.IndexOf(args, "-hudLanguages");
@@ -139,6 +166,7 @@ namespace TrollStrategy.Editor.Tools
                 Pending.Enqueue(new Shot { Name = $"{code}-colony", Setup = () =>
                 {
                     Ensure();
+                    ShowBattle(false);
                     view.Wiki?.Close();
                     Localization.Select(code);
                     view.Refresh(session.CurrentSnapshot);
@@ -201,6 +229,17 @@ namespace TrollStrategy.Editor.Tools
                 Pending.Enqueue(new Shot { Name = $"{code}-wiki-goods", Setup = () => view.Wiki?.Go(WikiSection.Goods, ResourceKind.Leather.ToString()) });
                 Pending.Enqueue(new Shot { Name = $"{code}-wiki-upgrades", Setup = () => view.Wiki?.Show(WikiSection.Upgrades) });
                 Pending.Enqueue(new Shot { Name = $"{code}-wiki-arena", Setup = () => view.Wiki?.Go(WikiSection.Arena, "11") });
+                if (battleHud != null && mission != null)
+                    Pending.Enqueue(new Shot { Name = $"{code}-battle-gear", Setup = () =>
+                    {
+                        view.Wiki?.Close();
+                        EnsureBattle();
+                        battle.Gear.Pages.Turn(-battle.Gear.Pages.Page);
+                        ShowBattle(true);
+                        battle.Refresh();
+                    } });
+                if (battleHud != null && mission != null)
+                    Pending.Enqueue(new Shot { Name = $"{code}-battle-gear-page2", Setup = () => battle.Gear.Pages.Turn(1) });
                 Pending.Enqueue(new Shot { Name = $"{code}-wiki-search", Setup = () => view.Wiki?.Search(Localization.T("Кожа").Substring(0, Math.Min(3, Localization.T("Кожа").Length))) });
             }
         }

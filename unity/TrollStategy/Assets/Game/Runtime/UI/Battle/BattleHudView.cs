@@ -27,7 +27,8 @@ namespace TrollStrategy.UI
                 () => IsDeploying ? "Бой не начнётся, бойцы вернутся к работе." : null, Tooltip);
             Squad = new SquadPanel(roots.Squad, Tooltip);
             Squad.KindDropped += kind => KindDropped?.Invoke(kind);
-            Gear = new GearPanel(roots.Squad, Tooltip);
+            Gear = new GearPanel(roots.Squad, Tooltip, () => GearRoom(roots));
+            roots.Deployment.RegisterCallback<GeometryChangedEvent>(_ => Gear.Measure());
             Actions = new DeploymentActions(roots.Actions, roots.Hint, () => StartRequested?.Invoke(), Tooltip);
             Replay = new ReplayBar(roots.Replay, () => PauseToggled?.Invoke(), speed => SpeedChosen?.Invoke(speed),
                 () => CloseRequested?.Invoke(), Tooltip);
@@ -105,6 +106,10 @@ namespace TrollStrategy.UI
             _deployment = null;
             Banner.Hide();
         }
+
+        // the fighter's row may take the band less the start's column and the least the hint keeps
+        private static float GearRoom(BattleHudRoots roots) =>
+            roots.Deployment.contentRect.width - roots.Actions.layout.width - roots.Hint.resolvedStyle.minWidth.value;
 
         private void Detach()
         {

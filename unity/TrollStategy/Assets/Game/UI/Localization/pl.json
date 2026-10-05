@@ -1413,6 +1413,10 @@
 "v": "Na razie zamknięte."
 },
 {
+"k": "Снаряжение: по {0} каждого",
+"v": "Ekwipunek: po {0} z każdego"
+},
+{
 "k": "Не хватает золота для тестового отряда",
 "v": "Za mało złota na testowy oddział"
 },

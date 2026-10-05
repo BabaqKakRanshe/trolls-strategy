@@ -224,6 +224,68 @@ namespace TrollStrategy.Tests
             Assert.That(_hud.Replay.ShowsPrize, Is.False, "A repeat win from an empty fund leaves nothing to take");
         }
 
+#if UNITY_EDITOR || UNITY_ENABLE_CHECKS
+        [Test]
+        public void GearCheat_PutsEveryItemOfTheCatalogIntoTheInventory_EachWithItsOwnId()
+        {
+            var definitions = _catalog.Equipment.Where(definition => definition != null).ToList();
+            int before = _session.CurrentSnapshot.Equipment.Count;
+
+            Assert.That(_session.DebugGrantGear(3).Ok, Is.True);
+
+            var equipment = _session.CurrentSnapshot.Equipment;
+            Assert.That(equipment.Count, Is.EqualTo(before + 3 * definitions.Count));
+            Assert.That(equipment.Select(item => item.Id).Distinct().Count(), Is.EqualTo(equipment.Count));
+            foreach (var definition in definitions)
+                Assert.That(equipment.Count(item => item.DefinitionId == definition.ItemId), Is.GreaterThanOrEqualTo(3),
+                    definition.ItemId);
+        }
+
+        [Test]
+        public void GearRow_HasOneButtonPerKind_WhenTheColonyHoldsEveryItem()
+        {
+            int kinds = _catalog.Equipment.Count(definition => definition != null);
+            Assert.That(_session.DebugGrantGear(3).Ok, Is.True);
+            _deployment = new BattleDeployment(_session, _mission, _board);
+            _hud.Open(_deployment);
+            _deployment.ClickCell(FreeCell());
+
+            Assert.That(_hud.Gear.IsShown, Is.True);
+            Assert.That(_hud.Gear.ButtonCount, Is.EqualTo(kinds));
+        }
+
+        [Test]
+        public void GearRow_ShowsWholeButtonsAPageAtATime_AndEveryKindIsOnSomePage()
+        {
+            Assert.That(_session.DebugGrantGear(3).Ok, Is.True);
+            _deployment = new BattleDeployment(_session, _mission, _board);
+            _hud.Open(_deployment);
+            _deployment.ClickCell(FreeCell());
+            var buttons = _deployment.Equipment.GroupBy(item => item.DefinitionId)
+                .Select(group => _hud.Gear.ItemButton(group.First().Id)).ToList();
+            var pages = _hud.Gear.Pages;
+
+            // room for five buttons, as a narrow screen leaves
+            pages.Fit(5 * 62f);
+
+            Assert.That(pages.PerPage, Is.EqualTo(5));
+            Assert.That(pages.HasPages, Is.True);
+            Assert.That(Ui.IsShown(pages.PrevButton) && Ui.IsShown(pages.NextButton), Is.True);
+            var seen = new System.Collections.Generic.HashSet<Button>();
+            for (int page = 0; page < pages.PageCount; page++)
+            {
+                var shown = buttons.Where(button => Ui.IsShown(button)).ToList();
+                Assert.That(shown.Count, Is.InRange(1, 5), $"page {page + 1}");
+                seen.UnionWith(shown);
+                UiFeel.Press(pages.NextButton);
+            }
+            Assert.That(seen.Count, Is.EqualTo(buttons.Count), "every kind of item is on some page");
+
+            pages.Fit(buttons.Count * 62f);
+            Assert.That(pages.HasPages, Is.EqualTo(buttons.Count > 20), "a wide screen shows them all, up to twenty");
+        }
+#endif
+
         private Cell FreeCell() => _mission.PlayerDeployment.First(cell =>
             _board.CanPlace(cell) && _deployment.UnitAt(cell) == null);
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
@@ -9,7 +10,8 @@ namespace TrollStrategy.UI
     /// <summary>
     /// The selected fighter's row over the squad: health, damage and armour with its gear on, the inventory
     /// as round buttons (lit on the fighter who wears them, faint on another) and the way back to the
-    /// reserve. Hidden while no fighter is selected; names, bonuses and owners are in the hints.
+    /// reserve. Hidden while no fighter is selected; names, bonuses and owners are in the hints. The inventory
+    /// shows whole buttons a page at a time, as many as the band leaves room for, with round arrows at its ends.
     /// </summary>
     public sealed class GearPanel
     {
@@ -30,15 +32,28 @@ namespace TrollStrategy.UI
         private readonly VisualElement _list;
         private readonly HudTooltip _tooltip;
         private readonly List<Item> _items = new();
+        private readonly CatalogPager _pager;
+        private readonly Func<float> _rowRoom;
         private BattleDeployment _deployment;
 
-        public GearPanel(VisualElement root, HudTooltip tooltip = null)
+        // a button: 68 px less its -6 px margin (.battle-item); an arrow: 52 px with its margins (.battle-items__arrow)
+        private const float ItemWidth = 62f;
+        private const float ArrowWidth = 52f;
+        private const int MaxPerPage = 20;
+
+        /// <param name="rowRoom">The width the selected fighter's row may take; without it a page holds the most.</param>
+        public GearPanel(VisualElement root, HudTooltip tooltip = null, Func<float> rowRoom = null)
         {
             _panel = Ui.Require<VisualElement>(root, "battle-gear");
             _health = Ui.Require<Label>(root, "battle-health-value");
             _damage = Ui.Require<Label>(root, "battle-damage-value");
             _armor = Ui.Require<Label>(root, "battle-armor-value");
             _list = Ui.Require<VisualElement>(root, "battle-items");
+            _pager = new CatalogPager(_list, Ui.Require<Button>(root, "battle-items-prev"),
+                Ui.Require<Button>(root, "battle-items-next"), Ui.Require<VisualElement>(root, "battle-items-dots"),
+                MaxPerPage, ItemWidth, "battle-items__dot");
+            _rowRoom = rowRoom;
+            _panel.RegisterCallback<GeometryChangedEvent>(_ => Measure());
             _tooltip = tooltip;
             Remove = UiFeel.Bind(Ui.Require<Button>(root, "battle-remove"), RemoveSelected, silentClick: true);
             if (tooltip == null) return;
@@ -56,6 +71,9 @@ namespace TrollStrategy.UI
         public string Armor => _armor.text;
 
         public Button ItemButton(string itemId) => GroupOf(itemId)?.Button;
+
+        /// <summary>The inventory's pages.</summary>
+        public CatalogPager Pages => _pager;
 
         /// <summary>How many buttons the inventory row has: one per kind of item.</summary>
         public int ButtonCount => _items.Count;
@@ -93,8 +111,31 @@ namespace TrollStrategy.UI
                 item.Items.Add(equipment);
             }
             Ui.Show(_list, _items.Count > 0);
+            var tokens = new List<(VisualElement, bool)>(_items.Count);
+            foreach (var item in _items) tokens.Add((item.Button, true));
+            _pager.Show(tokens, null);
             Refresh();
         }
+
+        /// <summary>
+        /// A page holds as many whole buttons as the row's room leaves beside the fighter's numbers, the way back
+        /// and the page arrows. The band calls it when the screen changes; the row, when it shows.
+        /// </summary>
+        public void Measure()
+        {
+            if (_rowRoom == null || !IsShown) return;
+            float room = _rowRoom();
+            float row = _panel.layout.width;
+            float list = _list.layout.width;
+            if (float.IsNaN(room) || float.IsNaN(row) || float.IsNaN(list) || row <= 0f) return;
+            // the numbers and the way back; the arrows count whether they show now or not
+            float beside = row - list - Outer(_pager.PrevButton) - Outer(_pager.NextButton);
+            _pager.Fit(room - beside - 2f * ArrowWidth);
+        }
+
+        private static float Outer(VisualElement element) => Ui.IsShown(element)
+            ? element.layout.width + element.resolvedStyle.marginLeft + element.resolvedStyle.marginRight
+            : 0f;
 
         public void Refresh()
         {

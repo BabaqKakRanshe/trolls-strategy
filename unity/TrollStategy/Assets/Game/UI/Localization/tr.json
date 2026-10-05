@@ -1413,6 +1413,10 @@
 "v": "Şimdilik kapalı."
 },
 {
+"k": "Снаряжение: по {0} каждого",
+"v": "Teçhizat: her birinden {0}"
+},
+{
 "k": "Не хватает золота для тестового отряда",
 "v": "Deneme birliği için altın yetmiyor"
 },

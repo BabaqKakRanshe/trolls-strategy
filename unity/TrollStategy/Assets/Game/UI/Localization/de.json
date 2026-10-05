@@ -1413,6 +1413,10 @@
 "v": "Noch gesperrt."
 },
 {
+"k": "Снаряжение: по {0} каждого",
+"v": "Ausrüstung: je {0}"
+},
+{
 "k": "Не хватает золота для тестового отряда",
 "v": "Nicht genug Gold für einen Testtrupp"
 },

@@ -923,5 +923,6 @@
  "Свободных мест для рабочих нет": "No free places for workers",
  "Нанять некого: откройте существ заданиями": "Nobody to hire: unlock creatures with quests",
  "{0} нанят и идёт на работу: {1}.": "{0} hired and heading to work: {1}.",
- "В этой игре вся арена уже открыта": "The whole arena is already open in this game"
+ "В этой игре вся арена уже открыта": "The whole arena is already open in this game",
+ "Снаряжение: по {0} каждого": "Gear: {0} of each"
 }

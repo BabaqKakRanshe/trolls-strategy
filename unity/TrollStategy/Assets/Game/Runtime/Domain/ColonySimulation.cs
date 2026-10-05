@@ -995,7 +995,8 @@ namespace TrollStrategy.Domain
                 state.Equipment.Add(new EquipmentState { Id = NextEquipmentId(state), DefinitionId = equipmentId });
         }
 
-        private static string NextEquipmentId(GameState state)
+        /// <summary>The next free inventory id, "item-NNN", for every way gear enters the colony.</summary>
+        public static string NextEquipmentId(GameState state)
         {
             for (int n = state.Equipment.Count + 1; ; n++)
             {

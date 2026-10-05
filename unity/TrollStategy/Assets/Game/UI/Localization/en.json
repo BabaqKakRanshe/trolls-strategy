@@ -1413,6 +1413,10 @@
 "v": "Locked for now."
 },
 {
+"k": "Снаряжение: по {0} каждого",
+"v": "Gear: {0} of each"
+},
+{
 "k": "Не хватает золота для тестового отряда",
 "v": "Not enough gold for a test squad"
 },

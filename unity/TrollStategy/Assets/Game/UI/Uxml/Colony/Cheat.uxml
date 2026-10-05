@@ -17,6 +17,8 @@
             <ui:Button name="cheat-land-buy" text="Купить всю землю" class="btn" />
             <ui:Button name="cheat-land-clear" text="Расчистить всю землю" class="btn" />
             <ui:Button name="cheat-buildings" text="Открыть все постройки" class="btn" />
+            <!-- the caption says how many of each item: CheatPanel writes it with its number -->
+            <ui:Button name="cheat-gear" class="btn" />
             <ui:Button name="cheat-gold" text="+1000 золота" class="btn btn--gold" />
             <ui:Label name="cheat-status" text="Если бойцов нет, быстрый бой наймёт 1 тролля и 3 гоблинов." class="note" />
         </ui:VisualElement>

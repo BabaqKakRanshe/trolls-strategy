@@ -143,16 +143,77 @@
     font-size: 24px;
 }
 
+/* the inventory a page at a time (GearPanel): small round arrows at its ends, a dot per page over it */
+.battle-items-pager {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+}
+
 .battle-items {
     flex-direction: row;
     align-items: center;
+    flex-shrink: 0;
 }
 
-/* disc.png: the 50 px circle sits in the middle of this box */
+/* disc.png: the 50 px circle sits in the middle of this box; a button never shrinks (GearPanel.ItemWidth) */
 .battle-item {
     width: 68px;
     height: 68px;
     margin-right: -6px;
+    flex-shrink: 0;
+}
+
+/* 48 px and 2 px margins: GearPanel.ArrowWidth */
+.battle-items__arrow {
+    width: 48px;
+    height: 48px;
+    margin: 0 2px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.battle-items__arrow-glyph {
+    width: 20px;
+    height: 20px;
+}
+
+/* nowhere to turn: the arrow fades, a press still answers with the refusal */
+.battle-items__arrow.is-unavailable {
+    opacity: 0.35;
+}
+
+.battle-items__arrow--prev > .battle-items__arrow-glyph {
+    rotate: -90deg;
+}
+
+.battle-items__arrow--next > .battle-items__arrow-glyph {
+    rotate: 90deg;
+}
+
+.battle-items__dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -10px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.battle-items__dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 3px;
+    border-radius: 4px;
+    background-color: var(--paper);
+    border-width: 1px;
+    border-color: var(--paper-line);
+}
+
+.battle-items__dot.is-on {
+    background-color: var(--ink);
+    border-color: var(--ink);
 }
 
 .battle-item__art {
