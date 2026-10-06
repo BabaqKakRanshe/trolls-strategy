@@ -172,6 +172,8 @@ namespace TrollStrategy.Bootstrap
 
             if (_hud != null)
             {
+                // the tutorial pointer finds buildings, creatures and cells on the screen through the colony camera
+                var locator = new ScreenLocator(_camera, _worldView, _buildingManager, _unitManager);
                 var context = new ColonyHudContext(_session, _interaction)
                 {
                     ToggleGuides = _routeVisualizer != null ? _routeVisualizer.ToggleGuides : null,
@@ -180,20 +182,24 @@ namespace TrollStrategy.Bootstrap
                     SetPaused = SetPaused,
                     Restart = Restart,
                     IntroClosed = PlayFirstFlight,
+                    ReportBug = _support != null ? _support.ReportFromMenu : null,
                     Languages = Localization.Languages,
                     CurrentLanguage = () => Localization.Current,
                     SetLanguage = Localization.Select,
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
                     OpenQuickBattle = mission => BattleSceneController.OpenQuick(this, mission),
 #endif
-                    Showcase = new BuildingShowcase()
+                    Showcase = new BuildingShowcase(),
+                    MapToScreen = locator.MapToScreen,
+                    UnitToScreen = locator.UnitToScreen,
+                    BuildingToScreen = locator.BuildingToScreen
                 };
                 _hud.Init(context, _inputHandler);
                 _screenPanel = _hud.Document != null ? _hud.Document.panelSettings : null;
                 if (_screenPanel != null) _designedResolution = _screenPanel.referenceResolution;
                 ApplyUiScale();
                 // a new version opens with the alpha notice; the first launch flies in once it is closed
-                if (_hud.View == null || !_hud.View.Intro.OpenOnce()) PlayFirstFlight();
+                if (_hud.View == null || !_hud.View.Intro.OpenOnce(Telemetry.Game)) PlayFirstFlight();
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
                 if (_support != null) _support.SetCheats(() => _hud.View?.ToggleCheat());
 #endif

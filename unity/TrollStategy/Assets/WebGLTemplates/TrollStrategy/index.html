@@ -8,9 +8,10 @@
     <script src="TemplateData/report.js"></script>
     <link rel="stylesheet" href="TemplateData/style.css">
     <style>
-      #troll-report { position: fixed; left: 50%; top: 6px; transform: translateX(-50%); z-index: 10; padding: 6px 12px; border: 0;
-        border-radius: 14px; background: rgba(255, 255, 255, 0.75); color: #3a4250;
-        font: 600 13px system-ui, sans-serif; cursor: pointer; }
+      #troll-report { float: right; margin: 7px 8px 0 0; padding: 4px 10px; border: 1px solid rgba(58, 66, 80, 0.25);
+        border-radius: 12px; background: transparent; color: #3a4250;
+        font: 600 12px system-ui, sans-serif; cursor: pointer; }
+      #troll-report:hover { background: rgba(255, 255, 255, 0.7); }
     </style>
 #if SHOW_DIAGNOSTICS
     <link rel="stylesheet" href="<<<TemplateData/diagnostics.css>>>">
@@ -34,10 +35,10 @@
         </div>
       </div>
       <div id="unity-warning"> </div>
-      <button id="troll-report" type="button" onclick="trollReport.request()">Отчёт</button>
       <div id="unity-footer">
         <div id="unity-logo-title-footer"></div>
         <div id="unity-fullscreen-button"></div>
+        <button id="troll-report" type="button" onclick="trollReport.request()">Сообщить об ошибке</button>
 #if SHOW_DIAGNOSTICS
         <img id="diagnostics-icon" src="TemplateData/webmemd-icon.png">
 #endif

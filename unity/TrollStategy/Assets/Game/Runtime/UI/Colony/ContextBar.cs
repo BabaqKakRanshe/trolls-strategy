@@ -120,6 +120,14 @@ namespace TrollStrategy.UI
         /// <summary>Drops the selection, as Esc does.</summary>
         public Button ClearButton => _clear;
         public IReadOnlyList<Button> TargetButtons => _targetButtons;
+        /// <summary>The round button of a target of this kind in the current pick, or null.</summary>
+        public Button TargetButton(BuildingKind kind)
+        {
+            int at = _targetKinds.IndexOf(kind);
+            return at >= 0 ? _targetButtons[at] : null;
+        }
+        /// <summary>"Поставить сам" while a building waits for its place.</summary>
+        public Button AutoButton => _auto.Button;
         public Button HaulButton => _haul.Button;
         /// <summary>Back to the cargo choice while the haul destination is being picked.</summary>
         public Button ChangeCargoButton => _cargo.Button;
@@ -217,10 +225,10 @@ namespace TrollStrategy.UI
                     title = "Куда на работу";
                     break;
                 case InteractionModeType.ChoosingHaulSource:
-                    title = "Откуда носить";
+                    title = "1. Откуда носить";
                     break;
                 case InteractionModeType.ChoosingHaulDestination:
-                    title = "Куда носить";
+                    title = "2. Куда носить";
                     break;
                 case InteractionModeType.ManagingLand:
                     title = snapshot.Land != null ? $"Земля: участок за {Ui.Gold(snapshot.Land.NextPrice)}" : "Земля";
@@ -244,9 +252,10 @@ namespace TrollStrategy.UI
             Ui.SetText(_prompt, interaction.Message);
             ShowPortrait(picture, tight);
 
-            // the haul destination is the player's call on the map: no list of buildings for it
+            // every pick of a building lists its targets, where to carry too; the quest's one is marked
             bool listed = mode.Type == InteractionModeType.ChoosingWorkTarget ||
-                          mode.Type == InteractionModeType.ChoosingHaulSource;
+                          mode.Type == InteractionModeType.ChoosingHaulSource ||
+                          mode.Type == InteractionModeType.ChoosingHaulDestination;
             if (listed) ShowTargets(snapshot, interaction, mode);
             else ClearTargets();
             SetButtons(selection: false, auto: mode.Type == InteractionModeType.PlacingBuilding,
@@ -255,13 +264,14 @@ namespace TrollStrategy.UI
             MarkQuestTargets(mode.Type);
         }
 
-        // The target the quest asks for in this step: its workplace, where to carry from.
+        // The target the quest asks for in this step: its workplace, where to carry from, where to carry to.
         private void MarkQuestTargets(InteractionModeType mode)
         {
             BuildingKind? wanted = mode switch
             {
                 InteractionModeType.ChoosingWorkTarget => _focus.WorkTarget,
                 InteractionModeType.ChoosingHaulSource => _focus.HaulFrom,
+                InteractionModeType.ChoosingHaulDestination => _focus.HaulTo,
                 _ => null
             };
             for (int i = 0; i < _targetButtons.Count; i++)

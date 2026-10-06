@@ -180,6 +180,7 @@ namespace TrollStrategy.Presentation.Battle
             _screen.CloseRequested += Close;
             _screen.KindDropped += OnKindDropped;
             _screen.Open(_deployment);
+            _screen.LocateCells(CellOnScreen);
             ShowDeployment();
         }
 
@@ -238,6 +239,15 @@ namespace TrollStrategy.Presentation.Battle
         }
 
         private void ShowReplay() => _screen.ShowReplay(_paused, _speed, _boardView.AlivePlayers, _boardView.AliveEnemies);
+
+        // the tutorial pointer finds a fighter by the cell it stands on
+        private Vector2? CellOnScreen(Cell cell)
+        {
+            if (_battleCamera == null || _boardView == null) return null;
+            var point = _battleCamera.WorldToScreenPoint(_boardView.CellWorldPosition(cell));
+            // pixels from the top left, as the HUD counts them
+            return point.z > 0f ? new Vector2(point.x, _battleCamera.pixelHeight - point.y) : (Vector2?)null;
+        }
 
         private void OnCellClicked(Cell cell)
         {

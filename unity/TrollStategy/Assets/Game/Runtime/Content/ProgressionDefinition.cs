@@ -38,7 +38,10 @@ namespace TrollStrategy.Content
         /// <summary>Have Amount creatures wearing equipment.</summary>
         EquipFighters,
         /// <summary>Have Amount items in the armory, worn or not.</summary>
-        OwnEquipment
+        OwnEquipment,
+        /// <summary>Wear Amount items in battles, counted as each battle starts, over the whole game: gear a player
+        /// put on before the quest began counts too.</summary>
+        WearGearInBattle
     }
 
     // Values are serialized by index: append new kinds, never reorder.
@@ -127,6 +130,7 @@ namespace TrollStrategy.Content
         public static QuestGoal BuyUpgrades(int levels) => new(QuestGoalKind.BuyUpgrades, levels);
         public static QuestGoal EquipFighters(int fighters) => new(QuestGoalKind.EquipFighters, fighters);
         public static QuestGoal OwnEquipment(int items) => new(QuestGoalKind.OwnEquipment, items);
+        public static QuestGoal WearGearInBattle(int items) => new(QuestGoalKind.WearGearInBattle, items);
     }
 
     /// <summary>What claiming a finished quest gives: gold or the right to build, hire or fight.</summary>

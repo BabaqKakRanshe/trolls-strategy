@@ -188,7 +188,7 @@
     if (!button) return;
     button.textContent = message;
     clearTimeout(report._statusTimer);
-    report._statusTimer = setTimeout(function () { button.textContent = "Отчёт"; }, 5000);
+    report._statusTimer = setTimeout(function () { button.textContent = "Сообщить об ошибке"; }, 5000);
   };
 
   window.trollReport = report;

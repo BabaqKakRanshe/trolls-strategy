@@ -16,6 +16,7 @@ namespace TrollStrategy.Presentation
         private const string QualityKey = "settings.quality";
         private const string LanguageKey = "settings.language";
         private const string UiScaleKey = "settings.uiScale";
+        private const string HintsKey = "settings.tutorialHints";
         private const string IntroKey = "intro.seen";
         private const string FlightKey = "intro.flight";
 
@@ -31,6 +32,8 @@ namespace TrollStrategy.Presentation
         public static string Language { get; private set; } = string.Empty;
         /// <summary>The interface size the player chose; 0 is automatic.</summary>
         public static float UiScale { get; private set; }
+        /// <summary>Whether the tutorial pointer shows: the veil, the hand, the hint card and the free cells. On by default.</summary>
+        public static bool TutorialHints { get; private set; } = true;
 
         public static event Action Changed;
 
@@ -42,6 +45,7 @@ namespace TrollStrategy.Presentation
             Quality = ReadInt(QualityKey, AutoQuality);
             Language = ReadString(LanguageKey, string.Empty);
             UiScale = ReadFloat(UiScaleKey, 0f);
+            TutorialHints = ReadInt(HintsKey, 1) != 0;
             Apply();
         }
 
@@ -66,6 +70,17 @@ namespace TrollStrategy.Presentation
             Try(() =>
             {
                 PlayerPrefs.SetString(LanguageKey, Language);
+                PlayerPrefs.Save();
+            });
+            Changed?.Invoke();
+        }
+
+        public static void SetTutorialHints(bool on)
+        {
+            TutorialHints = on;
+            Try(() =>
+            {
+                PlayerPrefs.SetInt(HintsKey, on ? 1 : 0);
                 PlayerPrefs.Save();
             });
             Changed?.Invoke();

@@ -164,6 +164,8 @@ namespace TrollStrategy.Domain
                 }
                 case QuestGoalKind.OwnEquipment:
                     return state.Equipment.Count;
+                case QuestGoalKind.WearGearInBattle:
+                    return state.GearWornInBattles;
                 case QuestGoalKind.UpgradeBuilding:
                 {
                     int level = 0;

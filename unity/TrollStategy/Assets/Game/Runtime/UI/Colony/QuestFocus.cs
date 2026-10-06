@@ -55,6 +55,7 @@ namespace TrollStrategy.UI
                     if (!g.AnyUnit && !HasFree(snapshot, g)) focus.Hire = g.Unit;
                     break;
                 case QuestGoalKind.WinBattles:
+                case QuestGoalKind.WearGearInBattle:
                     focus.Battle = true;
                     break;
             }

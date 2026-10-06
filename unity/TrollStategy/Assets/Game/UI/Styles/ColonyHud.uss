@@ -199,16 +199,6 @@
     white-space: normal;
 }
 
-/* Four actions (the barracks: move, upgrade and two hires) go two by two: four in a row break their words. */
-.actions--grid {
-    flex-wrap: wrap;
-}
-
-.actions--grid > .action {
-    flex-basis: 40%;
-    margin-bottom: 8px;
-}
-
 /*
  * Catalog: a tray of round tokens across the bottom. The band runs the full width: the tabs stand at its
  * left end, the tokens in the middle of the screen, and the status line takes the right end, so the tray
@@ -1443,6 +1433,24 @@
     -unity-background-image-tint-color: var(--coin-deep);
 }
 
+/* the road beyond the next closed level, faded until the level below it is won */
+.arena-rail__level.is-far .arena-rail__disc {
+    opacity: 0.5;
+}
+
+/* the folk a first win opens for hire, on the disc's lower right */
+.arena-rail__folk {
+    position: absolute;
+    bottom: 4px;
+    right: 2px;
+    width: 28px;
+    height: 28px;
+    border-width: 2px;
+    border-color: var(--paper);
+    border-radius: 14px;
+    background-color: var(--paper-soft);
+}
+
 .arena-fact__value--hire {
     color: var(--accent-deep);
 }
@@ -1694,6 +1702,33 @@
     width: 18px;
     height: 18px;
     margin-right: 10px;
+}
+
+/* the statistics question: two answers, neither chosen until the player picks one */
+.intro-consent {
+    margin-top: 16px;
+    padding: 12px 14px;
+}
+
+.intro-consent__text {
+    margin-top: 4px;
+    font-size: 15px;
+    white-space: normal;
+}
+
+.intro-consent__choices {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.intro-consent__choice {
+    min-height: 44px;
+    margin-right: 10px;
+}
+
+.intro-consent__more {
+    margin-left: 6px;
 }
 
 .intro-dialog__side {

@@ -6,6 +6,7 @@ using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Battle;
 using TrollStrategy.Presentation.Visuals;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace TrollStrategy.UI
@@ -29,12 +30,15 @@ namespace TrollStrategy.UI
         [SerializeField] private UIDocument _replay;
         [SerializeField] private UIDocument _banner;
         [SerializeField] private UIDocument _tooltip;
+        [Tooltip("The tutorial pointer's layer (veil, hand, hint card).")]
+        [SerializeField] private UIDocument _guide;
 
         private readonly List<(VisualElement Root, VisualElement Content)> _builtFrom = new();
         private UIDocument _document;
         private BattleHudView _view;
         private BattleDeployment _deployment;
         private bool _open;
+        private Func<Cell, Vector2?> _cellToScreen;
 
         public event Action StartRequested;
         public event Action PauseToggled;
@@ -60,8 +64,16 @@ namespace TrollStrategy.UI
                 Actions = Of(_actions),
                 Replay = Of(_replay),
                 Banner = Of(_banner),
-                Tooltip = Of(_tooltip)
+                Tooltip = Of(_tooltip),
+                Guide = Of(_guide)
             };
+        }
+
+        /// <summary>Where a cell of the board shows on the screen; the tutorial pointer finds fighters by it.</summary>
+        public void LocateCells(Func<Cell, Vector2?> cellToScreen)
+        {
+            _cellToScreen = cellToScreen;
+            _view?.LocateCells(cellToScreen);
         }
 
         public void Open(BattleDeployment deployment)
@@ -111,6 +123,14 @@ namespace TrollStrategy.UI
                 _view = null;
                 if (EnsureView() && _open && _deployment != null) _view.Open(_deployment);
             }
+            if (_open && _view != null)
+            {
+                // a press outside the tutorial pointer's window lifts that step's veil
+                var pointer = Pointer.current;
+                var at = pointer != null ? pointer.position.ReadValue() : Vector2.zero;
+                _view.TrackPointer(pointer != null ? new Vector2(at.x, Screen.height - at.y) : (Vector2?)null,
+                    pointer != null && pointer.press.wasPressedThisFrame);
+            }
             if (_open) _view?.Tick();
         }
 
@@ -122,6 +142,7 @@ namespace TrollStrategy.UI
             foreach (var root in roots.Required)
                 if (root == null || root.panel == null) return false;
             _view = new BattleHudView(roots);
+            _view.LocateCells(_cellToScreen);
             _view.StartRequested += () => StartRequested?.Invoke();
             _view.PauseToggled += () => PauseToggled?.Invoke();
             _view.SpeedChosen += speed => SpeedChosen?.Invoke(speed);

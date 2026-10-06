@@ -229,6 +229,10 @@
 "v": "Items in the gear store"
 },
 {
+"k": "Снаряжение на бойцах в бою",
+"v": "Gear worn in battle"
+},
+{
 "k": "Новая постройка",
 "v": "New building"
 },
@@ -433,6 +437,10 @@
 "v": "Creatures hired: {0}."
 },
 {
+"k": "{0} нанят и стоит у склада.",
+"v": "{0} hired and standing by the warehouse."
+},
+{
 "k": "Постройка «{0}» откроется за задание.",
 "v": "“{0}” unlocks with a quest."
 },
@@ -521,16 +529,24 @@
 "v": "First choose where to carry goods from."
 },
 {
-"k": "{0} нанят в поселение!",
-"v": "{0} joined the colony!"
+"k": "{0} носит на склад: {1}.",
+"v": "{0} is carrying to the warehouse: {1}."
 },
 {
-"k": "Нанять некого: откройте существ заданиями",
-"v": "Nobody to hire: unlock creatures with quests"
+"k": "Сначала выберите здание.",
+"v": "Select a building first."
 },
 {
-"k": "{0} нанят и идёт на работу: {1}.",
-"v": "{0} hired and heading to work: {1}."
+"k": "Отсюда на склад не носят.",
+"v": "Nothing is carried to the warehouse from here."
+},
+{
+"k": "Нет свободного существа «{0}»: найми его в каталоге.",
+"v": "No idle “{0}”: hire one in the catalog."
+},
+{
+"k": "Нет свободных существ: найми работника в каталоге.",
+"v": "No idle creatures: hire a worker in the catalog."
 },
 {
 "k": "Награда за бой: +{0} зол.",
@@ -977,6 +993,38 @@
 "v": "Screenshot"
 },
 {
+"k": "Авторасстановка",
+"v": "Auto-arrange"
+},
+{
+"k": "Бойцы сами встанут на синие клетки.",
+"v": "Fighters will take the blue cells by themselves."
+},
+{
+"k": "Снаряжение",
+"v": "Gear"
+},
+{
+"k": "Нажми на «{0}»: боец наденет его.",
+"v": "Press “{0}”: the fighter will put it on."
+},
+{
+"k": "Выбери бойца",
+"v": "Pick a fighter"
+},
+{
+"k": "Кликни по бойцу на поле: внизу появится его снаряжение.",
+"v": "Click a fighter on the field: their gear appears below."
+},
+{
+"k": "Начать бой",
+"v": "Start battle"
+},
+{
+"k": "Бой идёт сам.",
+"v": "The battle runs by itself."
+},
+{
 "k": "В колонию",
 "v": "To the colony"
 },
@@ -1025,16 +1073,8 @@
 "v": "Draw"
 },
 {
-"k": "Авторасстановка",
-"v": "Auto-arrange"
-},
-{
 "k": "Поставить бойцов из резерва на свободные синие клетки.",
 "v": "Put fighters from the reserve on free blue tiles."
-},
-{
-"k": "Начать бой",
-"v": "Start battle"
 },
 {
 "k": "Бой идёт сам. Павшие бойцы и их снаряжение не вернутся.",
@@ -1341,6 +1381,10 @@
 "v": "Meadow"
 },
 {
+"k": "Откроется после победы на {0}-м уровне",
+"v": "Opens after a win on level {0}"
+},
+{
 "k": "Побед: {0}. Можно в бой",
 "v": "Wins: {0}. Ready to fight"
 },
@@ -1397,10 +1441,6 @@
 "v": "{0} gold each."
 },
 {
-"k": "Каждое новое существо в поселении поднимает цену найма.",
-"v": "Every new creature in the colony raises the hiring price."
-},
-{
 "k": "Каждая следующая такая постройка дороже.",
 "v": "Each further building of this kind costs more."
 },
@@ -1429,16 +1469,192 @@
 "v": "Done"
 },
 {
+"k": "Сюда",
+"v": "Here"
+},
+{
+"k": "Кликни по клетке у склада: отсюда ближе всего носить.",
+"v": "Click a cell by the warehouse: it is the shortest walk for carrying."
+},
+{
+"k": "Найми первого работника",
+"v": "Hire your first worker"
+},
+{
+"k": "Нажми на жетон «{0}»: он сам встанет у склада.",
+"v": "Press the “{0}” token: it will stand by the warehouse by itself."
+},
+{
+"k": "Найми работника",
+"v": "Hire a worker"
+},
+{
+"k": "Нажми на жетон «{0}».",
+"v": "Press the “{0}” token."
+},
+{
+"k": "Поставь сам",
+"v": "Place for me"
+},
+{
+"k": "Игра найдёт свободное место.",
+"v": "The game will find a free spot."
+},
+{
+"k": "Кликни по месту у склада или нажми «Поставить сам».",
+"v": "Click a spot by the warehouse or press “Place for me”."
+},
+{
+"k": "Построй здание",
+"v": "Build a building"
+},
+{
+"k": "Куда на работу",
+"v": "Where to work"
+},
+{
+"k": "Кликни по зданию «{0}».",
+"v": "Click the “{0}” building."
+},
+{
 "k": "Работа",
 "v": "Work"
 },
 {
-"k": "Потом кликни по зданию: туда встанут работать.",
-"v": "Then click a building: they'll work there."
+"k": "Нажми «Работа» (E), потом на здание.",
+"v": "Press “Work” (E), then a building."
+},
+{
+"k": "Выбери работника",
+"v": "Pick a worker"
+},
+{
+"k": "Кликни по свободному существу на острове.",
+"v": "Click an idle creature on the island."
+},
+{
+"k": "Вывозить на склад",
+"v": "Haul to warehouse"
+},
+{
+"k": "Ближайший свободный работник начнёт носить отсюда на склад.",
+"v": "The nearest idle worker will start carrying from here to the warehouse."
+},
+{
+"k": "Здание «{0}»",
+"v": "Building “{0}”"
+},
+{
+"k": "Нажми на него: в карточке есть «Вывозить на склад».",
+"v": "Press it: its card has “Haul to warehouse”."
+},
+{
+"k": "Изменить груз",
+"v": "Change cargo"
+},
+{
+"k": "Этот груз туда не носят: выбери другой.",
+"v": "This cargo is not carried there: choose another."
+},
+{
+"k": "2. Куда: {0}",
+"v": "2. To: {0}"
+},
+{
+"k": "Кликни по зданию: туда понесут груз.",
+"v": "Click a building: the cargo will be carried there."
+},
+{
+"k": "Что носить",
+"v": "What to carry"
+},
+{
+"k": "Можно оставить «Всё» и нажать «Куда носить».",
+"v": "You can keep “All” and press “Carry to”."
+},
+{
+"k": "1. Откуда: {0}",
+"v": "1. From: {0}"
+},
+{
+"k": "Кликни по зданию, откуда носить.",
+"v": "Click the building to carry from."
 },
 {
 "k": "Перенос",
 "v": "Carry"
+},
+{
+"k": "Нажми «Перенос» (H): дальше два здания, откуда и куда.",
+"v": "Press “Carry” (H): next come two buildings, from and to."
+},
+{
+"k": "Выбери носильщика",
+"v": "Pick a carrier"
+},
+{
+"k": "В бой",
+"v": "To battle"
+},
+{
+"k": "Уровень выбран: нажми «В бой».",
+"v": "Level chosen: press “To battle”."
+},
+{
+"k": "Подожди: кнопка оживёт, когда арена будет готова.",
+"v": "Wait: the button comes alive once the arena is ready."
+},
+{
+"k": "Арена",
+"v": "Arena"
+},
+{
+"k": "Нажми «Арена»: там уровни боёв.",
+"v": "Press “Arena”: the battle levels are there."
+},
+{
+"k": "Вернись к каталогу",
+"v": "Go back to the catalog"
+},
+{
+"k": "Кнопка снимет выбор и откроет каталог.",
+"v": "The button clears the selection and opens the catalog."
+},
+{
+"k": "Открой каталог",
+"v": "Open the catalog"
+},
+{
+"k": "Внизу появятся здания и существа.",
+"v": "Buildings and creatures will appear below."
+},
+{
+"k": "Вкладка «Существа»",
+"v": "“Creatures” tab"
+},
+{
+"k": "Здесь нанимают работников.",
+"v": "Workers are hired here."
+},
+{
+"k": "Вкладка «Здания»",
+"v": "“Buildings” tab"
+},
+{
+"k": "Здесь строят.",
+"v": "Buildings are built here."
+},
+{
+"k": "Сначала отмени",
+"v": "Cancel first"
+},
+{
+"k": "Нажми «Отмена» (Esc).",
+"v": "Press “Cancel” (Esc)."
+},
+{
+"k": "Потом кликни по зданию: туда встанут работать.",
+"v": "Then click a building: they'll work there."
 },
 {
 "k": "Кликни по двум зданиям: откуда и куда носить.",
@@ -1473,10 +1689,6 @@
 "v": "The building goes on the first free spot."
 },
 {
-"k": "Изменить груз",
-"v": "Change cargo"
-},
-{
 "k": "Вернуться к выбору, что носить.",
 "v": "Go back to choosing what to carry."
 },
@@ -1509,16 +1721,12 @@
 "v": "{0} ×{1} for {2}"
 },
 {
-"k": "Куда на работу",
-"v": "Where to work"
+"k": "1. Откуда носить",
+"v": "1. Carry from"
 },
 {
-"k": "Откуда носить",
-"v": "Carry from"
-},
-{
-"k": "Куда носить",
-"v": "Carry to"
+"k": "2. Куда носить",
+"v": "2. Carry to"
 },
 {
 "k": "Земля: участок за {0}",
@@ -1645,6 +1853,18 @@
 "v": "Learn more"
 },
 {
+"k": "Склад",
+"v": "Warehouse"
+},
+{
+"k": "свободный работник будет носить отсюда",
+"v": "an idle worker will carry from here"
+},
+{
+"k": "Ближайший свободный работник будет носить отсюда на склад всё, что здесь делают.",
+"v": "The nearest idle worker will carry everything made here to the warehouse."
+},
+{
 "k": "Уровень {0}, {1}×{2}",
 "v": "Level {0}, {1}×{2}"
 },
@@ -1679,10 +1899,6 @@
 {
 "k": "Хранит сырьё и полуфабрикаты от носильщиков.",
 "v": "Stores raw materials and semi-finished goods from carriers."
-},
-{
-"k": "Арена",
-"v": "Arena"
 },
 {
 "k": "уровень {0}",
@@ -1729,22 +1945,6 @@
 "v": "max level"
 },
 {
-"k": "Нанять сюда: {0}",
-"v": "Hire here: {0}"
-},
-{
-"k": "мест нет",
-"v": "no free places"
-},
-{
-"k": "Нанять: ",
-"v": "Hire: "
-},
-{
-"k": "закрыто",
-"v": "locked"
-},
-{
 "k": "Снести",
 "v": "Demolish"
 },
@@ -1771,10 +1971,6 @@
 {
 "k": "здоровье {0}, урон {1}, броня {2}",
 "v": "health {0}, damage {1}, armor {2}"
-},
-{
-"k": "Снаряжение",
-"v": "Gear"
 },
 {
 "k": "Возит",
@@ -1841,8 +2037,24 @@
 "v": "Hi! This is a demo version of the game: a colony of trolls and goblins on a floating island. The full game is still in the works: things will change, and progress isn't saved yet."
 },
 {
+"k": "Можно игре отправлять анонимную статистику: до какого задания доходят игроки? Так мы находим, где играть трудно. Ответ можно поменять по F8.",
+"v": "May the game send anonymous statistics: which quest players get to? That's how we find where it gets hard to play. You can change the answer with F8."
+},
+{
 "k": "Играть",
 "v": "Play"
+},
+{
+"k": "Анонимная статистика",
+"v": "Anonymous statistics"
+},
+{
+"k": "Отправлять",
+"v": "Send"
+},
+{
+"k": "Не отправлять",
+"v": "Don't send"
 },
 {
 "k": "Демо-версия",
@@ -1941,6 +2153,14 @@
 "v": "Who makes the game and where to find him."
 },
 {
+"k": "Сообщить об ошибке",
+"v": "Report a bug"
+},
+{
+"k": "Отправить автору снимок экрана и журнал игры.",
+"v": "Send the author a screenshot and the game log."
+},
+{
 "k": "Начать заново",
 "v": "Start over"
 },
@@ -1967,6 +2187,18 @@
 {
 "k": "Интерфейс",
 "v": "Interface"
+},
+{
+"k": "Показывать",
+"v": "Show"
+},
+{
+"k": "Скрыть",
+"v": "Hide"
+},
+{
+"k": "Подсказки обучения",
+"v": "Tutorial hints"
 },
 {
 "k": "Версия {0}, {1}",
@@ -2201,10 +2433,6 @@
 "v": "Battle locked"
 },
 {
-"k": "В бой",
-"v": "To battle"
-},
-{
 "k": "Бой через ",
 "v": "Battle in "
 },
@@ -2423,6 +2651,10 @@
 {
 "k": "везде одинаково",
 "v": "same everywhere"
+},
+{
+"k": "Шаг {0} из {1}",
+"v": "Step {0} of {1}"
 },
 {
 "k": "Подробнее в справочнике",
@@ -2785,8 +3017,8 @@
 "v": "First worker"
 },
 {
-"k": "Внизу, во вкладке «Существа», нажми на гоблина и кликни по свободной клетке на карте.",
-"v": "At the bottom, in the “Creatures” tab, click the goblin and then a free tile on the map."
+"k": "Внизу, во вкладке «Существа», нажми на гоблина: он сам встанет у склада.",
+"v": "At the bottom, in the “Creatures” tab, click the goblin: it will stand by the warehouse by itself."
 },
 {
 "k": "Своя шахта",
@@ -2801,16 +3033,16 @@
 "v": "Get to work!"
 },
 {
-"k": "Найми тролля. Кликни по нему → «Работа» (E) → шахта. Затем кликни по гоблину → «Перенос» (H) → шахта → выбери, что носить → склад.",
-"v": "Hire a troll. Click it → “Work” (E) → mine. Then click a goblin → “Carry” (H) → mine → choose what to carry → warehouse."
+"k": "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, нажми на шахту и в её карточке — «Вывозить на склад»: новый гоблин начнёт носить руду на склад.",
+"v": "Click a goblin → “Work” (E) → mine: it will dig ore. Then hire another goblin, press the mine and, in its card, “Haul to warehouse”: the new goblin will start carrying ore to the warehouse."
 },
 {
 "k": "Первая выручка",
 "v": "First income"
 },
 {
-"k": "Руда копится на складе. Найми ещё гоблина и дай ему «Перенос»: склад → рынок. Рынок платит за каждую доставленную руду.",
-"v": "Ore piles up in the warehouse. Hire another goblin and give it “Carry”: warehouse → market. The market pays for every ore delivered."
+"k": "Руда копится на складе. Найми ещё гоблина, кликни по нему → «Перенос» (H): сначала склад — откуда носить, потом рынок — куда. Рынок платит за каждую доставленную руду.",
+"v": "Ore piles up in the warehouse. Hire another goblin, click it → “Carry” (H): first the warehouse, where to carry from, then the market, where to carry to. The market pays for every ore delivered."
 },
 {
 "k": "Казна",
@@ -2829,8 +3061,24 @@
 "v": "At the bottom, in the “Buildings” tab, click the barracks and put them on a free spot. Creatures taken off work rest at their doors, and the road to the arena opens from the barracks."
 },
 {
-"k": "Нажми «В бой» справа. Поставь до 4 бойцов в левые клетки: тролля вперёд, гоблинов за ним. Бой идёт сам.",
-"v": "Click “To battle” on the right. Place up to 4 fighters on the left tiles: the troll in front, the goblins behind it. The battle plays out by itself."
+"k": "Нажми «В бой» справа. Поставь до 4 гоблинов в синие клетки слева. Бой идёт сам, а победа откроет тролля.",
+"v": "Click “To battle” on the right. Place up to 4 goblins on the blue tiles on the left. The battle plays out by itself, and a win unlocks the troll."
+},
+{
+"k": "Склад экипировки",
+"v": "Gear store"
+},
+{
+"k": "За победу бойцы взяли трофеи: ржавый меч и латаную броню, они лежат в бараках. Построй склад экипировки и дай гоблину «Перенос»: бараки → склад экипировки.",
+"v": "For the win your fighters took trophies: a rusty sword and patched armor; they lie in the barracks. Build a gear store and give a goblin “Carry”: barracks → gear store."
+},
+{
+"k": "В броне на арену",
+"v": "Armored for the arena"
+},
+{
+"k": "Нажми «В бой» и выбери 2-й уровень. Перед боем нажми на бойца и выбери внизу меч и броню со склада экипировки. Тролль уже открыт: его нанимают во вкладке «Существа».",
+"v": "Click “To battle” and choose level 2. Before the battle, click a fighter and choose the sword and armor from the gear store at the bottom. The troll is already unlocked: hire it in the “Creatures” tab."
 },
 {
 "k": "Урожай",
@@ -2885,30 +3133,6 @@
 "v": "The forge makes swords from ingots, and armor with leather; sometimes it spoils the work into scrap. Build it and put two workers on it."
 },
 {
-"k": "Богатый рынок",
-"v": "Rich market"
-},
-{
-"k": "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.",
-"v": "Select the market on the map and click “Upgrade”: each level raises the price of every good."
-},
-{
-"k": "Склад экипировки",
-"v": "Gear store"
-},
-{
-"k": "Построй склад экипировки и вози туда мечи из кузницы: перед боем их можно выдать бойцам.",
-"v": "Build a gear store and carry swords there from the forge: before a battle you can hand them out to fighters."
-},
-{
-"k": "Оружие для отряда",
-"v": "Arms for the squad"
-},
-{
-"k": "Пусть на складе экипировки будет пять предметов: мечи, броня, щиты.",
-"v": "Let the gear store hold five items: swords, armor, shields."
-},
-{
 "k": "Третий уровень арены",
 "v": "Third arena level"
 },
@@ -2923,6 +3147,14 @@
 {
 "k": "Ферма кормит скот пшеницей и соломой и даёт шкуры, мясо и молоко. Построй её и дай ей двух рабочих.",
 "v": "The farm feeds livestock wheat and straw and gives hides, meat and milk. Build it and give it two workers."
+},
+{
+"k": "Оружие для отряда",
+"v": "Arms for the squad"
+},
+{
+"k": "Вози мечи из кузницы на склад экипировки: пусть там будет пять предметов — мечи, броня, щиты.",
+"v": "Carry swords from the forge to the gear store: let it hold five items — swords, armor, shields."
 },
 {
 "k": "Растущее поселение",
@@ -2971,6 +3203,14 @@
 {
 "k": "Пилорама режет брёвна на доски. Построй её и дай ей двух рабочих.",
 "v": "The sawmill cuts logs into planks. Build it and give it two workers."
+},
+{
+"k": "Богатый рынок",
+"v": "Rich market"
+},
+{
+"k": "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.",
+"v": "Select the market on the map and click “Upgrade”: each level raises the price of every good."
 },
 {
 "k": "Продай доски на рынке — или копи их для щитов.",
@@ -3485,18 +3725,6 @@
 "v": "Send logs"
 },
 {
-"k": "Игра отправляет анонимную статистику: до какого задания доходят игроки. Так мы находим, где играть трудно.",
-"v": "The game sends anonymous statistics: which quest players get to. That's how we find where it gets hard to play."
-},
-{
-"k": "Не отправлять",
-"v": "Don't send"
-},
-{
-"k": "Хорошо",
-"v": "OK"
-},
-{
 "k": "Поле",
 "v": "Field"
 },
@@ -3507,10 +3735,6 @@
 {
 "k": "Шахта",
 "v": "Mine"
-},
-{
-"k": "Склад",
-"v": "Warehouse"
 },
 {
 "k": "2. Слизни на лугу",
@@ -3643,6 +3867,14 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Works faster than a goblin and carries more, but walks slowly. Strong in battle."
+},
+{
+"k": "Каждое новое существо в поселении поднимает цену найма.",
+"v": "Every new creature in the colony raises the hiring price."
+},
+{
+"k": "Рецепт",
+"v": "Recipe"
 }
 ]
 }

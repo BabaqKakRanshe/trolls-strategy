@@ -15,15 +15,6 @@
             <ui:Button name="tech-send" text="Отправить логи" class="btn btn--primary" />
             <ui:Label name="tech-status" class="note" />
         </ui:VisualElement>
-        <ui:VisualElement name="tech-notice" class="float tech-notice">
-            <ui:Label text="Игра отправляет анонимную статистику: до какого задания доходят игроки. Так мы находим, где играть трудно." class="tech-notice__text t-wrap" />
-            <ui:VisualElement class="tech-notice__actions">
-                <ui:Button name="tech-notice-more" text="Подробнее" class="btn-link" />
-                <ui:VisualElement class="spacer" />
-                <ui:Button name="tech-notice-off" text="Не отправлять" class="btn tech-notice__button" />
-                <ui:Button name="tech-notice-ok" text="Хорошо" class="btn btn--primary tech-notice__button" />
-            </ui:VisualElement>
-        </ui:VisualElement>
         <ui:Button name="tech-strip" class="btn tech-strip">
             <ui:Label name="tech-version" picking-mode="Ignore" />
             <ui:Label name="tech-fps" class="tech-strip__part t-bold" picking-mode="Ignore" />

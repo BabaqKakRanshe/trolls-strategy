@@ -16,8 +16,8 @@ namespace TrollStrategy.UI
     /// </summary>
     public sealed class InspectPanel
     {
-        // the barracks shows the most: move, upgrade and two hires
-        private const int ActionCount = 4;
+        // a building card shows the most: move, upgrade and demolish
+        private const int ActionCount = 3;
 
         private sealed class Row
         {
@@ -84,6 +84,8 @@ namespace TrollStrategy.UI
         private readonly StaffList _staff;
         private readonly ActionButton[] _actions = new ActionButton[ActionCount];
         private readonly VisualElement _actionRow;
+        // the tutorial's first haul in one press (specs/006-tutorial-guidance, FR-018)
+        private readonly Button _haulToWarehouse;
         private int _rowCount;
         private int _actionCount;
         private string _shownId;
@@ -111,6 +113,24 @@ namespace TrollStrategy.UI
             UiFeel.Bind(Ui.Require<Button>(root, "inspect-close"), () => context.Interaction.CloseInspect(), Sfx.UiBack);
 
             var actions = _actionRow = Ui.Require<VisualElement>(root, "inspect-actions");
+            // "Вывозить на склад": above the card's actions while the quest asks to carry from here to the warehouse
+            _haulToWarehouse = Ui.TextButton(string.Empty, "btn btn--primary inspect-haul");
+            _haulToWarehouse.Add(Ui.Art(RewardArt.BuildingIcon(context.Catalog, BuildingKind.Warehouse), "Склад", "inspect-haul__art"));
+            var haulWords = Ui.Box("inspect-haul__words");
+            haulWords.pickingMode = PickingMode.Ignore;
+            var haulTitle = Ui.Text("Вывозить на склад", "btn__title");
+            var haulHint = Ui.Text("свободный работник будет носить отсюда", "btn__hint");
+            haulTitle.pickingMode = PickingMode.Ignore;
+            haulHint.pickingMode = PickingMode.Ignore;
+            haulWords.Add(haulTitle);
+            haulWords.Add(haulHint);
+            _haulToWarehouse.Add(haulWords);
+            UiFeel.Bind(_haulToWarehouse, () => context.Interaction.HaulInspectedToWarehouse());
+            tooltip?.Attach(_haulToWarehouse, () => "Вывозить на склад",
+                () => context.Interaction.HaulToWarehouseBlocker ??
+                      "Ближайший свободный работник будет носить отсюда на склад всё, что здесь делают.");
+            actions.parent.Insert(actions.parent.IndexOf(actions), _haulToWarehouse);
+            Ui.Show(_haulToWarehouse, false);
             for (int i = 0; i < ActionCount; i++)
             {
                 var button = Ui.StackButton("action", out var title, out var hint);
@@ -124,6 +144,8 @@ namespace TrollStrategy.UI
         public bool IsShown => Ui.IsShown(_panel);
         public string Title => _title.text;
         public StaffList Staff => _staff;
+        /// <summary>"Вывозить на склад"; shown while the quest asks to carry from the shown building to the warehouse.</summary>
+        public Button HaulToWarehouseButton => _haulToWarehouse;
 
         /// <summary>The buy buttons of the shown upgrades, top to bottom.</summary>
         public IReadOnlyList<Button> UpgradeButtons
@@ -214,6 +236,7 @@ namespace TrollStrategy.UI
         {
             _shownId = null;
             _staff.Hide();
+            Ui.Show(_haulToWarehouse, false);
             Ui.Show(_panel, false);
         }
 
@@ -271,6 +294,7 @@ namespace TrollStrategy.UI
             RenderUpgrades(building.Kind, snapshot);
             RenderSlots(building);
             _staff.Show(building, snapshot);
+            ShowHaulToWarehouse(building, snapshot);
 
             BeginActions();
             var interaction = _context.Interaction;
@@ -280,35 +304,25 @@ namespace TrollStrategy.UI
             if (definition.MaxLevel > 1)
                 AddAction("Улучшить", maxed ? "макс. уровень" : Ui.Gold(building.UpgradeCost), "btn--primary",
                     !maxed && snapshot.Gold >= building.UpgradeCost, interaction.UpgradeInspectedBuilding);
-            // one press hires the building's best worker for the price and sends it here
-            if (building.IsWorkplace && _context.Session.SuggestedWorker(building.Kind) is UnitKind worker)
-            {
-                int price = _context.Session.HirePrice(worker);
-                bool room = building.WorkerCount < building.MaxWorkers;
-                string who = catalog.GetUnit(worker).DisplayName.ToLowerInvariant();
-                AddAction($"Нанять сюда: {who}", room ? Ui.Gold(price) : "мест нет", "",
-                    room && snapshot.Gold >= price, interaction.HireWorkerForInspected);
-            }
-            if (building.Kind == BuildingKind.Barracks)
-            {
-                foreach (var unit in catalog.Units)
-                {
-                    if (unit == null || !unit.Hireable || _actionCount >= ActionCount) continue;
-                    var kind = unit.Kind;
-                    bool open = snapshot.Progress.IsUnitUnlocked(kind);
-                    if (!open) continue;
-                    int price = _context.Session.HirePrice(kind);
-                    AddAction("Нанять: " + unit.DisplayName.ToLowerInvariant(), open ? Ui.Gold(price) : "закрыто",
-                        "btn--primary", open && snapshot.Gold >= price, () => interaction.RecruitUnit(kind));
-                }
-            }
-            else
+            // creatures are hired in the catalog, not on a card; the barracks' card offers no demolish
+            if (building.Kind != BuildingKind.Barracks)
             {
                 bool removable = definition.Constructible;
                 AddAction("Снести", removable ? "вернуть " + Ui.Gold(building.RefundGold) : "нельзя снести", "btn--danger",
                     removable, interaction.DemolishInspectedBuilding);
             }
             EndActions();
+        }
+
+        // shown while the quest asks to carry from this kind of building to the warehouse; without a free creature it
+        // stays, unavailable, and its hint says why
+        private void ShowHaulToWarehouse(BuildingSnapshot building, GameSnapshot snapshot)
+        {
+            var focus = QuestFocus.From(snapshot);
+            bool asked = building.Kind != BuildingKind.Warehouse && focus.HaulFrom == building.Kind &&
+                         focus.HaulTo == BuildingKind.Warehouse;
+            Ui.Show(_haulToWarehouse, asked);
+            if (asked) UiFeel.SetAvailable(_haulToWarehouse, _context.Interaction.HaulToWarehouseBlocker == null);
         }
 
         private void RenderUnit(UnitSnapshot unit, GameSnapshot snapshot)
@@ -335,6 +349,7 @@ namespace TrollStrategy.UI
             EndRows();
             _staff.Hide();
             HideUpgrades();
+            Ui.Show(_haulToWarehouse, false);
 
             var selected = _context.Interaction.SelectedIds;
             var note = new List<string>();
@@ -564,8 +579,6 @@ namespace TrollStrategy.UI
         private void EndActions()
         {
             for (int i = _actionCount; i < ActionCount; i++) Ui.Show(_actions[i].Button, false);
-            // four in a row would break their words; four go two by two
-            _actionRow.EnableInClassList("actions--grid", _actionCount > 3);
         }
 
         private static BuildingSnapshot FindBuilding(GameSnapshot snapshot, string id)

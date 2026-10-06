@@ -1,0 +1,134 @@
+/*
+ * The tutorial pointer (GuideOverlay) over the colony and the battle screens, and the marks the tutorial adds to
+ * other parts: a haul goal's route in the quest card and the inspect card's "Вывозить на склад".
+ *
+ * The veil is the one exception to the "air" look outside the dialogs (AGENTS.md): a light veil with a soft window
+ * around the step's target, only during tutorial steps and only until the step is done. It never catches the
+ * pointer. Colours are the theme's; this sheet sets layout and sizes only.
+ */
+
+.guide {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* the four strips around the window */
+.guide-veil {
+    position: absolute;
+    background-color: var(--veil-deep);
+}
+
+/* the window: spot.png is veil at its border and clear in its middle, with a soft rounded edge between */
+.guide-window {
+    position: absolute;
+    background-image: url("../Sprites/spot.png");
+    -unity-slice-left: 48;
+    -unity-slice-right: 48;
+    -unity-slice-top: 48;
+    -unity-slice-bottom: 48;
+    -unity-background-image-tint-color: var(--veil-deep);
+}
+
+/* hand.png: the fingertip is at 38.5, 5.5 of the 90 x 108 picture; it turns about the fingertip */
+.guide-hand {
+    position: absolute;
+    width: 90px;
+    height: 108px;
+    background-image: url("../Sprites/hand.png");
+    -unity-background-scale-mode: scale-to-fit;
+    transform-origin: 38.5px 5.5px;
+}
+
+/* the hint card: a .sheet like HudTooltip's, with the step, the action and one line */
+.guide-card {
+    position: absolute;
+    min-width: 240px;
+    max-width: 440px;
+}
+
+.guide-card__step {
+    font-size: 15px;
+    color: var(--accent);
+    margin-bottom: 2px;
+}
+
+.guide-card__title {
+    font-size: 23px;
+    white-space: normal;
+}
+
+.guide-card__text {
+    margin-top: 4px;
+    font-size: 17px;
+    color: var(--ink-soft);
+    white-space: normal;
+}
+
+/* the way to a target off the screen: a round button at the edge, its chevron pointing there */
+.guide-edge {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    align-items: center;
+    justify-content: center;
+}
+
+.guide-edge__glyph {
+    width: 26px;
+    height: 26px;
+    -unity-background-image-tint-color: var(--accent-deep);
+}
+
+/* the arrow from the haul's source to the pointer; its colours are read by GuideOverlay */
+.guide-route {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    --route-color: var(--accent);
+    --route-halo: var(--paper);
+}
+
+/* a haul goal's route in the quest card: where from, an arrow, where to */
+.quest-goal__route {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 6px;
+    margin-right: 4px;
+}
+
+.quest-goal__route-art {
+    width: 34px;
+    height: 34px;
+}
+
+.quest-goal__route-arrow {
+    margin-left: 2px;
+    margin-right: 2px;
+    font-size: 17px;
+    color: var(--ink-soft);
+}
+
+/* the inspect card's "Вывозить на склад": one wide button above the card's actions */
+.inspect-haul {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.inspect-haul__art {
+    width: 44px;
+    height: 44px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.inspect-haul__words {
+    flex-shrink: 1;
+    align-items: flex-start;
+}

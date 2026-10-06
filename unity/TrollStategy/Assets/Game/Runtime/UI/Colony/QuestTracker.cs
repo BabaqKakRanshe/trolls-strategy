@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TrollStrategy.Application;
+using TrollStrategy.Content;
 using TrollStrategy.Presentation.Audio;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -22,6 +23,10 @@ namespace TrollStrategy.UI
             public Label Text;
             public Label Count;
             public bool Done;
+            // a haul goal's route as pictures: where from, an arrow, where to
+            public VisualElement Route;
+            public Image From;
+            public Image To;
         }
 
         private sealed class RewardChip
@@ -198,6 +203,7 @@ namespace TrollStrategy.UI
                 var goal = goals[i];
                 Ui.SetText(row.Text, goal.Text);
                 Ui.SetText(row.Count, goal.ProgressText);
+                ShowRoute(row, goal.Goal);
                 row.Root.EnableInClassList("is-done", goal.Done);
                 if (goal.Done && !row.Done && !fresh)
                 {
@@ -208,6 +214,35 @@ namespace TrollStrategy.UI
                 row.Done = goal.Done;
             }
         }
+
+        // a haul goal shows where from and where to as the buildings' pictures (specs/006-tutorial-guidance, FR-011)
+        private void ShowRoute(GoalRow row, QuestGoal goal)
+        {
+            bool haul = goal.Kind == QuestGoalKind.HaulRoute;
+            Ui.Show(row.Route, haul);
+            if (!haul) return;
+            SetArt(row.From, RewardArt.BuildingIcon(_context.Catalog, goal.Building));
+            SetArt(row.To, RewardArt.BuildingIcon(_context.Catalog, goal.Destination));
+        }
+
+        private static void SetArt(Image image, Sprite sprite)
+        {
+            if (image.sprite != sprite) image.sprite = sprite;
+            Ui.Show(image, sprite != null);
+        }
+
+        private static Image RouteArt()
+        {
+            var art = new Image { scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+            art.AddToClassList("quest-goal__route-art");
+            return art;
+        }
+
+        /// <summary>The pictures of a goal's route in the card, or nulls when it shows none.</summary>
+        public (Sprite From, Sprite To) RouteOf(int goalIndex) =>
+            goalIndex >= 0 && goalIndex < _goalRows.Count && Ui.IsShown(_goalRows[goalIndex].Route)
+                ? (_goalRows[goalIndex].From.sprite, _goalRows[goalIndex].To.sprite)
+                : (null, null);
 
         private void RenderRewards(QuestSnapshot quest)
         {
@@ -233,7 +268,18 @@ namespace TrollStrategy.UI
             row.Text = Ui.Text(string.Empty, "quest-goal__text");
             row.Count = Ui.Text(string.Empty, "quest-goal__count t-medium");
             row.Root.Add(row.Check);
+            row.Route = Ui.Box("quest-goal__route");
+            row.Route.pickingMode = PickingMode.Ignore;
+            row.From = RouteArt();
+            row.To = RouteArt();
+            var arrow = Ui.Text("→", "quest-goal__route-arrow t-bold");
+            arrow.pickingMode = PickingMode.Ignore;
+            row.Route.Add(row.From);
+            row.Route.Add(arrow);
+            row.Route.Add(row.To);
+            Ui.Show(row.Route, false);
             row.Root.Add(row.Text);
+            row.Root.Add(row.Route);
             row.Root.Add(row.Count);
             _goals.Add(row.Root);
             return row;

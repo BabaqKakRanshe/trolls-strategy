@@ -147,17 +147,17 @@ MonoBehaviour:
   - "\u0414\u0440\u0435\u043C\u0443\u0447\u0438\u0439"
   - "\u041C\u043E\u0445\u043D\u0430\u0442\u044B\u0439"
   - "\u0411\u043E\u0440\u043E\u0434\u0430\u0432\u0447\u0430\u0442\u044B\u0439"
-  _price: 170
-  _strength: 9
+  _price: 120
+  _strength: 5
   _speed: 2
   _stamina: 150
   _trailWear: 2
   _favoredBuildings: 
   _favoredWorkPercent: 0
   _hireable: 1
-  _combatHealth: 55
-  _combatDamage: 7
-  _combatArmor: 3
+  _combatHealth: 45
+  _combatDamage: 6
+  _combatArmor: 2
   _attackIntervalMs: 2600
   _attackRange: 1
   _portraitSprite: {fileID: -9173216857798640283, guid: a6336965953365c4aa5d5ce936dca220, type: 3}

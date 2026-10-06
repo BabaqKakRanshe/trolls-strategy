@@ -36,6 +36,8 @@ namespace TrollStrategy.UI
         [Tooltip("Developer cheat menu (F1); removed from release players.")]
         [SerializeField] private UIDocument _cheat;
         [SerializeField] private UIDocument _tooltip;
+        [Tooltip("The tutorial pointer's layer (veil, hand, hint card).")]
+        [SerializeField] private UIDocument _guide;
 
         private readonly List<(VisualElement Root, VisualElement Content)> _builtFrom = new();
         private UIDocument _document;
@@ -99,7 +101,8 @@ namespace TrollStrategy.UI
                 Reward = Of(_reward),
                 BattleReward = Of(_battleReward),
                 Cheat = Of(_cheat),
-                Tooltip = Of(_tooltip)
+                Tooltip = Of(_tooltip),
+                Guide = Of(_guide)
             };
         }
 
@@ -134,6 +137,12 @@ namespace TrollStrategy.UI
             if (_context == null) return;
             // UI Builder live reload replaces a part's tree; rebuild on the new ones
             if ((_view == null || IsStale()) && !TryBuild()) return;
+            // the tutorial pointer lifts its veil on a press outside its window and draws the haul's arrow to the pointer
+            // Input System screen space starts at the bottom left, the panel's at the top left
+            var pointer = Pointer.current;
+            var at = pointer != null ? pointer.position.ReadValue() : Vector2.zero;
+            _view.TrackPointer(pointer != null ? new Vector2(at.x, Screen.height - at.y) : (Vector2?)null,
+                pointer != null && pointer.press.wasPressedThisFrame);
             _view.Tick(Time.unscaledDeltaTime);
             // the quest card folds and opens like its button; a HUD-only view state, not a colony command
             if (_visible && !_view.BlocksMap)

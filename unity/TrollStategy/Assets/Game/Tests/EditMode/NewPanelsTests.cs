@@ -63,6 +63,32 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void ArenaRail_ShowsTheWholeLadder_TheNextLevelLocked_AndTheRoadBeyondFaded()
+        {
+            var campaign = new GameSession(_catalog, TestColony.LayoutFor(_catalog,
+                new StartingBuilding(BuildingKind.Warehouse, new Cell(10, 8)),
+                new StartingBuilding(BuildingKind.Market, new Cell(10, 2)),
+                new StartingBuilding(BuildingKind.Barracks, new Cell(2, 8))), campaign: true);
+            var hud = TestUi.Colony(new ColonyHudContext(campaign, new InteractionController(campaign)) { OpenBattle = _ => { } });
+            hud.Arena.Open();
+            var ladder = campaign.ArenaLadder();
+            Assume.That(campaign.IsMissionUnlocked(ladder[0].MissionId), Is.False, "A new campaign has no battle open");
+
+            Assert.That(hud.Arena.LevelButtons, Has.Count.EqualTo(ladder.Count), "Every level of the ladder is on the rail");
+            Assert.That(hud.Arena.HasLock(ladder[0]), Is.True, "The next level to open carries the lock");
+            Assert.That(hud.Arena.IsFaded(ladder[0]), Is.False);
+            Assert.That(hud.Arena.HasLock(ladder[1]), Is.False);
+            Assert.That(hud.Arena.IsFaded(ladder[1]), Is.True, "The road beyond it fades");
+            var hiring = ladder.First(m => m.UnlockUnit.HasValue);
+            Assert.That(hud.Arena.ShowsFolk(hiring), Is.True, "A level that opens a folk for hire shows it");
+            Assert.That(hud.Arena.ShowsFolk(ladder[0]), Is.False);
+
+            UiFeel.Press(hud.Arena.LevelButtons[hiring.Level - 1]);
+            Assert.That(hud.Arena.Chosen, Is.SameAs(hiring), "A closed level can be looked at");
+            Assert.That(UiFeel.IsAvailable(hud.Arena.FightButton), Is.False, "but not fought");
+        }
+
+        [Test]
         public void ArenaPoster_ShowsTheSquadAgainstTheEnemy_TheGold_AndTheFolkAFirstWinHires()
         {
             var hud = TestUi.Colony(new ColonyHudContext(_session, _interaction) { OpenBattle = _ => { } });
@@ -294,9 +320,7 @@ namespace TrollStrategy.Tests
             var barracks = _session.CurrentSnapshot.Buildings.Single(b => b.Kind == BuildingKind.Barracks);
             _interaction.SelectBuilding(barracks.Id);
             hud.Refresh(_session.CurrentSnapshot);
-            Assert.That(hud.Inspect.Actions, Has.Count.EqualTo(4), "Move, upgrade and a hire for goblins and trolls");
-            Assert.That(hud.Inspect.Actions[0].parent.ClassListContains("actions--grid"), Is.True,
-                "Four actions go two by two, so their words do not break");
+            Assert.That(hud.Inspect.Actions, Has.Count.EqualTo(2), "Move and upgrade: creatures are hired in the catalog");
 
             var hosted = _catalog.Upgrades.Where(u => u.Host == BuildingKind.Barracks).ToList();
             var squad = hosted.First(u => u.HostLevelFrom(1) == 2);

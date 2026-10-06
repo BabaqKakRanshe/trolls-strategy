@@ -229,6 +229,10 @@
 "v": "Itens no arsenal"
 },
 {
+"k": "Снаряжение на бойцах в бою",
+"v": "Equipamento usado em batalha"
+},
+{
 "k": "Новая постройка",
 "v": "Novo edifício"
 },
@@ -433,6 +437,10 @@
 "v": "Criaturas contratadas: {0}."
 },
 {
+"k": "{0} нанят и стоит у склада.",
+"v": "{0} foi contratado e está ao lado do armazém."
+},
+{
 "k": "Постройка «{0}» откроется за задание.",
 "v": "O edifício “{0}” será liberado por uma tarefa."
 },
@@ -521,16 +529,24 @@
 "v": "Primeiro indique de onde levar a mercadoria."
 },
 {
-"k": "{0} нанят в поселение!",
-"v": "{0} contratado no assentamento!"
+"k": "{0} носит на склад: {1}.",
+"v": "{0} leva ao armazém: {1}."
 },
 {
-"k": "Нанять некого: откройте существ заданиями",
-"v": "Ninguém para contratar: libere criaturas com tarefas"
+"k": "Сначала выберите здание.",
+"v": "Primeiro escolha um edifício."
 },
 {
-"k": "{0} нанят и идёт на работу: {1}.",
-"v": "{0} contratado, vai trabalhar: {1}."
+"k": "Отсюда на склад не носят.",
+"v": "Daqui não se leva nada ao armazém."
+},
+{
+"k": "Нет свободного существа «{0}»: найми его в каталоге.",
+"v": "Não há nenhuma criatura “{0}” livre: contrate uma no catálogo."
+},
+{
+"k": "Нет свободных существ: найми работника в каталоге.",
+"v": "Não há criaturas livres: contrate um trabalhador no catálogo."
 },
 {
 "k": "Награда за бой: +{0} зол.",
@@ -977,6 +993,38 @@
 "v": "Captura de tela"
 },
 {
+"k": "Авторасстановка",
+"v": "Posicionamento automático"
+},
+{
+"k": "Бойцы сами встанут на синие клетки.",
+"v": "Os lutadores vão se posicionar sozinhos nas casas azuis."
+},
+{
+"k": "Снаряжение",
+"v": "Equipamento"
+},
+{
+"k": "Нажми на «{0}»: боец наденет его.",
+"v": "Clique em “{0}”: o lutador vai vesti-lo."
+},
+{
+"k": "Выбери бойца",
+"v": "Escolha um lutador"
+},
+{
+"k": "Кликни по бойцу на поле: внизу появится его снаряжение.",
+"v": "Clique em um lutador no campo: embaixo aparece o equipamento dele."
+},
+{
+"k": "Начать бой",
+"v": "Começar a batalha"
+},
+{
+"k": "Бой идёт сам.",
+"v": "A batalha acontece sozinha."
+},
+{
 "k": "В колонию",
 "v": "Para a colônia"
 },
@@ -1025,16 +1073,8 @@
 "v": "Empate"
 },
 {
-"k": "Авторасстановка",
-"v": "Posicionamento automático"
-},
-{
 "k": "Поставить бойцов из резерва на свободные синие клетки.",
 "v": "Coloca os combatentes da reserva nos quadrados azuis livres."
-},
-{
-"k": "Начать бой",
-"v": "Começar a batalha"
 },
 {
 "k": "Бой идёт сам. Павшие бойцы и их снаряжение не вернутся.",
@@ -1341,6 +1381,10 @@
 "v": "Prado"
 },
 {
+"k": "Откроется после победы на {0}-м уровне",
+"v": "Abre após vencer no nível {0}"
+},
+{
 "k": "Побед: {0}. Можно в бой",
 "v": "Vitórias: {0}. Pronto para lutar"
 },
@@ -1397,10 +1441,6 @@
 "v": "{0} de ouro por unidade."
 },
 {
-"k": "Каждое новое существо в поселении поднимает цену найма.",
-"v": "Cada nova criatura no assentamento aumenta o preço de contratação."
-},
-{
 "k": "Каждая следующая такая постройка дороже.",
 "v": "Cada edifício seguinte deste tipo custa mais."
 },
@@ -1429,16 +1469,192 @@
 "v": "Pronto"
 },
 {
+"k": "Сюда",
+"v": "Aqui"
+},
+{
+"k": "Кликни по клетке у склада: отсюда ближе всего носить.",
+"v": "Clique em uma casa perto do armazém: dali o caminho é mais curto."
+},
+{
+"k": "Найми первого работника",
+"v": "Contrate o primeiro trabalhador"
+},
+{
+"k": "Нажми на жетон «{0}»: он сам встанет у склада.",
+"v": "Clique na ficha “{0}”: ela se posiciona sozinha ao lado do armazém."
+},
+{
+"k": "Найми работника",
+"v": "Contrate um trabalhador"
+},
+{
+"k": "Нажми на жетон «{0}».",
+"v": "Clique na ficha “{0}”."
+},
+{
+"k": "Поставь сам",
+"v": "Posicionar eu mesmo"
+},
+{
+"k": "Игра найдёт свободное место.",
+"v": "O jogo vai achar um lugar livre."
+},
+{
+"k": "Кликни по месту у склада или нажми «Поставить сам».",
+"v": "Clique em um lugar perto do armazém ou em “Posicionar eu mesmo”."
+},
+{
+"k": "Построй здание",
+"v": "Construa um edifício"
+},
+{
+"k": "Куда на работу",
+"v": "Onde trabalhar"
+},
+{
+"k": "Кликни по зданию «{0}».",
+"v": "Clique no edifício “{0}”."
+},
+{
 "k": "Работа",
 "v": "Trabalho"
 },
 {
-"k": "Потом кликни по зданию: туда встанут работать.",
-"v": "Depois clique em um edifício: eles vão trabalhar lá."
+"k": "Нажми «Работа» (E), потом на здание.",
+"v": "Clique em “Trabalho” (E) e depois em um edifício."
+},
+{
+"k": "Выбери работника",
+"v": "Escolha um trabalhador"
+},
+{
+"k": "Кликни по свободному существу на острове.",
+"v": "Clique em uma criatura livre na ilha."
+},
+{
+"k": "Вывозить на склад",
+"v": "Levar ao armazém"
+},
+{
+"k": "Ближайший свободный работник начнёт носить отсюда на склад.",
+"v": "O trabalhador livre mais próximo vai começar a levar daqui ao armazém."
+},
+{
+"k": "Здание «{0}»",
+"v": "Edifício “{0}”"
+},
+{
+"k": "Нажми на него: в карточке есть «Вывозить на склад».",
+"v": "Clique nele: na ficha dele há “Levar ao armazém”."
+},
+{
+"k": "Изменить груз",
+"v": "Mudar carga"
+},
+{
+"k": "Этот груз туда не носят: выбери другой.",
+"v": "Essa carga não vai para lá: escolha outra."
+},
+{
+"k": "2. Куда: {0}",
+"v": "2. Para onde: {0}"
+},
+{
+"k": "Кликни по зданию: туда понесут груз.",
+"v": "Clique em um edifício: a carga será levada para lá."
+},
+{
+"k": "Что носить",
+"v": "O que levar"
+},
+{
+"k": "Можно оставить «Всё» и нажать «Куда носить».",
+"v": "Você pode deixar “Tudo” e clicar em “Para onde levar”."
+},
+{
+"k": "1. Откуда: {0}",
+"v": "1. De onde: {0}"
+},
+{
+"k": "Кликни по зданию, откуда носить.",
+"v": "Clique no edifício de onde levar."
 },
 {
 "k": "Перенос",
 "v": "Transporte"
+},
+{
+"k": "Нажми «Перенос» (H): дальше два здания, откуда и куда.",
+"v": "Clique em “Transporte” (H): depois vêm dois edifícios, de onde e para onde."
+},
+{
+"k": "Выбери носильщика",
+"v": "Escolha um carregador"
+},
+{
+"k": "В бой",
+"v": "Lutar"
+},
+{
+"k": "Уровень выбран: нажми «В бой».",
+"v": "Nível escolhido: clique em “Lutar”."
+},
+{
+"k": "Подожди: кнопка оживёт, когда арена будет готова.",
+"v": "Espere: o botão será ativado quando a arena estiver pronta."
+},
+{
+"k": "Арена",
+"v": "Arena"
+},
+{
+"k": "Нажми «Арена»: там уровни боёв.",
+"v": "Clique em “Arena”: lá estão os níveis de batalha."
+},
+{
+"k": "Вернись к каталогу",
+"v": "Volte ao catálogo"
+},
+{
+"k": "Кнопка снимет выбор и откроет каталог.",
+"v": "O botão tira a seleção e abre o catálogo."
+},
+{
+"k": "Открой каталог",
+"v": "Abra o catálogo"
+},
+{
+"k": "Внизу появятся здания и существа.",
+"v": "Embaixo vão aparecer edifícios e criaturas."
+},
+{
+"k": "Вкладка «Существа»",
+"v": "Aba “Criaturas”"
+},
+{
+"k": "Здесь нанимают работников.",
+"v": "Aqui se contratam os trabalhadores."
+},
+{
+"k": "Вкладка «Здания»",
+"v": "Aba “Edifícios”"
+},
+{
+"k": "Здесь строят.",
+"v": "Aqui se constrói."
+},
+{
+"k": "Сначала отмени",
+"v": "Cancele primeiro"
+},
+{
+"k": "Нажми «Отмена» (Esc).",
+"v": "Clique em “Cancelar” (Esc)."
+},
+{
+"k": "Потом кликни по зданию: туда встанут работать.",
+"v": "Depois clique em um edifício: eles vão trabalhar lá."
 },
 {
 "k": "Кликни по двум зданиям: откуда и куда носить.",
@@ -1473,10 +1689,6 @@
 "v": "O edifício será colocado no primeiro lugar livre."
 },
 {
-"k": "Изменить груз",
-"v": "Mudar carga"
-},
-{
 "k": "Вернуться к выбору, что носить.",
 "v": "Voltar à escolha do que levar."
 },
@@ -1509,16 +1721,12 @@
 "v": "{0} ×{1} por {2}"
 },
 {
-"k": "Куда на работу",
-"v": "Onde trabalhar"
+"k": "1. Откуда носить",
+"v": "1. De onde levar"
 },
 {
-"k": "Откуда носить",
-"v": "De onde levar"
-},
-{
-"k": "Куда носить",
-"v": "Para onde levar"
+"k": "2. Куда носить",
+"v": "2. Para onde levar"
 },
 {
 "k": "Земля: участок за {0}",
@@ -1645,6 +1853,18 @@
 "v": "Saiba mais"
 },
 {
+"k": "Склад",
+"v": "Armazém"
+},
+{
+"k": "свободный работник будет носить отсюда",
+"v": "um trabalhador livre vai levar daqui"
+},
+{
+"k": "Ближайший свободный работник будет носить отсюда на склад всё, что здесь делают.",
+"v": "O trabalhador livre mais próximo vai levar ao armazém tudo o que for produzido aqui."
+},
+{
 "k": "Уровень {0}, {1}×{2}",
 "v": "Nível {0}, {1}×{2}"
 },
@@ -1679,10 +1899,6 @@
 {
 "k": "Хранит сырьё и полуфабрикаты от носильщиков.",
 "v": "Guarda matérias-primas e semiacabados dos carregadores."
-},
-{
-"k": "Арена",
-"v": "Arena"
 },
 {
 "k": "уровень {0}",
@@ -1729,22 +1945,6 @@
 "v": "nív. máximo"
 },
 {
-"k": "Нанять сюда: {0}",
-"v": "Contratar aqui: {0}"
-},
-{
-"k": "мест нет",
-"v": "sem vagas"
-},
-{
-"k": "Нанять: ",
-"v": "Contratar:"
-},
-{
-"k": "закрыто",
-"v": "fechado"
-},
-{
 "k": "Снести",
 "v": "Demolir"
 },
@@ -1771,10 +1971,6 @@
 {
 "k": "здоровье {0}, урон {1}, броня {2}",
 "v": "saúde {0}, dano {1}, armadura {2}"
-},
-{
-"k": "Снаряжение",
-"v": "Equipamento"
 },
 {
 "k": "Возит",
@@ -1841,8 +2037,24 @@
 "v": "Olá! Esta é a versão demo do jogo: uma colônia de trolls e goblins numa ilha flutuante. O jogo completo ainda está em desenvolvimento: algumas coisas vão mudar, e o progresso por enquanto não é salvo."
 },
 {
+"k": "Можно игре отправлять анонимную статистику: до какого задания доходят игроки? Так мы находим, где играть трудно. Ответ можно поменять по F8.",
+"v": "O jogo pode enviar estatísticas anônimas: até qual tarefa os jogadores chegam? Assim descobrimos onde jogar é difícil. A resposta pode ser mudada com F8."
+},
+{
 "k": "Играть",
 "v": "Jogar"
+},
+{
+"k": "Анонимная статистика",
+"v": "Estatísticas anônimas"
+},
+{
+"k": "Отправлять",
+"v": "Enviar"
+},
+{
+"k": "Не отправлять",
+"v": "Não enviar"
 },
 {
 "k": "Демо-версия",
@@ -1941,6 +2153,14 @@
 "v": "Quem faz o jogo e onde encontrá-lo."
 },
 {
+"k": "Сообщить об ошибке",
+"v": "Relatar um erro"
+},
+{
+"k": "Отправить автору снимок экрана и журнал игры.",
+"v": "Enviar ao autor uma captura de tela e o registro do jogo."
+},
+{
 "k": "Начать заново",
 "v": "Recomeçar"
 },
@@ -1967,6 +2187,18 @@
 {
 "k": "Интерфейс",
 "v": "Interface"
+},
+{
+"k": "Показывать",
+"v": "Mostrar"
+},
+{
+"k": "Скрыть",
+"v": "Ocultar"
+},
+{
+"k": "Подсказки обучения",
+"v": "Dicas do tutorial"
 },
 {
 "k": "Версия {0}, {1}",
@@ -2201,10 +2433,6 @@
 "v": "Batalha fechada"
 },
 {
-"k": "В бой",
-"v": "Lutar"
-},
-{
 "k": "Бой через ",
 "v": "Batalha em"
 },
@@ -2423,6 +2651,10 @@
 {
 "k": "везде одинаково",
 "v": "igual em todo lugar"
+},
+{
+"k": "Шаг {0} из {1}",
+"v": "Passo {0} de {1}"
 },
 {
 "k": "Подробнее в справочнике",
@@ -2785,8 +3017,8 @@
 "v": "Primeiro trabalhador"
 },
 {
-"k": "Внизу, во вкладке «Существа», нажми на гоблина и кликни по свободной клетке на карте.",
-"v": "Embaixo, na aba “Criaturas”, clique no goblin e depois em um quadrado livre do mapa."
+"k": "Внизу, во вкладке «Существа», нажми на гоблина: он сам встанет у склада.",
+"v": "Embaixo, na aba “Criaturas”, clique no goblin: ele se posiciona sozinho ao lado do armazém."
 },
 {
 "k": "Своя шахта",
@@ -2801,16 +3033,16 @@
 "v": "Mãos à obra!"
 },
 {
-"k": "Найми тролля. Кликни по нему → «Работа» (E) → шахта. Затем кликни по гоблину → «Перенос» (H) → шахта → выбери, что носить → склад.",
-"v": "Contrate um troll. Clique nele → “Trabalho” (E) → mina. Depois clique no goblin → “Transporte” (H) → mina → escolha o que levar → armazém."
+"k": "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, нажми на шахту и в её карточке — «Вывозить на склад»: новый гоблин начнёт носить руду на склад.",
+"v": "Clique no goblin → “Trabalho” (E) → mina: ele vai cavar minério. Depois contrate outro goblin, clique na mina e, na ficha dela, em “Levar ao armazém”: o novo goblin vai começar a levar o minério ao armazém."
 },
 {
 "k": "Первая выручка",
 "v": "Primeira receita"
 },
 {
-"k": "Руда копится на складе. Найми ещё гоблина и дай ему «Перенос»: склад → рынок. Рынок платит за каждую доставленную руду.",
-"v": "O minério se acumula no armazém. Contrate mais um goblin e dê a ele “Transporte”: armazém → mercado. O mercado paga por cada minério entregue."
+"k": "Руда копится на складе. Найми ещё гоблина, кликни по нему → «Перенос» (H): сначала склад — откуда носить, потом рынок — куда. Рынок платит за каждую доставленную руду.",
+"v": "O minério se acumula no armazém. Contrate outro goblin, clique nele → “Transporte” (H): primeiro o armazém, de onde levar; depois o mercado, para onde. O mercado paga por cada minério entregue."
 },
 {
 "k": "Казна",
@@ -2829,8 +3061,24 @@
 "v": "Embaixo, na aba “Edifícios”, clique no quartel e coloque-o em um lugar livre. As criaturas tiradas do trabalho descansam junto à porta dele, e do quartel se abre o caminho para a arena."
 },
 {
-"k": "Нажми «В бой» справа. Поставь до 4 бойцов в левые клетки: тролля вперёд, гоблинов за ним. Бой идёт сам.",
-"v": "Clique em “Lutar” à direita. Coloque até 4 combatentes nos quadrados da esquerda: o troll na frente, os goblins atrás dele. A batalha acontece sozinha."
+"k": "Нажми «В бой» справа. Поставь до 4 гоблинов в синие клетки слева. Бой идёт сам, а победа откроет тролля.",
+"v": "Clique em “Lutar” à direita. Coloque até 4 goblins nos quadrados azuis da esquerda. A batalha acontece sozinha, e a vitória desbloqueia o troll."
+},
+{
+"k": "Склад экипировки",
+"v": "Arsenal"
+},
+{
+"k": "За победу бойцы взяли трофеи: ржавый меч и латаную броню, они лежат в бараках. Построй склад экипировки и дай гоблину «Перенос»: бараки → склад экипировки.",
+"v": "Pela vitória, seus combatentes pegaram troféus: uma espada enferrujada e uma armadura remendada, que estão no quartel. Construa um arsenal e dê a um goblin “Transporte”: quartel → arsenal."
+},
+{
+"k": "В броне на арену",
+"v": "De armadura para a arena"
+},
+{
+"k": "Нажми «В бой» и выбери 2-й уровень. Перед боем нажми на бойца и выбери внизу меч и броню со склада экипировки. Тролль уже открыт: его нанимают во вкладке «Существа».",
+"v": "Clique em “Lutar” e escolha o nível 2. Antes da batalha, clique em um combatente e escolha embaixo a espada e a armadura do arsenal. O troll já está desbloqueado: contrate-o na aba “Criaturas”."
 },
 {
 "k": "Урожай",
@@ -2885,30 +3133,6 @@
 "v": "A forja faz espadas de lingotes e, com couro, armaduras; às vezes estraga o trabalho e vira sucata. Construa-a e ponha dois trabalhadores."
 },
 {
-"k": "Богатый рынок",
-"v": "Mercado rico"
-},
-{
-"k": "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.",
-"v": "Escolha o mercado no mapa e clique em “Melhorar”: cada nível aumenta o preço de todas as mercadorias."
-},
-{
-"k": "Склад экипировки",
-"v": "Arsenal"
-},
-{
-"k": "Построй склад экипировки и вози туда мечи из кузницы: перед боем их можно выдать бойцам.",
-"v": "Construa um arsenal e leve para lá as espadas da forja: antes da batalha elas podem ser dadas aos combatentes."
-},
-{
-"k": "Оружие для отряда",
-"v": "Armas para o esquadrão"
-},
-{
-"k": "Пусть на складе экипировки будет пять предметов: мечи, броня, щиты.",
-"v": "Faça o arsenal ter cinco itens: espadas, armaduras, escudos."
-},
-{
 "k": "Третий уровень арены",
 "v": "Terceiro nível da arena"
 },
@@ -2923,6 +3147,14 @@
 {
 "k": "Ферма кормит скот пшеницей и соломой и даёт шкуры, мясо и молоко. Построй её и дай ей двух рабочих.",
 "v": "A fazenda alimenta o gado com trigo e palha e dá peles, carne e leite. Construa-a e dê a ela dois trabalhadores."
+},
+{
+"k": "Оружие для отряда",
+"v": "Armas para o esquadrão"
+},
+{
+"k": "Вози мечи из кузницы на склад экипировки: пусть там будет пять предметов — мечи, броня, щиты.",
+"v": "Leve espadas da forja para o arsenal: que haja cinco itens — espadas, armaduras, escudos."
 },
 {
 "k": "Растущее поселение",
@@ -2971,6 +3203,14 @@
 {
 "k": "Пилорама режет брёвна на доски. Построй её и дай ей двух рабочих.",
 "v": "A serraria corta toras em tábuas. Construa-a e dê a ela dois trabalhadores."
+},
+{
+"k": "Богатый рынок",
+"v": "Mercado rico"
+},
+{
+"k": "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.",
+"v": "Escolha o mercado no mapa e clique em “Melhorar”: cada nível aumenta o preço de todas as mercadorias."
 },
 {
 "k": "Продай доски на рынке — или копи их для щитов.",
@@ -3485,18 +3725,6 @@
 "v": "Enviar logs"
 },
 {
-"k": "Игра отправляет анонимную статистику: до какого задания доходят игроки. Так мы находим, где играть трудно.",
-"v": "O jogo envia estatísticas anônimas: até qual tarefa os jogadores chegam. Assim descobrimos onde jogar é difícil."
-},
-{
-"k": "Не отправлять",
-"v": "Não enviar"
-},
-{
-"k": "Хорошо",
-"v": "Certo"
-},
-{
 "k": "Поле",
 "v": "Plantação"
 },
@@ -3507,10 +3735,6 @@
 {
 "k": "Шахта",
 "v": "Mina"
-},
-{
-"k": "Склад",
-"v": "Armazém"
 },
 {
 "k": "2. Слизни на лугу",
@@ -3643,6 +3867,14 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Trabalha mais rápido que o goblin e leva mais, mas anda devagar. Forte na batalha."
+},
+{
+"k": "Каждое новое существо в поселении поднимает цену найма.",
+"v": "Cada nova criatura no assentamento aumenta o preço de contratação."
+},
+{
+"k": "Рецепт",
+"v": "Receita"
 }
 ]
 }

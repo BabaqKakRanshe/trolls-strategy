@@ -94,6 +94,7 @@ namespace TrollStrategy.Bots
                     EnsureEquipment(goal.Amount, wait);
                     break;
                 case QuestGoalKind.EquipFighters:
+                case QuestGoalKind.WearGearInBattle:
                     // gear is dealt as the squad marches out: enough items, then a battle
                     if (EnsureEquipment(goal.Amount, wait)) _battles.TryFight(wait, hire: true);
                     break;

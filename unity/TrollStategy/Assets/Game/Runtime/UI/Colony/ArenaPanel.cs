@@ -10,9 +10,10 @@ using UnityEngine.UIElements;
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// The arena as a poster, opened by the battle tool. On the left a rail of level discs: every level the
-    /// colony has opened and the next closed one, a tick on a won level, a lock on the closed one, a star on a
-    /// milestone and the rest time under a resting one. The chosen level fills the poster from the session's
+    /// The arena as a poster, opened by the battle tool. On the left a rail of level discs, the whole ladder: the
+    /// levels the colony has opened, the next one with a lock and the road beyond it faded; a tick on a won level,
+    /// a star on a milestone, the folk a first win opens for hire and the rest time under a resting one. Any level
+    /// can be looked at, only an open one fights. The chosen level fills the poster from the session's
     /// <see cref="ArenaOfferSnapshot"/>: the squad's places and how the colony's best squad compares, the enemies
     /// with their strength and gear, what a win brings (gold, trophies, the folk a first win opens for hire), the
     /// arena's prize fund, the stake and what a defeat costs, and the button into its battle. Which level is
@@ -34,6 +35,8 @@ namespace TrollStrategy.UI
             public VisualElement Badge;
             public VisualElement BadgeGlyph;
             public VisualElement Star;
+            public VisualElement Folk;
+            public bool HasFolk;
             public VisualElement Rest;
             public Label RestTime;
             public BattleMissionDefinition Mission;
@@ -72,6 +75,7 @@ namespace TrollStrategy.UI
         private ArenaOfferSnapshot _offer;
         private string _trophiesShown;
         private BattleMissionDefinition _chosen;
+        private BattleMissionDefinition _nextClosed;
         private BattleMissionDefinition _posterOf;
         private int _squadShown = -1;
         private float _sinceRefresh;
@@ -205,6 +209,16 @@ namespace TrollStrategy.UI
             return false;
         }
 
+        /// <summary>Whether the level's disc carries the lock: the next level the colony can open.</summary>
+        public bool HasLock(BattleMissionDefinition mission) =>
+            LevelOf(mission) is Level level && Ui.IsShown(level.Badge) && level.Badge.ClassListContains("arena-rail__badge--closed");
+
+        /// <summary>Whether the level's disc is faded: a level beyond the next one.</summary>
+        public bool IsFaded(BattleMissionDefinition mission) => LevelOf(mission)?.Root.ClassListContains("is-far") == true;
+
+        /// <summary>Whether the level's disc shows the folk its first win opens for hire.</summary>
+        public bool ShowsFolk(BattleMissionDefinition mission) => LevelOf(mission) is Level level && Ui.IsShown(level.Folk);
+
         /// <summary>The folk a first win opens for hire, as the poster names it; null when it names none.</summary>
         public string Hire => Ui.IsShown(_hire) ? _hireName.text : null;
 
@@ -238,13 +252,9 @@ namespace TrollStrategy.UI
         public void Refresh()
         {
             var session = _context.Session;
-            // every open level and the first closed one after them
-            var shown = new List<BattleMissionDefinition>();
-            foreach (var mission in session.ArenaLadder())
-            {
-                shown.Add(mission);
-                if (!session.IsMissionUnlocked(mission.MissionId)) break;
-            }
+            // the whole ladder: the open levels, the next one with its lock and the road beyond it
+            var shown = new List<BattleMissionDefinition>(session.ArenaLadder());
+            _nextClosed = shown.Find(mission => !session.IsMissionUnlocked(mission.MissionId));
             string signature = string.Join(",", shown.ConvertAll(m => m.MissionId));
             if (signature != _shownSignature) Rebuild(shown, signature);
             if (_chosen == null || !shown.Contains(_chosen)) _chosen = session.SuggestedMission();
@@ -274,6 +284,9 @@ namespace TrollStrategy.UI
                 level.Mission = shown[i];
                 Ui.Show(level.Path, i > 0);
                 Ui.SetCaption(level.Disc, level.Mission.Level.ToString());
+                var folk = level.Mission.UnlockUnit.HasValue ? _context.Catalog.TryGetUnit(level.Mission.UnlockUnit.Value) : null;
+                Ui.SetPicture(level.Folk, RewardArt.Tight(folk != null ? folk.PortraitSprite : null));
+                level.HasFolk = folk != null && folk.PortraitSprite != null;
             }
         }
 
@@ -285,15 +298,19 @@ namespace TrollStrategy.UI
             bool won = open && session.MissionWins(id) > 0;
             int wait = open ? session.MissionWaitMs(id) : 0;
 
+            bool next = level.Mission == _nextClosed;
             level.Disc.EnableInClassList("is-on", level.Mission == _chosen);
             level.Root.EnableInClassList("is-closed", !open);
-            // a tick on a won level, a lock on the closed one
-            Ui.Show(level.Badge, won || !open);
+            level.Root.EnableInClassList("is-far", !open && !next);
+            // a tick on a won level, a lock on the next closed one; the road beyond it only fades
+            Ui.Show(level.Badge, won || next);
             level.Badge.EnableInClassList("arena-rail__badge--won", won);
-            level.Badge.EnableInClassList("arena-rail__badge--closed", !open);
+            level.Badge.EnableInClassList("arena-rail__badge--closed", next);
             Ui.Show(level.Star, level.Mission.Milestone);
+            // the folk a first win opens for hire, until that win
+            Ui.Show(level.Folk, level.HasFolk && !won);
             level.BadgeGlyph.EnableInClassList("glyph--check", won);
-            level.BadgeGlyph.EnableInClassList("glyph--lock", !open);
+            level.BadgeGlyph.EnableInClassList("glyph--lock", next);
             Ui.Show(level.Rest, wait > 0);
             if (wait > 0) Ui.SetText(level.RestTime, TopBar.Duration(wait));
         }
@@ -556,6 +573,10 @@ namespace TrollStrategy.UI
             level.Star.pickingMode = PickingMode.Ignore;
             Ui.Show(level.Star, false);
             level.Disc.Add(level.Star);
+            level.Folk = Ui.Box("arena-rail__folk");
+            level.Folk.pickingMode = PickingMode.Ignore;
+            Ui.Show(level.Folk, false);
+            level.Disc.Add(level.Folk);
             level.Rest = Ui.Box("arena-rail__rest");
             level.Rest.pickingMode = PickingMode.Ignore;
             var clock = Ui.Box("glyph glyph--rest");
@@ -574,6 +595,13 @@ namespace TrollStrategy.UI
             return level;
         }
 
+        private Level LevelOf(BattleMissionDefinition mission)
+        {
+            foreach (var level in _levels)
+                if (Ui.IsShown(level.Root) && level.Mission == mission) return level;
+            return null;
+        }
+
         // The level's state in words for its disc's hint.
         private string StateOf(BattleMissionDefinition mission)
         {
@@ -581,7 +609,8 @@ namespace TrollStrategy.UI
             var enter = session.CanEnterMission(mission.MissionId);
             int wins = session.MissionWins(mission.MissionId);
             int wait = session.MissionWaitMs(mission.MissionId);
-            if (!session.IsMissionUnlocked(mission.MissionId)) return enter.Error;
+            if (!session.IsMissionUnlocked(mission.MissionId))
+                return mission == _nextClosed ? enter.Error : $"Откроется после победы на {mission.Level - 1}-м уровне";
             if (enter.Ok) return wins > 0 ? $"Побед: {wins}. Можно в бой" : "Можно в бой";
             return wait > 0 ? $"Отдых {TopBar.Duration(wait)}" : enter.Error;
         }

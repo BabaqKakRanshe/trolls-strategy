@@ -89,12 +89,6 @@ MonoBehaviour:
       Y: 2
     Gear: []
     Champion: 0
-  - Kind: 0
-    Cell:
-      X: 7
-      Y: 3
-    Gear: []
-    Champion: 0
   _firstWinGold: 250
   _firstWinGoldMax: 400
   _repeatWinGold: 150

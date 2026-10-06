@@ -3,6 +3,8 @@ using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Presentation.Buildings;
 using TrollStrategy.Support;
+using TrollStrategy.Domain;
+using UnityEngine;
 
 namespace TrollStrategy.UI
 {
@@ -29,6 +31,15 @@ namespace TrollStrategy.UI
         /// <summary>Development builds only: places the squad and starts the replay at once.</summary>
         public Func<BattleMissionDefinition, bool> OpenQuickBattle { get; set; }
         public BuildingShowcase Showcase { get; set; }
+        /// <summary>
+        /// Where a point of the colony map shows on the screen, in pixels from the top left; null off the camera.
+        /// Set by the bootstrap from the colony camera for the tutorial pointer; null without a scene (tests).
+        /// </summary>
+        public Func<WorldPosition, Vector2?> MapToScreen { get; set; }
+        /// <summary>The screen rectangle (pixels from the top left) around a creature's view, or null.</summary>
+        public Func<string, Rect?> UnitToScreen { get; set; }
+        /// <summary>The screen rectangle (pixels from the top left) around a building's model, or null.</summary>
+        public Func<string, Rect?> BuildingToScreen { get; set; }
         /// <summary>Opens the arena ladder; set by the HUD view, called by the battle tool.</summary>
         public Action OpenArena { get; set; }
         /// <summary>Opens the pause menu; set by the HUD view, called by the menu tool.</summary>
@@ -41,6 +52,8 @@ namespace TrollStrategy.UI
         public Action Restart { get; set; }
         /// <summary>The alpha notice was closed: the first-launch camera flight may start.</summary>
         public Action IntroClosed { get; set; }
+        /// <summary>Sends a bug report and shows its progress (the menu's "report a bug"); null without support.</summary>
+        public Action ReportBug { get; set; }
         /// <summary>Languages the menu offers, as code and name in that language.</summary>
         public System.Collections.Generic.List<(string Code, string Name)> Languages { get; set; }
         public Func<string> CurrentLanguage { get; set; }

@@ -10,8 +10,8 @@ using UnityEngine.UIElements;
 namespace TrollStrategy.Tests
 {
     /// <summary>
-    /// A workplace card's "hire here": one press hires the building's best worker for the price and sends it there,
-    /// instead of a hire in the catalog and a work order.
+    /// Hiring straight into a workplace: one order hires the building's best worker for the price and sends it
+    /// there (the bots give it). Building cards do not offer it: creatures are hired in the catalog.
     /// </summary>
     public class HireHereTests
     {
@@ -101,47 +101,21 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void WorkplaceCard_HiresItsWorker_InOnePress()
+        public void BuildingCards_OfferNoHire()
         {
-            _interaction.SelectBuilding(Mine.Id);
-            Refresh();
-            string who = _catalog.GetUnit(Worker).DisplayName.ToLowerInvariant();
-            var hire = _hud.Inspect.Actions.Single(b => Title(b) == $"Нанять сюда: {who}");
-            Assert.That(Hint(hire), Is.EqualTo(Ui.Gold(_session.HirePrice(Worker))));
+            foreach (var kind in new[] { BuildingKind.Mine, BuildingKind.Warehouse, BuildingKind.Barracks })
+            {
+                _interaction.SelectBuilding(_session.CurrentSnapshot.Buildings.First(b => b.Kind == kind).Id);
+                Refresh();
 
-            UiFeel.Press(hire);
-
-            var unit = _session.CurrentSnapshot.Units.Single();
-            Assert.That(unit.Assignment.Kind, Is.EqualTo(AssignmentKind.ToWork));
-            Assert.That(unit.Assignment.BuildingId, Is.EqualTo(Mine.Id));
-        }
-
-        [Test]
-        public void WorkplaceCard_FullBuilding_SaysSo_AndTheHireIsUnavailable()
-        {
-            for (int i = 0; i < Mine.MaxWorkers; i++) Assert.That(HireAtMine().Ok, Is.True);
-            _interaction.SelectBuilding(Mine.Id);
-            Refresh();
-
-            var hire = _hud.Inspect.Actions.Single(b => Title(b).StartsWith("Нанять сюда"));
-
-            Assert.That(Hint(hire), Is.EqualTo("мест нет"));
-            Assert.That(hire.ClassListContains(UiFeel.UnavailableClass), Is.True);
-        }
-
-        [Test]
-        public void StorageCard_OffersNoHire()
-        {
-            _interaction.SelectBuilding(_session.CurrentSnapshot.Buildings.First(b => b.Kind == BuildingKind.Warehouse).Id);
-            Refresh();
-
-            Assert.That(_hud.Inspect.Actions.Where(Ui.IsShown).Select(Title).Any(t => t.StartsWith("Нанять сюда")), Is.False);
+                Assert.That(_hud.Inspect.Actions.Where(Ui.IsShown).Select(Title).Any(t => t.StartsWith("Нанять")), Is.False,
+                    kind.ToString());
+            }
         }
 
         private void Refresh() => _hud.OnInteractionChanged(_session.CurrentSnapshot);
 
         private static string Title(Button button) => button.Q<Label>(className: "btn__title").text;
 
-        private static string Hint(Button button) => button.Q<Label>(className: "btn__hint").text;
     }
 }

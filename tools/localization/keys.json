@@ -175,6 +175,9 @@
  "Предметов на складе экипировки": [
   "Runtime/Application/GameSession.cs"
  ],
+ "Снаряжение на бойцах в бою": [
+  "Runtime/Application/GameSession.cs"
+ ],
  "Новая постройка": [
   "Runtime/Application/GameSession.cs"
  ],
@@ -233,7 +236,6 @@
  ],
  "брак {0}%": [
   "Runtime/Application/GameSession.cs",
-  "Runtime/UI/Colony/RecipeList.cs",
   "Runtime/UI/Colony/WikiPanel.cs"
  ],
  "Свободен": [
@@ -332,6 +334,9 @@
  "Нанято существ: {0}.": [
   "Runtime/Application/InteractionController.cs"
  ],
+ "{0} нанят и стоит у склада.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
  "Постройка «{0}» откроется за задание.": [
   "Runtime/Application/InteractionController.cs"
  ],
@@ -398,13 +403,19 @@
  "Сначала укажите, откуда носить товар.": [
   "Runtime/Application/InteractionController.cs"
  ],
- "{0} нанят в поселение!": [
+ "{0} носит на склад: {1}.": [
   "Runtime/Application/InteractionController.cs"
  ],
- "Нанять некого: откройте существ заданиями": [
+ "Сначала выберите здание.": [
   "Runtime/Application/InteractionController.cs"
  ],
- "{0} нанят и идёт на работу: {1}.": [
+ "Отсюда на склад не носят.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Нет свободного существа «{0}»: найми его в каталоге.": [
+  "Runtime/Application/InteractionController.cs"
+ ],
+ "Нет свободных существ: найми работника в каталоге.": [
   "Runtime/Application/InteractionController.cs"
  ],
  "Награда за бой: +{0} зол.": [
@@ -747,6 +758,33 @@
  "Снимок экрана": [
   "Runtime/Support/UnityReportUploader.cs"
  ],
+ "Авторасстановка": [
+  "Runtime/UI/Battle/BattleGuide.cs",
+  "Runtime/UI/Battle/DeploymentActions.cs"
+ ],
+ "Бойцы сами встанут на синие клетки.": [
+  "Runtime/UI/Battle/BattleGuide.cs"
+ ],
+ "Снаряжение": [
+  "Runtime/UI/Battle/BattleGuide.cs",
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Нажми на «{0}»: боец наденет его.": [
+  "Runtime/UI/Battle/BattleGuide.cs"
+ ],
+ "Выбери бойца": [
+  "Runtime/UI/Battle/BattleGuide.cs"
+ ],
+ "Кликни по бойцу на поле: внизу появится его снаряжение.": [
+  "Runtime/UI/Battle/BattleGuide.cs"
+ ],
+ "Начать бой": [
+  "Runtime/UI/Battle/BattleGuide.cs",
+  "Runtime/UI/Battle/DeploymentActions.cs"
+ ],
+ "Бой идёт сам.": [
+  "Runtime/UI/Battle/BattleGuide.cs"
+ ],
  "В колонию": [
   "Runtime/UI/Battle/BattleHeader.cs",
   "UI/Uxml/Battle/Replay.uxml"
@@ -785,13 +823,7 @@
  "Ничья": [
   "Runtime/UI/Battle/BattleHudView.cs"
  ],
- "Авторасстановка": [
-  "Runtime/UI/Battle/DeploymentActions.cs"
- ],
  "Поставить бойцов из резерва на свободные синие клетки.": [
-  "Runtime/UI/Battle/DeploymentActions.cs"
- ],
- "Начать бой": [
   "Runtime/UI/Battle/DeploymentActions.cs"
  ],
  "Бой идёт сам. Павшие бойцы и их снаряжение не вернутся.": [
@@ -1033,6 +1065,9 @@
  "Луг": [
   "Runtime/UI/Colony/ArenaPanel.cs"
  ],
+ "Откроется после победы на {0}-м уровне": [
+  "Runtime/UI/Colony/ArenaPanel.cs"
+ ],
  "Побед: {0}. Можно в бой": [
   "Runtime/UI/Colony/ArenaPanel.cs"
  ],
@@ -1078,9 +1113,6 @@
  "{0} золота за одного.": [
   "Runtime/UI/Colony/CatalogPanel.cs"
  ],
- "Каждое новое существо в поселении поднимает цену найма.": [
-  "Runtime/UI/Colony/CatalogPanel.cs"
- ],
  "Каждая следующая такая постройка дороже.": [
   "Runtime/UI/Colony/CatalogPanel.cs"
  ],
@@ -1102,16 +1134,160 @@
  "Готово": [
   "Runtime/UI/Colony/CheatPanel.cs"
  ],
+ "Сюда": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Кликни по клетке у склада: отсюда ближе всего носить.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Найми первого работника": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Нажми на жетон «{0}»: он сам встанет у склада.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Найми работника": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Нажми на жетон «{0}».": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Поставь сам": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Игра найдёт свободное место.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Кликни по месту у склада или нажми «Поставить сам».": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Построй здание": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Куда на работу": [
+  "Runtime/UI/Colony/ColonyGuide.cs",
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Кликни по зданию «{0}».": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
  "Работа": [
+  "Runtime/UI/Colony/ColonyGuide.cs",
   "Runtime/UI/Colony/CommandFan.cs",
   "Runtime/UI/Colony/ContextBar.cs",
   "Runtime/UI/Colony/WikiPanel.cs"
  ],
- "Потом кликни по зданию: туда встанут работать.": [
+ "Нажми «Работа» (E), потом на здание.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Выбери работника": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Кликни по свободному существу на острове.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Вывозить на склад": [
+  "Runtime/UI/Colony/ColonyGuide.cs",
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Ближайший свободный работник начнёт носить отсюда на склад.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Здание «{0}»": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Нажми на него: в карточке есть «Вывозить на склад».": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Изменить груз": [
+  "Runtime/UI/Colony/ColonyGuide.cs",
+  "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Этот груз туда не носят: выбери другой.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "2. Куда: {0}": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Кликни по зданию: туда понесут груз.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Что носить": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Можно оставить «Всё» и нажать «Куда носить».": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "1. Откуда: {0}": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Кликни по зданию, откуда носить.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Перенос": [
+  "Runtime/UI/Colony/ColonyGuide.cs",
   "Runtime/UI/Colony/CommandFan.cs",
   "Runtime/UI/Colony/ContextBar.cs"
  ],
- "Перенос": [
+ "Нажми «Перенос» (H): дальше два здания, откуда и куда.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Выбери носильщика": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "В бой": [
+  "Runtime/UI/Colony/ColonyGuide.cs",
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Battle/Actions.uxml",
+  "UI/Uxml/Colony/Arena.uxml",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Уровень выбран: нажми «В бой».": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Подожди: кнопка оживёт, когда арена будет готова.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Арена": [
+  "Runtime/UI/Colony/ColonyGuide.cs",
+  "Runtime/UI/Colony/InspectPanel.cs",
+  "Runtime/UI/Colony/TopBar.cs",
+  "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Нажми «Арена»: там уровни боёв.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Вернись к каталогу": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Кнопка снимет выбор и откроет каталог.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Открой каталог": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Внизу появятся здания и существа.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Вкладка «Существа»": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Здесь нанимают работников.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Вкладка «Здания»": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Здесь строят.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Сначала отмени": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Нажми «Отмена» (Esc).": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Потом кликни по зданию: туда встанут работать.": [
   "Runtime/UI/Colony/CommandFan.cs",
   "Runtime/UI/Colony/ContextBar.cs"
  ],
@@ -1143,9 +1319,6 @@
  "Постройка встанет на первое свободное место.": [
   "Runtime/UI/Colony/ContextBar.cs"
  ],
- "Изменить груз": [
-  "Runtime/UI/Colony/ContextBar.cs"
- ],
  "Вернуться к выбору, что носить.": [
   "Runtime/UI/Colony/ContextBar.cs"
  ],
@@ -1172,13 +1345,10 @@
  "{0} ×{1} за {2}": [
   "Runtime/UI/Colony/ContextBar.cs"
  ],
- "Куда на работу": [
+ "1. Откуда носить": [
   "Runtime/UI/Colony/ContextBar.cs"
  ],
- "Откуда носить": [
-  "Runtime/UI/Colony/ContextBar.cs"
- ],
- "Куда носить": [
+ "2. Куда носить": [
   "Runtime/UI/Colony/ContextBar.cs"
  ],
  "Земля: участок за {0}": [
@@ -1275,8 +1445,17 @@
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "Подробнее": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Склад": [
   "Runtime/UI/Colony/InspectPanel.cs",
-  "UI/Uxml/Support/TechInfo.uxml"
+  "Content/Definitions/Building_Warehouse.asset"
+ ],
+ "свободный работник будет носить отсюда": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "Ближайший свободный работник будет носить отсюда на склад всё, что здесь делают.": [
+  "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "Уровень {0}, {1}×{2}": [
   "Runtime/UI/Colony/InspectPanel.cs"
@@ -1304,11 +1483,6 @@
  ],
  "Хранит сырьё и полуфабрикаты от носильщиков.": [
   "Runtime/UI/Colony/InspectPanel.cs"
- ],
- "Арена": [
-  "Runtime/UI/Colony/InspectPanel.cs",
-  "Runtime/UI/Colony/TopBar.cs",
-  "Runtime/UI/Colony/WikiPanel.cs"
  ],
  "уровень {0}": [
   "Runtime/UI/Colony/InspectPanel.cs",
@@ -1344,18 +1518,6 @@
  "макс. уровень": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
- "Нанять сюда: {0}": [
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
- "мест нет": [
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
- "Нанять: ": [
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
- "закрыто": [
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
  "Снести": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
@@ -1376,9 +1538,6 @@
   "Runtime/UI/Colony/WikiPanel.cs"
  ],
  "здоровье {0}, урон {1}, броня {2}": [
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
- "Снаряжение": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "Возит": [
@@ -1429,7 +1588,19 @@
  "Привет! Это демо-версия игры: колония троллей и гоблинов на парящем острове. Полная игра ещё в работе: что-то будет меняться, а прогресс пока не сохраняется.": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
+ "Можно игре отправлять анонимную статистику: до какого задания доходят игроки? Так мы находим, где играть трудно. Ответ можно поменять по F8.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
  "Играть": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Анонимная статистика": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Отправлять": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Не отправлять": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
  "Демо-версия": [
@@ -1505,6 +1676,12 @@
  "Кто делает игру и где его найти.": [
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
+ "Сообщить об ошибке": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Отправить автору снимок экрана и журнал игры.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
  "Начать заново": [
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
@@ -1524,6 +1701,15 @@
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
  "Интерфейс": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Показывать": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Скрыть": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Подсказки обучения": [
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
  "Версия {0}, {1}": [
@@ -1576,7 +1762,6 @@
   "Runtime/UI/Colony/RecipeList.cs"
  ],
  "Брак {0}%": [
-  "Runtime/UI/Colony/RecipeList.cs",
   "Runtime/UI/Colony/RewardOverlay.cs"
  ],
  "Откроется, когда здание станет {0}-го уровня": [
@@ -1709,12 +1894,6 @@
  ],
  "Бой закрыт": [
   "Runtime/UI/Colony/TopBar.cs"
- ],
- "В бой": [
-  "Runtime/UI/Colony/TopBar.cs",
-  "UI/Uxml/Battle/Actions.uxml",
-  "UI/Uxml/Colony/Arena.uxml",
-  "UI/Uxml/Colony/TopBar.uxml"
  ],
  "Бой через ": [
   "Runtime/UI/Colony/TopBar.cs"
@@ -1881,6 +2060,9 @@
  ],
  "везде одинаково": [
   "Runtime/UI/Colony/WikiPanel.cs"
+ ],
+ "Шаг {0} из {1}": [
+  "Runtime/UI/Common/GuideOverlay.cs"
  ],
  "Подробнее в справочнике": [
   "Runtime/UI/Common/HudTooltip.cs"
@@ -2265,7 +2447,7 @@
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
  ],
- "Внизу, во вкладке «Существа», нажми на гоблина и кликни по свободной клетке на карте.": [
+ "Внизу, во вкладке «Существа», нажми на гоблина: он сам встанет у склада.": [
   "Editor/Setup/ProgressionContentSetup.cs"
  ],
  "Своя шахта": [
@@ -2279,14 +2461,14 @@
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
  ],
- "Найми тролля. Кликни по нему → «Работа» (E) → шахта. Затем кликни по гоблину → «Перенос» (H) → шахта → выбери, что носить → склад.": [
+ "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, нажми на шахту и в её карточке — «Вывозить на склад»: новый гоблин начнёт носить руду на склад.": [
   "Editor/Setup/ProgressionContentSetup.cs"
  ],
  "Первая выручка": [
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
  ],
- "Руда копится на складе. Найми ещё гоблина и дай ему «Перенос»: склад → рынок. Рынок платит за каждую доставленную руду.": [
+ "Руда копится на складе. Найми ещё гоблина, кликни по нему → «Перенос» (H): сначала склад — откуда носить, потом рынок — куда. Рынок платит за каждую доставленную руду.": [
   "Editor/Setup/ProgressionContentSetup.cs"
  ],
  "Казна": [
@@ -2305,7 +2487,22 @@
  "Внизу, во вкладке «Здания», нажми на бараки и поставь их на свободное место. Снятые с работы существа отдыхают у их дверей, а из бараков открывается дорога на арену.": [
   "Editor/Setup/ProgressionContentSetup.cs"
  ],
- "Нажми «В бой» справа. Поставь до 4 бойцов в левые клетки: тролля вперёд, гоблинов за ним. Бой идёт сам.": [
+ "Нажми «В бой» справа. Поставь до 4 гоблинов в синие клетки слева. Бой идёт сам, а победа откроет тролля.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "Склад экипировки": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Building_Armory.asset",
+  "Content/Definitions/Progression.asset"
+ ],
+ "За победу бойцы взяли трофеи: ржавый меч и латаную броню, они лежат в бараках. Построй склад экипировки и дай гоблину «Перенос»: бараки → склад экипировки.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
+ ],
+ "В броне на арену": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Нажми «В бой» и выбери 2-й уровень. Перед боем нажми на бойца и выбери внизу меч и броню со склада экипировки. Тролль уже открыт: его нанимают во вкладке «Существа».": [
   "Editor/Setup/ProgressionContentSetup.cs"
  ],
  "Урожай": [
@@ -2360,30 +2557,6 @@
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
  ],
- "Богатый рынок": [
-  "Editor/Setup/ProgressionContentSetup.cs",
-  "Content/Definitions/Progression.asset"
- ],
- "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.": [
-  "Editor/Setup/ProgressionContentSetup.cs"
- ],
- "Склад экипировки": [
-  "Editor/Setup/ProgressionContentSetup.cs",
-  "Content/Definitions/Building_Armory.asset",
-  "Content/Definitions/Progression.asset"
- ],
- "Построй склад экипировки и вози туда мечи из кузницы: перед боем их можно выдать бойцам.": [
-  "Editor/Setup/ProgressionContentSetup.cs",
-  "Content/Definitions/Progression.asset"
- ],
- "Оружие для отряда": [
-  "Editor/Setup/ProgressionContentSetup.cs",
-  "Content/Definitions/Progression.asset"
- ],
- "Пусть на складе экипировки будет пять предметов: мечи, броня, щиты.": [
-  "Editor/Setup/ProgressionContentSetup.cs",
-  "Content/Definitions/Progression.asset"
- ],
  "Третий уровень арены": [
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
@@ -2398,6 +2571,14 @@
   "Content/Definitions/Progression.asset"
  ],
  "Ферма кормит скот пшеницей и соломой и даёт шкуры, мясо и молоко. Построй её и дай ей двух рабочих.": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Оружие для отряда": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Вози мечи из кузницы на склад экипировки: пусть там будет пять предметов — мечи, броня, щиты.": [
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
  ],
@@ -2451,6 +2632,13 @@
  "Пилорама режет брёвна на доски. Построй её и дай ей двух рабочих.": [
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
+ ],
+ "Богатый рынок": [
+  "Editor/Setup/ProgressionContentSetup.cs",
+  "Content/Definitions/Progression.asset"
+ ],
+ "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.": [
+  "Editor/Setup/ProgressionContentSetup.cs"
  ],
  "Продай доски на рынке — или копи их для щитов.": [
   "Editor/Setup/ProgressionContentSetup.cs",
@@ -2913,15 +3101,6 @@
  "Отправить логи": [
   "UI/Uxml/Support/TechInfo.uxml"
  ],
- "Игра отправляет анонимную статистику: до какого задания доходят игроки. Так мы находим, где играть трудно.": [
-  "UI/Uxml/Support/TechInfo.uxml"
- ],
- "Не отправлять": [
-  "UI/Uxml/Support/TechInfo.uxml"
- ],
- "Хорошо": [
-  "UI/Uxml/Support/TechInfo.uxml"
- ],
  "Поле": [
   "Content/Definitions/Building_Field.asset"
  ],
@@ -2930,9 +3109,6 @@
  ],
  "Шахта": [
   "Content/Definitions/Building_Mine.asset"
- ],
- "Склад": [
-  "Content/Definitions/Building_Warehouse.asset"
  ],
  "2. Слизни на лугу": [
   "Content/Definitions/Mission_02.asset"
@@ -3032,5 +3208,11 @@
  ],
  "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.": [
   "Content/Definitions/Unit_Troll.asset"
+ ],
+ "Каждое новое существо в поселении поднимает цену найма.": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
+ "Рецепт": [
+  "Runtime/UI/Colony/InspectPanel.cs"
  ]
 }

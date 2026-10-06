@@ -298,6 +298,9 @@ namespace TrollStrategy.Application
             if (found != null) FocusRequested?.Invoke(found.Position);
         }
 
+        /// <summary>Asks the camera to go to a place of the map (the tutorial pointer's target off the screen).</summary>
+        public void Focus(WorldPosition position) => FocusRequested?.Invoke(position);
+
         public void BeginUnitPlacement(UnitKind kind, int amount)
         {
             if (!_session.IsUnitUnlocked(kind))
@@ -306,6 +309,8 @@ namespace TrollStrategy.Application
                 return;
             }
             _commandsOpen = false;
+            // the tutorial's first worker lands by the warehouse door at once: the same hire, the place chosen for it
+            if (QuickFirstHire(kind, amount)) return;
             _mode = InteractionMode.PlacingUnits(kind, amount);
             _message = $"Кликните по клетке, где появятся все {amount} существ.";
             Emit();
@@ -325,6 +330,43 @@ namespace TrollStrategy.Application
                 _message = result.Error;
             }
             Emit();
+        }
+
+        /// <summary>
+        /// Whether hiring this kind now is the tutorial's first worker: the current quest is a tutorial step whose next
+        /// goal hires this kind, and the colony has no creature yet. That hire goes by the warehouse door at once
+        /// (specs/006-tutorial-guidance, FR-005).
+        /// </summary>
+        public bool IsQuickFirstHire(UnitKind kind)
+        {
+            var snapshot = _session.CurrentSnapshot;
+            if (snapshot.Units.Count > 0) return false;
+            var progress = snapshot.Progress;
+            var quest = progress.Enabled ? progress.Quest : null;
+            if (quest == null || !quest.IsTutorial || quest.IsComplete) return false;
+            var next = quest.NextGoal;
+            if (next == null) return false;
+            var goal = next.Goal;
+            return goal.Kind == QuestGoalKind.OwnUnits && !goal.AnyUnit && goal.Unit == kind;
+        }
+
+        // the first worker: hired on the free cell nearest the warehouse door, and the camera goes there
+        private bool QuickFirstHire(UnitKind kind, int amount)
+        {
+            if (!IsQuickFirstHire(kind)) return false;
+            var cell = TutorialPlaces.HireCell(_session, kind, amount);
+            if (cell == null) return false;
+            var result = _session.Dispatch(new BuyUnitsCommand(kind, amount, cell.Value));
+            if (!result.Ok)
+            {
+                Refuse(result.Error);
+                return true;
+            }
+            _mode = InteractionMode.Neutral;
+            _message = $"{_session.Catalog.GetUnit(kind).DisplayName} нанят и стоит у склада.";
+            Emit();
+            FocusRequested?.Invoke(TutorialPlaces.CenterOf(cell.Value, _session.Catalog));
+            return true;
         }
 
         public void BeginBuildingPlacement(BuildingKind kind)
@@ -489,44 +531,64 @@ namespace TrollStrategy.Application
             Emit();
         }
 
-        public void RecruitUnit(UnitKind kind, int amount = 1)
+        /// <summary>
+        /// Why the inspected building's "Вывозить на склад" cannot go now, or null when it can. It gives the nearest
+        /// idle creature (one the current quest counts, when the quest asks for this haul) a route from the building
+        /// to the nearest warehouse with everything the route carries: the same order as "Перенос".
+        /// </summary>
+        public string HaulToWarehouseBlocker => PlanHaulToWarehouse(out _, out _, out _);
+
+        /// <summary>The inspected building's "Вывозить на склад", see <see cref="HaulToWarehouseBlocker"/>.</summary>
+        public void HaulInspectedToWarehouse()
         {
-            var cell = _session.FindSpawnCell();
-            var result = _session.Dispatch(new BuyUnitsCommand(kind, amount, cell));
-            if (result.Ok)
+            string blocker = PlanHaulToWarehouse(out var unit, out var source, out var warehouse);
+            if (blocker != null)
             {
-                var def = _session.Catalog.GetUnit(kind);
-                string name = def != null ? def.DisplayName : kind.ToString();
-                _message = $"{name} нанят в поселение!";
-                _mode = InteractionMode.Neutral;
+                Refuse(blocker);
+                return;
             }
-            else
+            var result = _session.Dispatch(new AssignHaulCommand(new[] { unit.Id }, source.Id, warehouse.Id));
+            if (!result.Ok)
             {
-                _message = result.Error;
+                Refuse(result.Error);
+                return;
             }
+            _message = $"{unit.Name} носит на склад: {source.Name}.";
             Emit();
         }
 
-        /// <summary>
-        /// A workplace card's "hire here": the inspected building's best worker for the price, hired and sent there
-        /// in one order.
-        /// </summary>
-        public void HireWorkerForInspected()
+        private string PlanHaulToWarehouse(out UnitSnapshot unit, out BuildingSnapshot source, out BuildingSnapshot warehouse)
         {
-            var building = FindBuilding(_inspectedBuildingId);
-            if (building == null) return;
-            var kind = _session.SuggestedWorker(building.Kind);
-            if (kind == null)
+            unit = null;
+            warehouse = null;
+            source = FindBuilding(_inspectedBuildingId);
+            if (source == null) return "Сначала выберите здание.";
+            var snapshot = _session.CurrentSnapshot;
+            var from = TutorialPlaces.CenterOf(source, _session.Catalog);
+            float best = float.MaxValue;
+            foreach (var building in snapshot.Buildings)
             {
-                Refuse("Нанять некого: откройте существ заданиями");
-                return;
+                if (building.Kind != BuildingKind.Warehouse || building.Id == source.Id ||
+                    !ColonySimulation.IsValidHaulRoute(source.Kind, building.Kind, _session.Catalog)) continue;
+                var at = TutorialPlaces.CenterOf(building, _session.Catalog);
+                float distance = (at.X - from.X) * (at.X - from.X) + (at.Y - from.Y) * (at.Y - from.Y);
+                if (distance >= best) continue;
+                best = distance;
+                warehouse = building;
             }
-            var result = _session.Dispatch(new HireWorkerCommand(kind.Value, building.Id, _session.FindSpawnCell()));
-            if (result.Ok)
-                _message = $"{_session.Catalog.GetUnit(kind.Value).DisplayName} нанят и идёт на работу: {building.Name}.";
-            else
-                Refuse(result.Error);
-            Emit();
+            if (warehouse == null) return "Отсюда на склад не носят.";
+            // the quest's haul counts its kind of creature; otherwise anyone free will do
+            var quest = snapshot.Progress.Enabled ? snapshot.Progress.Quest : null;
+            var next = quest?.NextGoal;
+            var goal = next != null ? next.Goal : default;
+            bool asked = next != null && goal.Kind == QuestGoalKind.HaulRoute && goal.Building == source.Kind &&
+                         goal.Destination == BuildingKind.Warehouse;
+            Func<UnitKind, bool> counts = asked ? goal.CountsUnit : (Func<UnitKind, bool>)null;
+            unit = TutorialPlaces.NearestIdle(snapshot, counts, from);
+            if (unit != null) return null;
+            if (asked && !goal.AnyUnit)
+                return $"Нет свободного существа «{_session.Catalog.GetUnit(goal.Unit).DisplayName}»: найми его в каталоге.";
+            return "Нет свободных существ: найми работника в каталоге.";
         }
 
         /// <summary>Takes a won battle's gold into the treasury.</summary>

@@ -144,7 +144,7 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void TheTutorial_CanBePlayedToTheFirstBattleReward()
+        public void TheTutorial_CanBePlayedToItsEnd_GoblinsWinTheFirstBattle_AndTheTrophiesAreWornOnTheSecond()
         {
             var session = new GameSession(_catalog, TestColony.LayoutFor(_catalog), campaign: true);
             Expect(session, "tutorial-goblin");
@@ -159,11 +159,11 @@ namespace TrollStrategy.Tests
             Dispatch(session, new BuildBuildingCommand(BuildingKind.Mine, mineCell.Value));
             string mine = session.CurrentSnapshot.Buildings.First(b => b.Kind == BuildingKind.Mine).Id;
             Claim(session, "tutorial-work");
-            Assert.That(session.IsUnitUnlocked(UnitKind.Troll), Is.True);
+            Assert.That(session.IsUnitUnlocked(UnitKind.Troll), Is.False, "The troll comes with the first won battle");
 
-            string troll = Buy(session, UnitKind.Troll);
-            Dispatch(session, new AssignWorkCommand(new[] { troll }, mine));
-            Assert.That(session.CurrentSnapshot.Progress.Quest.IsComplete, Is.False, "The goblin still has no route");
+            string digger = Buy(session, UnitKind.Goblin);
+            Dispatch(session, new AssignWorkCommand(new[] { digger }, mine));
+            Assert.That(session.CurrentSnapshot.Progress.Quest.IsComplete, Is.False, "The other goblin still has no route");
             Dispatch(session, new AssignHaulCommand(new[] { firstGoblin }, mine, "warehouse-1"));
             Claim(session, "tutorial-market");
 
@@ -175,7 +175,7 @@ namespace TrollStrategy.Tests
             // more carriers straight to the market bring the treasury up faster
             foreach (int _ in Enumerable.Range(0, 2))
                 Dispatch(session, new AssignHaulCommand(new[] { Buy(session, UnitKind.Goblin) }, mine, "market-1"));
-            AdvanceUntilComplete(session, 900f);
+            AdvanceUntilComplete(session, 1200f);
             Claim(session, "tutorial-barracks");
             Assert.That(session.IsBuildingUnlocked(BuildingKind.Barracks), Is.True);
 
@@ -187,20 +187,49 @@ namespace TrollStrategy.Tests
             Assert.That(AdvanceUntil(session, () => session.CanEnterMission(FirstMission).Ok, 300f), Is.True,
                 session.CanEnterMission(FirstMission).Error);
 
-            // no step asks for a squad any more: the battle is fought by whoever the tutorial has hired
-            var trolls = session.CurrentSnapshot.Units.Where(u => u.UnitKind == UnitKind.Troll).Select(u => u.Id).ToList();
+            // the tutorial's goblins win the first battle on their own
             var goblins = session.CurrentSnapshot.Units.Where(u => u.UnitKind == UnitKind.Goblin).Select(u => u.Id).ToList();
-            Assert.That(trolls.Count, Is.EqualTo(1));
-            Assert.That(goblins.Count, Is.GreaterThanOrEqualTo(3));
+            Assert.That(session.CurrentSnapshot.Units.Any(u => u.UnitKind != UnitKind.Goblin), Is.False);
+            Assert.That(goblins.Count, Is.GreaterThanOrEqualTo(4));
             Dispatch(session, new StartBattleCommand(FirstMission, new[]
             {
-                new BattlePlacement(trolls[0], new Cell(1, 2)),
-                new BattlePlacement(goblins[0], new Cell(0, 1)), new BattlePlacement(goblins[1], new Cell(0, 2)),
-                new BattlePlacement(goblins[2], new Cell(0, 3))
+                new BattlePlacement(goblins[0], new Cell(1, 2)),
+                new BattlePlacement(goblins[1], new Cell(0, 1)), new BattlePlacement(goblins[2], new Cell(0, 2)),
+                new BattlePlacement(goblins[3], new Cell(0, 3))
             }));
             Assert.That(session.ActiveBattle.Report.Outcome, Is.EqualTo(BattleOutcome.PlayerVictory),
-                "The colony the tutorial builds must win the first battle");
+                "Four goblins must win the first battle");
             Assert.That(session.CurrentSnapshot.Progress.Quest.IsComplete, Is.True);
+            Dispatch(session, new AcknowledgeBattleCommand());
+            Dispatch(session, new ClaimBattleRewardCommand());
+            Claim(session, "tutorial-armory");
+            Assert.That(session.IsUnitUnlocked(UnitKind.Troll), Is.True);
+            Assert.That(session.IsBuildingUnlocked(BuildingKind.Armory), Is.True);
+
+            // the trophies go from the barracks to the armory, and from there onto a fighter
+            var armoryCell = session.FindFirstBuildingCell(BuildingKind.Armory);
+            Assert.That(armoryCell.HasValue, Is.True);
+            Dispatch(session, new BuildBuildingCommand(BuildingKind.Armory, armoryCell.Value));
+            string armory = session.CurrentSnapshot.Buildings.First(b => b.Kind == BuildingKind.Armory).Id;
+            string barracks = session.CurrentSnapshot.Buildings.First(b => b.Kind == BuildingKind.Barracks).Id;
+            Dispatch(session, new AssignHaulCommand(new[] { Buy(session, UnitKind.Goblin) }, barracks, armory));
+            Claim(session, "tutorial-gear");
+            Assert.That(AdvanceUntil(session, () => session.CurrentSnapshot.Equipment.Count >= 2, 300f), Is.True,
+                "The first win's sword and armour reach the armory");
+
+            const string secondMission = "mission-2";
+            Assert.That(AdvanceUntil(session, () => session.CanEnterMission(secondMission).Ok, 300f), Is.True,
+                session.CanEnterMission(secondMission).Error);
+            var fighters = session.CurrentSnapshot.Units.Where(u => u.UnitKind == UnitKind.Goblin).Select(u => u.Id).Take(4).ToList();
+            var gear = session.CurrentSnapshot.Equipment.Select(item => new BattleEquipmentAssignment(item.Id, fighters[0])).ToList();
+            Dispatch(session, new StartBattleCommand(secondMission, new[]
+            {
+                new BattlePlacement(fighters[0], new Cell(1, 2)),
+                new BattlePlacement(fighters[1], new Cell(0, 1)), new BattlePlacement(fighters[2], new Cell(0, 2)),
+                new BattlePlacement(fighters[3], new Cell(0, 3))
+            }, gear));
+            Assert.That(session.CurrentSnapshot.Progress.Quest.IsComplete, Is.True,
+                "Gear worn as the battle starts counts, whatever the battle brings");
             Dispatch(session, new AcknowledgeBattleCommand());
             Claim(session, "field-build");
 

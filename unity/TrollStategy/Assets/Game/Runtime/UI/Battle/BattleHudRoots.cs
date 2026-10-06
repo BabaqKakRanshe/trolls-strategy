@@ -19,6 +19,8 @@ namespace TrollStrategy.UI
         public VisualElement Replay { get; set; }
         public VisualElement Banner { get; set; }
         public VisualElement Tooltip { get; set; }
+        /// <summary>The tutorial pointer's layer; optional until the UI prefab is rebuilt with it (TrollStrategy/Dev/Setup UI).</summary>
+        public VisualElement Guide { get; set; }
 
         public VisualElement[] Required => new[] { Screen, Header, Deployment, Squad, Hint, Actions, Replay, Banner, Tooltip };
     }

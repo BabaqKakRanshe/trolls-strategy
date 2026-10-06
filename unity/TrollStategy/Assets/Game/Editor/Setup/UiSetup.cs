@@ -98,6 +98,8 @@ namespace TrollStrategy.Editor.Setup
                 Layer("Colony", "CommandFan", 10, "_commandFan"),
                 Layer("Colony", "HaulCargo", 20, "_haulCargo"),
                 Layer("Colony", "Arena", 25, "_arena"),
+                // the tutorial pointer: above the orders, the cargo dialog and the arena, below the rewards and the menu
+                new Node { Name = "Guide", Order = 28, Field = "_guide", Absolute = true, Classes = new[] { "layer" } },
                 Layer("Colony", "Reward", 30, "_reward"),
                 Layer("Colony", "BattleReward", 31, "_battleReward"),
                 Layer("Colony", "Wiki", 33, "_wiki"),
@@ -136,6 +138,7 @@ namespace TrollStrategy.Editor.Setup
                         },
                         Part("Battle", "Replay", 1, "_replay"))),
                 Layer("Battle", "Banner", 10, "_banner"),
+                new Node { Name = "Guide", Order = 20, Field = "_guide", Absolute = true, Classes = new[] { "layer" } },
                 new Node { Name = "Tooltip", Order = 50, Field = "_tooltip", Absolute = true, Classes = new[] { "layer" } }
             }
         };

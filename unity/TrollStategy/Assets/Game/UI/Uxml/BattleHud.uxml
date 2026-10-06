@@ -3,4 +3,5 @@
          BattleHud GameObject. These sheets reach every one of them. -->
     <ui:Style src="../Styles/Theme.uss" />
     <ui:Style src="../Styles/BattleHud.uss" />
+    <ui:Style src="../Styles/Guide.uss" />
 </ui:UXML>

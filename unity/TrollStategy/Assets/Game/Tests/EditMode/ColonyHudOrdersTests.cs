@@ -68,8 +68,9 @@ namespace TrollStrategy.Tests
             Refresh();
             Assert.That(dialog.IsOpen, Is.False);
             Assert.That(_hud.ContextBar.IsShown, Is.True);
-            Assert.That(_hud.ContextBar.Title, Is.EqualTo("Куда носить"));
-            Assert.That(_hud.ContextBar.TargetButtons, Is.Empty, "Where to carry is the player's pick on the map");
+            Assert.That(_hud.ContextBar.Title, Is.EqualTo("2. Куда носить"));
+            Assert.That(_hud.ContextBar.TargetButtons, Has.Count.EqualTo(_interaction.GetTargetBuildingIds().Count),
+                "Where to carry is listed like where from (specs/006-tutorial-guidance, FR-010)");
             Assert.That(_interaction.GetTargetBuildingIds(), Does.Contain("market-1"));
 
             _interaction.ChooseBuilding("market-1");

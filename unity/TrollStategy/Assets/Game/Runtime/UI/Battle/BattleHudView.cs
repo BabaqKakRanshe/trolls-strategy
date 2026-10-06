@@ -17,6 +17,10 @@ namespace TrollStrategy.UI
     {
         private readonly VisualElement _deploymentBand;
         private BattleDeployment _deployment;
+        // the tutorial pointer: its layer, where the board's cells show, how long ago the step was worked out
+        private readonly VisualElement _guideLayer;
+        private Func<Cell, Vector2?> _cellToScreen;
+        private float _guideAge;
 
         public BattleHudView(BattleHudRoots roots)
         {
@@ -33,6 +37,8 @@ namespace TrollStrategy.UI
             Replay = new ReplayBar(roots.Replay, () => PauseToggled?.Invoke(), speed => SpeedChosen?.Invoke(speed),
                 () => CloseRequested?.Invoke(), Tooltip);
             Banner = new BattleBanner(roots.Banner);
+            _guideLayer = roots.Guide;
+            if (_guideLayer != null) Guide = new GuideOverlay(_guideLayer);
             TrollStrategy.Presentation.Localization.TranslateTree(roots.Screen);
         }
 
@@ -52,6 +58,10 @@ namespace TrollStrategy.UI
         public ReplayBar Replay { get; }
         public BattleBanner Banner { get; }
         public bool IsDeploying => Ui.IsShown(_deploymentBand);
+        /// <summary>The tutorial pointer; null while the UI prefab has no layer for it.</summary>
+        public GuideOverlay Guide { get; }
+        /// <summary>The tutorial pointer's step on the deployment (none outside the tutorial's battle steps).</summary>
+        public GuideStep CurrentStep { get; private set; } = GuideStep.None;
 
         public void Open(BattleDeployment deployment)
         {
@@ -65,6 +75,7 @@ namespace TrollStrategy.UI
             Ui.Show(_deploymentBand, true);
             Replay.Hide();
             Banner.Hide();
+            UpdateGuide();
         }
 
         /// <summary>The deployment changed: every panel that shows it.</summary>
@@ -73,6 +84,7 @@ namespace TrollStrategy.UI
             Squad.Refresh();
             Gear.Refresh();
             Actions.Refresh();
+            UpdateGuide();
         }
 
         public void Refuse() => Actions.Refuse();
@@ -81,6 +93,7 @@ namespace TrollStrategy.UI
         {
             Detach();
             Ui.Show(_deploymentBand, false);
+            UpdateGuide();
             Replay.Begin(OurPortrait(), EnemyPortrait(), _deployment != null ? RewardArt.Coin(_deployment.Session.Catalog) : null);
             Banner.Show("В бой!", null, 1.1f);
         }
@@ -98,13 +111,57 @@ namespace TrollStrategy.UI
             Banner.Show(verdict, victory ? "is-victory" : defeat ? "is-defeat" : "is-draw", 2f);
         }
 
-        public void Tick() => Banner.Tick();
+        public void Tick()
+        {
+            Banner.Tick();
+            if (Guide == null) return;
+            float deltaTime = Time.unscaledDeltaTime;
+            _guideAge += deltaTime;
+            if (_guideAge >= .15f) UpdateGuide();
+            Guide.Tick(deltaTime, LocateOnBoard);
+        }
+
+        /// <summary>Where a cell of the board shows on the screen (pixels from the top left), from the battle scene.</summary>
+        public void LocateCells(Func<Cell, Vector2?> cellToScreen) => _cellToScreen = cellToScreen;
+
+        /// <summary>The pointer as the scene reads it each frame; a press outside the pointer's window lifts its veil.</summary>
+        public void TrackPointer(Vector2? screenPosition, bool pressed)
+        {
+            if (!pressed || screenPosition == null || Guide == null) return;
+            var point = ScreenToLayer(screenPosition.Value);
+            if (point != null) Guide.PointerPressed(point.Value);
+        }
+
+        private void UpdateGuide()
+        {
+            _guideAge = 0f;
+            CurrentStep = BattleGuide.Resolve(this, _deployment);
+            Guide?.Show(CurrentStep);
+        }
+
+        // a fighter on the board: a box over its cell, as tall as a fighter stands
+        private Rect? LocateOnBoard(GuideTarget target)
+        {
+            if (target.Kind != GuideTargetKind.BattleCell || _cellToScreen == null) return null;
+            var screen = _cellToScreen(target.Cell);
+            var point = screen != null ? ScreenToLayer(screen.Value) : null;
+            if (point == null) return null;
+            return new Rect(point.Value.x - 45f, point.Value.y - 115f, 90f, 130f);
+        }
+
+        private Vector2? ScreenToLayer(Vector2 screen)
+        {
+            var panel = _guideLayer?.panel;
+            if (panel == null) return null;
+            return _guideLayer.WorldToLocal(RuntimePanelUtils.ScreenToPanel(panel, screen));
+        }
 
         public void Close()
         {
             Detach();
             _deployment = null;
             Banner.Hide();
+            UpdateGuide();
         }
 
         // the fighter's row may take the band less the start's column and the least the hint keeps

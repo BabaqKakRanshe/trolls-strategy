@@ -229,6 +229,10 @@
 "v": "Teçhizat deposundaki eşyalar"
 },
 {
+"k": "Снаряжение на бойцах в бою",
+"v": "Savaşta giyilen teçhizat"
+},
+{
 "k": "Новая постройка",
 "v": "Yeni bina"
 },
@@ -433,6 +437,10 @@
 "v": "İşe alınan yaratık: {0}."
 },
 {
+"k": "{0} нанят и стоит у склада.",
+"v": "{0} işe alındı ve depoda bekliyor."
+},
+{
 "k": "Постройка «{0}» откроется за задание.",
 "v": "«{0}» binası bir görevle açılacak."
 },
@@ -521,16 +529,24 @@
 "v": "Önce malın nereden taşınacağını göster."
 },
 {
-"k": "{0} нанят в поселение!",
-"v": "{0} yerleşime katıldı!"
+"k": "{0} носит на склад: {1}.",
+"v": "{0} depoya şunu taşıyor: {1}."
 },
 {
-"k": "Нанять некого: откройте существ заданиями",
-"v": "İşe alınacak kimse yok: yaratıkları görevlerle açın"
+"k": "Сначала выберите здание.",
+"v": "Önce bir bina seç."
 },
 {
-"k": "{0} нанят и идёт на работу: {1}.",
-"v": "{0} işe alındı, işe gidiyor: {1}."
+"k": "Отсюда на склад не носят.",
+"v": "Buradan depoya taşıma yapılmaz."
+},
+{
+"k": "Нет свободного существа «{0}»: найми его в каталоге.",
+"v": "Boşta «{0}» yok: katalogdan bir tane işe al."
+},
+{
+"k": "Нет свободных существ: найми работника в каталоге.",
+"v": "Boşta yaratık yok: katalogdan bir işçi işe al."
 },
 {
 "k": "Награда за бой: +{0} зол.",
@@ -977,6 +993,38 @@
 "v": "Ekran görüntüsü"
 },
 {
+"k": "Авторасстановка",
+"v": "Otomatik diziliş"
+},
+{
+"k": "Бойцы сами встанут на синие клетки.",
+"v": "Savaşçılar mavi karelere kendileri dizilir."
+},
+{
+"k": "Снаряжение",
+"v": "Teçhizat"
+},
+{
+"k": "Нажми на «{0}»: боец наденет его.",
+"v": "«{0}» jetonuna bas: savaşçı onu kuşanır."
+},
+{
+"k": "Выбери бойца",
+"v": "Savaşçıyı seç"
+},
+{
+"k": "Кликни по бойцу на поле: внизу появится его снаряжение.",
+"v": "Sahadaki bir savaşçıya tıkla: altta teçhizatı görünür."
+},
+{
+"k": "Начать бой",
+"v": "Savaşı başlat"
+},
+{
+"k": "Бой идёт сам.",
+"v": "Savaş kendi kendine ilerler."
+},
+{
 "k": "В колонию",
 "v": "Koloniye"
 },
@@ -1025,16 +1073,8 @@
 "v": "Berabere"
 },
 {
-"k": "Авторасстановка",
-"v": "Otomatik diziliş"
-},
-{
 "k": "Поставить бойцов из резерва на свободные синие клетки.",
 "v": "Yedekteki savaşçıları boş mavi karelere yerleştir."
-},
-{
-"k": "Начать бой",
-"v": "Savaşı başlat"
 },
 {
 "k": "Бой идёт сам. Павшие бойцы и их снаряжение не вернутся.",
@@ -1341,6 +1381,10 @@
 "v": "Çayır"
 },
 {
+"k": "Откроется после победы на {0}-м уровне",
+"v": "{0}. seviyede kazandıktan sonra açılır"
+},
+{
 "k": "Побед: {0}. Можно в бой",
 "v": "Zafer: {0}. Savaşa hazır"
 },
@@ -1397,10 +1441,6 @@
 "v": "Tanesi {0} altın."
 },
 {
-"k": "Каждое новое существо в поселении поднимает цену найма.",
-"v": "Yerleşime katılan her yeni yaratık işe alım fiyatını yükseltir."
-},
-{
 "k": "Каждая следующая такая постройка дороже.",
 "v": "Bu binadan her yenisi daha pahalıdır."
 },
@@ -1429,16 +1469,192 @@
 "v": "Tamam"
 },
 {
+"k": "Сюда",
+"v": "Buraya"
+},
+{
+"k": "Кликни по клетке у склада: отсюда ближе всего носить.",
+"v": "Depo yanındaki bir kareye tıkla: taşıma için en yakın yer burası."
+},
+{
+"k": "Найми первого работника",
+"v": "İlk işçini işe al"
+},
+{
+"k": "Нажми на жетон «{0}»: он сам встанет у склада.",
+"v": "«{0}» jetonuna bas: kendisi depoya yakın durur."
+},
+{
+"k": "Найми работника",
+"v": "İşçi işe al"
+},
+{
+"k": "Нажми на жетон «{0}».",
+"v": "«{0}» jetonuna bas."
+},
+{
+"k": "Поставь сам",
+"v": "Kendin yerleştir"
+},
+{
+"k": "Игра найдёт свободное место.",
+"v": "Oyun boş bir yer bulur."
+},
+{
+"k": "Кликни по месту у склада или нажми «Поставить сам».",
+"v": "Depo yanında bir yere tıkla ya da «Kendin yerleştir» düğmesine bas."
+},
+{
+"k": "Построй здание",
+"v": "Bir bina yap"
+},
+{
+"k": "Куда на работу",
+"v": "İşe nereye"
+},
+{
+"k": "Кликни по зданию «{0}».",
+"v": "«{0}» binasına tıkla."
+},
+{
 "k": "Работа",
 "v": "İş"
 },
 {
-"k": "Потом кликни по зданию: туда встанут работать.",
-"v": "Sonra bir binayı tıkla: oraya çalışmaya gidecekler."
+"k": "Нажми «Работа» (E), потом на здание.",
+"v": "«İş» (E) düğmesine bas, sonra binaya tıkla."
+},
+{
+"k": "Выбери работника",
+"v": "Bir işçi seç"
+},
+{
+"k": "Кликни по свободному существу на острове.",
+"v": "Adadaki boşta bir yaratığa tıkla."
+},
+{
+"k": "Вывозить на склад",
+"v": "Depoya taşı"
+},
+{
+"k": "Ближайший свободный работник начнёт носить отсюда на склад.",
+"v": "En yakın boştaki işçi buradan depoya taşımaya başlar."
+},
+{
+"k": "Здание «{0}»",
+"v": "Bina «{0}»"
+},
+{
+"k": "Нажми на него: в карточке есть «Вывозить на склад».",
+"v": "Ona bas: kartında «Depoya taşı» var."
+},
+{
+"k": "Изменить груз",
+"v": "Yükü değiştir"
+},
+{
+"k": "Этот груз туда не носят: выбери другой.",
+"v": "Bu yük oraya taşınmaz: başka bir yük seç."
+},
+{
+"k": "2. Куда: {0}",
+"v": "2. Nereye: {0}"
+},
+{
+"k": "Кликни по зданию: туда понесут груз.",
+"v": "Binaya tıkla: yük oraya taşınacak."
+},
+{
+"k": "Что носить",
+"v": "Ne taşınsın"
+},
+{
+"k": "Можно оставить «Всё» и нажать «Куда носить».",
+"v": "«Hepsi» olarak bırakıp «Nereye taşınsın» düğmesine basabilirsin."
+},
+{
+"k": "1. Откуда: {0}",
+"v": "1. Nereden: {0}"
+},
+{
+"k": "Кликни по зданию, откуда носить.",
+"v": "Yükün alınacağı binaya tıkla."
 },
 {
 "k": "Перенос",
 "v": "Taşıma"
+},
+{
+"k": "Нажми «Перенос» (H): дальше два здания, откуда и куда.",
+"v": "«Taşıma» (H) düğmesine bas: sonra iki bina gelir, nereden ve nereye."
+},
+{
+"k": "Выбери носильщика",
+"v": "Taşıyıcı seç"
+},
+{
+"k": "В бой",
+"v": "Savaşa"
+},
+{
+"k": "Уровень выбран: нажми «В бой».",
+"v": "Seviye seçildi: «Savaşa» düğmesine bas."
+},
+{
+"k": "Подожди: кнопка оживёт, когда арена будет готова.",
+"v": "Bekle: arena hazır olunca düğme etkinleşir."
+},
+{
+"k": "Арена",
+"v": "Arena"
+},
+{
+"k": "Нажми «Арена»: там уровни боёв.",
+"v": "«Arena» düğmesine bas: savaş seviyeleri orada."
+},
+{
+"k": "Вернись к каталогу",
+"v": "Kataloğa dön"
+},
+{
+"k": "Кнопка снимет выбор и откроет каталог.",
+"v": "Düğme seçimi kaldırır ve kataloğu açar."
+},
+{
+"k": "Открой каталог",
+"v": "Kataloğu aç"
+},
+{
+"k": "Внизу появятся здания и существа.",
+"v": "Altta binalar ve yaratıklar belirir."
+},
+{
+"k": "Вкладка «Существа»",
+"v": "«Yaratıklar» sekmesi"
+},
+{
+"k": "Здесь нанимают работников.",
+"v": "Burada işçi işe alınır."
+},
+{
+"k": "Вкладка «Здания»",
+"v": "«Binalar» sekmesi"
+},
+{
+"k": "Здесь строят.",
+"v": "Burada inşa edilir."
+},
+{
+"k": "Сначала отмени",
+"v": "Önce iptal et"
+},
+{
+"k": "Нажми «Отмена» (Esc).",
+"v": "«İptal» (Esc) düğmesine bas."
+},
+{
+"k": "Потом кликни по зданию: туда встанут работать.",
+"v": "Sonra bir binayı tıkla: oraya çalışmaya gidecekler."
 },
 {
 "k": "Кликни по двум зданиям: откуда и куда носить.",
@@ -1473,10 +1689,6 @@
 "v": "Bina ilk boş yere kurulur."
 },
 {
-"k": "Изменить груз",
-"v": "Yükü değiştir"
-},
-{
 "k": "Вернуться к выбору, что носить.",
 "v": "Neyin taşınacağı seçimine geri dön."
 },
@@ -1509,16 +1721,12 @@
 "v": "{0} ×{1}: {2}"
 },
 {
-"k": "Куда на работу",
-"v": "İşe nereye"
+"k": "1. Откуда носить",
+"v": "1. Nereden taşınsın"
 },
 {
-"k": "Откуда носить",
-"v": "Nereden taşınsın"
-},
-{
-"k": "Куда носить",
-"v": "Nereye taşınsın"
+"k": "2. Куда носить",
+"v": "2. Nereye taşınsın"
 },
 {
 "k": "Земля: участок за {0}",
@@ -1645,6 +1853,18 @@
 "v": "Ayrıntılar"
 },
 {
+"k": "Склад",
+"v": "Depo"
+},
+{
+"k": "свободный работник будет носить отсюда",
+"v": "boştaki işçi buradan taşıyacak"
+},
+{
+"k": "Ближайший свободный работник будет носить отсюда на склад всё, что здесь делают.",
+"v": "En yakın boştaki işçi, burada üretilen her şeyi buradan depoya taşır."
+},
+{
 "k": "Уровень {0}, {1}×{2}",
 "v": "Seviye {0}, {1}×{2}"
 },
@@ -1679,10 +1899,6 @@
 {
 "k": "Хранит сырьё и полуфабрикаты от носильщиков.",
 "v": "Taşıyıcılardan gelen ham madde ve yarı mamulleri depolar."
-},
-{
-"k": "Арена",
-"v": "Arena"
 },
 {
 "k": "уровень {0}",
@@ -1729,22 +1945,6 @@
 "v": "en yüksek seviye"
 },
 {
-"k": "Нанять сюда: {0}",
-"v": "Buraya işe al: {0}"
-},
-{
-"k": "мест нет",
-"v": "yer yok"
-},
-{
-"k": "Нанять: ",
-"v": "İşe al:"
-},
-{
-"k": "закрыто",
-"v": "kapalı"
-},
-{
 "k": "Снести",
 "v": "Yık"
 },
@@ -1771,10 +1971,6 @@
 {
 "k": "здоровье {0}, урон {1}, броня {2}",
 "v": "sağlık {0}, hasar {1}, zırh {2}"
-},
-{
-"k": "Снаряжение",
-"v": "Teçhizat"
 },
 {
 "k": "Возит",
@@ -1841,8 +2037,24 @@
 "v": "Merhaba! Bu, oyunun demo sürümü: uçan bir adada troll ve goblin kolonisi. Oyunun tamamı hâlâ yapım aşamasında: bazı şeyler değişecek, ilerleme de henüz kaydedilmiyor."
 },
 {
+"k": "Можно игре отправлять анонимную статистику: до какого задания доходят игроки? Так мы находим, где играть трудно. Ответ можно поменять по F8.",
+"v": "Oyun anonim istatistik gönderebilir mi: oyuncular hangi göreve kadar geliyor? Böylece oyunun nerede zorlaştığını buluruz. Cevabı F8 ile değiştirebilirsin."
+},
+{
 "k": "Играть",
 "v": "Oyna"
+},
+{
+"k": "Анонимная статистика",
+"v": "Anonim istatistik"
+},
+{
+"k": "Отправлять",
+"v": "Gönder"
+},
+{
+"k": "Не отправлять",
+"v": "Gönderme"
 },
 {
 "k": "Демо-версия",
@@ -1941,6 +2153,14 @@
 "v": "Oyunu kim yapıyor ve onu nerede bulabilirsin."
 },
 {
+"k": "Сообщить об ошибке",
+"v": "Hata bildir"
+},
+{
+"k": "Отправить автору снимок экрана и журнал игры.",
+"v": "Yazara ekran görüntüsü ve oyun günlüğünü gönder."
+},
+{
 "k": "Начать заново",
 "v": "Yeniden başla"
 },
@@ -1967,6 +2187,18 @@
 {
 "k": "Интерфейс",
 "v": "Arayüz"
+},
+{
+"k": "Показывать",
+"v": "Göster"
+},
+{
+"k": "Скрыть",
+"v": "Gizle"
+},
+{
+"k": "Подсказки обучения",
+"v": "Eğitim ipuçları"
 },
 {
 "k": "Версия {0}, {1}",
@@ -2201,10 +2433,6 @@
 "v": "Savaş kapalı"
 },
 {
-"k": "В бой",
-"v": "Savaşa"
-},
-{
 "k": "Бой через ",
 "v": "Savaşa kalan:"
 },
@@ -2423,6 +2651,10 @@
 {
 "k": "везде одинаково",
 "v": "her yerde aynı"
+},
+{
+"k": "Шаг {0} из {1}",
+"v": "Adım {0}/{1}"
 },
 {
 "k": "Подробнее в справочнике",
@@ -2785,8 +3017,8 @@
 "v": "İlk işçi"
 },
 {
-"k": "Внизу, во вкладке «Существа», нажми на гоблина и кликни по свободной клетке на карте.",
-"v": "Aşağıda «Yaratıklar» sekmesinde goblini tıkla, sonra haritada boş bir kareyi tıkla."
+"k": "Внизу, во вкладке «Существа», нажми на гоблина: он сам встанет у склада.",
+"v": "Aşağıda «Yaratıklar» sekmesinde goblini tıkla: kendisi depoya yakın durur."
 },
 {
 "k": "Своя шахта",
@@ -2801,16 +3033,16 @@
 "v": "İşe koyul!"
 },
 {
-"k": "Найми тролля. Кликни по нему → «Работа» (E) → шахта. Затем кликни по гоблину → «Перенос» (H) → шахта → выбери, что носить → склад.",
-"v": "Bir troll işe al. Onu tıkla → «İş» (E) → maden. Sonra goblini tıkla → «Taşıma» (H) → maden → neyin taşınacağını seç → depo."
+"k": "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, нажми на шахту и в её карточке — «Вывозить на склад»: новый гоблин начнёт носить руду на склад.",
+"v": "Goblini tıkla → «İş» (E) → maden: cevher kazar. Sonra bir goblin daha işe al, madene bas ve kartındaki «Depoya taşı» düğmesine bas: yeni goblin cevheri depoya taşımaya başlar."
 },
 {
 "k": "Первая выручка",
 "v": "İlk gelir"
 },
 {
-"k": "Руда копится на складе. Найми ещё гоблина и дай ему «Перенос»: склад → рынок. Рынок платит за каждую доставленную руду.",
-"v": "Cevher depoda birikiyor. Bir goblin daha işe al ve ona «Taşıma» ver: depo → pazar. Pazar teslim edilen her cevher için öder."
+"k": "Руда копится на складе. Найми ещё гоблина, кликни по нему → «Перенос» (H): сначала склад — откуда носить, потом рынок — куда. Рынок платит за каждую доставленную руду.",
+"v": "Cevher depoda birikir. Bir goblin daha işe al, ona tıkla → «Taşıma» (H): önce depo — nereden, sonra pazar — nereye. Pazar teslim edilen her cevher için öder."
 },
 {
 "k": "Казна",
@@ -2829,8 +3061,24 @@
 "v": "Aşağıda «Binalar» sekmesinde kışlaya bas ve boş bir yere kur. İşten alınan yaratıklar kapısında dinlenir, kışladan arenaya yol açılır."
 },
 {
-"k": "Нажми «В бой» справа. Поставь до 4 бойцов в левые клетки: тролля вперёд, гоблинов за ним. Бой идёт сам.",
-"v": "Sağdaki «Savaşa» düğmesine bas. Soldaki karelere en fazla 4 savaşçı yerleştir: önce troll, arkasına goblinler. Savaş kendiliğinden ilerler."
+"k": "Нажми «В бой» справа. Поставь до 4 гоблинов в синие клетки слева. Бой идёт сам, а победа откроет тролля.",
+"v": "Sağdaki «Savaşa» düğmesine bas. Soldaki mavi karelere en fazla 4 goblin yerleştir. Savaş kendiliğinden ilerler, zafer de trollün kilidini açar."
+},
+{
+"k": "Склад экипировки",
+"v": "Teçhizat deposu"
+},
+{
+"k": "За победу бойцы взяли трофеи: ржавый меч и латаную броню, они лежат в бараках. Построй склад экипировки и дай гоблину «Перенос»: бараки → склад экипировки.",
+"v": "Zafer karşılığında savaşçıların ganimet aldı: paslı bir kılıç ve yamalı bir zırh, kışlada duruyorlar. Teçhizat deposu kur ve bir gobline «Taşıma» ver: kışla → teçhizat deposu."
+},
+{
+"k": "В броне на арену",
+"v": "Zırhla arenaya"
+},
+{
+"k": "Нажми «В бой» и выбери 2-й уровень. Перед боем нажми на бойца и выбери внизу меч и броню со склада экипировки. Тролль уже открыт: его нанимают во вкладке «Существа».",
+"v": "«Savaşa» düğmesine bas ve 2. seviyeyi seç. Savaştan önce bir savaşçıya bas ve aşağıdan teçhizat deposundaki kılıcı ve zırhı seç. Troll zaten açık: onu «Yaratıklar» sekmesinden işe alırsın."
 },
 {
 "k": "Урожай",
@@ -2885,30 +3133,6 @@
 "v": "Demirci külçeden kılıç, deriyle birlikte zırh dövar; bazen işi bozup hurda yapar. Onu kur ve iki işçi ata."
 },
 {
-"k": "Богатый рынок",
-"v": "Zengin pazar"
-},
-{
-"k": "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.",
-"v": "Haritada pazarı seç ve «Geliştir»e bas: her seviye tüm malların fiyatını yükseltir."
-},
-{
-"k": "Склад экипировки",
-"v": "Teçhizat deposu"
-},
-{
-"k": "Построй склад экипировки и вози туда мечи из кузницы: перед боем их можно выдать бойцам.",
-"v": "Teçhizat deposu kur ve demircideki kılıçları oraya taşı: savaştan önce savaşçılara verilebilir."
-},
-{
-"k": "Оружие для отряда",
-"v": "Birlik için silah"
-},
-{
-"k": "Пусть на складе экипировки будет пять предметов: мечи, броня, щиты.",
-"v": "Teçhizat deposunda beş eşya olsun: kılıçlar, zırhlar, kalkanlar."
-},
-{
 "k": "Третий уровень арены",
 "v": "Arenanın üçüncü seviyesi"
 },
@@ -2923,6 +3147,14 @@
 {
 "k": "Ферма кормит скот пшеницей и соломой и даёт шкуры, мясо и молоко. Построй её и дай ей двух рабочих.",
 "v": "Çiftlik hayvanları buğday ve samanla besler; post, et ve süt verir. Onu kur ve iki işçi ata."
+},
+{
+"k": "Оружие для отряда",
+"v": "Birlik için silah"
+},
+{
+"k": "Вози мечи из кузницы на склад экипировки: пусть там будет пять предметов — мечи, броня, щиты.",
+"v": "Demircideki kılıçları teçhizat deposuna taşı: orada beş eşya olsun — kılıçlar, zırhlar, kalkanlar."
 },
 {
 "k": "Растущее поселение",
@@ -2971,6 +3203,14 @@
 {
 "k": "Пилорама режет брёвна на доски. Построй её и дай ей двух рабочих.",
 "v": "Hızar atölyesi kütükleri tahtaya keser. Onu kur ve iki işçi ata."
+},
+{
+"k": "Богатый рынок",
+"v": "Zengin pazar"
+},
+{
+"k": "Выбери рынок на карте и нажми «Улучшить»: каждый уровень поднимает цену всех товаров.",
+"v": "Haritada pazarı seç ve «Geliştir»e bas: her seviye tüm malların fiyatını yükseltir."
 },
 {
 "k": "Продай доски на рынке — или копи их для щитов.",
@@ -3485,18 +3725,6 @@
 "v": "Günlükleri gönder"
 },
 {
-"k": "Игра отправляет анонимную статистику: до какого задания доходят игроки. Так мы находим, где играть трудно.",
-"v": "Oyun anonim istatistik gönderir: oyuncuların hangi göreve kadar geldiği. Böylece oyunun nerede zorlaştığını buluruz."
-},
-{
-"k": "Не отправлять",
-"v": "Gönderme"
-},
-{
-"k": "Хорошо",
-"v": "Tamam"
-},
-{
 "k": "Поле",
 "v": "Tarla"
 },
@@ -3507,10 +3735,6 @@
 {
 "k": "Шахта",
 "v": "Maden"
-},
-{
-"k": "Склад",
-"v": "Depo"
 },
 {
 "k": "2. Слизни на лугу",
@@ -3643,6 +3867,14 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Gobline göre hızlı çalışır ve daha çok taşır ama yavaş yürür. Savaşta güçlü."
+},
+{
+"k": "Каждое новое существо в поселении поднимает цену найма.",
+"v": "Yerleşime katılan her yeni yaratık işe alım fiyatını yükseltir."
+},
+{
+"k": "Рецепт",
+"v": "Tarif"
 }
 ]
 }

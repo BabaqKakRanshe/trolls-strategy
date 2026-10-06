@@ -13,6 +13,8 @@ namespace TrollStrategy.Domain
         public int SalesGold { get; set; }
         public Dictionary<ResourceKind, int> SoldByResource { get; set; } = new();
         public int BattlesWon { get; set; }
+        // Items fighters wore as their battles started, over the whole game; quests count from it.
+        public int GearWornInBattles { get; set; }
         public List<BuildingState> Buildings { get; set; } = new();
         public List<UnitState> Units { get; set; } = new();
         public List<EquipmentState> Equipment { get; set; } = new();
@@ -88,6 +90,7 @@ namespace TrollStrategy.Domain
                 SalesGold = SalesGold,
                 SoldByResource = new Dictionary<ResourceKind, int>(SoldByResource),
                 BattlesWon = BattlesWon,
+                GearWornInBattles = GearWornInBattles,
                 NextBuildingId = NextBuildingId,
                 NextUnitId = NextUnitId,
                 NextHaulQueueTicket = NextHaulQueueTicket,

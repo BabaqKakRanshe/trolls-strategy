@@ -28,7 +28,8 @@ namespace TrollStrategy.Editor.Setup
 
         private static readonly (string Name, UnitKind? Unlock, ArenaBiome Biome, (UnitKind Kind, int Count)[] Enemies)[] Ladder =
         {
-            ("Первый бой", null, ArenaBiome.Meadow, new[] { (UnitKind.Goblin, 4) }),
+            // the tutorial's goblins fight it alone: the troll comes with its win
+            ("Первый бой", null, ArenaBiome.Meadow, new[] { (UnitKind.Goblin, 3) }),
             ("Слизни на лугу", null, ArenaBiome.Meadow, new[] { (UnitKind.GreenSlime, 3), (UnitKind.BlueSlime, 1) }),
             ("Хоббиты-забияки", UnitKind.Halfling, ArenaBiome.Meadow, new[] { (UnitKind.Halfling, 3), (UnitKind.Goblin, 1) }),
             ("Ночная стая", null, ArenaBiome.Forest, new[] { (UnitKind.Bat, 4), (UnitKind.Trasgo, 1) }),

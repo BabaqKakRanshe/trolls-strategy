@@ -29,6 +29,8 @@ namespace TrollStrategy.UI
         /// <summary>The developer cheat menu; missing from release players.</summary>
         public VisualElement Cheat { get; set; }
         public VisualElement Tooltip { get; set; }
+        /// <summary>The tutorial pointer's layer; optional until the UI prefab is rebuilt with it (TrollStrategy/Dev/Setup UI).</summary>
+        public VisualElement Guide { get; set; }
 
         public VisualElement[] Required => new[]
         {

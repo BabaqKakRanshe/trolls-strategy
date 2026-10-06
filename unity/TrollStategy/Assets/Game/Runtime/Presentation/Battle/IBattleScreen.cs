@@ -21,6 +21,12 @@ namespace TrollStrategy.Presentation.Battle
         /// <summary>Shows the deployment for this battle; the screen follows the deployment's changes.</summary>
         void Open(BattleDeployment deployment);
 
+        /// <summary>
+        /// Where a cell of the board shows on the screen (pixels from the top left), or null; the tutorial pointer
+        /// finds a fighter on the board by it.
+        /// </summary>
+        void LocateCells(Func<Cell, UnityEngine.Vector2?> cellToScreen);
+
         /// <summary>Answers a refused click or start with the deployment's reason.</summary>
         void Refuse();
 

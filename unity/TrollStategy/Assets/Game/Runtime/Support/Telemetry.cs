@@ -38,8 +38,9 @@ namespace TrollStrategy.Support
     }
 
     /// <summary>
-    /// Anonymous play statistics: the game hands it events, it sends them while the player lets it. Collecting is
-    /// on until the player turns it off, and the choice is kept between runs. Events from before the service is up
+    /// Anonymous play statistics: the game hands it events, it sends them while the player lets it. Nothing is
+    /// sent until the player answers the question in the intro; the answer is kept between runs and the tech
+    /// panel (F8) changes it. Events from before the service is up
     /// wait in a short queue. Recorded events go out within <see cref="FlushSeconds"/>, so closing the game (a
     /// browser tab gives no warning) loses little. In the editor there is no service and nothing is sent.
     /// </summary>
@@ -86,24 +87,24 @@ namespace TrollStrategy.Support
             }
         }
 
-        /// <summary>The player's choice; on until they turn it off.</summary>
-        public bool Collecting => _prefs.Get(CollectKey, 1) != 0;
+        /// <summary>The player's choice; off until they answer yes.</summary>
+        public bool Collecting => Answered && _prefs.Get(CollectKey, 1) != 0;
 
-        /// <summary>The player has seen the line saying what is sent.</summary>
-        public bool NoticeSeen => _prefs.Get(NoticeKey, 0) != 0;
+        /// <summary>The player has answered whether statistics may be sent.</summary>
+        public bool Answered => _prefs.Get(NoticeKey, 0) != 0;
 
         public string PrivacyUrl => _backend?.PrivacyUrl;
 
         /// <summary>Events waiting for the service to start.</summary>
         public int Pending => _pending.Count;
 
-        public void MarkNoticeSeen() => _prefs.Set(NoticeKey, 1);
-
-        public void SetCollecting(bool collect)
+        /// <summary>The player's answer, from the intro or the tech panel: send statistics or not.</summary>
+        public void Answer(bool collect)
         {
-            if (collect == Collecting) return;
+            bool was = Collecting;
             _prefs.Set(CollectKey, collect ? 1 : 0);
-            if (_backend == null) return;
+            _prefs.Set(NoticeKey, 1);
+            if (_backend == null || was == Collecting) return;
             Call(() => _backend.SetConsent(collect));
             if (!collect)
             {

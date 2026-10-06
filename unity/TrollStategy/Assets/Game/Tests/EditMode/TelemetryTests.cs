@@ -17,8 +17,8 @@ using UnityEngine.UIElements;
 namespace TrollStrategy.Tests
 {
     /// <summary>
-    /// The drop-off funnel: what a campaign sends, how the player's consent and the service's start gate it, and the
-    /// tech panel's notice and switch.
+    /// The drop-off funnel: what a campaign sends, how the player's consent and the service's start gate it, the
+    /// question in the intro and the tech panel's switch.
     /// </summary>
     public class TelemetryTests
     {
@@ -122,7 +122,14 @@ namespace TrollStrategy.Tests
             var backend = new FakeBackend();
             var telemetry = new Telemetry(backend, new MemoryPrefs());
 
-            Assert.That(backend.Consent, Is.True, "collecting is on until the player turns it off");
+            Assert.That(backend.Consent, Is.False, "nothing is sent before the player answers");
+            Assert.That(backend.Starts, Is.Zero);
+            telemetry.Record("questStarted", Fields(("questLevel", 1)));
+            Assert.That(telemetry.Pending, Is.Zero, "an event before the answer is dropped");
+
+            telemetry.Answer(true);
+
+            Assert.That(backend.Consent, Is.True);
             Assert.That(backend.Starts, Is.EqualTo(1));
             telemetry.Record("questStarted", Fields(("questLevel", 1)));
             Assert.That(telemetry.Pending, Is.EqualTo(1));
@@ -153,7 +160,7 @@ namespace TrollStrategy.Tests
             var telemetry = new Telemetry(backend, prefs);
             backend.Start.SetResult(true);
 
-            telemetry.SetCollecting(false);
+            telemetry.Answer(false);
             telemetry.Record("questStarted", Fields(("questLevel", 1)));
             telemetry.Flush();
 
@@ -167,7 +174,7 @@ namespace TrollStrategy.Tests
             Assert.That(next.Consent, Is.False);
             Assert.That(next.Starts, Is.Zero, "the service does not start for a player who said no");
 
-            nextRun.SetCollecting(true);
+            nextRun.Answer(true);
             Assert.That(next.Consent, Is.True);
             Assert.That(next.Starts, Is.EqualTo(1));
         }
@@ -182,7 +189,7 @@ namespace TrollStrategy.Tests
             Assert.That(editor.Available, Is.False);
 
             var backend = new FakeBackend();
-            var failed = new Telemetry(backend, new MemoryPrefs());
+            var failed = new Telemetry(backend, AnsweredYes());
             failed.Record("questStarted", Fields(("questLevel", 1)));
             backend.Start.SetResult(false);
             Assert.That(failed.Available, Is.False, "no cloud project: nothing to switch");
@@ -195,7 +202,7 @@ namespace TrollStrategy.Tests
         public void Telemetry_AFailingServiceCallNeverReachesTheGame()
         {
             var backend = new FakeBackend { Throw = true };
-            var telemetry = new Telemetry(backend, new MemoryPrefs());
+            var telemetry = new Telemetry(backend, AnsweredYes());
             backend.Start.SetResult(true);
 
             LogAssert.Expect(LogType.Warning, "[Support] Analytics call failed: service down");
@@ -207,38 +214,60 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void TechPanel_SaysWhatIsSent_UntilThePlayerAnswers()
+        public void Intro_AsksAboutStatistics_AndPlayWaitsForTheAnswer()
         {
             var prefs = new MemoryPrefs();
-            var telemetry = new Telemetry(Started(), prefs);
-            var panel = Panel(telemetry, out var root);
+            var backend = new FakeBackend();
+            var telemetry = new Telemetry(backend, prefs);
+            var intro = Intro();
+            intro.Open();
+            intro.AskConsent(telemetry);
 
-            Assert.That(panel.NoticeShown, Is.True, "first run: the line above the strip");
-            panel.Show();
-            Assert.That(panel.NoticeShown, Is.False, "the open panel holds the same switch");
-            panel.Hide();
-            Assert.That(panel.NoticeShown, Is.True);
+            Assert.That(intro.AsksConsent, Is.True, "first run: the question is on the notice");
+            Assert.That(UiFeel.IsAvailable(intro.PlayButton), Is.False, "«Играть» waits for an answer");
+            intro.Close();
+            Assert.That(intro.IsOpen, Is.True, "neither Esc nor Enter skips the question");
 
-            UiFeel.Press(root.Q<Button>("tech-notice-ok"));
+            UiFeel.Press(intro.ConsentNoButton);
 
-            Assert.That(panel.NoticeShown, Is.False);
+            Assert.That(telemetry.Answered, Is.True);
+            Assert.That(telemetry.Collecting, Is.False);
+            Assert.That(backend.Starts, Is.Zero, "a no starts nothing");
+            Assert.That(intro.ConsentNoButton.ClassListContains("is-on"), Is.True);
+            Assert.That(intro.AsksConsent, Is.False);
+            Assert.That(UiFeel.IsAvailable(intro.PlayButton), Is.True);
+
+            UiFeel.Press(intro.ConsentYesButton);
+
             Assert.That(telemetry.Collecting, Is.True);
-            Assert.That(Panel(new Telemetry(Started(), prefs), out _).NoticeShown, Is.False, "answered once for good");
+            Assert.That(backend.Consent, Is.True);
+            Assert.That(backend.Starts, Is.EqualTo(1));
+
+            var next = Intro();
+            next.AskConsent(new Telemetry(Started(), prefs));
+            Assert.That(next.ShowsConsent, Is.False, "answered once for good");
         }
 
         [Test]
-        public void TechPanel_NoticeTurnsStatisticsOff_AndTheSwitchTurnsThemBackOn()
+        public void Intro_WithoutAService_AsksNothing()
+        {
+            var intro = Intro();
+            intro.Open();
+            intro.AskConsent(new Telemetry(null, new MemoryPrefs()));
+
+            Assert.That(intro.ShowsConsent, Is.False);
+            Assert.That(UiFeel.IsAvailable(intro.PlayButton), Is.True);
+        }
+
+        [Test]
+        public void TechPanel_SwitchChangesTheAnswer()
         {
             var backend = Started();
             var telemetry = new Telemetry(backend, new MemoryPrefs());
+            telemetry.Answer(false);
             var panel = Panel(telemetry, out var root);
             var stats = root.Q<Button>("tech-stats");
 
-            UiFeel.Press(root.Q<Button>("tech-notice-off"));
-
-            Assert.That(telemetry.Collecting, Is.False);
-            Assert.That(backend.Consent, Is.False);
-            Assert.That(panel.NoticeShown, Is.False);
             panel.Show();
             Assert.That(Ui.IsShown(stats), Is.True);
             Assert.That(stats.text, Is.EqualTo("Статистика: не отправляется"));
@@ -253,15 +282,14 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void TechPanel_WithoutAService_HidesTheNoticeAndTheSwitch()
+        public void TechPanel_WithoutAService_HidesTheSwitch()
         {
             var panel = Panel(new Telemetry(null, new MemoryPrefs()), out var root);
             panel.Show();
-            Assert.That(panel.NoticeShown, Is.False);
             Assert.That(Ui.IsShown(root.Q<Button>("tech-stats")), Is.False);
 
             var noStats = Panel(null, out var bare);
-            Assert.That(noStats.NoticeShown, Is.False);
+            noStats.Show();
             Assert.That(Ui.IsShown(bare.Q<Button>("tech-stats")), Is.False);
         }
 
@@ -278,6 +306,20 @@ namespace TrollStrategy.Tests
 
         private static IReadOnlyList<KeyValuePair<string, object>> Fields(params (string Key, object Value)[] fields) =>
             new TelemetryEvent("test", fields).Fields;
+
+        private static MemoryPrefs AnsweredYes()
+        {
+            var prefs = new MemoryPrefs();
+            prefs.Set(Telemetry.CollectKey, 1);
+            prefs.Set(Telemetry.NoticeKey, 1);
+            return prefs;
+        }
+
+        private IntroPanel Intro()
+        {
+            var session = TestColony.NewSession(_catalog);
+            return TestUi.Colony(session, new InteractionController(session)).Intro;
+        }
 
         private static FakeBackend Started()
         {

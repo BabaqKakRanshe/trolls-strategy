@@ -19,7 +19,7 @@ namespace TrollStrategy.UI
 
     /// <summary>
     /// The pause menu (Esc with nothing to cancel, or the menu tool). Its first page has no card: the title on the
-    /// halo over the island and four round actions (continue, settings, about the game, start over) with their
+    /// halo over the island and round actions (continue, settings, about the game, a bug report, start over) with their
     /// words in the hint. The other pages are a white sheet with a back arrow: settings (music, sounds, nature,
     /// graphics with an automatic choice, interface size, the language on a page of its own), about the game and
     /// its author, and the question before starting over. The colony stands still while it is open. Settings
@@ -67,6 +67,8 @@ namespace TrollStrategy.UI
         private readonly Dictionary<MenuPage, VisualElement> _pages = new();
         private readonly List<Button> _graphics = new();
         private readonly List<Button> _sizes = new();
+        // the tutorial pointer on or off (specs/006-tutorial-guidance, FR-014)
+        private readonly List<(bool On, Button Button)> _hints = new();
         private readonly List<(string Code, Button Button)> _languages = new();
         private SettingSlider _music;
         private SettingSlider _sound;
@@ -95,6 +97,12 @@ namespace TrollStrategy.UI
                 "Звук, графика, размер интерфейса и язык.");
             AboutButton = AddAction(actions, "info", "Об игре", null, null, () => Show(MenuPage.About),
                 "Кто делает игру и где его найти.");
+            if (context.ReportBug != null)
+                ReportButton = AddAction(actions, "mail", "Сообщить об ошибке", null, null, () =>
+                {
+                    Close();
+                    _context.ReportBug();
+                }, "Отправить автору снимок экрана и журнал игры.");
             RestartButton = AddAction(actions, "restart", "Начать заново", null, "is-danger", () => Show(MenuPage.Restart),
                 RestartWarning);
 
@@ -110,10 +118,14 @@ namespace TrollStrategy.UI
         public Button ContinueButton { get; }
         public Button SettingsButton { get; }
         public Button AboutButton { get; }
+        /// <summary>"Сообщить об ошибке"; null while the game has no way to send a report.</summary>
+        public Button ReportButton { get; }
         public Button RestartButton { get; }
         public Button LanguageButton { get; private set; }
         public Button RestartConfirmButton { get; private set; }
         public Slider MusicSlider => _music.Slider;
+        /// <summary>The settings' "Подсказки обучения": show, then hide.</summary>
+        public IReadOnlyList<Button> HintButtons => _hints.ConvertAll(hint => hint.Button);
         /// <summary>The music bar's filled share, 0..1, as drawn.</summary>
         public float MusicFill => _music.Fill.style.width.value.value / 100f;
         public string MusicValue => _music.Value.text;
@@ -241,6 +253,22 @@ namespace TrollStrategy.UI
                 sizes.Add(choice);
             }
             AddRow(page, "text-size", "Интерфейс").Add(sizes);
+
+            // the tutorial's hand, veil and hint cards; the quests and their short ways stay the same either way
+            var hints = Ui.Box("segmented setting-row__control");
+            foreach (var (on, name) in new[] { (true, "Показывать"), (false, "Скрыть") })
+            {
+                var choice = Ui.CaptionButton(name, null, "btn");
+                bool picked = on;
+                UiFeel.Bind(choice, () =>
+                {
+                    GameSettings.SetTutorialHints(picked);
+                    RefreshSettings();
+                });
+                _hints.Add((on, choice));
+                hints.Add(choice);
+            }
+            AddRow(page, "book", "Подсказки обучения").Add(hints);
             page.Add(Ui.Box("divider"));
 
             LanguageButton = Ui.CaptionButton(string.Empty, null, "btn btn-picker setting-row__control");
@@ -312,6 +340,7 @@ namespace TrollStrategy.UI
                 _graphics[i].EnableInClassList("is-on", GraphicsChoices[i].Level == GameSettings.Quality);
             for (int i = 0; i < _sizes.Count; i++)
                 _sizes[i].EnableInClassList("is-on", Mathf.Approximately(SizeChoices[i].Scale, GameSettings.UiScale));
+            foreach (var (on, button) in _hints) button.EnableInClassList("is-on", on == GameSettings.TutorialHints);
             var names = QualitySettings.names;
             int effective = GameSettings.EffectiveQuality;
             Ui.SetText(_graphicsNote, GameSettings.Quality == GameSettings.AutoQuality && effective < names.Length

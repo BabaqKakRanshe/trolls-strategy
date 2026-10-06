@@ -107,6 +107,14 @@ namespace TrollStrategy.UI
             return true;
         }
 
+        /// <summary>The menu's bug report: the tech panel opens and sends it, showing the progress.</summary>
+        public void ReportFromMenu()
+        {
+            if (!EnsurePanel()) return;
+            _panel.Show();
+            _panel.SendReport();
+        }
+
         /// <summary>Phones and tablets, including a browser on them: tap the strip instead of F8.</summary>
         private static bool IsTouchScreen() =>
             UnityEngine.Application.isMobilePlatform || (Touchscreen.current != null && Keyboard.current == null);

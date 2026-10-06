@@ -187,11 +187,10 @@ namespace TrollStrategy.Tests
                 Assert.That(_session.Dispatch(new BuildBuildingCommand(BuildingKind.Mine, cell.Value)).Ok, Is.True);
             });
             Refresh();
-            Assert.That(_hud.Catalog.IsSuggested(UnitKind.Troll), Is.True, "No troll yet: hire one first");
+            Assert.That(_hud.Catalog.IsSuggested(UnitKind.Goblin), Is.False, "Any creature digs: the goblin at hand will do");
 
-            Assert.That(_session.Dispatch(new BuyUnitsCommand(UnitKind.Troll, 1, _session.FindSpawnCell())).Ok, Is.True);
-            string troll = _session.CurrentSnapshot.Units.Last(u => u.UnitKind == UnitKind.Troll).Id;
-            _interaction.ClickUnit(troll, false);
+            string goblin = _session.CurrentSnapshot.Units.Last(u => u.UnitKind == UnitKind.Goblin).Id;
+            _interaction.ClickUnit(goblin, false);
             Refresh();
 
             Assert.That(_hud.Focus.WorkTarget, Is.EqualTo(BuildingKind.Mine));

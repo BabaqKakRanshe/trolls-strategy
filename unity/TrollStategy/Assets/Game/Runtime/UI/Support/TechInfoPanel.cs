@@ -9,8 +9,8 @@ namespace TrollStrategy.UI
 {
     /// <summary>
     /// The support corner: build version and FPS over every screen. A click on it, or F8, opens the tech
-    /// panel with the machine's details, "send logs" and the switch for anonymous play statistics. While the
-    /// statistics go out and the player has not answered it, a line above the strip says so.
+    /// panel with the machine's details, "send logs" and the switch for anonymous play statistics; the player
+    /// answers that question first in the intro.
     /// </summary>
     public sealed class TechInfoPanel
     {
@@ -27,7 +27,6 @@ namespace TrollStrategy.UI
         private Action _openCheats;
         private readonly Label _status;
         private readonly Button _stats;
-        private readonly VisualElement _notice;
         private readonly List<(Label Key, Label Value)> _rowLabels = new();
         private float _sinceRefresh;
         private bool _sending;
@@ -44,15 +43,11 @@ namespace TrollStrategy.UI
             _cheats = Ui.Require<Button>(root, "tech-cheats");
             _status = Ui.Require<Label>(root, "tech-status");
             _stats = Ui.Require<Button>(root, "tech-stats");
-            _notice = Ui.Require<VisualElement>(root, "tech-notice");
             UiFeel.Bind(Ui.Require<Button>(root, "tech-strip"), Toggle);
             UiFeel.Bind(Ui.Require<Button>(root, "tech-close"), Hide, Sfx.UiBack);
             UiFeel.Bind(_send, Send);
             UiFeel.Bind(_cheats, OpenCheats);
             UiFeel.Bind(_stats, ToggleStats);
-            UiFeel.Bind(Ui.Require<Button>(root, "tech-notice-ok"), AcceptNotice);
-            UiFeel.Bind(Ui.Require<Button>(root, "tech-notice-off"), DeclineNotice, Sfx.UiBack);
-            UiFeel.Bind(Ui.Require<Button>(root, "tech-notice-more"), OpenPrivacy);
             SetCheats(null);
             Ui.Show(_details, false);
             ShowStatus(null);
@@ -62,7 +57,6 @@ namespace TrollStrategy.UI
         public bool IsOpen => Ui.IsShown(_details);
         public bool IsSending => _sending;
         public string Status => Ui.IsShown(_status) ? _status.text : null;
-        public bool NoticeShown => Ui.IsShown(_notice);
 
         private Telemetry Stats => _context.Telemetry;
 
@@ -83,6 +77,9 @@ namespace TrollStrategy.UI
             Ui.Show(_details, false);
             ShowStats();
         }
+
+        /// <summary>Sends a bug report as "send logs" does: the menu's "report a bug".</summary>
+        public void SendReport() => Send();
 
         /// <summary>
         /// The way to the developer cheat menu for touch screens, which have no F1; null (release players)
@@ -126,7 +123,7 @@ namespace TrollStrategy.UI
             ShowStats();
         }
 
-        // the notice steps aside while the panel, which holds the same switch, is open
+        // the switch shows where a service can take the answer
         private void ShowStats()
         {
             bool available = Stats != null && Stats.Available;
@@ -136,32 +133,12 @@ namespace TrollStrategy.UI
                 _stats.EnableInClassList("is-on", Stats.Collecting);
                 Ui.SetText(_stats, Stats.Collecting ? "Статистика: отправляется" : "Статистика: не отправляется");
             }
-            Ui.Show(_notice, available && Stats.Collecting && !Stats.NoticeSeen && !IsOpen);
         }
 
         private void ToggleStats()
         {
-            Stats.SetCollecting(!Stats.Collecting);
-            Stats.MarkNoticeSeen();
+            Stats.Answer(!Stats.Collecting);
             ShowStats();
-        }
-
-        private void AcceptNotice()
-        {
-            Stats.MarkNoticeSeen();
-            ShowStats();
-        }
-
-        private void DeclineNotice()
-        {
-            Stats.SetCollecting(false);
-            Stats.MarkNoticeSeen();
-            ShowStats();
-        }
-
-        private void OpenPrivacy()
-        {
-            if (!string.IsNullOrEmpty(Stats?.PrivacyUrl)) UnityEngine.Application.OpenURL(Stats.PrivacyUrl);
         }
 
         private void FillRows(IReadOnlyList<KeyValuePair<string, string>> rows)

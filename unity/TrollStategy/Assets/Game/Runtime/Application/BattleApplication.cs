@@ -179,6 +179,10 @@ namespace TrollStrategy.Application
             try { fighters.AddRange(EnemyFighters(mission, catalog)); }
             catch (ArgumentOutOfRangeException) { return CommandResult.Fail("Данные миссии некорректны"); }
 
+            // the squad's gear counts as it marches out, so a fighter who falls still wore it
+            foreach (var item in state.Equipment)
+                if (item.OwnerUnitId != null && selectedIds.Contains(item.OwnerUnitId)) state.GearWornInBattles++;
+
             BattleReport report;
             try { report = BattleSimulation.Run(board, fighters, 1); }
             catch (ArgumentException) { return CommandResult.Fail("Бой не удалось рассчитать"); }

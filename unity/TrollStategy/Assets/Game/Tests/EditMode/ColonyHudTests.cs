@@ -168,23 +168,13 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void Inspect_BarracksHiresAtCatalogPrices()
+        public void Inspect_BarracksCard_MovesAndUpgrades_AndHiresNothing()
         {
             _interaction.SelectBuilding("barracks-1");
             Refresh();
 
-            var hints = _hud.Inspect.Actions.Select(Hint).ToList();
-            // the card has room for two hires beside "move": the first creatures that may join the colony
-            foreach (var unit in _catalog.Units.Where(u => u != null && u.Hireable && _session.IsUnitUnlocked(u.Kind)).Take(2))
-                Assert.That(hints.Contains(Ui.Gold(_session.HirePrice(unit.Kind))), Is.True,
-                    $"{unit.DisplayName}: {string.Join(", ", hints)}");
-
-            var goblin = _catalog.GetUnit(UnitKind.Goblin);
-            var hireGoblin = _hud.Inspect.Actions.First(b => Title(b).Contains(goblin.DisplayName.ToLowerInvariant()));
-            UiFeel.Press(hireGoblin);
-
-            Assert.That(_session.CurrentSnapshot.Units.Count, Is.EqualTo(1));
-            Assert.That(_session.CurrentSnapshot.Units[0].UnitKind, Is.EqualTo(UnitKind.Goblin));
+            Assert.That(_hud.Inspect.Actions.Select(Title), Is.EqualTo(new[] { "Перенести", "Улучшить" }),
+                "Creatures are hired in the catalog");
         }
 
         [Test]

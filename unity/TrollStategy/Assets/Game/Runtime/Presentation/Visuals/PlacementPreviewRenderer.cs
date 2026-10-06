@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
@@ -23,6 +24,14 @@ namespace TrollStrategy.Presentation.Visuals
         private Camera _camera;
         private readonly Dictionary<BuildingKind, BuildingModel> _ghosts = new();
         private BuildingModel _activeGhost;
+        // the tutorial's map of free cells (specs/006-tutorial-guidance, FR-009)
+        private const float FreeCellsRefreshSeconds = .25f;
+        private MeshRenderer _freeCells;
+        private Mesh _freeCellsMesh;
+        private GameSnapshot _freeCellsSnapshot;
+        private UnitKind _freeCellsKind;
+        private int _freeCellsAmount;
+        private float _freeCellsAt = float.NegativeInfinity;
 
         public void Init(GameSession session, InteractionController interaction, TilemapWorldView worldView, GameContentCatalog catalog, Camera cam)
         {
@@ -78,6 +87,7 @@ namespace TrollStrategy.Presentation.Visuals
             if (_session == null || _interaction == null || _camera == null || _worldView == null) return;
 
             var mode = _interaction.Mode;
+            UpdateFreeCells(mode);
             if (mode.Type != _lastModeType)
             {
                 _lastModeType = mode.Type;
@@ -194,6 +204,82 @@ namespace TrollStrategy.Presentation.Visuals
                 else if (mode.Type == InteractionModeType.PlacingUnits)
                     _interaction.PlaceUnits(cell);
             }
+        }
+
+        // Where the next creature may stand: a light square on every free cell, while a tutorial step waits for a
+        // cell and the hints are on. The cells are the ones the purchase itself accepts.
+        private void UpdateFreeCells(InteractionMode mode)
+        {
+            var snapshot = _session.CurrentSnapshot;
+            var quest = snapshot.Progress.Enabled ? snapshot.Progress.Quest : null;
+            bool show = mode.Type == InteractionModeType.PlacingUnits && GameSettings.TutorialHints &&
+                        quest != null && quest.IsTutorial && !quest.IsComplete;
+            if (!show)
+            {
+                if (_freeCells != null && _freeCells.enabled) _freeCells.enabled = false;
+                _freeCellsSnapshot = null;
+                return;
+            }
+            EnsureFreeCells();
+            _freeCells.enabled = true;
+            bool stale = snapshot != _freeCellsSnapshot || mode.UnitKind != _freeCellsKind || mode.Amount != _freeCellsAmount;
+            if (!stale || Time.unscaledTime - _freeCellsAt < FreeCellsRefreshSeconds) return;
+            _freeCellsSnapshot = snapshot;
+            _freeCellsKind = mode.UnitKind;
+            _freeCellsAmount = mode.Amount;
+            _freeCellsAt = Time.unscaledTime;
+            BuildFreeCells(mode.UnitKind, mode.Amount);
+        }
+
+        private void EnsureFreeCells()
+        {
+            if (_freeCells != null) return;
+            var go = new GameObject("TutorialFreeCells");
+            go.transform.SetParent(transform, false);
+            _freeCellsMesh = new Mesh { name = "TutorialFreeCells" };
+            _freeCellsMesh.MarkDynamic();
+            go.AddComponent<MeshFilter>().sharedMesh = _freeCellsMesh;
+            _freeCells = go.AddComponent<MeshRenderer>();
+            _freeCells.sharedMaterial = new Material(Shader.Find("Sprites/Default"));
+            _freeCells.sortingOrder = 97;
+            _freeCells.shadowCastingMode = ShadowCastingMode.Off;
+            _freeCells.receiveShadows = false;
+        }
+
+        private void BuildFreeCells(UnitKind kind, int amount)
+        {
+            var vertices = new List<Vector3>();
+            var colors = new List<Color>();
+            var triangles = new List<int>();
+            var fill = ColonyPalette.WithAlpha(Color.white, .32f);
+            var lift = _worldView.GroundOffset(0.14f);
+            var local = _freeCells.transform;
+            const float inset = .08f;
+            for (int y = 0; y < _worldView.GridHeight; y++)
+            {
+                for (int x = 0; x < _worldView.GridWidth; x++)
+                {
+                    if (!_session.CanBuyUnits(kind, amount, new Cell(x, y)).Ok) continue;
+                    int first = vertices.Count;
+                    vertices.Add(local.InverseTransformPoint(_worldView.MapToWorld(new Vector3(x + inset, y + inset, 0f)) + lift));
+                    vertices.Add(local.InverseTransformPoint(_worldView.MapToWorld(new Vector3(x + 1 - inset, y + inset, 0f)) + lift));
+                    vertices.Add(local.InverseTransformPoint(_worldView.MapToWorld(new Vector3(x + 1 - inset, y + 1 - inset, 0f)) + lift));
+                    vertices.Add(local.InverseTransformPoint(_worldView.MapToWorld(new Vector3(x + inset, y + 1 - inset, 0f)) + lift));
+                    for (int i = 0; i < 4; i++) colors.Add(fill);
+                    triangles.Add(first);
+                    triangles.Add(first + 1);
+                    triangles.Add(first + 2);
+                    triangles.Add(first);
+                    triangles.Add(first + 2);
+                    triangles.Add(first + 3);
+                }
+            }
+            _freeCellsMesh.Clear();
+            _freeCellsMesh.indexFormat = vertices.Count > 65000 ? IndexFormat.UInt32 : IndexFormat.UInt16;
+            _freeCellsMesh.SetVertices(vertices);
+            _freeCellsMesh.SetColors(colors);
+            _freeCellsMesh.SetTriangles(triangles, 0);
+            _freeCellsMesh.RecalculateBounds();
         }
 
         private BuildingModel GetGhost(BuildingKind kind)

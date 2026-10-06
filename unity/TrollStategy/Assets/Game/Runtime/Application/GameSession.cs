@@ -687,6 +687,8 @@ namespace TrollStrategy.Application
                     return "Бойцов в снаряжении";
                 case QuestGoalKind.OwnEquipment:
                     return "Предметов на складе экипировки";
+                case QuestGoalKind.WearGearInBattle:
+                    return "Снаряжение на бойцах в бою";
                 default:
                     return goal.Kind.ToString();
             }
