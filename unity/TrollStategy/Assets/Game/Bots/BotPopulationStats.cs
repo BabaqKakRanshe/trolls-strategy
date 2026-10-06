@@ -51,6 +51,8 @@ namespace TrollStrategy.Bots
     public sealed class BotQuestStat
     {
         public int Level;
+        /// <summary>The quest's id: the chain changes, and a level alone may name another quest in other data.</summary>
+        public string Id;
         public string Title;
         /// <summary>Runs that began the quest.</summary>
         public int Reached;
@@ -225,6 +227,7 @@ namespace TrollStrategy.Bots
                 stats.Quests.Add(new BotQuestStat
                 {
                     Level = level,
+                    Id = runs.SelectMany(r => r.Quests).FirstOrDefault(q => q.Level == level && q.Id != null)?.Id,
                     Title = title(level),
                     Reached = runs.Count(r => r.Quests.Count >= level - 1 && (r.Quests.Count >= level || r.Outcome != BotOutcome.Completed)),
                     Done = records.Count,

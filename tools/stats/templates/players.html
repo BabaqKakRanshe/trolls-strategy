@@ -523,15 +523,43 @@ function botStats() {
   const data = window.BOT_DATA;
   return data && data.latest && data.latest.stats ? data.latest.stats : null;
 }
-function botQuest(level) {
+// the bots' quest with the same id: the chain changes, so a level alone may name another quest (older bot data
+// without ids falls back to the level)
+function botQuestOf(level, id) {
   const stats = botStats();
-  const q = stats && stats.quests.find(o => o.level === level);
+  if (!stats) return null;
+  return id && stats.quests.some(o => o.id) ? stats.quests.find(o => o.id === id) : stats.quests.find(o => o.level === level);
+}
+function botQuest(level, id) {
+  const q = botQuestOf(level, id);
   return q && q.duration ? q : null;
 }
 function questTitle(level, id) {
-  const stats = botStats();
-  const q = stats && stats.quests.find(o => o.level === level);
+  const q = botQuestOf(level, id);
   return q ? q.title : id || `задание ${level}`;
+}
+
+// below this many sessions the fit is noise: the bots' traits are not tuned by it
+const CALIBRATION_SESSIONS = 20;
+// How much dearer the players' clicks and reading are than the bots': the factor on the bots' time for actions
+// (their waits stay) that brings their quest times closest to the players' medians, in log error weighted by the
+// sessions behind each median.
+function calibrate(pairs) {
+  const used = pairs.filter(p => p.player.n > 0 && p.player.median > 0 && p.bot);
+  if (!used.length) return null;
+  let best = null;
+  for (let scale = 0.25; scale <= 8.0001; scale += 0.05) {
+    let err = 0, weight = 0;
+    for (const p of used) {
+      const predicted = (p.bot.flowWaitMs + p.bot.goldWaitMs + p.bot.timeWaitMs + scale * p.bot.busyMs) / 1000;
+      if (!(predicted > 0)) continue;
+      const d = Math.log(p.player.median) - Math.log(predicted);
+      err += p.player.n * d * d;
+      weight += p.player.n;
+    }
+    if (weight && (!best || err / weight < best.err)) best = { scale, err: err / weight };
+  }
+  return best && { scale: best.scale, quests: used.length };
 }
 
 function emptyState(info) {
@@ -618,8 +646,8 @@ function render() {
     ...ENDINGS.map(e => ({ label: e.label, num: true, value: q => nf0.format(q[e.key]) }))], ended);
 
   // quest time against the bots
-  const timeRows = quests.filter(q => q.times.n > 0 || botQuest(q.level)).map(q => {
-    const b = botQuest(q.level), bot = b ? b.duration.p50 / 1000 : null;
+  const timeRows = quests.filter(q => q.times.n > 0 || botQuest(q.level, q.id)).map(q => {
+    const b = botQuest(q.level, q.id), bot = b ? b.duration.p50 / 1000 : null;
     const ratio = q.times.median != null && bot > 0 ? q.times.median / bot : null;
     return {
       n: q.n, label: q.label, median: minOfSec(q.times.median), p25: minOfSec(q.times.p25), p75: minOfSec(q.times.p75),
@@ -633,12 +661,17 @@ function render() {
         { color: "transparent", label: "к медиане ботов", value: ratio == null ? "—" : "×" + nf1.format(ratio) }]
     };
   });
+  const fit = calibrate(quests.map(q => ({ player: q.times, bot: botQuest(q.level, q.id) })));
+  const fitNote = fit ? el("p", { class: "sub" }, `Подгонка ботов (заданий: ${fit.quests}, сессий: ${totals.sessions}): ` +
+      `время ботов ближе всего к игрокам, если клики и чтение у них стоят ×${nf1.format(fit.scale)} от нынешних.` +
+      (totals.sessions < CALIBRATION_SESSIONS ? ` Сессий меньше ${CALIBRATION_SESSIONS} — оценка шумная, черты ботов по ней не меняют.` : "")) : null;
   const timeBody = !bots && !timeRows.some(r => r.count)
     ? el("p", { class: "empty" }, "Нет ни времени игроков, ни прогона ботов.")
     : el("div", {},
         legend([{ label: "игроки: точка — медиана, линия — средняя половина игроков", color: css("--s-players") },
                 ...(bots ? [{ label: "боты: медиана", color: css("--s-bots") }] : [])]),
         timeChart(timeRows, { label: "Минуты колонии на задание: игроки и боты" }),
+        fitNote,
         bots ? null : el("p", { class: "empty" }, "Прогона ботов нет: запустите TrollStrategy → Bots → Run Campaign Bots."));
   const timeTable = makeTable([
     { label: "#", value: r => r.n }, { label: "Задание", value: r => r.label },

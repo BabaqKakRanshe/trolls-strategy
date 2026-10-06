@@ -442,7 +442,7 @@ namespace TrollStrategy.Bots
                             (uncommitted is { Count: > 0 } ? $" Незакоммиченные правки правил: {uncommitted.Count}." : ""));
             text.AppendLine();
             text.AppendLine(failed == 0 && count > 0
-                ? $"Все {count} профилей: колония в игре и без сцены совпала на каждом взгляде."
+                ? (count == 1 ? "Бот" : $"Все боты ({count})") + ": колония в игре и без сцены совпала на каждом взгляде."
                 : $"Совпало {count - failed} из {count}.");
             text.AppendLine();
             foreach (string line in lines) text.Append(line);

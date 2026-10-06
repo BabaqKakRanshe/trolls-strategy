@@ -131,6 +131,7 @@ namespace TrollStrategy.Bots
             ("slowest", Str(s.SlowestId)),
             ("quests", Arr(s.Quests, q => Obj(
                 ("level", Num(q.Level)),
+                ("id", Str(q.Id)),
                 ("title", Str(q.Title)),
                 ("reached", Num(q.Reached)),
                 ("done", Num(q.Done)),
