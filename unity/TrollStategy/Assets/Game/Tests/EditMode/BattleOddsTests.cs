@@ -26,20 +26,33 @@ namespace TrollStrategy.Tests
         {
             var one = new[] { Fighter("p", true, 100, 10) };
             var equal = new[] { Fighter("e", false, 100, 10) };
-            Assert.That(BattleOdds.Compare(one, equal, 1.5).Grade, Is.EqualTo(OddsGrade.Even));
-            Assert.That(BattleOdds.Compare(one, equal, 1.5).Ratio, Is.EqualTo(1.0).Within(1e-9));
+            Assert.That(BattleOdds.Compare(one, equal, 1.5, 10).Grade, Is.EqualTo(OddsGrade.Even));
+            Assert.That(BattleOdds.Compare(one, equal, 1.5, 10).Ratio, Is.EqualTo(1.0).Within(1e-9));
 
             var two = new[] { Fighter("p1", true, 100, 10), Fighter("p2", true, 100, 10) };
-            Assert.That(BattleOdds.Compare(two, equal, 1.5).Ratio, Is.EqualTo(4.0).Within(1e-9),
+            Assert.That(BattleOdds.Compare(two, equal, 1.5, 10).Ratio, Is.EqualTo(4.0).Within(1e-9),
                 "Twice the health and twice the damage: four times as strong");
-            Assert.That(BattleOdds.Compare(two, equal, 1.5).Grade, Is.EqualTo(OddsGrade.Stronger));
+            Assert.That(BattleOdds.Compare(two, equal, 1.5, 10).Grade, Is.EqualTo(OddsGrade.Stronger));
             Assert.That(BattleOdds.Compare(equal.Select(e => Fighter("x", true, 100, 10)).ToArray(), two
-                .Select(p => Fighter(p.Id, false, 100, 10)).ToArray(), 1.5).Grade, Is.EqualTo(OddsGrade.Weaker));
+                .Select(p => Fighter(p.Id, false, 100, 10)).ToArray(), 1.5, 10).Grade, Is.EqualTo(OddsGrade.Weaker));
 
-            var armoured = new[] { Fighter("e", false, 100, 10, armor: 9) };
-            Assert.That(BattleOdds.Compare(one, armoured, 1.5).Grade, Is.EqualTo(OddsGrade.Weaker),
-                "Armour that eats nine of ten damage turns an even fight");
-            Assert.That(BattleOdds.Compare(Array.Empty<BattleFighterInput>(), equal, 1.5).Grade, Is.EqualTo(OddsGrade.Weaker));
+            var armoured = new[] { Fighter("e", false, 100, 10, armor: 10) };
+            Assert.That(BattleOdds.Compare(one, armoured, 1.5, 10).Ratio, Is.EqualTo(0.5).Within(1e-9),
+                "Armour equal to the scale halves the damage, so the even fight is half as good");
+            Assert.That(BattleOdds.Compare(one, armoured, 1.5, 10).Grade, Is.EqualTo(OddsGrade.Weaker));
+            Assert.That(BattleOdds.Compare(Array.Empty<BattleFighterInput>(), equal, 1.5, 10).Grade, Is.EqualTo(OddsGrade.Weaker));
+        }
+
+        [Test]
+        public void DamageThrough_ArmourTakesAShareOfTheBlow_NeverAllOfIt()
+        {
+            Assert.That(BattleSimulation.DamageThrough(10, 0, 10), Is.EqualTo(10), "No armour, the whole blow");
+            Assert.That(BattleSimulation.DamageThrough(10, 10, 10), Is.EqualTo(5), "Armour equal to the scale halves it");
+            Assert.That(BattleSimulation.DamageThrough(7, 3, 10), Is.EqualTo(5), "7 × 10 / 13 = 5.4");
+            Assert.That(BattleSimulation.DamageThrough(5, 6, 10), Is.EqualTo(3), "5 × 10 / 16 = 3.1");
+            Assert.That(BattleSimulation.DamageThrough(2, 1, 10), Is.EqualTo(2), "A goblin's blow survives light armour");
+            Assert.That(BattleSimulation.DamageThrough(1, 50, 10), Is.EqualTo(1), "Every blow lands at least 1");
+            Assert.That(BattleSimulation.DamageThrough(6, 2, 4), Is.EqualTo(4), "A smaller scale makes armour stronger");
         }
 
         [Test]

@@ -15,7 +15,7 @@ MonoBehaviour:
   _missionId: mission-2
   _displayName: "2. \u0421\u043B\u0438\u0437\u043D\u0438 \u043D\u0430 \u043B\u0443\u0433\u0443"
   _level: 2
-  _enemyHealthPercent: 170
+  _enemyHealthPercent: 102
   _enemyDamageBonus: 0
   _enemyArmorBonus: 0
   _unlocksUnit: 0

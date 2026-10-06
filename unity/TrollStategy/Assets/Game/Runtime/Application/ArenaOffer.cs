@@ -158,7 +158,7 @@ namespace TrollStrategy.Application
             List<BattleFighterInput> enemies;
             try { enemies = BattleApplication.EnemyFighters(mission, catalog); }
             catch (ArgumentOutOfRangeException) { enemies = new List<BattleFighterInput>(); }
-            var (ratio, grade) = BattleOdds.Compare(squad, enemies, economy.ArenaOddsMargin);
+            var (ratio, grade) = BattleOdds.Compare(squad, enemies, economy.ArenaOddsMargin, economy.ArmorScale);
             offer.OddsRatio = ratio;
             offer.Odds = grade;
 

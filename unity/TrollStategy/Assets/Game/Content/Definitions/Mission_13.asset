@@ -15,7 +15,7 @@ MonoBehaviour:
   _missionId: mission-13
   _displayName: "13. \u041E\u0440\u043E\u0447\u0438\u0439 \u043D\u0430\u0431\u0435\u0433"
   _level: 13
-  _enemyHealthPercent: 280
+  _enemyHealthPercent: 124
   _enemyDamageBonus: 0
   _enemyArmorBonus: 0
   _unlocksUnit: 1
@@ -76,7 +76,7 @@ MonoBehaviour:
       X: 7
       Y: 0
     Gear:
-    - battle-axe
+    - steel-sword
     - leather-armor
     Champion: 0
   - Kind: 9
@@ -84,7 +84,7 @@ MonoBehaviour:
       X: 7
       Y: 1
     Gear:
-    - battle-axe
+    - steel-sword
     - leather-armor
     Champion: 0
   - Kind: 9
@@ -92,7 +92,7 @@ MonoBehaviour:
       X: 7
       Y: 2
     Gear:
-    - battle-axe
+    - steel-sword
     - leather-armor
     Champion: 0
   - Kind: 11
@@ -100,7 +100,7 @@ MonoBehaviour:
       X: 7
       Y: 3
     Gear:
-    - battle-axe
+    - steel-sword
     - leather-armor
     Champion: 0
   - Kind: 11
@@ -108,7 +108,7 @@ MonoBehaviour:
       X: 7
       Y: 4
     Gear:
-    - battle-axe
+    - steel-sword
     - leather-armor
     Champion: 0
   - Kind: 9
@@ -116,7 +116,7 @@ MonoBehaviour:
       X: 8
       Y: 0
     Gear:
-    - battle-axe
+    - steel-sword
     - leather-armor
     Champion: 0
   - Kind: 9
@@ -124,7 +124,7 @@ MonoBehaviour:
       X: 8
       Y: 1
     Gear:
-    - battle-axe
+    - steel-sword
     - leather-armor
     Champion: 0
   _firstWinGold: 970

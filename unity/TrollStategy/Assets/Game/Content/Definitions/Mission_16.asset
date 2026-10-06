@@ -15,7 +15,7 @@ MonoBehaviour:
   _missionId: mission-16
   _displayName: "16. \u041C\u0451\u0440\u0442\u0432\u044B\u0435 \u0432\u0441\u0442\u0430\u044E\u0442"
   _level: 16
-  _enemyHealthPercent: 310
+  _enemyHealthPercent: 130
   _enemyDamageBonus: 0
   _enemyArmorBonus: 0
   _unlocksUnit: 0
@@ -76,7 +76,7 @@ MonoBehaviour:
       X: 7
       Y: 2
     Gear:
-    - battle-axe
+    - war-hammer
     - leather-armor
     Champion: 0
   - Kind: 20
@@ -84,7 +84,7 @@ MonoBehaviour:
       X: 8
       Y: 2
     Gear:
-    - battle-axe
+    - war-hammer
     - leather-armor
     Champion: 0
   - Kind: 20
@@ -92,7 +92,7 @@ MonoBehaviour:
       X: 7
       Y: 1
     Gear:
-    - battle-axe
+    - war-hammer
     - leather-armor
     Champion: 0
   - Kind: 19
@@ -100,7 +100,7 @@ MonoBehaviour:
       X: 8
       Y: 1
     Gear:
-    - battle-axe
+    - war-hammer
     - leather-armor
     Champion: 0
   - Kind: 19
@@ -108,7 +108,7 @@ MonoBehaviour:
       X: 7
       Y: 3
     Gear:
-    - battle-axe
+    - war-hammer
     - leather-armor
     Champion: 0
   - Kind: 19
@@ -116,7 +116,7 @@ MonoBehaviour:
       X: 8
       Y: 3
     Gear:
-    - battle-axe
+    - war-hammer
     - leather-armor
     Champion: 0
   - Kind: 20
@@ -124,7 +124,7 @@ MonoBehaviour:
       X: 7
       Y: 0
     Gear:
-    - battle-axe
+    - war-hammer
     - leather-armor
     Champion: 0
   - Kind: 20
@@ -132,7 +132,7 @@ MonoBehaviour:
       X: 8
       Y: 0
     Gear:
-    - battle-axe
+    - war-hammer
     - leather-armor
     Champion: 0
   - Kind: 20
@@ -140,7 +140,7 @@ MonoBehaviour:
       X: 7
       Y: 4
     Gear:
-    - battle-axe
+    - war-hammer
     - leather-armor
     Champion: 0
   _firstWinGold: 1150
@@ -148,7 +148,7 @@ MonoBehaviour:
   _repeatWinGold: 690
   _repeatWinGoldMax: 1100
   _winGoods:
-  - _resource: 20
+  - _resource: 34
     _amount: 1
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120

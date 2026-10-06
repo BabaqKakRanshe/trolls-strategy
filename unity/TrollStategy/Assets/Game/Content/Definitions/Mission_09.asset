@@ -15,9 +15,9 @@ MonoBehaviour:
   _missionId: mission-9
   _displayName: "9. \u041B\u0435\u0441\u043D\u044B\u0435 \u0441\u0442\u0440\u0435\u043B\u043A\u0438"
   _level: 9
-  _enemyHealthPercent: 240
+  _enemyHealthPercent: 116
   _enemyDamageBonus: 2
-  _enemyArmorBonus: 2
+  _enemyArmorBonus: 1
   _unlocksUnit: 1
   _unlockUnit: 4
   _formation: 0

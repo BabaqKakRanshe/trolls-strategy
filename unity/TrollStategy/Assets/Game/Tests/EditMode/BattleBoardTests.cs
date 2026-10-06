@@ -81,8 +81,8 @@ namespace TrollStrategy.Tests
                     20, 2, 1, 2000, 3, 200)
             };
 
-            var first = BattleSimulation.Run(board, fighters, 17);
-            var second = BattleSimulation.Run(board, fighters, 17);
+            var first = BattleSimulation.Run(board, fighters, 17, 10);
+            var second = BattleSimulation.Run(board, fighters, 17, 10);
 
             Assert.That(first.Outcome, Is.EqualTo(second.Outcome));
             Assert.That(first.DurationMs, Is.EqualTo(second.DurationMs));
@@ -117,7 +117,7 @@ namespace TrollStrategy.Tests
                     new Cell(0, 0), 40, 2, 1, 2000, 1, 200)
             };
 
-            var report = BattleSimulation.Run(board, fighters, 23);
+            var report = BattleSimulation.Run(board, fighters, 23, 10);
             Assert.That(report.Events.Any(eventEntry => eventEntry.Kind == BattleEventKind.Move &&
                 eventEntry.ActorId == "ally"), Is.True);
         }

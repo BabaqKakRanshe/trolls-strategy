@@ -15,8 +15,8 @@ MonoBehaviour:
   _missionId: mission-4
   _displayName: "4. \u041D\u043E\u0447\u043D\u0430\u044F \u0441\u0442\u0430\u044F"
   _level: 4
-  _enemyHealthPercent: 190
-  _enemyDamageBonus: 0
+  _enemyHealthPercent: 106
+  _enemyDamageBonus: 1
   _enemyArmorBonus: 0
   _unlocksUnit: 0
   _unlockUnit: 0

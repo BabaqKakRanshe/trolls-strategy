@@ -15,7 +15,7 @@ MonoBehaviour:
   _missionId: mission-23
   _displayName: "23. \u0426\u0438\u043A\u043B\u043E\u043F \u0438 \u0441\u0432\u0438\u0442\u0430"
   _level: 23
-  _enemyHealthPercent: 380
+  _enemyHealthPercent: 144
   _enemyDamageBonus: 0
   _enemyArmorBonus: 0
   _unlocksUnit: 0
@@ -76,79 +76,79 @@ MonoBehaviour:
       X: 7
       Y: 0
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 25
     Cell:
       X: 7
       Y: 4
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 25
     Cell:
       X: 8
       Y: 0
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 25
     Cell:
       X: 8
       Y: 4
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 25
     Cell:
       X: 7
       Y: 1
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 0
     Cell:
       X: 7
       Y: 3
     Gear:
-    - enchanted-bow
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 0
     Cell:
       X: 8
       Y: 1
     Gear:
-    - enchanted-bow
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 0
     Cell:
       X: 8
       Y: 3
     Gear:
-    - enchanted-bow
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 0
     Cell:
       X: 7
       Y: 2
     Gear:
-    - enchanted-bow
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   _firstWinGold: 1570
   _firstWinGoldMax: 2510
   _repeatWinGold: 940
   _repeatWinGoldMax: 1510
   _winGoods:
-  - _resource: 37
+  - _resource: 8
     _amount: 1
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120

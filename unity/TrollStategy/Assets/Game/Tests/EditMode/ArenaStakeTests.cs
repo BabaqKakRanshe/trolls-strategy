@@ -141,6 +141,8 @@ namespace TrollStrategy.Tests
         public void Draw_PaysTheShareOfTheEnemiesHealthTaken_BurnsTheStake_AndIsNoWin()
         {
             _world = new ArenaTestWorld(5000, 2000);
+            // a goblin that hits for 1 cannot fell the troll in the 90 s of a battle
+            _world.Catalog.GetUnit(TrollStrategy.Content.UnitKind.Goblin).SetCombatStats(20, 1, 1, 2000, 3);
             var session = _world.Start();
             _world.HireTroll();
             int before = session.CurrentSnapshot.Gold;

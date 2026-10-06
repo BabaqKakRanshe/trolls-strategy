@@ -184,7 +184,7 @@ namespace TrollStrategy.Application
                 if (item.OwnerUnitId != null && selectedIds.Contains(item.OwnerUnitId)) state.GearWornInBattles++;
 
             BattleReport report;
-            try { report = BattleSimulation.Run(board, fighters, 1); }
+            try { report = BattleSimulation.Run(board, fighters, 1, catalog.Economy.ArmorScale); }
             catch (ArgumentException) { return CommandResult.Fail("Бой не удалось рассчитать"); }
 
             var survivors = new HashSet<string>(report.Survivors, StringComparer.Ordinal);

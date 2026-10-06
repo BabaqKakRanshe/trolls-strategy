@@ -80,6 +80,23 @@ namespace TrollStrategy.Bots
         }
 
         /// <summary>
+        /// A battle for a gear quest, which counts fighters who keep their gear: the highest level the bot has
+        /// won and its squad beats («Отряд сильнее»), as a player would pick; the top only when there is none.
+        /// The fallen lose their gear, so climbing for such a quest can undo it.
+        /// </summary>
+        public bool TryFightSafely(BotWait wait)
+        {
+            BattleMissionDefinition safe = null;
+            foreach (var mission in _hands.Session.ArenaLadder())
+                if (_hands.Session.MissionWins(mission.MissionId) > 0 && _hands.Session.CanEnterMission(mission.MissionId).Ok &&
+                    _hands.Session.ArenaOffer(mission).Odds == OddsGrade.Stronger)
+                    safe = mission;
+            if (safe == null) return TryFight(wait, hire: true);
+            if (!Ready(safe, _hands.Session.ArenaOffer(safe), wait) || !Squad(safe, wait, hire: true)) return false;
+            return Fight(safe, _hands.Session.ArenaOffer(safe));
+        }
+
+        /// <summary>
         /// Fights for gold: climbs while the squad is at least even (a first win pays in full), else repeats the
         /// highest won level that the prize fund pays and the squad beats. Returns true when a battle was fought.
         /// </summary>

@@ -15,9 +15,9 @@ MonoBehaviour:
   _missionId: mission-5
   _displayName: "5. \u041B\u044E\u0434\u0438 \u0441 \u0445\u043E\u043B\u043C\u043E\u0432"
   _level: 5
-  _enemyHealthPercent: 200
+  _enemyHealthPercent: 108
   _enemyDamageBonus: 1
-  _enemyArmorBonus: 1
+  _enemyArmorBonus: 0
   _unlocksUnit: 1
   _unlockUnit: 6
   _formation: 0

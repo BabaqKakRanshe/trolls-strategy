@@ -49,3 +49,4 @@ MonoBehaviour:
   _arenaStakePercent: 30
   _arenaDefeatRestMultiplier: 2
   _arenaOddsMargin: 1.5
+  _armorScale: 10

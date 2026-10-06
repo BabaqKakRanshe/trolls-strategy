@@ -19,13 +19,13 @@ namespace TrollStrategy.Domain
         /// stronger, at most its inverse weaker. No squad is weaker; no enemies, stronger.
         /// </summary>
         public static (double Ratio, OddsGrade Grade) Compare(IReadOnlyList<BattleFighterInput> players,
-            IReadOnlyList<BattleFighterInput> enemies, double margin)
+            IReadOnlyList<BattleFighterInput> enemies, double margin, int armorScale)
         {
             margin = Math.Max(1.0001, margin);
             if (players == null || players.Count == 0) return (0, OddsGrade.Weaker);
             if (enemies == null || enemies.Count == 0) return (double.PositiveInfinity, OddsGrade.Stronger);
-            double squad = Health(players) * DamagePerSecond(players, AverageArmor(enemies));
-            double foes = Health(enemies) * DamagePerSecond(enemies, AverageArmor(players));
+            double squad = Health(players) * DamagePerSecond(players, AverageArmor(enemies), armorScale);
+            double foes = Health(enemies) * DamagePerSecond(enemies, AverageArmor(players), armorScale);
             double ratio = foes > 0 ? squad / foes : double.PositiveInfinity;
             var grade = ratio >= margin ? OddsGrade.Stronger : ratio <= 1 / margin ? OddsGrade.Weaker : OddsGrade.Even;
             return (ratio, grade);
@@ -45,12 +45,13 @@ namespace TrollStrategy.Domain
             return sum / side.Count;
         }
 
-        // the battle's own damage rule (at least 1 a blow) against the other side's average armour
-        private static double DamagePerSecond(IReadOnlyList<BattleFighterInput> side, double armor)
+        // the battle's own damage rule (BattleSimulation.DamageThrough) against the other side's average armour
+        private static double DamagePerSecond(IReadOnlyList<BattleFighterInput> side, double armor, int armorScale)
         {
             double sum = 0;
             foreach (var fighter in side)
-                sum += Math.Max(1, fighter.Damage - armor) * 1000.0 / Math.Max(1, fighter.AttackIntervalMs);
+                sum += BattleSimulation.ExpectedDamage(fighter.Damage, armor, armorScale) * 1000.0 /
+                       Math.Max(1, fighter.AttackIntervalMs);
             return sum;
         }
     }

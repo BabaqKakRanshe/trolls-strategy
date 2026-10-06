@@ -60,23 +60,27 @@ namespace TrollStrategy.Tests
         public void EnemyGear_FromLevelTen_IsTheCatalogsAndKeepsTheLevelsStrength()
         {
             var items = _catalog.Equipment.Where(e => e != null).ToDictionary(e => e.ItemId);
+            int lastDamage = -1, lastArmor = -1;
             foreach (var mission in _ladder)
             {
-                int bonus = (mission.Level - 1) / 4;
                 var regular = mission.Enemies.Where(e => !e.Champion).ToList();
                 foreach (var enemy in mission.Enemies)
                     foreach (string id in enemy.GearIds)
                         Assert.That(items.ContainsKey(id), Is.True, $"{mission.MissionId}: {id}");
                 if (mission.Level < 10)
-                {
                     Assert.That(regular.All(e => e.GearIds.Count == 0), Is.True, $"{mission.MissionId}: gear starts at level 10");
-                    continue;
-                }
-                Assert.That(regular.All(e => e.GearIds.Count > 0), Is.True, $"{mission.MissionId}: every enemy wears gear");
+                else
+                    Assert.That(regular.All(e => e.GearIds.Count > 0), Is.True, $"{mission.MissionId}: every enemy wears gear");
+                // the level's bonus, flat or worn: it never drops, never jumps, and the gear only changes how it looks
                 int damage = regular.Max(e => mission.EnemyDamageBonus + e.GearIds.Sum(id => items[id].DamageBonus));
                 int armor = regular.Max(e => mission.EnemyArmorBonus + e.GearIds.Sum(id => items[id].ArmorBonus));
-                Assert.That(damage, Is.EqualTo(bonus), $"{mission.MissionId}: the gear is part of the level's damage bonus");
-                Assert.That(armor, Is.EqualTo(bonus), $"{mission.MissionId}: the gear is part of the level's armour bonus");
+                if (lastDamage >= 0)
+                {
+                    Assert.That(damage, Is.InRange(lastDamage, lastDamage + 1), $"{mission.MissionId}: damage bonus step");
+                    Assert.That(armor, Is.InRange(lastArmor, lastArmor + 1), $"{mission.MissionId}: armour bonus step");
+                }
+                lastDamage = damage;
+                lastArmor = armor;
             }
         }
 

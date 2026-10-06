@@ -22,7 +22,7 @@ namespace TrollStrategy.Tests
                 new("troll", UnitKind.Troll, true, new Cell(0, 0), 55, 7, 3, 2600, 1, 500),
                 new("enemy-000", UnitKind.Goblin, false, new Cell(2, 0), enemyHealth, enemyDamage, 1, 2000, 3, 200)
             };
-            return BattleSimulation.Run(board, fighters, 1);
+            return BattleSimulation.Run(board, fighters, 1, 10);
         }
 
         [Test]
@@ -36,7 +36,8 @@ namespace TrollStrategy.Tests
         [Test]
         public void DefeatedShare_ADrawTookTheDamageDealtOverTheEnemiesHealth()
         {
-            var report = Run(100000);
+            // a goblin that hits for 1 cannot fell the troll in the 90 s of a battle
+            var report = Run(100000, enemyDamage: 1);
             Assert.That(report.Outcome, Is.EqualTo(BattleOutcome.Draw));
             int dealt = report.Events.Where(e => e.Kind == BattleEventKind.Attack && e.TargetId == "enemy-000")
                 .Sum(e => e.Damage);

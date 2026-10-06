@@ -84,6 +84,10 @@ namespace TrollStrategy.Content
         [Tooltip("С какого отношения сил отряда к силам врагов окно арены пишет «Отряд сильнее»; обратное отношение — «Отряд слабее».")]
         [SerializeField, Min(1.01f)] private float _arenaOddsMargin = 1.5f;
 
+        [Header("Бой")]
+        [Tooltip("Как броня гасит удар: урон × K / (K + броня), округлённо и не меньше 1. При K = 10 броня 10 вдвое снижает урон; чем меньше K, тем сильнее броня. Неуязвимости не бывает, а каждое очко брони прибавляет столько же запаса здоровья.")]
+        [SerializeField, Min(1)] private int _armorScale = 10;
+
         public int GridWidth => _gridWidth;
         public int GridHeight => _gridHeight;
         public float CellSize => _cellSize;
@@ -119,6 +123,7 @@ namespace TrollStrategy.Content
         public int ArenaStakePercent => Mathf.Clamp(_arenaStakePercent, 0, 100);
         public float ArenaDefeatRestMultiplier => Mathf.Max(1f, _arenaDefeatRestMultiplier);
         public float ArenaOddsMargin => Mathf.Max(1.01f, _arenaOddsMargin);
+        public int ArmorScale => Mathf.Max(1, _armorScale);
 
         /// <param name="transferTimeSeconds">Both loading and unloading time; see <see cref="SetHauling"/>.</param>
         public void Init(int gridWidth, int gridHeight, float cellSize, int startingGold, int maxUnitsPerCell, float tickIntervalSeconds, float workPerStrengthSecond, float transferTimeSeconds)
@@ -182,5 +187,7 @@ namespace TrollStrategy.Content
             _arenaDefeatRestMultiplier = Mathf.Max(1f, defeatRestMultiplier);
             _arenaOddsMargin = Mathf.Max(1.01f, oddsMargin);
         }
+
+        public void SetBattle(int armorScale) => _armorScale = Mathf.Max(1, armorScale);
     }
 }

@@ -15,7 +15,7 @@ MonoBehaviour:
   _missionId: mission-24
   _displayName: "24. \u041E\u0433\u043E\u043D\u044C \u0438 \u043A\u043B\u044B\u043A\u0438"
   _level: 24
-  _enemyHealthPercent: 390
+  _enemyHealthPercent: 146
   _enemyDamageBonus: 0
   _enemyArmorBonus: 0
   _unlocksUnit: 0
@@ -76,87 +76,87 @@ MonoBehaviour:
       X: 7
       Y: 2
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 14
     Cell:
       X: 8
       Y: 2
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 19
     Cell:
       X: 7
       Y: 1
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 19
     Cell:
       X: 8
       Y: 1
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 14
     Cell:
       X: 7
       Y: 3
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 14
     Cell:
       X: 8
       Y: 3
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 14
     Cell:
       X: 7
       Y: 0
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 14
     Cell:
       X: 8
       Y: 0
     Gear:
-    - war-hammer
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 21
     Cell:
       X: 7
       Y: 4
     Gear:
-    - enchanted-bow
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   - Kind: 21
     Cell:
       X: 8
       Y: 4
     Gear:
-    - enchanted-bow
-    - steel-armor
+    - enchanted-war-hammer
+    - iron-armor
     Champion: 0
   _firstWinGold: 1630
   _firstWinGoldMax: 2610
   _repeatWinGold: 980
   _repeatWinGoldMax: 1570
   _winGoods:
-  - _resource: 34
+  - _resource: 45
     _amount: 1
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120

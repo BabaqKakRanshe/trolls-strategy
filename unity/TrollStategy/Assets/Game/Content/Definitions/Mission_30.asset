@@ -15,8 +15,8 @@ MonoBehaviour:
   _missionId: mission-30
   _displayName: "30. \u0425\u043E\u0437\u044F\u0435\u0432\u0430 \u0430\u0440\u0435\u043D\u044B"
   _level: 30
-  _enemyHealthPercent: 450
-  _enemyDamageBonus: 0
+  _enemyHealthPercent: 158
+  _enemyDamageBonus: 2
   _enemyArmorBonus: 0
   _unlocksUnit: 0
   _unlockUnit: 0
@@ -77,8 +77,7 @@ MonoBehaviour:
       Y: 2
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
-    - helmet
+    - steel-armor
     Champion: 1
   - Kind: 27
     Cell:
@@ -86,7 +85,7 @@ MonoBehaviour:
       Y: 1
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
+    - chainmail
     Champion: 0
   - Kind: 25
     Cell:
@@ -94,7 +93,7 @@ MonoBehaviour:
       Y: 3
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
+    - chainmail
     Champion: 0
   - Kind: 25
     Cell:
@@ -102,7 +101,7 @@ MonoBehaviour:
       Y: 0
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
+    - chainmail
     Champion: 0
   - Kind: 26
     Cell:
@@ -110,7 +109,7 @@ MonoBehaviour:
       Y: 4
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
+    - chainmail
     Champion: 0
   - Kind: 27
     Cell:
@@ -118,7 +117,7 @@ MonoBehaviour:
       Y: 2
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
+    - chainmail
     Champion: 0
   - Kind: 27
     Cell:
@@ -126,7 +125,7 @@ MonoBehaviour:
       Y: 1
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
+    - chainmail
     Champion: 0
   - Kind: 27
     Cell:
@@ -134,7 +133,7 @@ MonoBehaviour:
       Y: 3
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
+    - chainmail
     Champion: 0
   - Kind: 23
     Cell:
@@ -142,7 +141,7 @@ MonoBehaviour:
       Y: 0
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
+    - chainmail
     Champion: 0
   - Kind: 23
     Cell:
@@ -150,7 +149,7 @@ MonoBehaviour:
       Y: 4
     Gear:
     - enchanted-war-hammer
-    - enchanted-steel-armor
+    - chainmail
     Champion: 0
   _firstWinGold: 1990
   _firstWinGoldMax: 3180
@@ -159,7 +158,7 @@ MonoBehaviour:
   _winGoods:
   - _resource: 45
     _amount: 1
-  - _resource: 50
+  - _resource: 37
     _amount: 1
   _unlockAfterActiveSeconds: 0
   _cooldownActiveSeconds: 120

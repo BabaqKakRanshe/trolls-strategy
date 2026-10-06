@@ -151,7 +151,23 @@ namespace TrollStrategy.Domain
             public int MoveCooldown;
         }
 
-        public static BattleReport Run(BattleBoard board, IReadOnlyList<BattleFighterInput> inputs, int seed)
+        /// <summary>
+        /// One blow through armour: the damage times K / (K + armour), rounded, at least 1, where K is the
+        /// economy's armour scale. Armour never makes a fighter immune, and every point of it adds the same
+        /// share of health, so low damage stays worth something and heavy armour stays worth buying.
+        /// </summary>
+        public static int DamageThrough(int damage, int armor, int armorScale) =>
+            Math.Max(1, (int)Math.Round(ExpectedDamage(damage, armor, armorScale), MidpointRounding.AwayFromZero));
+
+        /// <summary>The same rule unrounded, for estimates against an average armour.</summary>
+        public static double ExpectedDamage(double damage, double armor, int armorScale)
+        {
+            int scale = Math.Max(1, armorScale);
+            return Math.Max(1.0, Math.Max(0.0, damage) * scale / (scale + Math.Max(0.0, armor)));
+        }
+
+        public static BattleReport Run(BattleBoard board, IReadOnlyList<BattleFighterInput> inputs, int seed,
+            int armorScale)
         {
             if (board == null) throw new ArgumentNullException(nameof(board));
             if (inputs == null || inputs.Count == 0) throw new ArgumentException("Нет бойцов", nameof(inputs));
@@ -200,7 +216,7 @@ namespace TrollStrategy.Domain
                     if (distance <= fighter.Input.AttackRange)
                     {
                         if (fighter.AttackCooldown != 0) continue;
-                        int damage = Math.Max(1, fighter.Input.Damage - target.Input.Armor);
+                        int damage = DamageThrough(fighter.Input.Damage, target.Input.Armor, armorScale);
                         pendingDamage.TryGetValue(target.Input.Id, out int total);
                         pendingDamage[target.Input.Id] = total + damage;
                         events.Add(new BattleEvent(BattleEventKind.Attack, time, fighter.Input.Id,

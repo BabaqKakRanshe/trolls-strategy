@@ -25,6 +25,16 @@ namespace TrollStrategy.Editor.Setup
         private const int GearFromLevel = 10;
         private const int MilestoneEvery = 5;
         private const int ChampionHealthPercent = 200;
+        // enemy strength by level (docs/economy-balance.md §18): from level 2 health of HealthFrom% plus
+        // HealthPerLevel% a level, +1 damage every DamageEvery levels, +1 armour every ArmorEvery. Danger is the
+        // enemies' damage against the squad's health, so damage grows faster than health; armour only shares the
+        // blow (BattleSimulation.DamageThrough), so health is no longer the only lever.
+        private const int HealthFrom = 100, HealthPerLevel = 2;
+        private const int DamageEvery = 3, ArmorEvery = 6;
+
+        private static int HealthPercent(int level) => level == 1 ? 100 : HealthFrom + (level - 1) * HealthPerLevel;
+        private static int DamageBonus(int level) => (level - 1) / DamageEvery;
+        private static int ArmorBonus(int level) => (level - 1) / ArmorEvery;
 
         private static readonly (string Name, UnitKind? Unlock, ArenaBiome Biome, (UnitKind Kind, int Count)[] Enemies)[] Ladder =
         {
@@ -107,17 +117,16 @@ namespace TrollStrategy.Editor.Setup
                     kinds.Add(roster[0].Kind);
                 if (kinds.Count > enemyZone.Count) kinds.RemoveRange(enemyZone.Count, kinds.Count - enemyZone.Count);
 
-                // the arena is hard to win (2026-10-04): past the first fight, which teaches the battle, enemies
-                // have 60% more health and 10% more each level, +1 damage and +1 armour every 4 levels. Four bare
-                // trolls stop at level 5, ironclad ones at 9, the campaign's best squad at about 13 (docs/economy-balance.md §12).
-                // From level 10 the enemies wear part of that bonus as gear, so their strength stays the same.
-                int bonus = (level - 1) / 4;
+                // past the first fight, which teaches the battle, enemies grow by the level (HealthPercent,
+                // DamageBonus, ArmorBonus above; targets in ArenaBenchTests). From level 10 they wear part of the
+                // damage and armour as gear, so their strength stays the same.
+                int damage = DamageBonus(level), armor = ArmorBonus(level);
                 var kits = new List<string[]>();
                 foreach (var kind in kinds)
-                    kits.Add(level >= GearFromLevel ? Kit(catalog, bonus, Ranged(catalog, kind)) : Array.Empty<string>());
+                    kits.Add(level >= GearFromLevel ? Kit(catalog, damage, armor, Ranged(catalog, kind)) : Array.Empty<string>());
                 int worn = kits.Count == 0 ? 0 : kits.Max(kit => Damage(catalog, kit));
                 int wornArmor = kits.Count == 0 ? 0 : kits.Max(kit => Armor(catalog, kit));
-                int damageBonus = Math.Max(0, bonus - worn), armorBonus = Math.Max(0, bonus - wornArmor);
+                int damageBonus = Math.Max(0, damage - worn), armorBonus = Math.Max(0, armor - wornArmor);
 
                 var enemies = Place(catalog, formation, kinds, kits);
                 if (milestone)
@@ -127,9 +136,10 @@ namespace TrollStrategy.Editor.Setup
                     int at = enemies.FindIndex(enemy => enemy.Kind == roster[0].Kind);
                     var champion = enemies[at];
                     champion.Champion = true;
+                    // it always wears armour, so a milestone's trophies are a weapon and armour
                     champion.Gear = level >= GearFromLevel
-                        ? Kit(catalog, bonus + 1, Ranged(catalog, champion.Kind))
-                        : Kit(catalog, bonus, Ranged(catalog, champion.Kind));
+                        ? Kit(catalog, damage + 1, armor + 1, Ranged(catalog, champion.Kind))
+                        : Kit(catalog, damage, Math.Max(1, armor), Ranged(catalog, champion.Kind));
                     enemies[at] = champion;
                 }
 
@@ -145,7 +155,7 @@ namespace TrollStrategy.Editor.Setup
                 mission.SetTimingAndRewards(level == 1 ? 120f : 0f, 120f, firstMin, repeatMin);
                 mission.SetRewardRanges(firstMax, repeatMax);
                 mission.SetWinGoods(Trophies(catalog, level, milestone, enemies));
-                mission.SetArena(level, level == 1 ? 100 : 160 + (level - 1) * 10, damageBonus, armorBonus, unlock);
+                mission.SetArena(level, HealthPercent(level), damageBonus, armorBonus, unlock);
                 mission.SetLadderTraits(formation, milestone, milestone ? ChampionHealthPercent : 0);
                 mission.SetBiome(biome);
                 var look = AssetDatabase.LoadAssetAtPath<GameObject>($"{ArenaFolder}Arena_{biome}.prefab");
@@ -232,20 +242,21 @@ namespace TrollStrategy.Editor.Setup
         }
 
         /// <summary>
-        /// Gear for an enemy whose level adds <paramref name="bonus"/> damage and armour: the best weapon of no more
-        /// damage (of equal ones a bow for an archer, a blade for the rest), then the best armour and helmet that fit
-        /// what is left of the armour. The damage comes first: the level's strength must not drop for the look.
+        /// Gear for an enemy whose level adds <paramref name="damageBonus"/> damage and <paramref name="armorBonus"/>
+        /// armour: the best weapon of no more damage and armour (of equal ones a bow for an archer, a blade for the
+        /// rest), then the best armour and helmet that fit what is left of the armour. The damage comes first: the
+        /// level's strength must not drop for the look.
         /// </summary>
-        private static string[] Kit(GameContentCatalog catalog, int bonus, bool ranged)
+        private static string[] Kit(GameContentCatalog catalog, int damageBonus, int armorBonus, bool ranged)
         {
             var items = catalog.Equipment.Where(e => e != null && !string.IsNullOrEmpty(e.ItemId)).ToList();
             var weapon = items
-                .Where(e => e.Slot == EquipmentSlot.Weapon && e.DamageBonus > 0 && e.DamageBonus <= bonus &&
-                            e.ArmorBonus <= bonus)
+                .Where(e => e.Slot == EquipmentSlot.Weapon && e.DamageBonus > 0 && e.DamageBonus <= damageBonus &&
+                            e.ArmorBonus <= armorBonus)
                 .OrderByDescending(e => e.DamageBonus).ThenByDescending(e => e.ItemId.Contains("bow") == ranged)
                 .ThenBy(e => e.Enchanted).ThenBy(e => e.ItemId, StringComparer.Ordinal)
                 .FirstOrDefault();
-            int armorLeft = bonus - (weapon?.ArmorBonus ?? 0);
+            int armorLeft = armorBonus - (weapon?.ArmorBonus ?? 0);
             var armor = Best(items, EquipmentSlot.Armor, armorLeft);
             armorLeft -= armor?.ArmorBonus ?? 0;
             var helmet = Best(items, EquipmentSlot.Helmet, armorLeft);

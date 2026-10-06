@@ -15,8 +15,8 @@ MonoBehaviour:
   _missionId: mission-8
   _displayName: "8. \u041C\u0430\u0442\u044C \u0441\u043B\u0438\u0437\u043D\u0435\u0439"
   _level: 8
-  _enemyHealthPercent: 230
-  _enemyDamageBonus: 1
+  _enemyHealthPercent: 114
+  _enemyDamageBonus: 2
   _enemyArmorBonus: 1
   _unlocksUnit: 0
   _unlockUnit: 0
