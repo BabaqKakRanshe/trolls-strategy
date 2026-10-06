@@ -140,6 +140,59 @@ namespace TrollStrategy.Bots
                    a.DestinationId == destinationId;
         });
 
+        /// <summary>A place where goods are sold or stored rather than used: the market or a stockpile.</summary>
+        public bool IsOutlet(BuildingSnapshot building) => building != null &&
+            Def(building.Kind).StorageRole is StorageRole.Market or StorageRole.Stockpile;
+
+        /// <summary>
+        /// Some hauler takes the resource from the building to a place that accepts it and has room: a workshop full
+        /// of it takes no more, the market and the armory never fill up.
+        /// </summary>
+        public bool Served(BuildingSnapshot building, ResourceKind resource) => Snapshot.Units.Any(u =>
+        {
+            var a = u.Assignment;
+            if (a.Kind != AssignmentKind.Haul || a.SourceId != building.Id || !a.MayCarry(resource)) return false;
+            var destination = Building(a.DestinationId);
+            if (destination == null || !ColonySimulation.Accepts(Def(destination.Kind), resource, Catalog)) return false;
+            var role = Def(destination.Kind).StorageRole;
+            return role is StorageRole.Market or StorageRole.Armory || destination.TotalStock < destination.Capacity;
+        });
+
+        /// <summary>
+        /// The consumer stands short of the resource while haulers take it from the source to be sold or stored.
+        /// Those haulers keep the source's other goods; one left with nothing to carry takes the resource to the
+        /// consumer instead. With <paramref name="everyone"/> false only haulers sent for chosen goods (a by-product
+        /// clearing) are asked; a hauler free to take anything stays as it is. Returns whether an order was given.
+        /// </summary>
+        public bool StopSelling(ResourceKind resource, BuildingSnapshot source, BuildingSnapshot consumer, bool everyone)
+        {
+            bool ordered = false;
+            var haulers = Snapshot.Units.Where(u => u.Assignment.Kind == AssignmentKind.Haul &&
+                u.Assignment.SourceId == source.Id && u.Assignment.DestinationId != consumer.Id &&
+                u.Assignment.MayCarry(resource) && (everyone || !u.Assignment.CarriesAnything)).ToList();
+            foreach (var route in haulers.GroupBy(u => u.Assignment.DestinationId).ToList())
+            {
+                var outlet = Building(route.Key);
+                if (!IsOutlet(outlet)) continue;
+                var toConsumer = new List<string>();
+                foreach (var same in route.GroupBy(u => string.Join(",", Kept(u.Assignment, source, outlet, resource))))
+                {
+                    var ids = same.Select(u => u.Id).ToList();
+                    var kept = Kept(same.First().Assignment, source, outlet, resource);
+                    if (kept.Count == 0) toConsumer.AddRange(ids);
+                    else ordered |= Dispatch(new AssignHaulCommand(ids, source.Id, outlet.Id, kept));
+                }
+                if (toConsumer.Count > 0 && CanHaul(source, consumer))
+                    ordered |= Dispatch(new AssignHaulCommand(toConsumer, source.Id, consumer.Id));
+            }
+            return ordered;
+        }
+
+        // the goods a hauler may still take with the resource off its list
+        private List<ResourceKind> Kept(Assignment haul, BuildingSnapshot source, BuildingSnapshot outlet, ResourceKind resource) =>
+            (haul.CarriesAnything ? ColonySimulation.CarriableResources(source.Kind, outlet.Kind, Catalog) : haul.Cargo)
+            .Where(r => r != resource).ToList();
+
         /// <summary>Every source → destination pair at least one hauler works, in the order units were hired.</summary>
         public List<(string Source, string Destination)> Routes()
         {

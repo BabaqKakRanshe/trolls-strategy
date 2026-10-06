@@ -238,30 +238,30 @@ namespace TrollStrategy.Bots
         }
 
         /// <summary>
-        /// The chain's workshop stands idle while the building that holds its input sells that input: half of
-        /// the haulers taking goods from there to the market carry to the workshop instead, while its route has
-        /// room for them.
+        /// The chain's workshop stands idle while the buildings that hold its input sell or store it: half of the
+        /// haulers taking it from there to the market or a stockpile carry to the workshop instead, while its route
+        /// has room for them. When it has none, those haulers stop taking the input, so it stays for the chain.
         /// </summary>
         private void Redirect(ResourceKind resource, BuildingSnapshot consumer)
         {
-            var market = _hands.First(BuildingKind.Market);
-            if (market == null) return;
-            foreach (var route in _hands.Routes().Where(r => r.Destination == market.Id).ToList())
+            foreach (var route in _hands.Routes().ToList())
             {
                 var source = _hands.Building(route.Source);
-                if (source == null || source.Id == consumer.Id ||
+                var outlet = _hands.Building(route.Destination);
+                if (source == null || source.Id == consumer.Id || outlet == null || outlet.Id == consumer.Id ||
+                    !_hands.IsOutlet(outlet) ||
                     (!_hands.Makes(source.Kind, resource) && _hands.StockOf(source, resource) == 0) ||
                     !ColonySimulation.Provides(_hands.Def(source.Kind), resource) || !_hands.CanHaul(source, consumer))
                     continue;
-                int room = _profile.MaxHaulersPerRoute - _hands.Haulers(source.Id, consumer.Id);
-                if (room <= 0) continue;
-                // a hauler sent with chosen goods (a by-product clearing) stays on its own errand
                 var ids = _hands.Snapshot.Units
                     .Where(u => u.Assignment.Kind == AssignmentKind.Haul && u.Assignment.SourceId == source.Id &&
-                                u.Assignment.DestinationId == market.Id && u.Assignment.MayCarry(resource))
+                                u.Assignment.DestinationId == outlet.Id && u.Assignment.MayCarry(resource))
                     .Select(u => u.Id).ToList();
+                if (ids.Count == 0) continue;
+                int room = Math.Max(0, _profile.MaxHaulersPerRoute - _hands.Haulers(source.Id, consumer.Id));
                 int move = Math.Min(room, (ids.Count + 1) / 2);
                 if (move > 0) _hands.Dispatch(new AssignHaulCommand(ids.Take(move).ToList(), source.Id, consumer.Id));
+                else _hands.StopSelling(resource, source, consumer, everyone: true);
             }
         }
 
@@ -274,8 +274,9 @@ namespace TrollStrategy.Bots
         {
             var market = _hands.First(BuildingKind.Market);
             if (market == null || producer.Id == market.Id) return;
+            // a good a workshop already takes from here is its input, not a surplus to sell
             var surplus = ColonySimulation.ProvidedResources(producer.Kind, _hands.Catalog)
-                .Where(r => r != kept && _hands.StockOf(producer, r) > 0).ToList();
+                .Where(r => r != kept && _hands.StockOf(producer, r) > 0 && !UsedDownstream(producer, r)).ToList();
             if (surplus.Count == 0) return;
             bool taken = _hands.Snapshot.Units.Any(u => u.Assignment.Kind == AssignmentKind.Haul &&
                 u.Assignment.SourceId == producer.Id && u.Assignment.DestinationId == market.Id &&
@@ -289,6 +290,10 @@ namespace TrollStrategy.Bots
             else _hands.Haul(producer, market, 1, wait, $"лишнее на рынок: {producer.Name}", surplus);
         }
 
+        private bool UsedDownstream(BuildingSnapshot producer, ResourceKind resource) => _hands.Routes()
+            .Where(r => r.Source == producer.Id).Select(r => _hands.Building(r.Destination))
+            .Any(d => d != null && !_hands.IsOutlet(d) && _hands.Def(d.Kind).ConsumesInRecipe(resource));
+
         /// <summary>A route into the consumer from a building that hands out the resource, or a new chain.</summary>
         private void EnsureSupply(ResourceKind resource, BuildingSnapshot consumer, BotWait wait, int depth)
         {
@@ -300,6 +305,10 @@ namespace TrollStrategy.Bots
                 if (source == null || !ColonySimulation.Provides(_hands.Def(source.Kind), resource)) continue;
                 // a producer whose workers fell in battle or left supplies nothing: the chain staffs it again
                 if (source.IsWorkplace && source.WorkerCount == 0 && _hands.Makes(source.Kind, resource)) break;
+                // a supplier down to a single worker cannot keep a workshop going: it gets the chain's two
+                if (source.IsWorkplace && source.WorkerCount < ChainWorkers && _hands.Makes(source.Kind, resource))
+                    _hands.Staff(source, _hands.WorkerFor(source.Kind), ChainWorkers - source.WorkerCount, wait,
+                        $"рабочие: {source.Name}");
                 // the supplier makes other goods too; when they fill it up it stops supplying this one
                 if (source.ProductionState == ProductionState.OutputFull) ClearSurplus(source, resource, wait);
                 return;

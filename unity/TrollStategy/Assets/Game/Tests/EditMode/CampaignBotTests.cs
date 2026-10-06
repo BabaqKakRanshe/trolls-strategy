@@ -86,6 +86,24 @@ namespace TrollStrategy.Tests
             Assert.That(run.Outcome, Is.EqualTo(BotOutcome.Completed), BotReport.Markdown(run));
         }
 
+        // bots that once stalled on a chain because a good had nowhere to go or was sold away from the workshop
+        // that waited for it: a by-product filling a mine, straw taken from the farm, ingots sold past the forge,
+        // a mine's ore stored instead of smelted
+        [TestCase("p23", "armory-stock")]
+        [TestCase("p97", "ingot-sell")]
+        [TestCase("p8", "leather-sell")]
+        [TestCase("p135", "tavern-build")]
+        public void Persona_GetsPastTheChainThatStalledIt(string id, string questId)
+        {
+            int level = _catalog.Progression.Quests.ToList().FindIndex(q => q.Id == questId) + 1;
+            Assert.That(level, Is.GreaterThan(0), questId);
+
+            var run = new CampaignBot(new GameSession(_catalog, BotMenu.SceneLayout(_catalog), campaign: true),
+                BotPopulation.Find(id)) { StopAfterLevel = level }.Run();
+
+            Assert.That(run.Outcome, Is.EqualTo(BotOutcome.Completed), BotReport.Markdown(run));
+        }
+
         // fights for gold whenever the arena is ready and hires the strongest, as the "warlord" profile did
         private static readonly BotProfile Fighter = new("fighter", "Воитель",
             "Нанимает самых сильных, ходит на арену при каждой возможности ради золота и вкладывается в казарму.",

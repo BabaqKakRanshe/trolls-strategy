@@ -44,6 +44,8 @@ namespace TrollStrategy.Bots
             foreach (var id in _hands.Snapshot.Buildings.Select(b => b.Id).ToList())
                 OpenOutlet(_hands.Building(id));
             foreach (var id in _hands.Snapshot.Buildings.Select(b => b.Id).ToList())
+                Unblock(_hands.Building(id));
+            foreach (var id in _hands.Snapshot.Buildings.Select(b => b.Id).ToList())
                 Feed(_hands.Building(id), scale: false);
 
             _hands.SpendLimit = Spare(wait);
@@ -169,6 +171,20 @@ namespace TrollStrategy.Bots
                     $"на место павших: {building.Name}");
         }
 
+        // A producer full of goods no hauler takes anywhere they are wanted (a by-product its routes do not carry:
+        // crystal on the way to a smeltery) stops for all its goods: those go to the market on their own.
+        private void Unblock(BuildingSnapshot building)
+        {
+            if (building == null || !building.IsWorkplace || building.ProductionState != ProductionState.OutputFull) return;
+            var market = _hands.First(BuildingKind.Market);
+            if (market == null || !_hands.CanHaul(building, market)) return;
+            var def = _hands.Def(building.Kind);
+            var stuck = building.Stock.Where(s => s.Amount > 0 && ColonySimulation.Provides(def, s.Resource) &&
+                                                  !_hands.Served(building, s.Resource))
+                .Select(s => s.Resource).Distinct().ToList();
+            if (stuck.Count > 0) _hands.Haul(building, market, 1, null, $"вывоз лишнего: {building.Name}", stuck);
+        }
+
         private void OpenOutlet(BuildingSnapshot building)
         {
             if (building == null || HasOutlet(building)) return;
@@ -211,6 +227,9 @@ namespace TrollStrategy.Bots
                     .Select(i => i.Resource).ToList();
                 var sources = missing.Select(r => Source(r, consumer)).ToList();
                 if (missing.Count == 0 || sources.Any(s => s == null)) continue;
+                // a by-product clearing that sells the very input the workshop waits for gives it up
+                for (int i = 0; i < missing.Count; i++)
+                    _hands.StopSelling(missing[i], sources[i], consumer, everyone: false);
                 bool added = false;
                 foreach (var source in sources)
                 {
