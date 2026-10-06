@@ -103,6 +103,8 @@ namespace TrollStrategy.Bots
             ("arenaGoldShare", Num(run.ArenaGoldShare)),
             ("paidRepeatsIn10Min", Num(run.PaidRepeatsIn10Min)),
             ("units", Arr(run.Units, u => Obj(("name", Str(u.Key)), ("count", Num(u.Value))))),
+            ("hiredByKind", Arr(run.HiredByKind, u => Obj(("name", Str(u.Key)), ("count", Num(u.Value))))),
+            ("buildings", Arr(run.Buildings, b => Obj(("name", Str(b.Key)), ("count", Num(b.Value))))),
             ("upgrades", Arr(run.Upgrades, u => Obj(("name", Str(u.Key)), ("level", Num(u.Value))))),
             ("unlocks", Arr(run.Unlocks, u => Obj(
                 ("name", Str(u.Name)), ("atMs", Num(u.AtMs)), ("questLevel", Num(u.QuestLevel))))),

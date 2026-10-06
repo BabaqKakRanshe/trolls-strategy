@@ -133,6 +133,10 @@ namespace TrollStrategy.Bots
         }
         /// <summary>The colony at the end by creature name.</summary>
         public SortedDictionary<string, int> Units { get; } = new(System.StringComparer.Ordinal);
+        /// <summary>Everyone the bot hired, by creature name, the fallen and sold included.</summary>
+        public SortedDictionary<string, int> HiredByKind { get; } = new(System.StringComparer.Ordinal);
+        /// <summary>The colony's buildings at the end by name: a count above 1 is a copy.</summary>
+        public SortedDictionary<string, int> Buildings { get; } = new(System.StringComparer.Ordinal);
         /// <summary>Levels of the colony upgrades bought by the end, by name.</summary>
         public SortedDictionary<string, int> Upgrades { get; } = new(System.StringComparer.Ordinal);
         public List<UnlockRecord> Unlocks { get; } = new();

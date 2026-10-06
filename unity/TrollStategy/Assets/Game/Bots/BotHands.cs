@@ -230,6 +230,7 @@ namespace TrollStrategy.Bots
                 if (!Dispatch(new BuyUnitsCommand(kind, n, cell))) break;
                 Spent(cost);
                 _run.Hired += n;
+                CountHire(kind, n);
                 break;
             }
             hired.AddRange(Snapshot.Units.Where(u => !before.Contains(u.Id)).Select(u => u.Id));
@@ -271,7 +272,15 @@ namespace TrollStrategy.Bots
             if (!Dispatch(new HireWorkerCommand(kind, building.Id, cell))) return false;
             Spent(cost);
             _run.Hired++;
+            CountHire(kind, 1);
             return true;
+        }
+
+        private void CountHire(UnitKind kind, int amount)
+        {
+            string name = Catalog.GetUnit(kind).DisplayName;
+            _run.HiredByKind.TryGetValue(name, out int count);
+            _run.HiredByKind[name] = count + amount;
         }
 
         public int Haul(BuildingSnapshot source, BuildingSnapshot destination, int amount, BotWait wait, string why,

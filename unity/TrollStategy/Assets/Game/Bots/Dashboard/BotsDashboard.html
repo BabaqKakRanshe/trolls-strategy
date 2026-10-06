@@ -599,6 +599,8 @@ function render() {
         el("span", {}, "отказов ", el("b", {}, r.refusals.reduce((a, x) => a + x.count, 0)))),
       r.units ? el("div", { class: "facts" },
         el("span", {}, "существа: ", el("b", {}, r.units.length ? r.units.map(u => `${u.name} ${u.count}`).join(", ") : "—")),
+        r.hiredByKind ? el("span", {}, "нанято: ", el("b", {}, r.hiredByKind.length ? r.hiredByKind.map(u => `${u.name} ${u.count}`).join(", ") : "—")) : null,
+        r.buildings ? el("span", {}, "постройки: ", el("b", {}, r.buildings.length ? r.buildings.map(b => `${b.name} ${b.count}`).join(", ") : "—")) : null,
         el("span", {}, "улучшения: ", el("b", {}, r.upgrades.length ? r.upgrades.map(u => `${u.name} ${u.level}`).join(", ") : "—")),
         el("span", {}, "открыты жители: ", el("b", {}, r.unlocks.length
           ? r.unlocks.map(u => `${u.name} (${fmtMin(u.atMs)} мин, задание ${u.questLevel})`).join(", ") : "—"))) : null,

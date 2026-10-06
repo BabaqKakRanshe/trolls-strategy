@@ -69,6 +69,8 @@ namespace TrollStrategy.Bots
                             $"за любые 10 минут не больше {run.PaidRepeatsIn10Min}; сгорело ставок {run.Battles.Sum(b => b.Stake)}, " +
                             $"закрытий вершины {run.Battles.Count(b => b.ClosedLevel > 0)}");
             text.AppendLine($"- Существа: {Listed(run.Units)}");
+            text.AppendLine($"- Нанято по видам: {Listed(run.HiredByKind)}");
+            text.AppendLine($"- Постройки: {Listed(run.Buildings)}");
             text.AppendLine($"- Улучшения: {Listed(run.Upgrades)}");
             text.AppendLine("- Открыты жители: " + (run.Unlocks.Count == 0
                 ? "—"

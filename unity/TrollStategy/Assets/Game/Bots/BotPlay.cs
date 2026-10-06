@@ -155,6 +155,10 @@ namespace TrollStrategy.Bots
             Run.Units.Clear();
             foreach (var group in _hands.Snapshot.Units.GroupBy(u => u.UnitKind))
                 Run.Units[_hands.Catalog.GetUnit(group.Key).DisplayName] = group.Count();
+            Run.Buildings.Clear();
+            // by kind: a building's own name carries its number ("Шахта 2"), so copies would never add up
+            foreach (var group in _hands.Snapshot.Buildings.GroupBy(b => b.Kind))
+                Run.Buildings[_hands.Catalog.GetBuilding(group.Key).DisplayName] = group.Count();
             Run.Upgrades.Clear();
             foreach (var upgrade in _hands.Snapshot.Upgrades.Where(u => u.Level > 0))
                 Run.Upgrades[upgrade.Name] = upgrade.Level;
