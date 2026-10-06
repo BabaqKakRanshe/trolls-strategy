@@ -50,8 +50,12 @@ namespace TrollStrategy.Bots
             Economy = session.Catalog.Economy;
             _run = run;
             _profile = profile;
+            Dice = new BotDice(profile.Seed, 1);
             Refresh();
         }
+
+        /// <summary>The choices this bot takes while it plays: its own dice, the same in every run of it.</summary>
+        public BotDice Dice { get; }
 
         public GameSession Session { get; }
         public GameContentCatalog Catalog { get; }
@@ -347,8 +351,9 @@ namespace TrollStrategy.Bots
         }
 
         /// <summary>
-        /// The valid spot nearest the core that keeps a one-cell lane to every other building and covers no
-        /// creature; null when there is none on cleared land.
+        /// A valid spot that keeps a one-cell lane to every other building and covers no creature: the nearest to
+        /// the core, or any of the <see cref="BotProfile.PlacementChoice"/> nearest; null when there is none on
+        /// cleared land.
         /// </summary>
         public Cell? FindBuildingCell(BuildingKind kind)
         {
@@ -372,10 +377,15 @@ namespace TrollStrategy.Bots
                 float dx = x + def.Width * 0.5f - core.X, dy = y + def.Height * 0.5f - core.Y;
                 candidates.Add((dx * dx + dy * dy, new Cell(x, y)));
             }
+            int choice = Math.Max(1, _profile.PlacementChoice);
+            var valid = new List<Cell>(choice);
             foreach (var candidate in candidates.OrderBy(c => c.Score).ThenBy(c => c.Cell.Y).ThenBy(c => c.Cell.X))
-                if (Session.CanPlaceBuilding(kind, candidate.Cell).Ok)
-                    return candidate.Cell;
-            return null;
+            {
+                if (!Session.CanPlaceBuilding(kind, candidate.Cell).Ok) continue;
+                valid.Add(candidate.Cell);
+                if (valid.Count == choice) break;
+            }
+            return valid.Count > 0 ? valid[Dice.Pick(valid.Count)] : null;
         }
 
         private bool OnClearedLand(int x, int y, int width, int height)

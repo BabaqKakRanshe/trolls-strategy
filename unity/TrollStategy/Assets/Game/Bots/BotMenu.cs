@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Presentation.Buildings;
@@ -14,11 +16,12 @@ using UnityEngine.SceneManagement;
 namespace TrollStrategy.Bots
 {
     /// <summary>
-    /// Runs every bot profile on the shipped catalog and the colony scene's starting buildings and writes the
-    /// reports to Builds/Stats/bots (git-ignored): summary.md, one Markdown and one CSV per profile, and the report
-    /// page (index.html with bots-data.js; history.jsonl keeps the earlier runs it compares against). Builds/Stats
-    /// also holds the players' page (tools/stats/players.py) and the hub that shows both.
-    /// Batch: -executeMethod TrollStrategy.Bots.BotMenu.RunAllBatch -quit.
+    /// Plays the bots' population (<see cref="BotPopulation"/>) on the shipped catalog and the colony scene's
+    /// starting buildings, on every core at once, and writes the reports to Builds/Stats/bots (git-ignored):
+    /// summary.md, population.csv, full reports of a few bots in runs/, and the report page (index.html with
+    /// bots-data.js; history.jsonl keeps the earlier runs it compares against). Builds/Stats also holds the
+    /// players' page (tools/stats/players.py) and the hub that shows both.
+    /// Batch: -executeMethod TrollStrategy.Bots.BotMenu.RunAllBatch [-botCount 200].
     /// </summary>
     public static class BotMenu
     {
@@ -44,20 +47,31 @@ namespace TrollStrategy.Bots
             ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotMenu.cs",
             ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotReport.cs",
             ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotReportData.cs",
+            ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotPopulationStats.cs",
             ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotInGame.cs",
             ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotParity.cs",
             ":(exclude)unity/TrollStategy/Assets/Game/Bots/SnapshotDigest.cs"
         };
 
         [MenuItem("TrollStrategy/Bots/Run Campaign Bots")]
-        public static void RunAll()
+        public static void RunAll() => RunInEditor(BotPopulation.DefaultCount);
+
+        [MenuItem("TrollStrategy/Bots/Run Campaign Bots (1000)")]
+        public static void RunLarge() => RunInEditor(BotPopulation.LargeCount);
+
+        private static void RunInEditor(int count)
         {
             try
             {
-                var runs = RunProfiles(BotProfile.All, (i, profile) =>
-                    EditorUtility.DisplayProgressBar("Боты играют кампанию", profile.Title, i / (float)BotProfile.All.Count));
+                var result = RunPopulation(count, (done, total) => EditorUtility.DisplayCancelableProgressBar(
+                    "Боты играют кампанию", $"{done} из {total}: каждый бот — своя партия, все ядра сразу", done / (float)total));
+                if (result == null)
+                {
+                    Debug.Log("[Bots] the run was cancelled; the reports were left as they were");
+                    return;
+                }
                 WriteHub(Folder);
-                Debug.Log($"[Bots] report page {PagePath(Folder)}\n{BotReport.Summary(runs)}");
+                Debug.Log($"[Bots] report page {PagePath(Folder)}\n{BotReport.Headline(result.Value.Stats)}");
             }
             finally
             {
@@ -74,14 +88,17 @@ namespace TrollStrategy.Bots
             else Debug.LogWarning($"[Bots] no report page yet: run TrollStrategy/Bots/Run Campaign Bots ({page})");
         }
 
+        /// <summary>Batch: [-botCount 200] personas, [-botStopAfter 0] quests; exits 1 when the run could not be played.</summary>
         public static void RunAllBatch()
         {
             int code = 0;
             try
             {
-                string summary = Run(null, 0, Folder);
+                int count = int.TryParse(Argument("-botCount"), out int n) && n > 0 ? n : BotPopulation.DefaultCount;
+                int stopAfter = int.TryParse(Argument("-botStopAfter"), out int level) ? level : 0;
+                var result = RunPopulation(count, null, Folder, stopAfter).Value;
                 WriteHub(Folder);
-                Debug.Log($"[Bots] report page {PagePath(Folder)}\n{summary}");
+                Debug.Log($"[Bots] report page {PagePath(Folder)}\n{BotReport.Headline(result.Stats)}");
             }
             catch (Exception exception)
             {
@@ -91,65 +108,132 @@ namespace TrollStrategy.Bots
             EditorApplication.Exit(code);
         }
 
-        /// <summary>
-        /// Runs the profiles named in <paramref name="profileIds"/> (comma-separated; null or empty runs all) up to
-        /// <paramref name="stopAfterLevel"/> (0: the whole chain), writes the reports and returns the summary.
-        /// </summary>
-        public static string Run(string profileIds, int stopAfterLevel, string folder)
+        private static string Argument(string name)
         {
-            var ids = string.IsNullOrEmpty(profileIds) ? null : profileIds.Split(',').Select(id => id.Trim()).ToList();
-            var profiles = BotProfile.All.Where(p => ids == null || ids.Contains(p.Id)).ToList();
-            return BotReport.Summary(RunProfiles(profiles, null, folder, stopAfterLevel));
+            var args = Environment.GetCommandLineArgs();
+            int index = Array.IndexOf(args, name);
+            return index >= 0 && index + 1 < args.Length ? args[index + 1] : null;
         }
 
-        public static List<BotRun> RunProfiles(IReadOnlyList<BotProfile> profiles, Action<int, BotProfile> progress,
-            string folder = Folder, int stopAfterLevel = 0)
+        /// <summary>Runs at once: every core but one, so the editor stays responsive.</summary>
+        public static int Threads => Math.Max(1, Environment.ProcessorCount - 1);
+
+        /// <summary>
+        /// Plays personas 1 to <paramref name="count"/> on the shipped catalog and the colony scene's starting
+        /// buildings, up to <see cref="Threads"/> at once, and writes the reports. <paramref name="progress"/> sees
+        /// the finished count on the main thread and cancels with true; a cancelled run writes nothing and is null.
+        /// </summary>
+        public static (List<BotRun> Runs, BotPopulationStats Stats)? RunPopulation(int count,
+            Func<int, int, bool> progress = null, string folder = Folder, int stopAfterLevel = 0)
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
                 throw new InvalidOperationException("Боты читают сцену колонии: сначала выйдите из Play Mode");
             var catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath);
             if (catalog == null) throw new InvalidOperationException($"Нет каталога: {CatalogPath}");
             var layout = SceneLayout(catalog);
-            Directory.CreateDirectory(folder);
-            var runs = new List<BotRun>();
-            for (int i = 0; i < profiles.Count; i++)
-            {
-                progress?.Invoke(i, profiles[i]);
-                var bot = new CampaignBot(new GameSession(catalog, layout, campaign: true), profiles[i])
-                {
-                    StopAfterLevel = stopAfterLevel
-                };
-                var run = bot.Run();
-                runs.Add(run);
-                File.WriteAllText(Path.Combine(folder, $"{run.Profile.Id}.md"), BotReport.Markdown(run));
-                File.WriteAllText(Path.Combine(folder, $"{run.Profile.Id}.csv"), BotReport.Csv(run));
-            }
-            File.WriteAllText(Path.Combine(folder, "summary.md"), BotReport.Summary(runs));
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            var runs = Play(BotPopulation.Personas(count), catalog, layout, stopAfterLevel, progress, Threads);
+            if (runs == null) return null;
 
             var (commit, branch) = GitHead();
             var info = new BotReportInfo(DateTime.Now, commit, branch,
                 string.Join(", ", layout.Select(b => $"{b.Kind} ({b.Cell.X}, {b.Cell.Y})")),
-                catalog.Progression.Quests.Count, stopAfterLevel, UncommittedRules());
-            WritePage(runs, info, folder);
-            return runs;
+                catalog.Progression.Quests.Count, stopAfterLevel, UncommittedRules(),
+                catalog.Progression.Quests.Select(q => q.Title).ToList())
+            {
+                WallSeconds = clock.Elapsed.TotalSeconds,
+                Threads = Threads
+            };
+            return (runs, WriteReports(runs, info, folder));
         }
 
         /// <summary>
-        /// The report page: the latest runs in bots-data.js with the run history (one line per set of runs in
-        /// history.jsonl, the newest <see cref="HistoryLength"/> kept), and the page itself from its template.
-        /// An open page reloads the data on its own when a new run writes it.
+        /// Plays every profile to the end of the chain (or <paramref name="stopAfterLevel"/>), up to
+        /// <paramref name="threads"/> at once, and returns the runs in the profiles' order. Each run has a session of
+        /// its own; the catalog and the layout are only read. A run whose bot or session throws comes back
+        /// <see cref="BotOutcome.Crashed"/> and is logged. Null when <paramref name="progress"/> cancelled.
         /// </summary>
-        public static void WritePage(IReadOnlyList<BotRun> runs, BotReportInfo info, string folder)
+        public static List<BotRun> Play(IReadOnlyList<BotProfile> profiles, GameContentCatalog catalog,
+            IReadOnlyList<StartingBuilding> layout, int stopAfterLevel = 0, Func<int, int, bool> progress = null,
+            int threads = 0)
         {
+            int chain = catalog.Progression.Quests.Count;
+            var runs = new BotRun[profiles.Count];
+            var errors = new Exception[profiles.Count];
+            int done = 0, cancelled = 0;
+            void PlayOne(int i)
+            {
+                if (Volatile.Read(ref cancelled) != 0) return;
+                try
+                {
+                    runs[i] = new CampaignBot(new GameSession(catalog, layout, campaign: true), profiles[i])
+                    {
+                        StopAfterLevel = stopAfterLevel
+                    }.Run();
+                }
+                catch (Exception exception)
+                {
+                    errors[i] = exception;
+                    runs[i] = new BotRun(profiles[i], stopAfterLevel > 0 ? stopAfterLevel : chain)
+                    {
+                        Outcome = BotOutcome.Crashed,
+                        StopReason = $"{exception.GetType().Name}: {exception.Message}"
+                    };
+                }
+                Interlocked.Increment(ref done);
+            }
+
+            var options = new ParallelOptions { MaxDegreeOfParallelism = threads > 0 ? threads : Threads };
+            var work = Task.Run(() => Parallel.For(0, profiles.Count, options, PlayOne));
+            while (!work.Wait(100))
+                if (progress != null && progress(Volatile.Read(ref done), profiles.Count))
+                    Interlocked.Exchange(ref cancelled, 1);
+            if (cancelled != 0) return null;
+            for (int i = 0; i < errors.Length; i++)
+                if (errors[i] != null) Debug.LogError($"[Bots] {profiles[i].Id} crashed: {errors[i]}");
+            return runs.ToList();
+        }
+
+        /// <summary>
+        /// Writes the reports of a population run to <paramref name="folder"/>: summary.md, population.csv, the page
+        /// with its data and history, and a full report in runs/ for every bot that did not finish and for the
+        /// fastest, the median and the slowest. The reports of the run before go; the in-game check keeps its own.
+        /// </summary>
+        public static BotPopulationStats WriteReports(IReadOnlyList<BotRun> runs, BotReportInfo info, string folder)
+        {
+            var stats = BotPopulationStats.Of(runs, info.QuestTitles);
+            Directory.CreateDirectory(folder);
+            foreach (string file in Directory.GetFiles(folder, "*.md").Concat(Directory.GetFiles(folder, "*.csv")))
+                if (Path.GetFileName(file) != "in-game.md") File.Delete(file);
+            string reports = Path.Combine(folder, "runs");
+            if (Directory.Exists(reports)) Directory.Delete(reports, true);
+            Directory.CreateDirectory(reports);
+            foreach (var run in runs.Where(r => stats.FullReports.Contains(r.Profile.Id)))
+                File.WriteAllText(Path.Combine(reports, run.Profile.Id + ".md"), BotReport.Markdown(run));
+            File.WriteAllText(Path.Combine(folder, "summary.md"), BotReport.Summary(stats, runs, info));
+            File.WriteAllText(Path.Combine(folder, "population.csv"), BotReport.Population(runs));
+            WritePage(runs, info, folder, stats);
+            return stats;
+        }
+
+        /// <summary>
+        /// The report page: the latest run in bots-data.js with the run history (one line per run in history.jsonl,
+        /// the newest <see cref="HistoryLength"/> kept), and the page itself from its template. An open page reloads
+        /// the data on its own when a new run writes it.
+        /// </summary>
+        public static void WritePage(IReadOnlyList<BotRun> runs, BotReportInfo info, string folder,
+            BotPopulationStats stats = null)
+        {
+            stats ??= BotPopulationStats.Of(runs, info.QuestTitles);
             Directory.CreateDirectory(folder);
             string historyPath = Path.Combine(folder, "history.jsonl");
             var history = File.Exists(historyPath)
                 ? File.ReadAllLines(historyPath).Where(line => line.Trim().Length > 0).ToList()
                 : new List<string>();
-            history.Add(BotReportData.HistoryLine(runs, info));
+            history.Add(BotReportData.HistoryLine(stats, runs, info));
             if (history.Count > HistoryLength) history.RemoveRange(0, history.Count - HistoryLength);
             File.WriteAllLines(historyPath, history);
-            File.WriteAllText(Path.Combine(folder, "bots-data.js"), BotReportData.Script(runs, info, history));
+            File.WriteAllText(Path.Combine(folder, "bots-data.js"), BotReportData.Script(stats, runs, info, history));
             if (File.Exists(PageTemplatePath)) File.Copy(PageTemplatePath, PagePath(folder), true);
             else Debug.LogWarning($"[Bots] no page template at {PageTemplatePath}");
         }

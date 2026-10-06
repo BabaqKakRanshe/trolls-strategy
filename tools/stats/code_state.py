@@ -25,6 +25,7 @@ RULE_PATHS = [
     ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotMenu.cs",
     ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotReport.cs",
     ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotReportData.cs",
+    ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotPopulationStats.cs",
     ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotInGame.cs",
     ":(exclude)unity/TrollStategy/Assets/Game/Bots/BotParity.cs",
     ":(exclude)unity/TrollStategy/Assets/Game/Bots/SnapshotDigest.cs",

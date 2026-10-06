@@ -20,8 +20,9 @@ namespace TrollStrategy.Bots
     /// look for look shows that the headless reports measure the game as it runs; the first difference, commands
     /// the scene sent on its own and errors in the console are written down.
     /// Writes Builds/Stats/bots/in-game.md and in-game-data.js (the statistics hub shows it).
-    /// Batch: -executeMethod TrollStrategy.Bots.BotInGame.RunBatch [-botProfiles human,active] [-botSpeed 30]
-    /// [-botStopAfter 12]; the editor exits when the last profile is done (code 1 if a check failed).
+    /// Batch: -executeMethod TrollStrategy.Bots.BotInGame.RunBatch [-botProfiles p1,p2,p3] [-botSpeed 30]
+    /// [-botStopAfter 12]; the editor exits when the last bot is done (code 1 if a check failed). Bots are named as
+    /// <see cref="BotPopulation.Find"/> reads them: personas p1, p2… and the tests' reference bot "typical".
     /// </summary>
     [InitializeOnLoad]
     public static class BotInGame
@@ -46,11 +47,14 @@ namespace TrollStrategy.Bots
             if (Phase.Length > 0) Attach();
         }
 
-        [MenuItem("TrollStrategy/Bots/Play Bot In Game")]
-        public static void PlayHuman() => Start(new[] { BotProfile.Human.Id }, DefaultSpeed, 0, false);
+        /// <summary>The personas the check plays when none are named: a few, as each takes minutes of real time.</summary>
+        private static readonly string[] Sample = { BotPopulation.Id(1), BotPopulation.Id(2), BotPopulation.Id(3) };
 
-        [MenuItem("TrollStrategy/Bots/Play All Bots In Game")]
-        public static void PlayAll() => Start(BotProfile.All.Select(p => p.Id), DefaultSpeed, 0, false);
+        [MenuItem("TrollStrategy/Bots/Play Bot In Game")]
+        public static void PlayOne() => Start(Sample.Take(1), DefaultSpeed, 0, false);
+
+        [MenuItem("TrollStrategy/Bots/Play Three Bots In Game")]
+        public static void PlayThree() => Start(Sample, DefaultSpeed, 0, false);
 
         [MenuItem("TrollStrategy/Bots/Stop Bots In Game")]
         public static void StopAll()
@@ -62,7 +66,7 @@ namespace TrollStrategy.Bots
 
         public static void RunBatch()
         {
-            string profiles = Argument("-botProfiles") ?? string.Join(",", BotProfile.All.Select(p => p.Id));
+            string profiles = Argument("-botProfiles") ?? string.Join(",", Sample);
             float speed = float.TryParse(Argument("-botSpeed"), NumberStyles.Float, CultureInfo.InvariantCulture, out float s) ? s : DefaultSpeed;
             int stopAfter = int.TryParse(Argument("-botStopAfter"), out int level) ? level : 0;
             try
@@ -83,9 +87,9 @@ namespace TrollStrategy.Bots
                 throw new InvalidOperationException("Бот в игре сам запускает Play Mode: сначала выйдите из него");
             if (Phase.Length > 0) throw new InvalidOperationException("Проверка в игре уже идёт");
             var ids = profileIds.ToList();
-            var unknown = ids.Where(id => BotProfile.All.All(p => p.Id != id)).ToList();
+            var unknown = ids.Where(id => BotPopulation.Find(id) == null).ToList();
             if (ids.Count == 0 || unknown.Count > 0)
-                throw new ArgumentException($"Нет таких профилей: {string.Join(", ", unknown)}");
+                throw new ArgumentException($"Нет таких ботов: {string.Join(", ", unknown)}");
             var catalog = Catalog();
             var layout = BotMenu.SceneLayout(catalog);
 
@@ -125,7 +129,7 @@ namespace TrollStrategy.Bots
             {
                 var profiles = Profiles;
                 int index = SessionState.GetInt(Key + "Index", 0);
-                return index < profiles.Count ? BotProfile.All.First(p => p.Id == profiles[index]) : null;
+                return index < profiles.Count ? BotPopulation.Find(profiles[index]) : null;
             }
         }
 

@@ -11,7 +11,9 @@ namespace TrollStrategy.Bots
         /// <summary>No goal of the current quest moved for the stall limit.</summary>
         Stalled,
         /// <summary>The colony time limit ran out while the quests still moved.</summary>
-        TimeLimit
+        TimeLimit,
+        /// <summary>The bot or the session threw: a bug to fix, not a finding about the game.</summary>
+        Crashed
     }
 
     /// <summary>Why a bot was not doing anything for its quest during a look at the colony.</summary>
@@ -100,6 +102,8 @@ namespace TrollStrategy.Bots
         public BotOutcome Outcome { get; set; }
         /// <summary>For a stall or a time limit: the quest and what the bot last waited for.</summary>
         public string StopReason { get; set; }
+        /// <summary>For a stall or a time limit: what the bot last waited for, without the quest.</summary>
+        public string StopWait { get; set; }
         public int EndMs { get; set; }
         public int FinalGold { get; set; }
         public int FinalPopulation { get; set; }

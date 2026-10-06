@@ -230,7 +230,10 @@ namespace TrollStrategy.Bots
                 ClearSurplus(current, resource, wait);
 
             producer = _hands.Building(producer.Id);
-            if (producer != null && _hands.Haulers(producer.Id, destination.Id) == 0)
+            // a hauler that may carry the resource: one kept for a by-product alone is not the chain's
+            if (producer != null && !_hands.Snapshot.Units.Any(u => u.Assignment.Kind == AssignmentKind.Haul &&
+                    u.Assignment.SourceId == producer.Id && u.Assignment.DestinationId == destination.Id &&
+                    u.Assignment.MayCarry(resource)))
                 _hands.Haul(producer, destination, 1, wait, $"носильщик: {producer.Name} → {destination.Name}");
         }
 
@@ -262,7 +265,11 @@ namespace TrollStrategy.Bots
             }
         }
 
-        /// <summary>One hauler takes the producer's other goods to the market, so its by-products never block it.</summary>
+        /// <summary>
+        /// One hauler takes the producer's other goods to the market, so its by-products never block it. A hauler to
+        /// the market that may take them already does, a hauler without a cargo list too: the producer's only
+        /// hauler is never kept for the by-product alone, or the goods the chain wants would stay behind.
+        /// </summary>
         private void ClearSurplus(BuildingSnapshot producer, ResourceKind kept, BotWait wait)
         {
             var market = _hands.First(BuildingKind.Market);
@@ -272,7 +279,7 @@ namespace TrollStrategy.Bots
             if (surplus.Count == 0) return;
             bool taken = _hands.Snapshot.Units.Any(u => u.Assignment.Kind == AssignmentKind.Haul &&
                 u.Assignment.SourceId == producer.Id && u.Assignment.DestinationId == market.Id &&
-                !u.Assignment.CarriesAnything && surplus.All(u.Assignment.MayCarry));
+                surplus.All(u.Assignment.MayCarry));
             if (taken) return;
             // one of the haulers already queuing at the producer takes the surplus; a new one only if none waits
             var spare = _hands.Snapshot.Units

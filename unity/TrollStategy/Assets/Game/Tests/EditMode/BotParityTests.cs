@@ -29,6 +29,9 @@ namespace TrollStrategy.Tests
 
         private GameSession NewSession() => new(_catalog, TestColony.LayoutFor(_catalog), campaign: true);
 
+        // the busiest of the first personas: the most looks and commands for the check to follow
+        private static BotProfile Busiest => BotPopulation.Personas(50).OrderBy(p => p.ThinkSeconds + p.ActionSeconds).First();
+
         // Frames of 5…400 ms at ×30, as an editor in Play Mode gives them; the bot ticks after each one.
         private static void PlayInFrames(GameSession live, BotParity parity, Action<int> everyFrame = null)
         {
@@ -45,7 +48,7 @@ namespace TrollStrategy.Tests
         {
             var live = NewSession();
             live.Advance(1.37f); // the scene ran a few frames before the bot sat down
-            using var parity = new BotParity(live, NewSession(), BotProfile.Active, TutorialLength);
+            using var parity = new BotParity(live, NewSession(), Busiest, TutorialLength);
 
             PlayInFrames(live, parity);
             var (inGame, withoutScene) = parity.Finish();

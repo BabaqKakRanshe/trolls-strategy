@@ -14,8 +14,8 @@ and writes the page:
     unity/TrollStategy/Builds/Stats/players/players-data.js    what the page shows
     unity/TrollStategy/Builds/Stats/players/history.jsonl      one line per export, for the history table
 
-The bots write Builds/Stats/bots (TrollStrategy > Bots > Run Campaign Bots); the players page reads their data to
-compare quest times. An open page picks a new run of this script up on its own. Events and fields are the ones
+The bots write Builds/Stats/bots (TrollStrategy > Bots > Run Campaign Bots); the players page reads the bots'
+population medians to compare quest times and the colony by minute. An open page picks a new run of this script up on its own. Events and fields are the ones
 CampaignTelemetry sends (docs/analytics.md).
 """
 import argparse

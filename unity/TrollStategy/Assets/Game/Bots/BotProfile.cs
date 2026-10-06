@@ -5,9 +5,10 @@ using TrollStrategy.Content;
 namespace TrollStrategy.Bots
 {
     /// <summary>
-    /// How a bot plays: how often it looks at the colony, whether it invests beyond what the quests ask, whom it
-    /// puts to work and when it fights. A profile stands for a kind of player, not for a skill level: every
-    /// profile follows the same quest planner and keeps the same goods flowing.
+    /// How a bot plays: how often it looks at the colony, what a click costs it, whether it invests beyond what the
+    /// quests ask, whom it puts to work and when it fights. Every profile follows the same quest planner and keeps
+    /// the same goods flowing. The players the reports stand for are personas drawn by <see cref="BotPopulation"/>;
+    /// <see cref="Typical"/> is the reference bot the tests play.
     /// </summary>
     public sealed class BotProfile
     {
@@ -15,7 +16,8 @@ namespace TrollStrategy.Bots
             UnitKind workerKind = UnitKind.Goblin, int maxHaulersPerRoute = 6, int maxRawProducers = 3,
             float growthGoldFactor = 2f, float reserveShare = 1f, int squadTrolls = 2, bool fightsForGold = false,
             float actionSeconds = 0f, float questReadSeconds = 0f, float roleHiring = 0f,
-            BuildingKind[] upgradeHosts = null)
+            BuildingKind[] upgradeHosts = null, int seed = 0, float inattention = 0f, int placementChoice = 1,
+            float arenaRisk = 0f)
         {
             Id = id;
             Title = title;
@@ -33,6 +35,10 @@ namespace TrollStrategy.Bots
             QuestReadSeconds = questReadSeconds;
             RoleHiring = roleHiring;
             UpgradeHosts = upgradeHosts ?? Array.Empty<BuildingKind>();
+            Seed = seed;
+            Inattention = inattention;
+            PlacementChoice = placementChoice;
+            ArenaRisk = arenaRisk;
         }
 
         public string Id { get; }
@@ -70,32 +76,26 @@ namespace TrollStrategy.Bots
         public float RoleHiring { get; }
         /// <summary>Buildings whose upgrades growth buys, in this order; empty buys none beyond the quests.</summary>
         public IReadOnlyList<BuildingKind> UpgradeHosts { get; }
+        /// <summary>The persona's number in <see cref="BotPopulation"/>; 0 for a profile made by hand.</summary>
+        public int Seed { get; }
+        /// <summary>
+        /// Share of looks that go to the quest alone: the bot does not top up haulers and workers or grow, as a
+        /// player who does not watch the whole colony every time. The bot's own dice decide each look.
+        /// </summary>
+        public float Inattention { get; }
+        /// <summary>A new building goes on one of this many best spots, any of them; 1 always takes the nearest.</summary>
+        public int PlacementChoice { get; }
+        /// <summary>Share of looks in which a squad the arena window calls weaker climbs anyway.</summary>
+        public float ArenaRisk { get; }
 
         private static readonly BuildingKind[] Guild = { BuildingKind.HaulersGuild };
 
-        public static readonly BotProfile Human = new("human", "Живой игрок",
-            "Как обычный, но с ценой интерфейса: команда стоит 8 секунд, чтение задания 30, носильщиков на маршруте не больше трёх.",
-            thinkSeconds: 15f, grows: true, maxHaulersPerRoute: 3, actionSeconds: 8f, questReadSeconds: 30f,
-            roleHiring: 0.9f, upgradeHosts: Guild);
-
-        public static readonly BotProfile Passive = new("passive", "Пассивный",
-            "Делает только то, что просят задания, нанимает гоблинов и заглядывает в колонию раз в минуту.",
-            thinkSeconds: 60f, grows: false);
-
+        /// <summary>
+        /// The reference bot of the tests: no click costs, moderate growth, hires by craft. It checks that the chain
+        /// can be played; it is not one of the players the reports stand for.
+        /// </summary>
         public static readonly BotProfile Typical = new("typical", "Обычный",
             "Задания плюс умеренный рост: дозаполняет добычу и носильщиков, ставит жителей на их ремесло, копит на гильдию носильщиков; смотрит раз в 20 секунд.",
             thinkSeconds: 20f, grows: true, roleHiring: 0.9f, upgradeHosts: Guild);
-
-        public static readonly BotProfile Active = new("active", "Активный",
-            "Смотрит каждые 5 секунд и вкладывает свободное золото в добычу, мастеров и гильдию носильщиков, даже когда копит на задание.",
-            thinkSeconds: 5f, grows: true, maxHaulersPerRoute: 10, maxRawProducers: 5, growthGoldFactor: 1.2f,
-            reserveShare: 0.5f, roleHiring: 0.9f, upgradeHosts: Guild);
-
-        public static readonly BotProfile Warlord = new("warlord", "Воитель",
-            "Нанимает самых сильных, а не самых выгодных, ходит на арену при каждой возможности ради золота и вкладывается в казарму.",
-            thinkSeconds: 10f, grows: true, workerKind: UnitKind.Troll, squadTrolls: 3, fightsForGold: true,
-            roleHiring: 0.65f, upgradeHosts: new[] { BuildingKind.Barracks, BuildingKind.Armory, BuildingKind.HaulersGuild });
-
-        public static IReadOnlyList<BotProfile> All { get; } = new[] { Human, Passive, Typical, Active, Warlord };
     }
 }

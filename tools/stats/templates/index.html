@@ -17,8 +17,6 @@
     --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
     --grid: #e1e0d9; --border: rgba(11, 11, 11, 0.10); --hover: rgba(11, 11, 11, 0.05);
     --accent: #2a78d6; --critical: #d03b3b; --good: #006300;
-    /* the bots' profile colours, as on their page */
-    --s-passive: #2a78d6; --s-typical: #eb6834; --s-active: #1baf7a; --s-warlord: #eda100; --s-human: #e87ba4;
     --s-players: #4a3aa7;
   }
   @media (prefers-color-scheme: dark) {
@@ -27,7 +25,6 @@
       --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
       --grid: #2c2c2a; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
       --accent: #3987e5; --good: #0ca30c; --critical: #e66767;
-      --s-passive: #3987e5; --s-typical: #d95926; --s-active: #199e70; --s-warlord: #c98500; --s-human: #d55181;
       --s-players: #9085e9;
     }
   }
@@ -36,7 +33,6 @@
     --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
     --grid: #2c2c2a; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
     --accent: #3987e5; --good: #0ca30c; --critical: #e66767;
-    --s-passive: #3987e5; --s-typical: #d95926; --s-active: #199e70; --s-warlord: #c98500; --s-human: #d55181;
     --s-players: #9085e9;
   }
   * { box-sizing: border-box; }
@@ -129,17 +125,20 @@ function botsCard() {
   const data = window.BOT_DATA;
   const head = el("header", {}, el("h2", {}, "Боты"),
     data && data.latest ? el("span", { class: "when" }, "прогон " + when(data.latest.info.generatedAt)) : null);
-  if (!data || !data.latest) return el("section", { class: "card" }, head,
-    el("p", { class: "empty" }, "Прогона ещё нет: TrollStrategy → Bots → Run Campaign Bots."));
-  const { info, runs } = data.latest;
-  const done = runs.filter(r => r.outcome === "Completed").length;
-  const rows = runs.map(r => el("tr", {},
-    el("td", {}, el("i", { class: "key", style: `background:${css("--s-" + r.id) || css("--muted")}` }), r.title),
-    el("td", { class: "num" }, nf1.format(r.endMs / 60000) + " мин"),
-    el("td", {}, r.outcome === "Completed" ? `${r.quests.length} из ${r.chainLength}` : el("span", { class: "bad" }, `${r.outcomeText}: ${r.quests.length} из ${r.chainLength}`))));
+  if (!data || !data.latest || !data.latest.stats) return el("section", { class: "card" }, head,
+    el("p", { class: "empty" }, data && data.latest
+      ? "Данные от старого прогона с профилями: запустите TrollStrategy → Bots → Run Campaign Bots заново."
+      : "Прогона ещё нет: TrollStrategy → Bots → Run Campaign Bots."));
+  const { info, stats } = data.latest;
+  const c = stats.campaign, minutes = ms => nf1.format(ms / 60000);
+  const stall = stats.stalls[0];
   return el("section", { class: "card" }, head,
-    el("div", { class: "big" }, big(`${done} из ${runs.length}`, "профилей прошли кампанию"), big(nf0.format(info.chainLength), "заданий в цепочке")),
-    el("table", {}, el("thead", {}, el("tr", {}, el("th", {}, "Профиль"), el("th", { class: "num" }, "Кампания"), el("th", {}, "Заданий"))), el("tbody", {}, rows)),
+    el("div", { class: "big" }, big(`${stats.completed} из ${stats.count}`, "ботов прошли кампанию"),
+      big(c ? minutes(c.p50) + " мин" : "—", "кампания, медиана")),
+    c ? el("p", { class: "insight" }, `Каждый десятый бот проходит быстрее ${minutes(c.p10)} мин, каждый десятый дольше ${minutes(c.p90)} мин.`) : null,
+    stall ? el("p", { class: "insight" }, "Чаще всего застревают на задании ", el("strong", {}, `${stall.level}. ${stall.title}`),
+      `: ${stall.count} ${plural(stall.count, "бот", "бота", "ботов")}, ${stall.reasons[0].text}.`) : null,
+    stats.crashed ? el("p", { class: "insight bad" }, `Сломались ${stats.crashed} ${plural(stats.crashed, "бот", "бота", "ботов")}: ошибка в боте или в игре, см. bots/summary.md.`) : null,
     el("ul", { class: "checks" }, trust(info)),
     el("a", { class: "open", href: "bots/index.html" }, "Открыть отчёт ботов →"));
 }
@@ -209,9 +208,9 @@ function playersCard() {
   }
   if (worst && (tie || worst.ended < 2)) worst = null;
   const title = (level, id) => {
-    const runs = window.BOT_DATA && window.BOT_DATA.latest ? window.BOT_DATA.latest.runs : [];
-    for (const r of runs) { const q = r.quests.find(o => o.level === level); if (q) return q.title; }
-    return id || `задание ${level}`;
+    const stats = window.BOT_DATA && window.BOT_DATA.latest ? window.BOT_DATA.latest.stats : null;
+    const q = stats && stats.quests.find(o => o.level === level);
+    return q ? q.title : id || `задание ${level}`;
   };
   return el("section", { class: "card" }, head,
     el("div", { class: "big" }, big(nf0.format(t.players), "игроков"), big(nf0.format(t.sessions), "сессий"),

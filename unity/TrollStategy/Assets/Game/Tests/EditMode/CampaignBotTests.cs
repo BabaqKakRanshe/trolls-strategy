@@ -11,9 +11,9 @@ using UnityEditor;
 namespace TrollStrategy.Tests
 {
     /// <summary>
-    /// Bots play the shipped catalog through the session's commands. The typical player's whole campaign runs
-    /// with the suite (seconds): a content change that makes a quest impossible fails here. The other profiles
-    /// are explicit; TrollStrategy/Bots/Run Campaign Bots writes the full reports.
+    /// Bots play the shipped catalog through the session's commands. The reference bot's whole campaign runs with
+    /// the suite (seconds): a content change that makes a quest impossible fails here. The population and its
+    /// numbers are in <see cref="BotPopulationTests"/>; TrollStrategy/Bots/Run Campaign Bots writes the full reports.
     /// </summary>
     [Category("Bots")]
     public class CampaignBotTests
@@ -48,13 +48,54 @@ namespace TrollStrategy.Tests
             Assert.That(run.ArenaLevel, Is.GreaterThanOrEqualTo(1));
             Assert.That(run.Battles.All(b => b.ArenaLevel >= 1), Is.True, "every battle names its arena level");
             Assert.That(run.Units.Values.Sum(), Is.EqualTo(run.FinalPopulation));
+            Assert.That(run.Buildings.Values.Sum(), Is.EqualTo(run.FinalBuildings));
+            Assert.That(run.Buildings.Keys, Is.SubsetOf(_catalog.Buildings.Where(b => b != null).Select(b => b.DisplayName)),
+                "buildings are counted by kind, so copies of one add up");
             Assert.That(run.Refusals, Is.Empty, "the bot only sends commands the session accepts");
         }
 
         [Test]
-        public void Warlord_ClimbsTheArenaAndOpensFolk()
+        public void LeanBot_SellsWheatWithOneHaulerPerRoute()
         {
-            var run = Play(BotProfile.Warlord, 12);
+            // the field makes wheat and straw at once; its only hauler must not be kept for the straw alone
+            var lean = new BotProfile("lean", "Один носильщик", "Не больше одного носильщика на маршрут.",
+                thinkSeconds: 20f, grows: true, maxHaulersPerRoute: 1, roleHiring: 0.9f);
+            int wheatSale = _catalog.Progression.Quests.ToList().FindIndex(q => q.Id == "wheat-sell") + 1;
+            Assert.That(wheatSale, Is.GreaterThan(0), "the chain sells wheat");
+
+            var run = Play(lean, wheatSale);
+
+            Assert.That(run.Outcome, Is.EqualTo(BotOutcome.Completed), BotReport.Markdown(run));
+        }
+
+        // one hauler per route on the scene's own layout: the field fills up before its first hauler comes, and a
+        // hauler kept for the straw alone must not count as the chain's
+        [TestCase("p5")]
+        [TestCase("p133")]
+        public void OneHaulerPersona_SellsWheatOnTheSceneLayout(string id)
+        {
+            int wheatSale = _catalog.Progression.Quests.ToList().FindIndex(q => q.Id == "wheat-sell") + 1;
+            var persona = BotPopulation.Find(id);
+            Assert.That(persona.MaxHaulersPerRoute, Is.EqualTo(1), id);
+
+            var run = new CampaignBot(new GameSession(_catalog, BotMenu.SceneLayout(_catalog), campaign: true), persona)
+            {
+                StopAfterLevel = wheatSale
+            }.Run();
+
+            Assert.That(run.Outcome, Is.EqualTo(BotOutcome.Completed), BotReport.Markdown(run));
+        }
+
+        // fights for gold whenever the arena is ready and hires the strongest, as the "warlord" profile did
+        private static readonly BotProfile Fighter = new("fighter", "Воитель",
+            "Нанимает самых сильных, ходит на арену при каждой возможности ради золота и вкладывается в казарму.",
+            thinkSeconds: 10f, grows: true, workerKind: UnitKind.Troll, squadTrolls: 3, fightsForGold: true,
+            roleHiring: 0.65f, upgradeHosts: new[] { BuildingKind.Barracks, BuildingKind.Armory, BuildingKind.HaulersGuild });
+
+        [Test]
+        public void Fighter_ClimbsTheArenaAndOpensFolk()
+        {
+            var run = Play(Fighter, 12);
 
             Assert.That(run.Outcome, Is.EqualTo(BotOutcome.Completed), BotReport.Markdown(run));
             Assert.That(run.ArenaLevel, Is.GreaterThan(1), "it fights for gold, not only when a quest asks");
@@ -91,10 +132,10 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void SameProfile_PlaysTheSameGameTwice()
+        public void SamePersona_PlaysTheSameGameTwice()
         {
-            var first = Play(BotProfile.Active, TutorialLength);
-            var second = Play(BotProfile.Active, TutorialLength);
+            var first = Play(BotPopulation.Persona(5), TutorialLength);
+            var second = Play(BotPopulation.Persona(5), TutorialLength);
 
             Assert.That(second.Quests.Select(q => q.DoneMs), Is.EqualTo(first.Quests.Select(q => q.DoneMs)));
             Assert.That(second.FinalGold, Is.EqualTo(first.FinalGold));
@@ -137,6 +178,24 @@ namespace TrollStrategy.Tests
             }
         }
 
+        // personas that dress a fighter during the armory step and then march out with others: gear worn before the
+        // gear step began counts, or they would wait for it forever
+        [TestCase("p8")]
+        [TestCase("p69")]
+        [TestCase("p83")]
+        [TestCase("p84")]
+        [TestCase("p182")]
+        public void Persona_WhoDressedAFighterEarly_PassesTheGearStep(string id)
+        {
+            int gearStep = _catalog.Progression.Quests.ToList()
+                .FindIndex(q => q.Goals.Any(g => g.Kind == QuestGoalKind.WearGearInBattle)) + 1;
+            Assume.That(gearStep, Is.GreaterThan(0), "the tutorial has a step that asks for gear worn in battle");
+
+            var run = Play(BotPopulation.Find(id), gearStep);
+
+            Assert.That(run.Quests.Select(q => q.Level), Does.Contain(gearStep), BotReport.Markdown(run));
+        }
+
         [Test]
         public void Report_ListsEveryClaimedQuest()
         {
@@ -146,8 +205,10 @@ namespace TrollStrategy.Tests
             foreach (var quest in run.Quests)
                 StringAssert.Contains(quest.Title, markdown);
             StringAssert.Contains("Арена: уровень", markdown);
-            StringAssert.Contains(BotProfile.Typical.Title, BotReport.Summary(new[] { run }));
-            Assert.That(BotReport.Csv(run).Split('\n').Length, Is.GreaterThan(1));
+            string summary = BotReport.Summary(BotPopulationStats.Of(new[] { run }), new[] { run }, null);
+            foreach (var quest in run.Quests)
+                StringAssert.Contains(quest.Title, summary);
+            Assert.That(BotReport.Population(new[] { run }).Trim().Split('\n'), Has.Length.EqualTo(2));
         }
 
         [Test]
@@ -174,7 +235,9 @@ namespace TrollStrategy.Tests
                 StringAssert.StartsWith("window.BOT_DATA = {", script);
                 StringAssert.Contains("\"generatedAt\":\"2026-10-02T12:00:00\"", script);
                 StringAssert.Contains("\"arenaLevel\":", script);
-                StringAssert.Contains("\"units\":[{", script);
+                StringAssert.Contains("\"stats\":{", script);
+                StringAssert.Contains("\"traits\":[{", script);
+                StringAssert.Contains("\"outcomes\":\"C\"", File.ReadAllText(Path.Combine(folder, "history.jsonl")));
                 foreach (var quest in run.Quests)
                     StringAssert.Contains(BotReportData.Str(quest.Title), script);
                 Assert.That(File.Exists(Path.Combine(folder, "index.html")), Is.True, BotMenu.PageTemplatePath);
@@ -190,17 +253,5 @@ namespace TrollStrategy.Tests
             }
         }
 
-        private static IEnumerable<string> Profiles() =>
-            BotProfile.All.Where(p => p != BotProfile.Typical).Select(p => p.Id);
-
-        [Explicit("Plays the whole campaign; minutes per profile")]
-        [TestCaseSource(nameof(Profiles))]
-        public void Profile_FinishesTheCampaign(string id)
-        {
-            var run = Play(BotProfile.All.First(p => p.Id == id));
-
-            Assert.That(run.Outcome, Is.EqualTo(BotOutcome.Completed), BotReport.Markdown(run));
-            Assert.That(run.Quests.Count, Is.EqualTo(_catalog.Progression.Quests.Count));
-        }
     }
 }

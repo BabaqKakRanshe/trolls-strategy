@@ -24,9 +24,9 @@
     --accent: #2a78d6;
     --critical: #d03b3b;
     --good: #006300;
-    /* players against the live-player bot: categorical slots 7 and 5 (all-pairs dE 24.9 light / 16.0 dark) */
+    /* players against the bots' median: categorical slots 7 and 5 (all-pairs dE 24.9 light / 16.0 dark) */
     --s-players: #4a3aa7;
-    --s-human: #e87ba4;
+    --s-bots: #e87ba4;
     /* how a game ended: slots 1 and 4 (adjacent dE 31.5 light / 27.4 dark) */
     --e-stuck: #2a78d6;
     --e-unclaimed: #eda100;
@@ -37,7 +37,7 @@
       --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
       --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
       --accent: #3987e5; --good: #0ca30c; --critical: #e66767;
-      --s-players: #9085e9; --s-human: #d55181; --e-stuck: #3987e5; --e-unclaimed: #c98500;
+      --s-players: #9085e9; --s-bots: #d55181; --e-stuck: #3987e5; --e-unclaimed: #c98500;
     }
   }
   :root[data-theme="dark"] {
@@ -45,7 +45,7 @@
     --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
     --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
     --accent: #3987e5; --good: #0ca30c; --critical: #e66767;
-    --s-players: #9085e9; --s-human: #d55181; --e-stuck: #3987e5; --e-unclaimed: #c98500;
+    --s-players: #9085e9; --s-bots: #d55181; --e-stuck: #3987e5; --e-unclaimed: #c98500;
   }
 
   * { box-sizing: border-box; }
@@ -159,7 +159,7 @@ const ENDINGS = [
   { key: "endedStuck", label: "не выполнил задание", color: "--e-stuck" },
   { key: "endedCompleted", label: "выполнил, не забрал награду", color: "--e-unclaimed" }
 ];
-// a quest players take this many times longer than the live-player bot is likely unclear, not long
+// a quest players take this many times longer than the bots' median is likely unclear, not long
 const SLOW_RATIO = 2;
 const nf1 = new Intl.NumberFormat("ru-RU", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const nf0 = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
@@ -490,7 +490,7 @@ function timeChart(rows, opts) {
       svg("line", { x1: sx(t), x2: sx(t), y1: m.top, y2: height - m.bottom, stroke: css(t === 0 ? "--axis" : "--grid"), "stroke-width": 1 }, axis);
       svg("text", { x: sx(t), y: height - 8, "text-anchor": "middle" }, axis).textContent = nfTick.format(t);
     }
-    const players = css("--s-players"), bot = css("--s-human"), ring = css("--surface");
+    const players = css("--s-players"), bot = css("--s-bots"), ring = css("--surface");
     rows.forEach((r, i) => {
       const y = m.top + i * rowH, cy = y + rowH / 2;
       rowLabel(root, r, m.left - 10, cy + 4, m.left - 18);
@@ -518,18 +518,20 @@ const localTime = utc => {
 };
 const ENDING_TEXT = { stuck: "не выполнил задание", completed: "выполнил, не забрал награду", campaign: "прошёл кампанию" };
 
-function botRuns() {
+// the bots' population: per quest the spread of the bots that finished it, per minute the colonies still playing
+function botStats() {
   const data = window.BOT_DATA;
-  return data && data.latest ? data.latest.runs : [];
+  return data && data.latest && data.latest.stats ? data.latest.stats : null;
 }
-function botRun(id) { return botRuns().find(r => r.id === id) || null; }
-function botQuestSeconds(run, level) {
-  const q = run && run.quests.find(o => o.level === level);
-  return q ? (q.doneMs - q.startMs) / 1000 : null;
+function botQuest(level) {
+  const stats = botStats();
+  const q = stats && stats.quests.find(o => o.level === level);
+  return q && q.duration ? q : null;
 }
 function questTitle(level, id) {
-  for (const r of botRuns()) { const q = r.quests.find(o => o.level === level); if (q) return q.title; }
-  return id || `задание ${level}`;
+  const stats = botStats();
+  const q = stats && stats.quests.find(o => o.level === level);
+  return q ? q.title : id || `задание ${level}`;
 }
 
 function emptyState(info) {
@@ -568,7 +570,7 @@ function render() {
     return;
   }
 
-  const human = botRun("human"), typical = botRun("typical");
+  const bots = botStats();
   const quests = data.quests.map(q => ({ ...q, label: questTitle(q.level, q.id), n: q.level }));
 
   // the quest most games end on: the biggest step down the funnel
@@ -616,34 +618,36 @@ function render() {
     ...ENDINGS.map(e => ({ label: e.label, num: true, value: q => nf0.format(q[e.key]) }))], ended);
 
   // quest time against the bots
-  const timeRows = quests.filter(q => q.times.n > 0 || botQuestSeconds(human, q.level) != null).map(q => {
-    const bot = botQuestSeconds(human, q.level), ratio = q.times.median != null && bot > 0 ? q.times.median / bot : null;
+  const timeRows = quests.filter(q => q.times.n > 0 || botQuest(q.level)).map(q => {
+    const b = botQuest(q.level), bot = b ? b.duration.p50 / 1000 : null;
+    const ratio = q.times.median != null && bot > 0 ? q.times.median / bot : null;
     return {
       n: q.n, label: q.label, median: minOfSec(q.times.median), p25: minOfSec(q.times.p25), p75: minOfSec(q.times.p75),
-      bot: minOfSec(bot), typical: botQuestSeconds(typical, q.level), count: q.times.n, ratio, raw: q,
+      bot: minOfSec(bot), botLow: b ? b.duration.p25 / 1000 : null, botHigh: b ? b.duration.p75 / 1000 : null,
+      count: q.times.n, ratio, raw: q,
       tip: [
         { color: css("--s-players"), label: `игроки, медиана (${q.times.n} сесс.)`, value: fmtSec(q.times.median) + " мин" },
         { color: "transparent", label: "половина игроков — от и до", value: q.times.n ? `${fmtSec(q.times.p25)}–${fmtSec(q.times.p75)}` : "—" },
-        { color: css("--s-human"), label: "бот «Живой игрок»", value: fmtSec(bot) + " мин" },
-        { color: "transparent", label: "бот «Обычный»", value: fmtSec(botQuestSeconds(typical, q.level)) + " мин" },
-        { color: "transparent", label: "к живому игроку", value: ratio == null ? "—" : "×" + nf1.format(ratio) }]
+        { color: css("--s-bots"), label: `боты, медиана (${b ? b.done : 0} прошли)`, value: fmtSec(bot) + " мин" },
+        { color: "transparent", label: "половина ботов — от и до", value: b ? `${fmtSec(b.duration.p25 / 1000)}–${fmtSec(b.duration.p75 / 1000)}` : "—" },
+        { color: "transparent", label: "к медиане ботов", value: ratio == null ? "—" : "×" + nf1.format(ratio) }]
     };
   });
-  const timeBody = !human && !timeRows.some(r => r.count)
+  const timeBody = !bots && !timeRows.some(r => r.count)
     ? el("p", { class: "empty" }, "Нет ни времени игроков, ни прогона ботов.")
     : el("div", {},
         legend([{ label: "игроки: точка — медиана, линия — средняя половина игроков", color: css("--s-players") },
-                ...(human ? [{ label: "бот «Живой игрок»", color: css("--s-human") }] : [])]),
-        timeChart(timeRows, { label: "Минуты колонии на задание: игроки и бот" }),
-        human ? null : el("p", { class: "empty" }, "Прогона ботов нет: запустите TrollStrategy → Bots → Run Campaign Bots."));
+                ...(bots ? [{ label: "боты: медиана", color: css("--s-bots") }] : [])]),
+        timeChart(timeRows, { label: "Минуты колонии на задание: игроки и боты" }),
+        bots ? null : el("p", { class: "empty" }, "Прогона ботов нет: запустите TrollStrategy → Bots → Run Campaign Bots."));
   const timeTable = makeTable([
     { label: "#", value: r => r.n }, { label: "Задание", value: r => r.label },
     { label: "Сессий", num: true, value: r => r.count },
     { label: "Игроки, медиана", num: true, value: r => fmtSec(r.raw.times.median) },
     { label: "Половина игроков", num: true, value: r => r.count ? `${fmtSec(r.raw.times.p25)}–${fmtSec(r.raw.times.p75)}` : "—" },
-    { label: "Живой игрок", num: true, value: r => fmtSec(r.bot == null ? null : r.bot * 60) },
-    { label: "Обычный", num: true, value: r => fmtSec(r.typical) },
-    { label: "× к живому", num: true, value: r => r.ratio == null ? "—"
+    { label: "Боты, медиана", num: true, value: r => fmtSec(r.bot == null ? null : r.bot * 60) },
+    { label: "Половина ботов", num: true, value: r => r.botLow == null ? "—" : `${fmtSec(r.botLow)}–${fmtSec(r.botHigh)}` },
+    { label: "× к ботам", num: true, value: r => r.ratio == null ? "—"
         : r.ratio >= SLOW_RATIO ? el("span", { class: "flag" }, "⚠ ×" + nf1.format(r.ratio)) : "×" + nf1.format(r.ratio) }], timeRows);
 
   // battles
@@ -654,21 +658,21 @@ function render() {
         { label: "Погибло за бой", num: true, value: b => nf1.format(b.fallenAvg) }], data.battles))
     : el("p", { class: "empty" }, "Боёв ещё не было.");
 
-  // the colony over time against the live-player bot, while enough games were still playing for a median to mean
-  // something, and the bot up to the same minute
+  // the colony over time against the bots' median, while enough games were still playing for a median to mean
+  // something, and the bots up to the same minute
   const minSessions = Math.max(3, Math.ceil(totals.sessions * 0.05));
   const colony = data.colony.filter(c => c.sessions >= minSessions);
   const lastMinute = Math.max(...colony.map(c => c.minute), 1);
   const colonyChart = (field, botField, label) => {
     const series = [{ id: "players", label: "игроки", color: css("--s-players"),
       points: colony.filter(c => c[field] != null).map(c => ({ x: c.minute, y: c[field] })) }];
-    if (human) series.push({ id: "human", label: "Живой игрок", color: css("--s-human"),
-      points: human.samples.filter(s => s.atMs / 60000 <= lastMinute).map(s => ({ x: s.atMs / 60000, y: s[botField] })) });
+    if (bots) series.push({ id: "bots", label: "боты", color: css("--s-bots"),
+      points: bots.timeline.filter(t => t.minute <= lastMinute && t[botField]).map(t => ({ x: t.minute, y: t[botField].p50 })) });
     return lineChart(series, { label, endLabels: true, maxX: lastMinute, height: 200,
       tipTitle: x => `${nf1.format(x)} мин колонии`, tipValue: v => nf0.format(v) });
   };
   const colonyLegend = legend([{ label: "игроки, медиана", color: css("--s-players") },
-    ...(human ? [{ label: "бот «Живой игрок»", color: css("--s-human") }] : [])]);
+    ...(bots ? [{ label: "боты, медиана", color: css("--s-bots") }] : [])]);
   const colonyTable = makeTable([
     { label: "Минута", num: true, value: c => c.minute }, { label: "Сессий", num: true, value: c => c.sessions },
     { label: "Золото", num: true, value: c => c.gold == null ? "—" : nf0.format(c.gold) },
@@ -712,12 +716,12 @@ function render() {
       funnel, funnelTable),
     card("Где заканчиваются сессии", "Последнее задание каждой сессии. «Не выполнил» — не понял, что делать; «не забрал награду» — не нашёл кнопку.",
       endingsBody, ended.length ? endingsTable : null),
-    card("Время на задание: игроки и бот", `Минуты колонии от начала задания до выполнения целей. Если игроки тратят в ${SLOW_RATIO}+ раза больше бота «Живой игрок» (он уже платит за клики и чтение), задание скорее непонятное, чем долгое.`,
+    card("Время на задание: игроки и боты", `Минуты колонии от начала задания до выполнения целей. Если игроки тратят в ${SLOW_RATIO}+ раза больше медианы ботов (боты уже платят за клики и чтение), задание скорее непонятное, чем долгое.`,
       timeBody, timeTable),
     el("div", { class: "grid2" },
       card("Бои", "Чем кончаются бои у игроков.", battleBody, null),
       card("Версии", "Те же числа по сборкам: что дала правка.", el("div", { class: "tablewrap", style: "margin-top:0" }, versionsTable), null)),
-    card("Колония по минутам", `Медиана по сессиям, которые ещё играли на этой минуте; на графике минуты, где их хотя бы ${minSessions}, все минуты — в таблице. Бот показан до той же минуты.`,
+    card("Колония по минутам", `Медиана по сессиям, которые ещё играли на этой минуте; на графике минуты, где их хотя бы ${minSessions}, все минуты — в таблице. Боты показаны до той же минуты.`,
       colonyBody, data.colony.length ? colonyTable : null),
     card("Сессии", `Последние ${data.sessions.length}, новые сверху.`, el("div", { class: "tablewrap", style: "margin-top:0" }, sessionsTable), null),
     card("Выгрузки", "По строке на каждую сборку страницы с новыми данными.", el("div", { class: "tablewrap", style: "margin-top:0" }, historyTable), null));

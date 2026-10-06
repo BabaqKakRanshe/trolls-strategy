@@ -93,8 +93,12 @@ namespace TrollStrategy.Bots
             }
 
             var wait = _planner.Pursue(quest);
-            _keeper.Keep(wait);
-            if (_profile.Grows) _keeper.Grow(wait);
+            // a player does not watch the whole colony every time: some looks go to the quest alone
+            if (!_hands.Dice.Chance(_profile.Inattention))
+            {
+                _keeper.Keep(wait);
+                if (_profile.Grows) _keeper.Grow(wait);
+            }
             if (_profile.FightsForGold) _keeper.FightForGold(wait);
             _hands.Refresh();
 
@@ -111,12 +115,14 @@ namespace TrollStrategy.Bots
             {
                 Run.Outcome = BotOutcome.Stalled;
                 Run.StopReason = $"«{quest.Title}» (уровень {quest.Level}): {wait.Reason ?? "цели не двигаются"}";
+                Run.StopWait = wait.Reason ?? "цели не двигаются";
                 return Stop();
             }
             if (now >= _limitMs)
             {
                 Run.Outcome = BotOutcome.TimeLimit;
                 Run.StopReason = $"«{quest.Title}» (уровень {quest.Level}): {wait.Reason ?? "не успел"}";
+                Run.StopWait = wait.Reason ?? "не успел";
                 return Stop();
             }
 

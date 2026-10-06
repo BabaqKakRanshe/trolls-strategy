@@ -22,8 +22,11 @@ namespace TrollStrategy.Bots
 
         private readonly BotHands _hands;
         private readonly BotRun _run;
+        private readonly BotProfile _profile;
         private int _squadTrolls;
         private int _climbedAtMs = int.MinValue / 2;
+        // levels a squad lost at even odds: for gold the bot climbs them again only when it is stronger
+        private readonly HashSet<string> _lostAtEven = new(StringComparer.Ordinal);
 
         /// <summary>The last battle was lost: the squad needs to grow stronger before it climbs on.</summary>
         public bool LostLast { get; private set; }
@@ -35,6 +38,7 @@ namespace TrollStrategy.Bots
         {
             _hands = hands;
             _run = run;
+            _profile = profile;
             _squadTrolls = Math.Max(1, profile.SquadTrolls);
         }
 
@@ -67,9 +71,11 @@ namespace TrollStrategy.Bots
             offer = _hands.Session.ArenaOffer(mission);
             if (offer.Odds == OddsGrade.Weaker)
             {
-                // a weaker squad waits for strength; a full one tries now and then, as a player would
+                // a weaker squad waits for strength; a full one tries now and then, as a player would, and a bold
+                // player sometimes goes anyway
                 bool full = _hands.Snapshot.Units.Count >= _hands.Session.SquadLimit(mission);
-                if (!full || _hands.Session.ActiveTimeMs - _climbedAtMs < PatienceMs)
+                bool dares = _hands.Dice.Chance(_profile.ArenaRisk);
+                if (!dares && (!full || _hands.Session.ActiveTimeMs - _climbedAtMs < PatienceMs))
                 {
                     wait?.Note($"бой: отряд слабее врагов {mission.Level}-го уровня");
                     return false;
@@ -105,7 +111,10 @@ namespace TrollStrategy.Bots
             var top = OpenMission();
             if (top == null) return false;
             var climb = _hands.Session.ArenaOffer(top);
-            if (climb.Odds != OddsGrade.Weaker && _hands.Session.CanEnterMission(top.MissionId).Ok)
+            // a level lost at even odds waits for a stronger squad: a player does not throw fighters at it again
+            bool climbs = climb.Odds == OddsGrade.Stronger ||
+                          (climb.Odds == OddsGrade.Even && !_lostAtEven.Contains(top.MissionId));
+            if (climbs && _hands.Session.CanEnterMission(top.MissionId).Ok)
                 return TryFight(wait, hire: true);
 
             BattleMissionDefinition farm = null;
@@ -203,6 +212,7 @@ namespace TrollStrategy.Bots
             _run.Battles.Add(record);
             LostLast = record.Outcome != BattleOutcome.PlayerVictory;
             if (record.Outcome == BattleOutcome.EnemyVictory) Grow(mission);
+            if (record.Outcome != BattleOutcome.PlayerVictory && offer.Odds == OddsGrade.Even) _lostAtEven.Add(mission.MissionId);
             _hands.Dispatch(new AcknowledgeBattleCommand());
             if (_hands.Snapshot.BattleReward != null) _hands.Dispatch(new ClaimBattleRewardCommand());
             return true;

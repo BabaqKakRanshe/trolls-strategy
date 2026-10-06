@@ -10,9 +10,10 @@ namespace TrollStrategy.Bots
     public sealed class BotReportInfo
     {
         public BotReportInfo(DateTime generatedAt, string commit, string branch, string layout, int chainLength,
-            int stopAfterLevel, IReadOnlyList<string> uncommitted = null)
+            int stopAfterLevel, IReadOnlyList<string> uncommitted = null, IReadOnlyList<string> questTitles = null)
         {
             Uncommitted = uncommitted;
+            QuestTitles = questTitles;
             GeneratedAt = generatedAt;
             Commit = commit;
             Branch = branch;
@@ -31,44 +32,74 @@ namespace TrollStrategy.Bots
         public int StopAfterLevel { get; }
         /// <summary>Rule files changed but not committed when the runs played; null when unknown.</summary>
         public IReadOnlyList<string> Uncommitted { get; }
+        /// <summary>The chain's quest titles by level, for quests no run finished; null takes them from the runs.</summary>
+        public IReadOnlyList<string> QuestTitles { get; }
+        /// <summary>Real seconds the runs took to play; 0 when not measured.</summary>
+        public double WallSeconds { get; set; }
+        /// <summary>Runs played at once.</summary>
+        public int Threads { get; set; }
     }
 
     /// <summary>
-    /// Bot runs as JSON for the report page (Assets/Game/Bots/Dashboard): the whole latest set, and one compact
-    /// line per set for the run history the page compares against.
+    /// A population run as JSON for the report page (Assets/Game/Bots/Dashboard): the population's numbers, one
+    /// compact entry per bot in seed order, and one line per run for the history the page compares against. A history
+    /// line keeps every bot's outcome and campaign time, so the next run can compare each persona with itself.
     /// </summary>
     public static class BotReportData
     {
         private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
 
-        /// <summary>The script the page loads: the latest runs and the history lines, oldest first.</summary>
-        public static string Script(IReadOnlyList<BotRun> runs, BotReportInfo info, IEnumerable<string> history) =>
+        /// <summary>The script the page loads: the latest run and the history lines, oldest first.</summary>
+        public static string Script(BotPopulationStats stats, IReadOnlyList<BotRun> runs, BotReportInfo info,
+            IEnumerable<string> history) =>
             "window.BOT_DATA = " + Obj(
-                ("latest", Latest(runs, info)),
+                ("latest", Latest(stats, runs, info)),
                 ("history", "[" + string.Join(",\n", history) + "]")) + ";\n";
 
-        public static string Latest(IReadOnlyList<BotRun> runs, BotReportInfo info) => Obj(
+        public static string Latest(BotPopulationStats stats, IReadOnlyList<BotRun> runs, BotReportInfo info) => Obj(
             ("info", Info(info)),
-            ("runs", Arr(runs, Run)));
+            ("population", Obj(
+                ("signature", Str(BotPopulation.Signature)),
+                ("count", Num(runs.Count)),
+                ("wallSeconds", Num(info.WallSeconds)),
+                ("threads", Num(info.Threads)))),
+            ("traits", Arr(BotPopulation.Traits, t => Obj(
+                ("key", Str(t.Key)),
+                ("title", Str(t.Title)),
+                ("short", Str(t.Short)),
+                ("kind", Str(t.Kind.ToString())),
+                ("range", Str(t.Range)),
+                ("requires", Str(t.Requires))))),
+            ("stats", Stats(stats)),
+            ("runs", Arr(runs, run => Entry(run, stats))));
 
-        /// <summary>One line of the run history: per profile the outcome and where its time went.</summary>
-        public static string HistoryLine(IReadOnlyList<BotRun> runs, BotReportInfo info) => Obj(
+        /// <summary>One line of the run history: the population's spread and every bot's outcome and campaign time.</summary>
+        public static string HistoryLine(BotPopulationStats stats, IReadOnlyList<BotRun> runs, BotReportInfo info) => Obj(
             ("info", Info(info)),
-            ("profiles", Arr(runs, run => Obj(
-                ("id", Str(run.Profile.Id)),
-                ("title", Str(run.Profile.Title)),
-                ("outcome", Str(run.Outcome.ToString())),
-                ("levels", Num(run.Quests.Count)),
-                ("chainLength", Num(run.ChainLength)),
-                ("endMs", Num(run.EndMs)),
-                ("goldWaitMs", Num(run.Quests.Sum(q => q.GoldWaitMs))),
-                ("flowWaitMs", Num(run.Quests.Sum(q => q.FlowWaitMs))),
-                ("timeWaitMs", Num(run.Quests.Sum(q => q.TimeWaitMs))),
-                ("busyMs", Num(run.Quests.Sum(q => q.BusyMs))),
-                ("finalGold", Num(run.FinalGold)),
-                ("finalPopulation", Num(run.FinalPopulation)),
-                ("arenaLevel", Num(run.ArenaLevel)),
-                ("battleGold", Num(run.BattleGold))))));
+            ("population", Obj(
+                ("signature", Str(BotPopulation.Signature)),
+                ("count", Num(stats.Count)),
+                ("completed", Num(stats.Completed)),
+                ("stalled", Num(stats.Stalled)),
+                ("timeLimit", Num(stats.TimeLimit)),
+                ("crashed", Num(stats.Crashed)),
+                ("p10", Opt(stats.CampaignMs?.P10)),
+                ("p25", Opt(stats.CampaignMs?.P25)),
+                ("p50", Opt(stats.CampaignMs?.P50)),
+                ("p75", Opt(stats.CampaignMs?.P75)),
+                ("p90", Opt(stats.CampaignMs?.P90)),
+                ("mean", Opt(stats.CampaignMs?.Mean)))),
+            ("outcomes", Str(new string(runs.Select(Code).ToArray()))),
+            ("endMs", Arr(runs, run => Num(run.EndMs))));
+
+        /// <summary>A run's outcome in one letter: C completed, S stalled, T time limit, X crashed.</summary>
+        public static char Code(BotRun run) => run.Outcome switch
+        {
+            BotOutcome.Completed => 'C',
+            BotOutcome.Stalled => 'S',
+            BotOutcome.TimeLimit => 'T',
+            _ => 'X'
+        };
 
         private static string Info(BotReportInfo info) => Obj(
             ("generatedAt", Str(info.GeneratedAt.ToString("yyyy-MM-ddTHH:mm:ss", Invariant))),
@@ -79,73 +110,121 @@ namespace TrollStrategy.Bots
             ("stopAfterLevel", Num(info.StopAfterLevel)),
             ("uncommitted", info.Uncommitted == null ? "null" : Arr(info.Uncommitted, Str)));
 
-        private static string Run(BotRun run) => Obj(
-            ("id", Str(run.Profile.Id)),
-            ("title", Str(run.Profile.Title)),
-            ("description", Str(run.Profile.Description)),
-            ("thinkSeconds", Num(run.Profile.ThinkSeconds)),
-            ("actionSeconds", Num(run.Profile.ActionSeconds)),
-            ("questReadSeconds", Num(run.Profile.QuestReadSeconds)),
-            ("outcome", Str(run.Outcome.ToString())),
-            ("outcomeText", Str(BotReport.Outcome(run))),
-            ("stopReason", Str(run.StopReason)),
-            ("chainLength", Num(run.ChainLength)),
-            ("endMs", Num(run.EndMs)),
-            ("finalGold", Num(run.FinalGold)),
-            ("finalPopulation", Num(run.FinalPopulation)),
-            ("finalBuildings", Num(run.FinalBuildings)),
-            ("hired", Num(run.Hired)),
-            ("landBought", Num(run.LandBought)),
-            ("arenaLevel", Num(run.ArenaLevel)),
-            ("battleGold", Num(run.BattleGold)),
-            ("salesGold", Num(run.SalesGold)),
-            ("questGold", Num(run.QuestGold)),
-            ("arenaGoldShare", Num(run.ArenaGoldShare)),
-            ("paidRepeatsIn10Min", Num(run.PaidRepeatsIn10Min)),
-            ("units", Arr(run.Units, u => Obj(("name", Str(u.Key)), ("count", Num(u.Value))))),
-            ("hiredByKind", Arr(run.HiredByKind, u => Obj(("name", Str(u.Key)), ("count", Num(u.Value))))),
-            ("buildings", Arr(run.Buildings, b => Obj(("name", Str(b.Key)), ("count", Num(b.Value))))),
-            ("upgrades", Arr(run.Upgrades, u => Obj(("name", Str(u.Key)), ("level", Num(u.Value))))),
-            ("unlocks", Arr(run.Unlocks, u => Obj(
-                ("name", Str(u.Name)), ("atMs", Num(u.AtMs)), ("questLevel", Num(u.QuestLevel))))),
-            ("decisions", Num(run.Decisions)),
-            ("commandsAccepted", Num(run.CommandsAccepted)),
-            ("quests", Arr(run.Quests, q => Obj(
+        private static string Stats(BotPopulationStats s) => Obj(
+            ("count", Num(s.Count)),
+            ("completed", Num(s.Completed)),
+            ("stalled", Num(s.Stalled)),
+            ("timeLimit", Num(s.TimeLimit)),
+            ("crashed", Num(s.Crashed)),
+            ("minGroupRuns", Num(BotPopulationStats.MinGroupRuns)),
+            ("campaign", Spread(s.CampaignMs)),
+            ("busy", Spread(s.BusyMs)),
+            ("goldWait", Spread(s.GoldWaitMs)),
+            ("flowWait", Spread(s.FlowWaitMs)),
+            ("timeWait", Spread(s.TimeWaitMs)),
+            ("arenaLevel", Spread(s.ArenaLevel)),
+            ("battleGold", Spread(s.BattleGold)),
+            ("finalPopulation", Spread(s.FinalPopulation)),
+            ("commands", Spread(s.Commands)),
+            ("fastest", Str(s.FastestId)),
+            ("median", Str(s.MedianId)),
+            ("slowest", Str(s.SlowestId)),
+            ("quests", Arr(s.Quests, q => Obj(
                 ("level", Num(q.Level)),
-                ("id", Str(q.Id)),
                 ("title", Str(q.Title)),
-                ("startMs", Num(q.StartMs)),
-                ("doneMs", Num(q.DoneMs)),
+                ("reached", Num(q.Reached)),
+                ("done", Num(q.Done)),
+                ("stoppedHere", Num(q.StoppedHere)),
+                ("duration", Spread(q.Duration)),
+                ("busyMs", Num(q.BusyMs)),
                 ("goldWaitMs", Num(q.GoldWaitMs)),
                 ("flowWaitMs", Num(q.FlowWaitMs)),
-                ("timeWaitMs", Num(q.TimeWaitMs)),
-                ("busyMs", Num(q.BusyMs)),
-                ("goldAfterClaim", Num(q.GoldAfterClaim)),
-                ("population", Num(q.Population)),
-                ("buildings", Num(q.Buildings))))),
-            ("battles", Arr(run.Battles, b => Obj(
-                ("atMs", Num(b.AtMs)),
-                ("level", Num(b.QuestLevel)),
-                ("arenaLevel", Num(b.ArenaLevel)),
-                ("squad", Str(b.Squad)),
-                ("outcome", Str(b.Outcome.ToString())),
-                ("fallen", Num(b.Fallen)),
-                ("gold", Num(b.Gold)),
-                ("firstWin", Bool(b.FirstWin)),
-                ("paidFromFund", Bool(b.PaidFromFund)),
-                ("stake", Num(b.Stake)),
-                ("odds", Str(b.Odds)),
-                ("closedLevel", Num(b.ClosedLevel))))),
-            ("samples", Arr(run.Samples, s => Obj(
-                ("atMs", Num(s.AtMs)),
-                ("level", Num(s.QuestLevel)),
-                ("gold", Num(s.Gold)),
-                ("soldGoods", Num(s.SoldGoods)),
-                ("population", Num(s.Population)),
-                ("buildings", Num(s.Buildings)),
-                ("landBlocks", Num(s.LandBlocks)),
-                ("arenaLevel", Num(s.ArenaLevel))))),
-            ("refusals", Arr(run.Refusals, r => Obj(("message", Str(r.Key)), ("count", Num(r.Value))))));
+                ("timeWaitMs", Num(q.TimeWaitMs))))),
+            ("effects", Arr(s.Effects, e => Obj(
+                ("key", Str(e.Trait.Key)),
+                ("title", Str(e.Trait.Title)),
+                ("requires", Str(e.Trait.Requires)),
+                ("runs", Num(e.Runs)),
+                ("rho", Opt(e.Rho)),
+                ("spreadMs", Opt(e.SpreadMs)),
+                ("stoppedSpread", Num(e.StoppedSpread)),
+                ("groups", Arr(e.Groups, g => Obj(
+                    ("label", Str(g.Label)),
+                    ("from", Num(g.From)),
+                    ("to", Num(g.To)),
+                    ("count", Num(g.Count)),
+                    ("completed", Num(g.Completed)),
+                    ("medianMs", Opt(g.MedianMs)))))))),
+            ("stalls", Arr(s.Stalls, x => Obj(
+                ("level", Num(x.Level)),
+                ("title", Str(x.Title)),
+                ("count", Num(x.Count)),
+                ("reasons", Arr(x.Reasons, r => Obj(("text", Str(r.Reason)), ("count", Num(r.Count))))),
+                ("ids", Arr(x.Ids, Str))))),
+            ("crashes", Arr(s.Crashes, c => Obj(("id", Str(c.Id)), ("reason", Str(c.Reason))))),
+            ("timeline", Arr(s.Timeline, t => Obj(
+                ("minute", Num(t.Minute)),
+                ("runs", Num(t.Runs)),
+                ("gold", Middle(t.Gold)),
+                ("population", Middle(t.Population)),
+                ("buildings", Middle(t.Buildings)),
+                ("level", Middle(t.Level))))),
+            ("hired", Arr(s.Hired, Names)),
+            ("buildings", Arr(s.Buildings, Names)));
+
+        private static string Names(BotNameCount n) => Obj(
+            ("name", Str(n.Name)), ("total", Num(n.Total)), ("runs", Num(n.Runs)), ("runsWithCopies", Num(n.RunsWithCopies)));
+
+        private static string Spread(BotSpread s) => s == null ? "null" : Obj(
+            ("n", Num(s.Count)), ("min", Num(s.Min)), ("p10", Num(s.P10)), ("p25", Num(s.P25)), ("p50", Num(s.P50)),
+            ("p75", Num(s.P75)), ("p90", Num(s.P90)), ("max", Num(s.Max)), ("mean", Num(s.Mean)));
+
+        private static string Middle(BotSpread s) => s == null ? "null" : Obj(
+            ("p25", Num(s.P25)), ("p50", Num(s.P50)), ("p75", Num(s.P75)));
+
+        // one bot, compact: a thousand of them still load in a moment
+        private static string Entry(BotRun run, BotPopulationStats stats)
+        {
+            var values = run.Profile.Seed > 0 ? BotPopulation.Values(run.Profile.Seed) : Array.Empty<double>();
+            return Obj(
+                ("id", Str(run.Profile.Id)),
+                ("seed", Num(run.Profile.Seed)),
+                ("title", Str(run.Profile.Title)),
+                ("description", Str(run.Profile.Description)),
+                ("traits", Arr(values, v => Num(v))),
+                ("traitText", Arr(Enumerable.Range(0, values.Length), i => Str(BotPopulation.Traits[i].Format(values[i])))),
+                ("outcome", Str(run.Outcome.ToString())),
+                ("outcomeText", Str(BotReport.Outcome(run))),
+                ("stopReason", Str(run.StopReason)),
+                ("levels", Num(run.Quests.Count)),
+                ("chainLength", Num(run.ChainLength)),
+                ("endMs", Num(run.EndMs)),
+                ("busyMs", Num(run.Quests.Sum(q => q.BusyMs))),
+                ("goldWaitMs", Num(run.Quests.Sum(q => q.GoldWaitMs))),
+                ("flowWaitMs", Num(run.Quests.Sum(q => q.FlowWaitMs))),
+                ("timeWaitMs", Num(run.Quests.Sum(q => q.TimeWaitMs))),
+                ("commands", Num(run.CommandsAccepted)),
+                ("refusals", Num(run.Refusals.Values.Sum())),
+                ("battles", Num(run.Battles.Count)),
+                ("wins", Num(run.Battles.Count(b => b.Outcome == Domain.BattleOutcome.PlayerVictory))),
+                ("arenaLevel", Num(run.ArenaLevel)),
+                ("battleGold", Num(run.BattleGold)),
+                ("salesGold", Num(run.SalesGold)),
+                ("questGold", Num(run.QuestGold)),
+                ("arenaGoldShare", Num(run.ArenaGoldShare)),
+                ("paidRepeatsIn10Min", Num(run.PaidRepeatsIn10Min)),
+                ("finalGold", Num(run.FinalGold)),
+                ("finalPopulation", Num(run.FinalPopulation)),
+                ("finalBuildings", Num(run.FinalBuildings)),
+                ("hired", Num(run.Hired)),
+                ("landBought", Num(run.LandBought)),
+                ("questMs", Arr(run.Quests, q => Num(q.DurationMs))),
+                ("hiredByKind", Arr(run.HiredByKind, kv => Obj(("name", Str(kv.Key)), ("count", Num(kv.Value))))),
+                ("buildings", Arr(run.Buildings, kv => Obj(("name", Str(kv.Key)), ("count", Num(kv.Value))))),
+                ("report", stats.FullReports.Contains(run.Profile.Id) ? Str($"runs/{run.Profile.Id}.md") : "null"));
+        }
+
+        private static string Opt(double? value) => value.HasValue ? Num(value.Value) : "null";
 
         internal static string Obj(params (string Key, string Value)[] fields) =>
             "{" + string.Join(",", fields.Select(f => Str(f.Key) + ":" + f.Value)) + "}";
