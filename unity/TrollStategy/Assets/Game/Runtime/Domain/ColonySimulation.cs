@@ -822,8 +822,11 @@ namespace TrollStrategy.Domain
                 }
                 case HaulPhase.Loading:
                 {
+                    float before = assignment.PhaseElapsedSeconds;
                     assignment.PhaseElapsedSeconds += deltaSeconds;
-                    TryLoad(state, unit, source, destination, unitDef, catalog);
+                    float after = assignment.PhaseElapsedSeconds;
+                    if (TryLoad(state, unit, source, destination, unitDef, catalog))
+                        assignment.HandlingCreditSeconds = Overrun(before, after, LoadSeconds(state, catalog));
                     break;
                 }
                 case HaulPhase.ToDestination:
@@ -834,39 +837,62 @@ namespace TrollStrategy.Domain
                     if (Travel(state, unit, place, null, speedInWorldUnits, deltaSeconds, catalog))
                     {
                         assignment.Phase = HaulPhase.Unloading;
-                        assignment.PhaseElapsedSeconds = 0f;
-                        // with no unloading time the goods change hands on arrival
-                        if (UnloadSeconds(state, catalog) <= 0f) TryUnload(state, destination, assignment, catalog);
+                        // with no unloading time, or enough served past the last handover, the goods change hands
+                        // on arrival
+                        float credit = TakeHandlingCredit(assignment);
+                        assignment.PhaseElapsedSeconds = credit;
+                        if (TryUnload(state, destination, assignment, catalog))
+                            assignment.HandlingCreditSeconds = Math.Max(0f, credit - UnloadSeconds(state, catalog));
                     }
                     break;
                 }
                 case HaulPhase.Unloading:
                 {
+                    float before = assignment.PhaseElapsedSeconds;
                     assignment.PhaseElapsedSeconds += deltaSeconds;
-                    TryUnload(state, destination, assignment, catalog);
+                    float after = assignment.PhaseElapsedSeconds;
+                    if (TryUnload(state, destination, assignment, catalog))
+                        assignment.HandlingCreditSeconds = Overrun(before, after, UnloadSeconds(state, catalog));
                     break;
                 }
             }
         }
 
-        // The hauler stands at the door; with no loading time it takes its load at once.
+        // The hauler stands at the door; with no loading time, or enough served past its last handover, it takes
+        // its load at once.
         private static void BeginLoading(GameState state, UnitState unit, BuildingState source,
             BuildingState destination, UnitDefinition unitDef, GameContentCatalog catalog)
         {
-            unit.Assignment.Phase = HaulPhase.Loading;
-            unit.Assignment.PhaseElapsedSeconds = 0f;
-            if (LoadSeconds(state, catalog) <= 0f) TryLoad(state, unit, source, destination, unitDef, catalog);
+            var assignment = unit.Assignment;
+            assignment.Phase = HaulPhase.Loading;
+            float credit = TakeHandlingCredit(assignment);
+            assignment.PhaseElapsedSeconds = credit;
+            if (TryLoad(state, unit, source, destination, unitDef, catalog))
+                assignment.HandlingCreditSeconds = Math.Max(0f, credit - LoadSeconds(state, catalog));
         }
+
+        private static float TakeHandlingCredit(Assignment assignment)
+        {
+            float credit = assignment.HandlingCreditSeconds;
+            assignment.HandlingCreditSeconds = 0f;
+            return credit;
+        }
+
+        // The colony runs in whole steps, so a handover happens up to a step after its time is up. The part of that
+        // step past the time goes to the next handover: otherwise a guild's shorter loading that still ends in the
+        // same step would change nothing. A hauler that stood ready and waited (nothing to take, no room) earns none.
+        private static float Overrun(float before, float after, float handlingTime) =>
+            before < handlingTime ? Math.Max(0f, after - handlingTime) : 0f;
 
         // Once EconomyConfig.LoadSeconds have passed, takes as much of the first good it may carry as it can
         // lift and the destination can hold. With nothing it may take it waits at the door, unless others
-        // queue for the door: then it gives up its place and joins the back of the queue.
-        private static void TryLoad(GameState state, UnitState unit, BuildingState source, BuildingState destination,
+        // queue for the door: then it gives up its place and joins the back of the queue. True once it has a load.
+        private static bool TryLoad(GameState state, UnitState unit, BuildingState source, BuildingState destination,
             UnitDefinition unitDef, GameContentCatalog catalog)
         {
             var assignment = unit.Assignment;
             float loadTime = LoadSeconds(state, catalog);
-            if (assignment.PhaseElapsedSeconds < loadTime) return;
+            if (assignment.PhaseElapsedSeconds < loadTime) return false;
             if (!TryPickCargo(state, source, destination, assignment, catalog, out var resource, out int destinationRoom))
             {
                 if (HasSourceQueue(state, source.Id))
@@ -875,10 +901,10 @@ namespace TrollStrategy.Domain
                     assignment.QueueTicket = state.NextHaulQueueTicket++;
                     assignment.CrowdSlot = -1;
                     assignment.PhaseElapsedSeconds = 0f;
-                    return;
+                    return false;
                 }
                 assignment.PhaseElapsedSeconds = loadTime;
-                return;
+                return false;
             }
             int carryBudget = assignment.CarryCreditPercent + HaulStamina(state, unitDef, catalog);
             int capacity = TripCarryCapacity(carryBudget);
@@ -892,26 +918,26 @@ namespace TrollStrategy.Domain
                 : 0;
             assignment.Phase = HaulPhase.ToDestination;
             assignment.PhaseElapsedSeconds = 0f;
+            return true;
         }
 
         // Once EconomyConfig.UnloadSeconds have passed, hands the load over (sells it at a market); what does
-        // not fit stays with the hauler, who tries again next step.
-        private static void TryUnload(GameState state, BuildingState destination, Assignment assignment,
+        // not fit stays with the hauler, who tries again next step. True once the whole load is handed over.
+        private static bool TryUnload(GameState state, BuildingState destination, Assignment assignment,
             GameContentCatalog catalog)
         {
             float unloadTime = UnloadSeconds(state, catalog);
-            if (assignment.PhaseElapsedSeconds < unloadTime) return;
+            if (assignment.PhaseElapsedSeconds < unloadTime) return false;
             Unload(state, destination, assignment, catalog);
             if (assignment.Carried == 0)
             {
                 assignment.CrowdSlot = -1;
                 assignment.Phase = HaulPhase.ToSource;
                 assignment.PhaseElapsedSeconds = 0f;
+                return true;
             }
-            else
-            {
-                assignment.PhaseElapsedSeconds = unloadTime;
-            }
+            assignment.PhaseElapsedSeconds = unloadTime;
+            return false;
         }
 
         // Of the goods the hauler may take, the source holds and the destination still has room for, the one the

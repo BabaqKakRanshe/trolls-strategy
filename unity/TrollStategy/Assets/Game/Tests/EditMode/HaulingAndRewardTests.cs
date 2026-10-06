@@ -133,6 +133,42 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void QuickHands_EveryLevelShortensTheRounds()
+        {
+            // 0.5 s to load and 0.25 s to unload fill whole steps; 20% shorter times end inside a step
+            _economy.SetHauling(.5f, .25f, 1);
+            _catalog.SetUpgrades(new[]
+            {
+                new UpgradeDefinition("hands", "Быстрые руки", "", BuildingKind.Market, UpgradeEffect.HandlingTimePercent,
+                    20, new[] { 1, 1, 1 })
+            });
+            const int goods = 20;
+            float SecondsToSell(int level)
+            {
+                var state = TestColony.NewState(_catalog);
+                state.Upgrades["hands"] = level;
+                var warehouse = state.Buildings.First(b => b.Kind == BuildingKind.Warehouse);
+                warehouse.AddStock(ResourceKind.IronOre, goods);
+                Hauler(state, "unit-1", warehouse, Assignment.Haul("warehouse-1", "market-1"));
+                float seconds = 0f;
+                while (state.SoldGoods < goods && seconds < 600f)
+                {
+                    ColonySimulation.TickColony(state, _economy.StepTimeSeconds, _catalog);
+                    seconds += _economy.StepTimeSeconds;
+                }
+                Assert.That(state.SoldGoods, Is.EqualTo(goods), $"level {level}");
+                return seconds;
+            }
+
+            var times = Enumerable.Range(0, 4).Select(SecondsToSell).ToArray();
+            string all = string.Join(", ", times);
+            for (int level = 1; level < times.Length; level++)
+                Assert.That(times[level], Is.LessThan(times[level - 1]), $"Level {level} saves nothing: {all} s");
+            // a level takes 0.15 s off a round, 3 s off 20 rounds; whole steps may keep a part of it
+            Assert.That(times[0] - times[1], Is.GreaterThanOrEqualTo(2f), all);
+        }
+
+        [Test]
         public void SeveralLoadingPlaces_LetHaulersLoadSideBySide()
         {
             _economy.SetHauling(.5f, .5f, 2);

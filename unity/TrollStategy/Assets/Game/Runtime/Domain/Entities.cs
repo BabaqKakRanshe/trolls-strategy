@@ -35,6 +35,8 @@ namespace TrollStrategy.Domain
         public ResourceKind CarriedResource { get; set; }
         public int CarryCreditPercent { get; set; }
         public float PhaseElapsedSeconds { get; set; }
+        // Loading or unloading time served past the last handover; the next handover starts with it counted.
+        public float HandlingCreditSeconds { get; set; }
         public int QueueTicket { get; set; }
         // Place held in the group in front of the door the unit waits at (a hauler queued at its source or
         // delivering to its destination, a free creature at its gathering building); -1 when it is not waiting.
@@ -82,6 +84,7 @@ namespace TrollStrategy.Domain
             CarriedResource = CarriedResource,
             CarryCreditPercent = CarryCreditPercent,
             PhaseElapsedSeconds = PhaseElapsedSeconds,
+            HandlingCreditSeconds = HandlingCreditSeconds,
             QueueTicket = QueueTicket,
             CrowdSlot = CrowdSlot,
             Cargo = Cargo != null ? new List<ResourceKind>(Cargo) : new List<ResourceKind>()
