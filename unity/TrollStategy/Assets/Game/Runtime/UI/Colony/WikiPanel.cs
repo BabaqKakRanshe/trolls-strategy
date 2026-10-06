@@ -194,14 +194,27 @@ namespace TrollStrategy.UI
             Fill(hits, null);
         }
 
+        /// <summary>Opens the book on one entry: a hint's or a card's "more", the book's key over them.</summary>
+        public void OpenAt(WikiSection section, string key)
+        {
+            if (!IsOpen)
+            {
+                Section = section;
+                Open();
+            }
+            Go(section, key);
+        }
+
         /// <summary>Opens an entry by its key (a kind's name, an upgrade's id, a level number).</summary>
         public void Go(WikiSection section, string key)
         {
             Show(section);
-            foreach (var (entry, _) in _shown)
+            foreach (var (entry, row) in _shown)
                 if (entry.Key == key)
                 {
                     Select(entry);
+                    // a row below the fold: the list knows where it is once it has been laid out
+                    _rows.schedule.Execute(() => { if (_selected == entry && _rows.Contains(row)) _rows.ScrollTo(row); });
                     return;
                 }
         }
@@ -256,8 +269,8 @@ namespace TrollStrategy.UI
         private static string[] Columns(WikiSection? section) => section switch
         {
             WikiSection.Creatures => new[] { "wiki-cell--name", "wiki-cell--num", "wiki-cell--num", "wiki-cell--num", "wiki-cell--fight", "wiki-cell--wide", "wiki-cell--price" },
-            WikiSection.Enemies => new[] { "wiki-cell--name", "wiki-cell--num", "wiki-cell--num", "wiki-cell--num", "wiki-cell--wide" },
-            WikiSection.Buildings => new[] { "wiki-cell--name", "wiki-cell--num", "wiki-cell--num", "wiki-cell--wide", "wiki-cell--price" },
+            WikiSection.Enemies => new[] { "wiki-cell--name", "wiki-cell--stat", "wiki-cell--num", "wiki-cell--num", "wiki-cell--wide" },
+            WikiSection.Buildings => new[] { "wiki-cell--name", "wiki-cell--num", "wiki-cell--stat", "wiki-cell--wide", "wiki-cell--price" },
             WikiSection.Goods => new[] { "wiki-cell--name", "wiki-cell--price", "wiki-cell--wide", "wiki-cell--wide" },
             WikiSection.Upgrades => new[] { "wiki-cell--name", "wiki-cell--host", "wiki-cell--level", "wiki-cell--wide" },
             WikiSection.Arena => new[] { "wiki-cell--name", "wiki-cell--wide", "wiki-cell--reward", "wiki-cell--host" },

@@ -46,6 +46,8 @@ namespace TrollStrategy.UI
         public Action OpenMenu { get; set; }
         /// <summary>Opens the book; set by the HUD view when the UI has it, called by the book tool.</summary>
         public Action OpenWiki { get; set; }
+        /// <summary>Opens the book on one entry (a section and its key); set by the HUD view with the book.</summary>
+        public Action<WikiSection, string> OpenWikiAt { get; set; }
         /// <summary>Stops or resumes the colony's time while a menu holds the screen (the bootstrap owns time).</summary>
         public Action<bool> SetPaused { get; set; }
         /// <summary>Starts the colony over from the beginning.</summary>
@@ -60,6 +62,10 @@ namespace TrollStrategy.UI
         public Action<string> SetLanguage { get; set; }
         /// <summary>Which public build runs (the itch.io alpha or the Steam demo): the intro and the about page word it.</summary>
         public BuildEdition Edition { get; set; } = BuildInfo.Current.Edition;
+
+        /// <summary>A hint's or a card's "more": the book on one entry, or null while the HUD has no book.</summary>
+        public Action WikiLink(WikiSection section, string key) =>
+            OpenWikiAt == null || string.IsNullOrEmpty(key) ? null : () => OpenWikiAt?.Invoke(section, key);
 
         /// <summary>The mission the colony's battle button leads to, or null when the catalog has none.</summary>
         public BattleMissionDefinition FirstMission

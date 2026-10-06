@@ -1441,6 +1441,10 @@
 "v": "Tanesi {0} altın."
 },
 {
+"k": "Каждое следующее существо этого вида дороже.",
+"v": "Bu yaratıktan her yenisi daha pahalıdır."
+},
+{
 "k": "Каждая следующая такая постройка дороже.",
 "v": "Bu binadan her yenisi daha pahalıdır."
 },
@@ -3867,14 +3871,6 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Gobline göre hızlı çalışır ve daha çok taşır ama yavaş yürür. Savaşta güçlü."
-},
-{
-"k": "Каждое новое существо в поселении поднимает цену найма.",
-"v": "Yerleşime katılan her yeni yaratık işe alım fiyatını yükseltir."
-},
-{
-"k": "Рецепт",
-"v": "Tarif"
 }
 ]
 }

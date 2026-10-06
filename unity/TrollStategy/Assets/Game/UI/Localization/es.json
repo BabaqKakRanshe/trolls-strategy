@@ -1441,6 +1441,10 @@
 "v": "{0} de oro por cada uno."
 },
 {
+"k": "Каждое следующее существо этого вида дороже.",
+"v": "Cada criatura siguiente de este tipo es más cara."
+},
+{
 "k": "Каждая следующая такая постройка дороже.",
 "v": "Cada edificio de este tipo siguiente es más caro."
 },
@@ -3867,14 +3871,6 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Trabaja más rápido que el goblin y carga más, pero camina despacio. Fuerte en combate."
-},
-{
-"k": "Каждое новое существо в поселении поднимает цену найма.",
-"v": "Cada nueva criatura en el asentamiento sube el precio de contratación."
-},
-{
-"k": "Рецепт",
-"v": "Receta"
 }
 ]
 }

@@ -42,7 +42,6 @@ namespace TrollStrategy.Domain
         public static void TickColony(GameState state, float deltaSeconds, GameContentCatalog catalog)
         {
             LandRules.Tick(state, deltaSeconds);
-            TrailRules.Tick(state, deltaSeconds, catalog);
             ProduceGoods(state, deltaSeconds, catalog);
 
             for (int i = 0; i < state.Units.Count; i++)
@@ -145,22 +144,30 @@ namespace TrollStrategy.Domain
         }
 
         /// <summary>
-        /// Gold for hiring <paramref name="amount"/> creatures of a kind: each costs its catalog price plus the
-        /// per-creature percentage for everyone already in the colony, the ones hired before it in the group included.
+        /// Gold for hiring <paramref name="amount"/> creatures of a kind: each costs its catalog price times the copy
+        /// growth once for every creature of the kind already in the colony, the ones hired before it in the group
+        /// included. Other kinds do not count, so a crowd of goblin haulers leaves the price of a troll alone.
         /// </summary>
-        public static int HirePrice(UnitDefinition definition, int population, int amount, EconomyConfig economy)
+        public static int HirePrice(UnitDefinition definition, int owned, int amount, EconomyConfig economy)
         {
-            double percent = economy.HirePricePercentPerCreature / 100.0;
-            int total = 0;
+            double growth = economy.HireCopyPriceGrowth;
+            long total = 0;
             for (int i = 0; i < amount; i++)
-                total += RoundGold(definition.Price * (1.0 + percent * (population + i)));
-            return total;
+                total += RoundGold(definition.Price * Math.Pow(growth, owned + i));
+            return (int)Math.Min(total, int.MaxValue);
         }
 
-        public static int HirePrice(GameState state, UnitKind kind, int amount, GameContentCatalog catalog) =>
-            HirePrice(catalog.GetUnit(kind), state.Units.Count, amount, catalog.Economy);
+        public static int HirePrice(GameState state, UnitKind kind, int amount, GameContentCatalog catalog)
+        {
+            int owned = 0;
+            foreach (var unit in state.Units)
+                if (unit.Kind == kind) owned++;
+            return HirePrice(catalog.GetUnit(kind), owned, amount, catalog.Economy);
+        }
 
-        private static int RoundGold(double gold) => (int)Math.Round(gold, MidpointRounding.AwayFromZero);
+        // a compound price outgrows int long before anyone can pay it; it stays out of reach instead of wrapping
+        private static int RoundGold(double gold) =>
+            (int)Math.Min(int.MaxValue, Math.Round(gold, MidpointRounding.AwayFromZero));
 
         public static int CountUnitsInCell(GameState state, Cell cell, EconomyConfig economy)
         {
@@ -1151,25 +1158,19 @@ namespace TrollStrategy.Domain
                 unit.RouteLayoutVersion = state.LayoutVersion;
             }
 
-            // a trail underfoot speeds the creature up; every cell it steps into wears (heavy creatures more)
-            var economy = catalog.Economy;
-            float budget = speed * deltaSeconds * TrailRules.SpeedAt(state, unit.Position, economy);
-            int wear = state.Trails != null ? catalog.GetUnit(unit.Kind)?.TrailWear ?? 1 : 0;
+            float budget = speed * deltaSeconds;
             while (unit.Route.Count > 0)
             {
                 var next = unit.Route[0];
-                var from = unit.Position;
-                float dx = next.X - from.X;
-                float dy = next.Y - from.Y;
+                float dx = next.X - unit.Position.X;
+                float dy = next.Y - unit.Position.Y;
                 float dist = (float)Math.Sqrt(dx * dx + dy * dy);
                 if (dist > budget)
                 {
-                    unit.Position = new WorldPosition(from.X + dx / dist * budget, from.Y + dy / dist * budget);
-                    TrailRules.Walk(state, from, unit.Position, wear, economy);
+                    unit.Position = new WorldPosition(unit.Position.X + dx / dist * budget, unit.Position.Y + dy / dist * budget);
                     return false;
                 }
                 unit.Position = next;
-                TrailRules.Walk(state, from, next, wear, economy);
                 budget -= dist;
                 unit.Route.RemoveAt(0);
             }

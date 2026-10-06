@@ -106,10 +106,15 @@ namespace TrollStrategy.UI
                 // a campaign that has not opened the troll yet fights with goblins only
                 var leader = session.IsUnitUnlocked(UnitKind.Troll) ? UnitKind.Troll : UnitKind.Goblin;
                 var squad = new[] { leader, UnitKind.Goblin, UnitKind.Goblin, UnitKind.Goblin };
-                // each hire makes the next one dearer
+                // each hire makes the next one of its kind dearer
                 int squadCost = 0;
                 for (int i = 0; i < squad.Length; i++)
-                    squadCost += ColonySimulation.HirePrice(catalog.GetUnit(squad[i]), i, 1, catalog.Economy);
+                {
+                    int owned = 0;
+                    for (int j = 0; j < i; j++)
+                        if (squad[j] == squad[i]) owned++;
+                    squadCost += ColonySimulation.HirePrice(catalog.GetUnit(squad[i]), owned, 1, catalog.Economy);
+                }
                 if (session.CurrentSnapshot.Gold < squadCost)
                 {
                     _status.text = "Не хватает золота для тестового отряда";

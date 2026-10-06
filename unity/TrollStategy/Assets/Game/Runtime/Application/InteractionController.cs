@@ -497,7 +497,7 @@ namespace TrollStrategy.Application
                 _mode = InteractionMode.ManagingLand();
                 _message = buy
                     ? "Участок куплен и поднимается из облаков. Расчистите его, чтобы строить."
-                    : "Расчистка началась: деревья и камни уберут за " + Seconds(_session.Catalog.Economy.LandClearSeconds) + " с.";
+                    : $"Расчистка началась: деревья и камни уберут за {Seconds(_session.Catalog.Economy.LandClearSeconds)} с.";
             }
             else
             {

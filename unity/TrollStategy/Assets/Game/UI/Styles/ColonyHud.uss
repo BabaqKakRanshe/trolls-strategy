@@ -123,6 +123,20 @@
     flex-shrink: 1;
 }
 
+/* the book on what the card shows: a small disc beside the close */
+.inspect__wiki {
+    width: 48px;
+    height: 48px;
+    margin: -6px 2px -6px 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.inspect__wiki > .glyph {
+    width: 20px;
+    height: 20px;
+}
+
 .inspect__title {
     font-size: 27px;
     white-space: normal;
@@ -654,10 +668,28 @@
 
 /* What a haul order carries: a dialog in the middle of the screen, a card per good */
 
+/* five cards a row (5 × 148 px inside the sheet's padding); the warehouse's two dozen goods take five rows */
 .cargo-dialog {
-    width: 660px;
+    width: 840px;
     max-width: 94%;
     align-items: stretch;
+}
+
+/* "what it holds" or "every good": only a store with more goods than two rows of cards offers the choice */
+.cargo-dialog__filter {
+    align-self: center;
+    width: 440px;
+    margin-bottom: 10px;
+}
+
+.cargo-dialog__filter-count {
+    margin-left: 6px;
+}
+
+/* the cards scroll once a store keeps more goods than five rows hold */
+.cargo-dialog__scroll {
+    max-height: 640px;
+    flex-shrink: 1;
 }
 
 .cargo-dialog__title {
@@ -745,6 +777,125 @@
     min-width: 180px;
     margin-left: 6px;
     margin-right: 6px;
+}
+
+/* The inspect card's facts and recipes, scrolling once they outgrow the room between the quest and the catalog */
+.rows-scroll {
+    max-height: 430px;
+    flex-shrink: 1;
+    min-height: 60px;
+}
+
+/*
+ * The building's recipes as pictures and numbers. A recipe or by-product the building's level has not
+ * reached is greyed and carries the level that opens it; the enchanter's changes are pairs, three a row.
+ */
+.recipes {
+    margin-top: 4px;
+}
+
+/* rows of 32 px: the forge's nine and their spoilage line fit beside the open catalog on a 1080 px screen */
+.recipe {
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.recipe.is-locked,
+.recipe-pair.is-locked,
+.recipe__extra.is-locked {
+    opacity: 0.5;
+}
+
+.recipe__line,
+.recipes__shared,
+.recipes__spoilage {
+    flex-direction: row;
+    align-items: center;
+    min-height: 32px;
+}
+
+.recipe__icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.recipe__icon--small {
+    width: 24px;
+    height: 24px;
+}
+
+.recipe__letter {
+    font-size: 17px;
+    -unity-text-align: middle-center;
+}
+
+.recipe__count {
+    margin-left: 1px;
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.recipe__arrow {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.recipe__note {
+    font-size: 14px;
+}
+
+.recipe__level {
+    margin-left: 6px;
+    font-size: 13px;
+}
+
+.recipe__extras {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-left: 14px;
+}
+
+.recipe__extra {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 10px;
+    margin-bottom: 2px;
+}
+
+.recipe__chance {
+    margin-left: 2px;
+    font-size: 15px;
+}
+
+.recipes__words {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.recipe-pairs__row {
+    flex-direction: row;
+}
+
+.recipe-pair,
+.recipe-pairs__filler {
+    flex-grow: 1;
+    flex-basis: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+}
+
+.recipe-pair__icon {
+    width: 40px;
+    height: 40px;
+}
+
+.recipe-pair > .recipe__arrow {
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
 /* Workers and haulers of the inspected building */

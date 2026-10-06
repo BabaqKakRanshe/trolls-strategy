@@ -303,7 +303,7 @@
  "Посмотреть": "View",
  "{0} в 3D": "{0} in 3D",
  "{0} золота за одного.": "{0} gold each.",
- "Каждое новое существо в поселении поднимает цену найма.": "Every new creature in the colony raises the hiring price.",
+ "Каждое следующее существо этого вида дороже.": "Each further creature of this kind costs more.",
  "Каждая следующая такая постройка дороже.": "Each further building of this kind costs more.",
  "Откроется на {0} уровне.": "Unlocks at level {0}.",
  "Пока закрыто.": "Locked for now.",

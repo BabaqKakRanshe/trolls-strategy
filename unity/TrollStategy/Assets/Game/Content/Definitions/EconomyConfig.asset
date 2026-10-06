@@ -24,7 +24,7 @@ MonoBehaviour:
   _workPerStrengthSecond: 0.06
   _walkSpeedScale: 0.8
   _buildingCopyPriceGrowth: 1.12
-  _hirePricePercentPerCreature: 3
+  _hireCopyPriceGrowth: 1.025
   _landEnabled: 1
   _landBlockSize: 5
   _startLand:
@@ -36,14 +36,6 @@ MonoBehaviour:
   _landPriceStep: 150
   _landClearSeconds: 10
   _landClearGold: 0
-  _trailsEnabled: 1
-  _trailTrampledAt: 10
-  _trailPathAt: 40
-  _trailRoadAt: 80
-  _trailPathSpeed: 1.15
-  _trailRoadSpeed: 1.3
-  _trailGraceSeconds: 60
-  _trailDecaySeconds: 3
   _arenaFundPeriodSeconds: 180
   _arenaFundCap: 3
   _arenaStakePercent: 30

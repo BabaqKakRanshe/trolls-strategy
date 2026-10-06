@@ -10,13 +10,17 @@ namespace TrollStrategy.UI
     /// <summary>
     /// The middle step of every haul order, in the middle of the screen: what the hauler takes from the source
     /// just picked. "Всё" or chosen goods, each a card with its icon, what the source holds now and a hint on
-    /// hover; a mine offers its ore and crystals, a farm its wheat. Where to carry it is picked on the map next.
-    /// Choices go to the interaction controller, which owns the order being given.
+    /// hover; a mine offers its ore and crystals, a farm its wheat. A store with more goods than two rows of cards
+    /// opens on what it holds now and lists every good it takes in the other tab. Where to carry it is picked on
+    /// the map next. Choices go to the interaction controller, which owns the order being given; the tab is the
+    /// dialog's own.
     /// </summary>
     public sealed class HaulCargoDialog
     {
         // Icons of the goods shown together on the "everything" card.
         private const int StackIcons = 3;
+        // From this many goods, more than two rows of cards, the dialog can show only what the source holds now.
+        private const int FilterFrom = 10;
 
         private readonly ColonyHudContext _context;
         private readonly HudTooltip _tooltip;
@@ -25,6 +29,12 @@ namespace TrollStrategy.UI
         private readonly Label _title;
         private readonly Label _note;
         private readonly VisualElement _choices;
+        private readonly VisualElement _filter;
+        private readonly Button _stockedOnly;
+        private readonly Button _allGoods;
+        private readonly Label _stockedCount;
+        private readonly Label _allCount;
+        private bool _onlyStocked;
         private readonly Button _confirm;
         private readonly Button _cancel;
         private readonly List<Button> _cards = new();
@@ -43,6 +53,11 @@ namespace TrollStrategy.UI
             _title = Ui.Require<Label>(root, "haul-cargo-title");
             _note = Ui.Require<Label>(root, "haul-cargo-note");
             _choices = Ui.Require<VisualElement>(root, "haul-cargo-choices");
+            _filter = Ui.Require<VisualElement>(root, "haul-cargo-filter");
+            _stockedOnly = FilterButton("Есть в здании", true, out _stockedCount);
+            _allGoods = FilterButton("Все товары", false, out _allCount);
+            _filter.Add(_stockedOnly);
+            _filter.Add(_allGoods);
             var actions = Ui.Require<VisualElement>(root, "haul-cargo-actions");
             _cancel = UiFeel.Bind(Ui.CaptionButton("Отмена", "Esc", "btn"), interaction.CancelOrClear, Sfx.UiBack);
             _confirm = UiFeel.Bind(Ui.CaptionButton("Куда носить →", "Enter", "btn btn--primary"),
@@ -61,6 +76,22 @@ namespace TrollStrategy.UI
         public IReadOnlyList<ResourceKind> CargoKinds => _kinds;
         public Button ConfirmButton => _confirm;
         public Button CancelButton => _cancel;
+        /// <summary>Whether the dialog offers to show only the goods the source holds now.</summary>
+        public bool OffersFilter => Ui.IsShown(_filter);
+        public Button StockedOnlyButton => _stockedOnly;
+        public Button AllGoodsButton => _allGoods;
+
+        /// <summary>The goods whose cards are in view, in the dialog's order.</summary>
+        public IReadOnlyList<ResourceKind> ShownKinds
+        {
+            get
+            {
+                var shown = new List<ResourceKind>();
+                for (int i = 0; i < _cards.Count; i++)
+                    if (Ui.IsShown(_cards[i])) shown.Add(_kinds[i]);
+                return shown;
+            }
+        }
 
         /// <summary>The hover hint of a good: what the source holds now, its price and who makes and needs it.</summary>
         public string Hint(ResourceKind resource)
@@ -89,10 +120,23 @@ namespace TrollStrategy.UI
 
             var cargo = interaction.HaulCargo;
             _carryAll.EnableInClassList("is-on", cargo.Count == 0);
+            int stocked = 0;
+            foreach (var resource in _kinds)
+                if (Stock(source, resource) > 0) stocked++;
+            bool filtering = _kinds.Count >= FilterFrom;
+            if (stocked == 0) _onlyStocked = false;
+            Ui.Show(_filter, filtering);
+            _stockedOnly.EnableInClassList("is-on", _onlyStocked);
+            _allGoods.EnableInClassList("is-on", !_onlyStocked);
+            UiFeel.SetAvailable(_stockedOnly, stocked > 0);
+            Ui.SetText(_stockedCount, stocked.ToString());
+            Ui.SetText(_allCount, _kinds.Count.ToString());
             for (int i = 0; i < _cards.Count; i++)
             {
+                int amount = Stock(source, _kinds[i]);
+                Ui.Show(_cards[i], !filtering || !_onlyStocked || amount > 0);
                 _cards[i].EnableInClassList("is-on", Contains(cargo, _kinds[i]));
-                Ui.SetText(_counts[i], "в здании: " + Stock(source, _kinds[i]));
+                Ui.SetText(_counts[i], "в здании: " + amount);
             }
 
             bool onward = interaction.HaulCargoHasDestination;
@@ -119,11 +163,18 @@ namespace TrollStrategy.UI
             var interaction = _context.Interaction;
             string sourceName = source?.Name ?? "здания";
             Ui.SetText(_title, $"Что носить из «{sourceName}»?");
+            // a long list opens on what the source holds, unless a chosen good is not there (back from the map)
+            _onlyStocked = choices.Count >= FilterFrom && Holds(source, interaction.HaulCargo);
 
             _carryAll = Card("Всё", out var art, out var sub);
             art.AddToClassList("cargo-card__stack");
-            for (int i = 0; i < choices.Count && i < StackIcons; i++)
-                art.Add(Icon(choices[i], "cargo-card__stack-icon"));
+            // what the source holds goes on the "everything" card first
+            var stack = new List<ResourceKind>(StackIcons);
+            foreach (var resource in choices)
+                if (stack.Count < StackIcons && Stock(source, resource) > 0) stack.Add(resource);
+            foreach (var resource in choices)
+                if (stack.Count < StackIcons && !stack.Contains(resource)) stack.Add(resource);
+            foreach (var resource in stack) art.Add(Icon(resource, "cargo-card__stack-icon"));
             Ui.SetText(sub, "что есть");
             UiFeel.Bind(_carryAll, interaction.CarryEverything);
             _tooltip?.Attach(_carryAll, () => "Всё подряд",
@@ -160,6 +211,21 @@ namespace TrollStrategy.UI
             _counts.Clear();
             _carryAll = null;
             _signature = null;
+        }
+
+        // A tab of the filter: its name and how many goods it shows.
+        private Button FilterButton(string caption, bool onlyStocked, out Label count)
+        {
+            var button = Ui.CaptionButton(caption, null, "btn");
+            count = Ui.Text(string.Empty, "cargo-dialog__filter-count t-muted");
+            count.pickingMode = PickingMode.Ignore;
+            button.Add(count);
+            UiFeel.Bind(button, () =>
+            {
+                _onlyStocked = onlyStocked;
+                Refresh(_context.Session.CurrentSnapshot);
+            });
+            return button;
         }
 
         private static Button Card(string name, out VisualElement art, out Label sub)
@@ -207,6 +273,13 @@ namespace TrollStrategy.UI
             foreach (var stack in source.Stock)
                 if (stack.Resource == resource) return stack.Amount;
             return 0;
+        }
+
+        private static bool Holds(BuildingSnapshot source, IReadOnlyList<ResourceKind> goods)
+        {
+            foreach (var resource in goods)
+                if (Stock(source, resource) == 0) return false;
+            return true;
         }
 
         private static BuildingSnapshot Find(GameSnapshot snapshot, string buildingId)

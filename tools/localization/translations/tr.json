@@ -303,7 +303,7 @@
  "Посмотреть": "Bak",
  "{0} в 3D": "{0} 3D'de",
  "{0} золота за одного.": "Tanesi {0} altın.",
- "Каждое новое существо в поселении поднимает цену найма.": "Yerleşime katılan her yeni yaratık işe alım fiyatını yükseltir.",
+ "Каждое следующее существо этого вида дороже.": "Bu yaratıktan her yenisi daha pahalıdır.",
  "Каждая следующая такая постройка дороже.": "Bu binadan her yenisi daha pahalıdır.",
  "Откроется на {0} уровне.": "{0}. seviyede açılır.",
  "Пока закрыто.": "Şimdilik kapalı.",

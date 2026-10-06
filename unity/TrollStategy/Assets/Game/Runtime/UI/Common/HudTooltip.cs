@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine.UIElements;
 
 namespace TrollStrategy.UI
@@ -7,7 +8,8 @@ namespace TrollStrategy.UI
     /// A hint card by the HUD element under the pointer: a title, a few lines and the element's key. UI
     /// Toolkit's own tooltip only works in editor panels, so the runtime HUD draws this one. The card opens
     /// above its element, below it along the top edge of the screen and to its left along the right edge.
-    /// It never catches the pointer and goes away when its element leaves the pointer or the panel.
+    /// It never catches the pointer and goes away when its element leaves the pointer or the panel. A hint
+    /// with a "more" names the key that opens it (the book's) on a line under the words.
     /// </summary>
     public sealed class HudTooltip
     {
@@ -23,12 +25,26 @@ namespace TrollStrategy.UI
         private const float TopZone = 180f;
         private const float RightZone = 300f;
 
+        private sealed class Hint
+        {
+            public Func<string> Title;
+            public Func<string> Body;
+            public string Key;
+            public Action More;
+        }
+
         private readonly VisualElement _root;
         private readonly VisualElement _card;
         private readonly Label _title;
         private readonly Label _body;
         private readonly Label _key;
+        private readonly VisualElement _moreLine;
+        private readonly Label _moreText;
+        private readonly Label _moreKey;
+        // what each element shows; weak, so the HUD's rebuilt rows take their hints with them
+        private readonly ConditionalWeakTable<VisualElement, Hint> _hints = new();
         private VisualElement _target;
+        private Action _more;
 
         public HudTooltip(VisualElement root)
         {
@@ -40,11 +56,20 @@ namespace TrollStrategy.UI
             _title = Ui.Text(string.Empty, "tooltip__title t-bold");
             _body = Ui.Text(string.Empty, "tooltip__body");
             _key = Ui.Text(string.Empty, "hotkey tooltip__key");
+            _moreLine = Ui.Box("tooltip__more");
+            _moreText = Ui.Text(string.Empty, "tooltip__more-text t-bold");
+            _moreKey = Ui.Text(string.Empty, "hotkey tooltip__more-key");
             _title.pickingMode = PickingMode.Ignore;
             _body.pickingMode = PickingMode.Ignore;
             _key.pickingMode = PickingMode.Ignore;
+            _moreLine.pickingMode = PickingMode.Ignore;
+            _moreText.pickingMode = PickingMode.Ignore;
+            _moreKey.pickingMode = PickingMode.Ignore;
             text.Add(_title);
             text.Add(_body);
+            _moreLine.Add(_moreText);
+            _moreLine.Add(_moreKey);
+            text.Add(_moreLine);
             _card.Add(text);
             _card.Add(_key);
             root.Add(_card);
@@ -55,14 +80,23 @@ namespace TrollStrategy.UI
         public string Title => _title.text;
         public string Body => _body.text;
         public string Key => _key.text;
+        /// <summary>The key that opens a hint's "more" (the book's), shown on the card's last line.</summary>
+        public string MoreKey { get; set; }
+        /// <summary>The shown hint's "more" (the book on its entry), or null.</summary>
+        public Action More => IsShown ? _more : null;
 
         /// <summary>
         /// Shows the hint while the pointer is over <paramref name="target"/>; texts are read on entry, so
-        /// they follow the game. <paramref name="key"/> is the keyboard shortcut, if the element has one.
+        /// they follow the game. <paramref name="key"/> is the keyboard shortcut, if the element has one;
+        /// <paramref name="more"/> opens the book on what the element names. Attaching again changes the words.
         /// </summary>
-        public void Attach(VisualElement target, Func<string> title, Func<string> body, string key = null)
+        public void Attach(VisualElement target, Func<string> title, Func<string> body, string key = null, Action more = null)
         {
-            target.RegisterCallback<PointerEnterEvent>(_ => Show(target, title?.Invoke(), body?.Invoke(), key));
+            bool known = _hints.TryGetValue(target, out _);
+            if (known) _hints.Remove(target);
+            _hints.Add(target, new Hint { Title = title, Body = body, Key = key, More = more });
+            if (known) return;
+            target.RegisterCallback<PointerEnterEvent>(_ => Hover(target));
             // a finger leaves as it lifts: the card stays long enough to be read
             target.RegisterCallback<PointerLeaveEvent>(evt =>
             {
@@ -75,15 +109,31 @@ namespace TrollStrategy.UI
 
         private const long TouchHoldMs = 2500;
 
+        /// <summary>The pointer entered an attached element; tests call it, since they have no pointer.</summary>
+        public bool Hover(VisualElement target)
+        {
+            if (target == null || !_hints.TryGetValue(target, out var hint)) return false;
+            Show(target, hint.Title?.Invoke(), hint.Body?.Invoke(), hint.Key, hint.More);
+            return true;
+        }
+
         /// <summary>Opens the card by the element; tests call it directly, since they have no pointer.</summary>
-        public void Show(VisualElement target, string title, string body, string key = null)
+        public void Show(VisualElement target, string title, string body, string key = null, Action more = null)
         {
             _target = target;
+            _more = more;
             Ui.SetText(_title, title);
             Ui.SetText(_body, body);
             Ui.SetText(_key, key);
             Ui.Show(_body, !string.IsNullOrEmpty(body));
             Ui.Show(_key, !string.IsNullOrEmpty(key));
+            if (more != null)
+            {
+                Ui.SetText(_moreText, "Подробнее в справочнике");
+                Ui.SetText(_moreKey, MoreKey);
+                Ui.Show(_moreKey, !string.IsNullOrEmpty(MoreKey));
+            }
+            Ui.Show(_moreLine, more != null);
             Ui.Show(_card, true);
             _card.BringToFront();
             var bounds = target.worldBound;
@@ -118,7 +168,14 @@ namespace TrollStrategy.UI
         public void Hide(VisualElement target)
         {
             if (_target != target) return;
+            Dismiss();
+        }
+
+        /// <summary>Puts the card away whatever it shows: a dialog came up over its element.</summary>
+        public void Dismiss()
+        {
             _target = null;
+            _more = null;
             Ui.Show(_card, false);
         }
     }

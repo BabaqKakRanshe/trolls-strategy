@@ -4,13 +4,15 @@ using TrollStrategy.Application;
 using TrollStrategy.Content;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Audio;
+using TrollStrategy.Presentation.Visuals;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace TrollStrategy.UI
 {
     /// <summary>
-    /// Card for the building or creature the player inspects: what it does, what it holds, why it idles,
+    /// Card for the building or creature the player inspects: what it does (its recipes in pictures, see
+    /// <see cref="RecipeList"/>), what it holds, why it idles,
     /// who works and carries there (each can be taken off the job), and what can be done with it. Hidden while
     /// a building is being moved so the map stays clear.
     /// </summary>
@@ -82,6 +84,7 @@ namespace TrollStrategy.UI
         private readonly VisualElement _upgrades;
         private readonly List<UpgradeRow> _upgradePool = new();
         private readonly StaffList _staff;
+        private readonly RecipeList _recipes;
         private readonly ActionButton[] _actions = new ActionButton[ActionCount];
         private readonly VisualElement _actionRow;
         // the tutorial's first haul in one press (specs/006-tutorial-guidance, FR-018)
@@ -89,6 +92,8 @@ namespace TrollStrategy.UI
         private int _rowCount;
         private int _actionCount;
         private string _shownId;
+        private readonly Button _wikiButton;
+        private string _wikiHint;
 
         private readonly HudTooltip _tooltip;
 
@@ -103,14 +108,22 @@ namespace TrollStrategy.UI
             _note = Ui.Require<Label>(root, "inspect-note");
             _slotsHeader = Ui.Require<Label>(root, "inspect-slots-header");
             _slots = Ui.Require<VisualElement>(root, "inspect-slots");
-            // the colony upgrades of the guild, the barracks and the armory, one row each, under the facts
+            _recipes = new RecipeList(Ui.Require<VisualElement>(root, "inspect-recipes"), context, tooltip);
+            // the colony upgrades of the guild, the barracks and the armory, one row each, under the facts and
+            // outside their scroll, so a long recipe list never hides an upgrade
+            var rowsScroll = Ui.Require<ScrollView>(root, "inspect-rows-scroll");
+            rowsScroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             _upgrades = Ui.Box("upgrades");
-            _rows.parent.Insert(_rows.parent.IndexOf(_rows) + 1, _upgrades);
+            rowsScroll.parent.Insert(rowsScroll.parent.IndexOf(rowsScroll) + 1, _upgrades);
             var staffScroll = Ui.Require<ScrollView>(root, "inspect-staff-scroll");
             staffScroll.verticalScrollerVisibility = ScrollerVisibility.Hidden;
             staffScroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             _staff = new StaffList(Ui.Require<VisualElement>(root, "inspect-staff"), context);
             UiFeel.Bind(Ui.Require<Button>(root, "inspect-close"), () => context.Interaction.CloseInspect(), Sfx.UiBack);
+            // the book on the shown building or creature, as the book's key does while the card is up
+            _wikiButton = Ui.Require<Button>(root, "inspect-wiki");
+            UiFeel.Bind(_wikiButton, () => WikiLink?.Invoke());
+            _tooltip?.Attach(_wikiButton, () => "Подробнее", () => _wikiHint, Hotkeys.Wiki.Label);
 
             var actions = _actionRow = Ui.Require<VisualElement>(root, "inspect-actions");
             // "Вывозить на склад": above the card's actions while the quest asks to carry from here to the warehouse
@@ -146,6 +159,9 @@ namespace TrollStrategy.UI
         public StaffList Staff => _staff;
         /// <summary>"Вывозить на склад"; shown while the quest asks to carry from the shown building to the warehouse.</summary>
         public Button HaulToWarehouseButton => _haulToWarehouse;
+        /// <summary>The card's "more": the book on the shown building or creature, or null.</summary>
+        public Action WikiLink { get; private set; }
+        public Button WikiButton => _wikiButton;
 
         /// <summary>The buy buttons of the shown upgrades, top to bottom.</summary>
         public IReadOnlyList<Button> UpgradeButtons
@@ -236,8 +252,18 @@ namespace TrollStrategy.UI
         {
             _shownId = null;
             _staff.Hide();
+            _recipes.Hide();
             Ui.Show(_haulToWarehouse, false);
+            SetWikiLink(null, null);
             Ui.Show(_panel, false);
+        }
+
+        // the disc shows only for what the book has a page for
+        private void SetWikiLink(Action link, string hint)
+        {
+            WikiLink = link;
+            _wikiHint = hint;
+            Ui.Show(_wikiButton, link != null);
         }
 
         private void RenderBuilding(BuildingSnapshot building, GameSnapshot snapshot)
@@ -246,10 +272,11 @@ namespace TrollStrategy.UI
             var definition = catalog.GetBuilding(building.Kind);
             Ui.SetText(_title, building.Name);
             Ui.SetText(_subtitle, $"Уровень {building.Level}, {building.Width}×{building.Height}");
+            SetWikiLink(definition != null && definition.Constructible
+                    ? _context.WikiLink(WikiSection.Buildings, building.Kind.ToString()) : null,
+                "Рецепты, кто здесь работает быстрее и цены уровней.");
 
             BeginRows();
-            if (building.RecipeText.Length > 0)
-                AddRow("Рецепт", building.RecipeText);
             if (building.IsWorkplace)
                 ProductionRow(building);
             if (building.Slots.Count == 0 && building.Stock.Count > 0)
@@ -290,6 +317,7 @@ namespace TrollStrategy.UI
             if (building.UpgradeCost >= 0 && HostsUpgrades(building.Kind, snapshot))
                 note = (note != null ? note + "\n" : string.Empty) + "Новый уровень здания открывает следующие ступени его улучшений.";
             EndRows();
+            _recipes.Show(definition, building.Level);
             SetNote(note);
             RenderUpgrades(building.Kind, snapshot);
             RenderSlots(building);
@@ -334,6 +362,9 @@ namespace TrollStrategy.UI
             Ui.SetText(_subtitle, string.IsNullOrEmpty(unit.Status)
                 ? species
                 : $"{species}, {char.ToLowerInvariant(unit.Status[0])}{unit.Status.Substring(1)}");
+            SetWikiLink(definition != null && definition.Hireable
+                    ? _context.WikiLink(WikiSection.Creatures, unit.UnitKind.ToString()) : null,
+                "Работа, шаг, груз, бой и любимые здания этого существа.");
 
             // what the creature is good for is in its words below; of its stats only the load says something alone
             BeginRows();
@@ -347,6 +378,7 @@ namespace TrollStrategy.UI
             var assignment = unit.Assignment;
             if (assignment.Kind == AssignmentKind.Haul) AddRow("Возит", _context.Session.DescribeCargo(assignment));
             EndRows();
+            _recipes.Hide();
             _staff.Hide();
             HideUpgrades();
             Ui.Show(_haulToWarehouse, false);
@@ -554,7 +586,10 @@ namespace TrollStrategy.UI
             text.Add(row.Info);
             row.Buy = Ui.CaptionButton(string.Empty, null, "btn btn--primary upgrade__buy");
             UiFeel.Bind(row.Buy, () => { if (row.Id != null) _context.Interaction.BuyUpgrade(row.Id); });
-            _tooltip?.Attach(row.Root, () => row.Title.text, () => row.Description);
+            _tooltip?.Attach(row.Root, () => row.Title.text, () => row.Description,
+                more: _context.OpenWikiAt != null
+                    ? () => { if (row.Id != null) _context.OpenWikiAt?.Invoke(WikiSection.Upgrades, row.Id); }
+                    : null);
             row.Root.Add(text);
             row.Root.Add(row.Buy);
             _upgrades.Add(row.Root);

@@ -37,7 +37,19 @@ namespace TrollStrategy.UI
             Root = roots.Screen;
             // the hint card's document sorts above every other part of the HUD; the parts that name things
             // by picture only (counters, tools, catalog tokens) put their words in it
-            Tooltip = new HudTooltip(roots.Tooltip);
+            Tooltip = new HudTooltip(roots.Tooltip) { MoreKey = Hotkeys.Wiki.Label };
+            // the book before the parts: their hints and the inspect card link into it
+            if (roots.Wiki != null)
+            {
+                Wiki = new WikiPanel(roots.Wiki, context);
+                context.OpenWiki = OpenWiki;
+                context.OpenWikiAt = OpenWikiAt;
+            }
+            else
+            {
+                context.OpenWiki = null;
+                context.OpenWikiAt = null;
+            }
             Showcase = new ShowcasePanel(roots.Showcase, context.Showcase);
             Catalog = new CatalogPanel(roots.Catalog, context, Showcase, Tooltip);
             TopBar = new TopBar(roots.TopBar, context, ToggleCatalog, Tooltip);
@@ -49,11 +61,6 @@ namespace TrollStrategy.UI
             HaulCargo = new HaulCargoDialog(roots.HaulCargo, context, Tooltip);
             Arena = new ArenaPanel(roots.Arena, context, Tooltip);
             Menu = new MenuPanel(roots.Menu, context, Tooltip);
-            if (roots.Wiki != null)
-            {
-                Wiki = new WikiPanel(roots.Wiki, context);
-                context.OpenWiki = Wiki.Open;
-            }
             Intro = new IntroPanel(roots.Intro, context.Edition, () => context.IntroClosed?.Invoke());
             context.OpenArena = Arena.Open;
             context.OpenMenu = Menu.Open;
@@ -367,6 +374,36 @@ namespace TrollStrategy.UI
 
         /// <summary>The catalog tool's action, also on its key.</summary>
         public void ToggleCatalogTool() => ToggleCatalog();
+
+        /// <summary>
+        /// The book's key: closes the book; otherwise opens it on what the hint card or the inspect card shows,
+        /// or where the player left it.
+        /// </summary>
+        public void ToggleWiki()
+        {
+            if (Wiki == null) return;
+            if (Wiki.IsOpen)
+            {
+                Wiki.Close();
+                return;
+            }
+            var entry = Tooltip.More ?? (Inspect.IsShown ? Inspect.WikiLink : null);
+            if (entry != null) entry();
+            else OpenWiki();
+        }
+
+        // The book covers the screen; the hint that led to it goes too, since the pointer may stay where it was.
+        private void OpenWiki()
+        {
+            Tooltip.Dismiss();
+            Wiki.Open();
+        }
+
+        private void OpenWikiAt(WikiSection section, string key)
+        {
+            Tooltip.Dismiss();
+            Wiki.OpenAt(section, key);
+        }
 
         // The catalog tool: while the orders hold the tray it drops the selection or the pick and brings the
         // catalog back; otherwise it opens and closes the catalog.

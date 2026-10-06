@@ -303,7 +303,7 @@
  "Посмотреть": "Ver",
  "{0} в 3D": "{0} em 3D",
  "{0} золота за одного.": "{0} de ouro por unidade.",
- "Каждое новое существо в поселении поднимает цену найма.": "Cada nova criatura no assentamento aumenta o preço de contratação.",
+ "Каждое следующее существо этого вида дороже.": "Cada criatura seguinte deste tipo custa mais.",
  "Каждая следующая такая постройка дороже.": "Cada edifício seguinte deste tipo custa mais.",
  "Откроется на {0} уровне.": "Será aberto no nível {0}.",
  "Пока закрыто.": "Ainda fechado.",

@@ -35,8 +35,8 @@ namespace TrollStrategy.Content
         [Header("Рост цен")]
         [Tooltip("Во сколько раз дороже каждая следующая постройка того же вида, считая стоящие. 1 — цена не растёт.")]
         [SerializeField, Min(1f)] private float _buildingCopyPriceGrowth = 1f;
-        [Tooltip("На сколько процентов от цены в каталоге дорожает найм за каждое существо в поселении. 0 — цена не растёт.")]
-        [SerializeField, Min(0f)] private float _hirePricePercentPerCreature;
+        [Tooltip("Во сколько раз дороже найм за каждое существо того же вида в поселении, считая нанятых в той же группе. Другие виды цену не поднимают. 1 — цена не растёт.")]
+        [SerializeField, Min(1f)] private float _hireCopyPriceGrowth = 1f;
 
         [Header("Земля")]
         [Tooltip("Земля покупается блоками и расчищается. Выключено: строить и ходить можно по всему полю.")]
@@ -53,24 +53,6 @@ namespace TrollStrategy.Content
         [SerializeField, Min(0f)] private float _landClearSeconds = 10f;
         [Tooltip("Сколько золота стоит расчистка блока.")]
         [SerializeField, Min(0)] private int _landClearGold;
-
-        [Header("Тропы")]
-        [Tooltip("Существа протаптывают тропы, по тропам ходят быстрее, без шагов тропы зарастают. Выключено: земля не меняется.")]
-        [SerializeField] private bool _trailsEnabled;
-        [Tooltip("С какой протоптанности (из 100) трава выглядит примятой. Меняет только вид.")]
-        [SerializeField, Range(1, 100)] private int _trailTrampledAt = 10;
-        [Tooltip("С какой протоптанности (из 100) клетка становится тропой.")]
-        [SerializeField, Range(1, 100)] private int _trailPathAt = 40;
-        [Tooltip("С какой протоптанности (из 100) тропа становится дорогой.")]
-        [SerializeField, Range(1, 100)] private int _trailRoadAt = 80;
-        [Tooltip("Во сколько раз быстрее ходят по тропе.")]
-        [SerializeField, Min(1f)] private float _trailPathSpeed = 1.15f;
-        [Tooltip("Во сколько раз быстрее ходят по дороге.")]
-        [SerializeField, Min(1f)] private float _trailRoadSpeed = 1.3f;
-        [Tooltip("Сколько секунд клетка без шагов держится, прежде чем начать зарастать.")]
-        [SerializeField, Min(0f)] private float _trailGraceSeconds = 60f;
-        [Tooltip("Раз в сколько секунд зарастающая клетка теряет единицу протоптанности.")]
-        [SerializeField, Min(.25f)] private float _trailDecaySeconds = 3f;
 
         [Header("Арена")]
         [Tooltip("Призовой фонд арены получает одну выплату за повторную победу раз в столько активных секунд. Фонд один на все уровни.")]
@@ -101,7 +83,7 @@ namespace TrollStrategy.Content
         public float WorkPerStrengthSecond => _workPerStrengthSecond;
         public float WalkSpeedScale => Mathf.Max(0.1f, _walkSpeedScale);
         public float BuildingCopyPriceGrowth => Mathf.Max(1f, _buildingCopyPriceGrowth);
-        public float HirePricePercentPerCreature => Mathf.Max(0f, _hirePricePercentPerCreature);
+        public float HireCopyPriceGrowth => Mathf.Max(1f, _hireCopyPriceGrowth);
         public bool LandEnabled => _landEnabled;
         public int LandBlockSize => Mathf.Max(1, _landBlockSize);
         public RectInt StartLand => _startLand;
@@ -109,15 +91,6 @@ namespace TrollStrategy.Content
         public int LandPriceStep => Mathf.Max(0, _landPriceStep);
         public float LandClearSeconds => Mathf.Max(0f, _landClearSeconds);
         public int LandClearGold => Mathf.Max(0, _landClearGold);
-        // wear runs 0..100 (TrailState.Max); stages and speeds never go backwards
-        public bool TrailsEnabled => _trailsEnabled;
-        public int TrailTrampledAt => Mathf.Clamp(_trailTrampledAt, 1, 100);
-        public int TrailPathAt => Mathf.Clamp(_trailPathAt, TrailTrampledAt, 100);
-        public int TrailRoadAt => Mathf.Clamp(_trailRoadAt, TrailPathAt, 100);
-        public float TrailPathSpeed => Mathf.Max(1f, _trailPathSpeed);
-        public float TrailRoadSpeed => Mathf.Max(TrailPathSpeed, _trailRoadSpeed);
-        public float TrailGraceSeconds => Mathf.Max(0f, _trailGraceSeconds);
-        public float TrailDecaySeconds => Mathf.Max(.25f, _trailDecaySeconds);
         public int ArenaFundPeriodMs => Mathf.Max(1000, Mathf.RoundToInt(_arenaFundPeriodSeconds * 1000f));
         public int ArenaFundCap => Mathf.Max(1, _arenaFundCap);
         public int ArenaStakePercent => Mathf.Clamp(_arenaStakePercent, 0, 100);
@@ -147,10 +120,10 @@ namespace TrollStrategy.Content
             _loadersPerDoor = Mathf.Max(1, loadersPerDoor);
         }
 
-        public void SetPriceGrowth(float buildingCopyGrowth, float hirePercentPerCreature)
+        public void SetPriceGrowth(float buildingCopyGrowth, float hireCopyGrowth)
         {
             _buildingCopyPriceGrowth = Mathf.Max(1f, buildingCopyGrowth);
-            _hirePricePercentPerCreature = Mathf.Max(0f, hirePercentPerCreature);
+            _hireCopyPriceGrowth = Mathf.Max(1f, hireCopyGrowth);
         }
 
         public void SetLand(bool enabled, int blockSize, RectInt startLand, int priceBase, int priceStep,
@@ -163,19 +136,6 @@ namespace TrollStrategy.Content
             _landPriceStep = Mathf.Max(0, priceStep);
             _landClearSeconds = Mathf.Max(0f, clearSeconds);
             _landClearGold = Mathf.Max(0, clearGold);
-        }
-
-        public void SetTrails(bool enabled, int trampledAt = 10, int pathAt = 40, int roadAt = 80,
-            float pathSpeed = 1.15f, float roadSpeed = 1.3f, float graceSeconds = 60f, float decaySeconds = 3f)
-        {
-            _trailsEnabled = enabled;
-            _trailTrampledAt = Mathf.Clamp(trampledAt, 1, 100);
-            _trailPathAt = Mathf.Clamp(pathAt, 1, 100);
-            _trailRoadAt = Mathf.Clamp(roadAt, 1, 100);
-            _trailPathSpeed = Mathf.Max(1f, pathSpeed);
-            _trailRoadSpeed = Mathf.Max(1f, roadSpeed);
-            _trailGraceSeconds = Mathf.Max(0f, graceSeconds);
-            _trailDecaySeconds = Mathf.Max(.25f, decaySeconds);
         }
 
         public void SetArena(float fundPeriodSeconds = 180f, int fundCap = 3, int stakePercent = 30,

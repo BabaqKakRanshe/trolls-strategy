@@ -290,7 +290,8 @@ namespace TrollStrategy.UI
         {
             var view = CreateToken(RewardArt.Tight(unit.PortraitSprite), unit.DisplayName, "token token--unit");
             UiFeel.Bind(view.Buy, () => _context.Interaction.BeginUnitPlacement(unit.Kind, _hireAmount));
-            _tooltip?.Attach(view.Buy, () => unit.DisplayName, () => UnitHint(unit));
+            _tooltip?.Attach(view.Buy, () => unit.DisplayName, () => UnitHint(unit),
+                more: _context.WikiLink(WikiSection.Creatures, unit.Kind.ToString()));
             parent.Add(view.Root);
             return new UnitToken { Definition = unit, View = view };
         }
@@ -299,7 +300,8 @@ namespace TrollStrategy.UI
         {
             var view = CreateToken(RewardArt.BuildingIcon(building), building.DisplayName, "token");
             UiFeel.Bind(view.Buy, () => _context.Interaction.BeginBuildingPlacement(building.Kind));
-            _tooltip?.Attach(view.Buy, () => building.DisplayName, () => BuildingHint(building));
+            _tooltip?.Attach(view.Buy, () => building.DisplayName, () => BuildingHint(building),
+                more: _context.WikiLink(WikiSection.Buildings, building.Kind.ToString()));
             if (_showcase.CanShow)
             {
                 var look = Ui.TextButton(string.Empty, "btn btn-disc token__look");
@@ -374,8 +376,8 @@ namespace TrollStrategy.UI
             var lines = new List<string>();
             if (!string.IsNullOrWhiteSpace(unit.Description)) lines.Add(Sentence(unit.Description));
             if (_hireAmount > 1) lines.Add($"{_context.Session.HirePrice(unit.Kind)} золота за одного.");
-            if (_context.Catalog.Economy.HirePricePercentPerCreature > 0f)
-                lines.Add("Каждое новое существо в поселении поднимает цену найма.");
+            if (_context.Catalog.Economy.HireCopyPriceGrowth > 1f)
+                lines.Add("Каждое следующее существо этого вида дороже.");
             if (!_progress.IsUnitUnlocked(unit.Kind)) lines.Add(Opens(_progress.UnlockLevel(unit.Kind)));
             return string.Join("\n", lines);
         }

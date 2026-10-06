@@ -49,8 +49,6 @@ namespace TrollStrategy.Domain
         public ProgressState Progress { get; set; }
         // The colony's land blocks; null when land limits nothing (the whole grid is open).
         public LandState Land { get; set; }
-        // How trodden every cell is; null when the colony has no trails.
-        public TrailState Trails { get; set; }
 
         public static GameState CreateInitialState(int startingGold = 1000)
         {
@@ -109,7 +107,6 @@ namespace TrollStrategy.Domain
                 Upgrades = new Dictionary<string, int>(Upgrades, StringComparer.Ordinal),
                 Progress = Progress?.Clone(),
                 Land = Land?.Clone(),
-                Trails = Trails?.Clone(),
                 Buildings = new List<BuildingState>(Buildings.Count),
                 Units = new List<UnitState>(Units.Count),
                 Equipment = new List<EquipmentState>(Equipment.Count)

@@ -157,11 +157,6 @@ namespace TrollStrategy.Bootstrap
             if (_routeVisualizer != null)
                 _routeVisualizer.Init(_session, _interaction, _worldView, _camera);
 
-            // the trails creatures tread into the lawn, under the cell grid
-            var trails = new GameObject("Trails").AddComponent<TrailView>();
-            trails.transform.SetParent(_worldView.Grid.transform, false);
-            trails.Init(_session, _worldView);
-
             if (_inputHandler != null)
                 _inputHandler.Init(_interaction, _selectionBox);
 

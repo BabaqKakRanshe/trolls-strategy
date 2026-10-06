@@ -1441,6 +1441,10 @@
 "v": "{0} zl. za jednoho."
 },
 {
+"k": "Каждое следующее существо этого вида дороже.",
+"v": "Každý další tvor tohoto druhu je dražší."
+},
+{
 "k": "Каждая следующая такая постройка дороже.",
 "v": "Každá další taková budova je dražší."
 },
@@ -3867,14 +3871,6 @@
 {
 "k": "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.",
 "v": "Pracuje rychleji než goblin a nosí víc, ale chodí pomalu. Silný v boji."
-},
-{
-"k": "Каждое новое существо в поселении поднимает цену найма.",
-"v": "Každý nový tvor v osadě zvyšuje cenu najmutí."
-},
-{
-"k": "Рецепт",
-"v": "Recept"
 }
 ]
 }

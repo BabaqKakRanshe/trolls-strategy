@@ -176,6 +176,64 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void Book_OpensOnTheEntry_FromAHintAndFromTheInspectCard()
+        {
+            var paused = new List<bool>();
+            var hud = TestUi.Colony(new ColonyHudContext(_session, _interaction) { SetPaused = paused.Add });
+            Assert.That(hud.Wiki, Is.Not.Null, "The UI prefab carries the book: run TrollStrategy/Dev/Setup UI");
+            hud.Refresh(_session.CurrentSnapshot);
+            var book = hud.Wiki;
+
+            // a catalog token's hint names the book's key, and the key opens the book on its building
+            var forge = _catalog.GetBuilding(BuildingKind.Forge);
+            var token = hud.Catalog.BuyButton(BuildingKind.Forge);
+            Assert.That(hud.Tooltip.Hover(token), Is.True);
+            Assert.That(hud.Tooltip.More, Is.Not.Null, "The forge has a page in the book");
+            hud.ToggleWiki();
+            Assert.That(book.IsOpen, Is.True);
+            Assert.That(hud.Tooltip.IsShown, Is.False, "The book covers the hint that opened it");
+            Assert.That(book.Section, Is.EqualTo(WikiSection.Buildings));
+            Assert.That(book.SelectedName, Is.EqualTo(forge.DisplayName));
+            hud.ToggleWiki();
+            Assert.That(book.IsOpen, Is.False, "The book's key closes it again");
+            Assert.That(paused, Is.EqualTo(new[] { true, false }));
+            hud.Tooltip.Hide(token);
+
+            var dwarf = _catalog.GetUnit(UnitKind.Dwarf);
+            Assert.That(hud.Tooltip.Hover(hud.Catalog.HireButton(UnitKind.Dwarf)), Is.True);
+            hud.Tooltip.More();
+            Assert.That(book.Section, Is.EqualTo(WikiSection.Creatures));
+            Assert.That(book.SelectedName, Is.EqualTo(dwarf.DisplayName), "A creature's token opens its page");
+            book.Close();
+            hud.Tooltip.Hide(hud.Catalog.HireButton(UnitKind.Dwarf));
+
+            Assert.That(hud.Tooltip.Hover(hud.TopBar.WikiButton), Is.True);
+            Assert.That(hud.Tooltip.More, Is.Null, "A tool has no page of its own");
+            hud.Tooltip.Hide(hud.TopBar.WikiButton);
+
+            // the inspect card's disc opens the book on the inspected building, and so does the key
+            var barracks = _catalog.GetBuilding(BuildingKind.Barracks);
+            _interaction.SelectBuilding("barracks-1");
+            hud.Refresh(_session.CurrentSnapshot);
+            Assert.That(Ui.IsShown(hud.Inspect.WikiButton), Is.True);
+            UiFeel.Press(hud.Inspect.WikiButton);
+            Assert.That(book.IsOpen, Is.True);
+            Assert.That(book.SelectedName, Is.EqualTo(barracks.DisplayName));
+            hud.ToggleWiki();
+            Assert.That(book.IsOpen, Is.False);
+            hud.ToggleWiki();
+            Assert.That(book.SelectedName, Is.EqualTo(barracks.DisplayName), "The key opens the inspected building too");
+            book.Close();
+
+            // the market is not built by the player: the book has no page and the card no disc
+            _interaction.SelectBuilding("market-1");
+            hud.Refresh(_session.CurrentSnapshot);
+            Assert.That(hud.Inspect.IsShown, Is.True);
+            Assert.That(Ui.IsShown(hud.Inspect.WikiButton), Is.False);
+            Assert.That(hud.Inspect.WikiLink, Is.Null);
+        }
+
+        [Test]
         public void Menu_StopsTheColony_AndEscapeWalksBack()
         {
             var paused = new List<bool>();

@@ -50,7 +50,6 @@ namespace TrollStrategy.Application
             _state = GameState.CreateInitialState(_catalog.Economy.StartingGold);
             // land first: the starting buildings must stand on the cleared start land
             _state.Land = LandRules.CreateStart(_catalog.Economy);
-            _state.Trails = TrailRules.CreateStart(_catalog.Economy);
             var ids = new string[startingBuildings.Count];
             for (int i = 0; i < startingBuildings.Count; i++)
             {
@@ -472,8 +471,7 @@ namespace TrollStrategy.Application
                         : null,
                     StockOf(b),
                     def.IsWorkplace,
-                    ColonySimulation.DescribeProduction(_state, b, _catalog),
-                    DescribeRecipes(def)));
+                    ColonySimulation.DescribeProduction(_state, b, _catalog)));
             }
 
             var unitSnapshots = new List<UnitSnapshot>(_state.Units.Count);
@@ -496,9 +494,7 @@ namespace TrollStrategy.Application
                     u.Position,
                     u.Assignment,
                     FormatAssignmentStatus(u.Assignment, u.Position, buildingSnapshots),
-                    // the view walks as fast as the creature does, a trail underfoot included
-                    ColonySimulation.UnitMovementSpeed(_state, def, _catalog) *
-                    TrailRules.SpeedAt(_state, u.Position, _catalog.Economy)));
+                    ColonySimulation.UnitMovementSpeed(_state, def, _catalog)));
             }
 
             var equipmentSnapshots = new List<EquipmentSnapshot>(_state.Equipment.Count);
@@ -517,8 +513,7 @@ namespace TrollStrategy.Application
                 CreateProgressSnapshot(),
                 CreateBattleRewardSnapshot(),
                 CreateLandSnapshot(),
-                CreateUpgradeSnapshots(),
-                CreateTrailSnapshot());
+                CreateUpgradeSnapshots());
         }
 
         private List<UpgradeSnapshot> CreateUpgradeSnapshots()
@@ -537,17 +532,6 @@ namespace TrollStrategy.Application
 
         /// <summary>Whether the colony may raise this upgrade now, and why not.</summary>
         public CommandResult CanBuyUpgrade(string upgradeId) => UpgradeRules.Validate(_state, upgradeId, _catalog);
-
-        private TrailSnapshot CreateTrailSnapshot()
-        {
-            var trails = _state.Trails;
-            if (trails == null) return null;
-            var wear = new byte[trails.Width * trails.Height];
-            trails.CopyWear(wear);
-            var economy = _catalog.Economy;
-            return new TrailSnapshot(trails.Width, trails.Height, wear, TrailState.Max, economy.TrailTrampledAt,
-                economy.TrailPathAt, economy.TrailRoadAt);
-        }
 
         private LandSnapshot CreateLandSnapshot()
         {
@@ -848,21 +832,27 @@ namespace TrollStrategy.Application
         {
             var lines = new List<string>();
             foreach (var recipe in definition.Recipes)
-            {
-                string line = (recipe.MinLevel > 1 ? $"С {recipe.MinLevel} уровня: " : "") +
-                    (recipe.Inputs.Length > 0 ? FormatAmounts(recipe.Inputs) + " → " : "") +
-                    FormatAmounts(recipe.Outputs);
-                var notes = new List<string>();
-                foreach (var extra in recipe.Extras)
-                    notes.Add($"{extra.ChancePercent}%: +{extra.Output.Amount} {ResourceName(extra.Output.Resource)}" +
-                              (extra.MinLevel > recipe.MinLevel ? $" с {extra.MinLevel} уровня" : ""));
-                if (recipe.FailChancePercent > 0)
-                    notes.Add($"брак {recipe.FailChancePercent}%" +
-                              (recipe.FailOutputs.Length > 0 ? $" → {FormatAmounts(recipe.FailOutputs)}" : ""));
-                if (notes.Count > 0) line += " (" + string.Join("; ", notes) + ")";
-                lines.Add(line);
-            }
+                lines.Add((recipe.MinLevel > 1 ? $"С {recipe.MinLevel} уровня: " : "") + DescribeRecipe(recipe));
             return string.Join("\n", lines);
+        }
+
+        /// <summary>
+        /// One recipe in words, "2 руда + 1 уголь → 2 слиток", by-products and spoilage in brackets; the level it
+        /// opens at is the caller's to say.
+        /// </summary>
+        public string DescribeRecipe(ProductionRecipe recipe)
+        {
+            string line = (recipe.Inputs.Length > 0 ? FormatAmounts(recipe.Inputs) + " → " : "") +
+                FormatAmounts(recipe.Outputs);
+            var notes = new List<string>();
+            foreach (var extra in recipe.Extras)
+                notes.Add($"{extra.ChancePercent}%: +{extra.Output.Amount} {ResourceName(extra.Output.Resource)}" +
+                          (extra.MinLevel > recipe.MinLevel ? $" с {extra.MinLevel} уровня" : ""));
+            if (recipe.FailChancePercent > 0)
+                notes.Add($"брак {recipe.FailChancePercent}%" +
+                          (recipe.FailOutputs.Length > 0 ? $" → {FormatAmounts(recipe.FailOutputs)}" : ""));
+            if (notes.Count > 0) line += " (" + string.Join("; ", notes) + ")";
+            return line;
         }
 
         private string FormatAmounts(ResourceAmount[] amounts)

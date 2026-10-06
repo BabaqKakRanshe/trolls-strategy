@@ -191,6 +191,11 @@
     width: 62px;
 }
 
+/* a number under a longer title ("Рабочих", "Здоровье") */
+.wiki-cell--stat {
+    width: 88px;
+}
+
 .wiki-cell--fight {
     width: 90px;
 }

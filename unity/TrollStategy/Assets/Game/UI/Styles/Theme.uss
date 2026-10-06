@@ -675,6 +675,18 @@
     font-size: 15px;
 }
 
+/* A hint whose thing has a page in the book says so in the accent, with the book's key. */
+.tooltip__more {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.tooltip__more-text {
+    font-size: 15px;
+    color: var(--accent);
+}
+
 /* Behind a dialog the island stays in view, blurred under a pale veil. */
 .overlay {
     position: absolute;

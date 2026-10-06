@@ -236,6 +236,7 @@
  ],
  "брак {0}%": [
   "Runtime/Application/GameSession.cs",
+  "Runtime/UI/Colony/RecipeList.cs",
   "Runtime/UI/Colony/WikiPanel.cs"
  ],
  "Свободен": [
@@ -1113,6 +1114,9 @@
  "{0} золота за одного.": [
   "Runtime/UI/Colony/CatalogPanel.cs"
  ],
+ "Каждое следующее существо этого вида дороже.": [
+  "Runtime/UI/Colony/CatalogPanel.cs"
+ ],
  "Каждая следующая такая постройка дороже.": [
   "Runtime/UI/Colony/CatalogPanel.cs"
  ],
@@ -1445,6 +1449,7 @@
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "Подробнее": [
+  "Runtime/UI/Colony/InspectPanel.cs",
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
  "Склад": [
@@ -1762,6 +1767,7 @@
   "Runtime/UI/Colony/RecipeList.cs"
  ],
  "Брак {0}%": [
+  "Runtime/UI/Colony/RecipeList.cs",
   "Runtime/UI/Colony/RewardOverlay.cs"
  ],
  "Откроется, когда здание станет {0}-го уровня": [
@@ -3208,11 +3214,5 @@
  ],
  "Работает быстрее гоблина и носит больше, но ходит медленно. Силён в бою.": [
   "Content/Definitions/Unit_Troll.asset"
- ],
- "Каждое новое существо в поселении поднимает цену найма.": [
-  "Runtime/UI/Colony/CatalogPanel.cs"
- ],
- "Рецепт": [
-  "Runtime/UI/Colony/InspectPanel.cs"
  ]
 }

@@ -24,8 +24,6 @@ namespace TrollStrategy.Content
         [SerializeField, Min(0f)] private float _speed = 5f;
         [Tooltip("Выносливость в процентах: 100% = 1 единица груза за ходку, 150% = 1.5. Дробная часть копится между ходками.")]
         [SerializeField, Min(1)] private int _stamina = 100;
-        [Tooltip("Сколько протоптанности добавляет каждый шаг в новую клетку: тяжёлые существа протаптывают тропы быстрее.")]
-        [SerializeField, Range(0, 10)] private int _trailWear = 1;
 
         [Tooltip("Здания, где существо работает лучше других.")]
         [SerializeField] private BuildingKind[] _favoredBuildings = System.Array.Empty<BuildingKind>();
@@ -53,7 +51,6 @@ namespace TrollStrategy.Content
         public int Strength => _strength;
         public float Speed => _speed;
         public int Stamina => _stamina;
-        public int TrailWear => _trailWear;
         public int CombatHealth => _combatHealth;
         public int CombatDamage => _combatDamage;
         public int CombatArmor => _combatArmor;
@@ -76,7 +73,6 @@ namespace TrollStrategy.Content
 
         public void SetPrefab(GameObject prefab) => _prefab = prefab;
         public void SetPortrait(Sprite portrait) => _portraitSprite = portrait;
-        public void SetTrailWear(int wear) => _trailWear = Mathf.Clamp(wear, 0, 10);
 
         public IReadOnlyList<string> Names => _names;
         public IReadOnlyList<string> Epithets => _epithets;

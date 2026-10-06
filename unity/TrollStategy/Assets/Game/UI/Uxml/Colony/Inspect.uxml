@@ -8,10 +8,17 @@
                 <ui:Label name="inspect-title" class="inspect__title t-black" />
                 <ui:Label name="inspect-subtitle" class="inspect__subtitle t-medium" />
             </ui:VisualElement>
+            <ui:Button name="inspect-wiki" class="btn btn-disc inspect__wiki">
+                <ui:VisualElement class="glyph glyph--book" picking-mode="Ignore" />
+            </ui:Button>
             <ui:Button name="inspect-close" text="×" class="btn btn-close" />
         </ui:VisualElement>
         <ui:VisualElement class="divider" />
-        <ui:VisualElement name="inspect-rows" />
+        <!-- the facts and the recipes scroll once a long recipe list outgrows the card -->
+        <ui:ScrollView name="inspect-rows-scroll" class="rows-scroll">
+            <ui:VisualElement name="inspect-rows" />
+            <ui:VisualElement name="inspect-recipes" class="recipes" />
+        </ui:ScrollView>
         <ui:Label name="inspect-note" class="note" />
         <ui:Label name="inspect-slots-header" class="slots-header t-medium" />
         <ui:VisualElement name="inspect-slots" class="slots" />

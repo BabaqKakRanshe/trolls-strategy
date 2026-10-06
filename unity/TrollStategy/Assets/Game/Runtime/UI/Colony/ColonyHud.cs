@@ -151,10 +151,11 @@ namespace TrollStrategy.UI
                 if (Hotkeys.Catalog.WasPressed) _view.ToggleCatalogTool();
                 if (Hotkeys.Arena.WasPressed) _view.Arena.Toggle();
             }
-            // K opens the book and closes it again, unless the player types it into the book's search
+            // K opens the book (on the hinted or inspected entry) and closes it again, unless the player types it
+            // into the book's search
             if (_visible && _view.Wiki != null && Hotkeys.Wiki.WasPressed && !_view.Wiki.IsTyping &&
                 (_view.Wiki.IsOpen || !_view.BlocksMap))
-                _view.Wiki.Toggle();
+                _view.ToggleWiki();
             if (_visible && _view.Intro.IsOpen && Hotkeys.Confirm.WasPressed) _view.Intro.Close();
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
             if (_visible && Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)

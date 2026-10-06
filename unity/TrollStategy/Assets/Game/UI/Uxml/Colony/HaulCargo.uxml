@@ -6,7 +6,12 @@
         <ui:VisualElement name="haul-cargo-dialog" class="sheet cargo-dialog">
             <ui:Label name="haul-cargo-title" class="cargo-dialog__title t-black" />
             <ui:Label text="Отметьте один или несколько товаров или оставьте «Всё». Куда носить, укажете на карте." class="cargo-dialog__text" />
-            <ui:VisualElement name="haul-cargo-choices" class="cargo-dialog__choices" picking-mode="Ignore" />
+            <!-- a store of two dozen goods shows what it holds now or every good it takes -->
+            <ui:VisualElement name="haul-cargo-filter" class="segmented cargo-dialog__filter" />
+            <!-- the cards scroll once a store keeps more goods than fit -->
+            <ui:ScrollView name="haul-cargo-scroll" class="cargo-dialog__scroll">
+                <ui:VisualElement name="haul-cargo-choices" class="cargo-dialog__choices" picking-mode="Ignore" />
+            </ui:ScrollView>
             <ui:Label name="haul-cargo-note" class="cargo-dialog__note" />
             <ui:VisualElement name="haul-cargo-actions" class="cargo-dialog__actions" picking-mode="Ignore" />
         </ui:VisualElement>

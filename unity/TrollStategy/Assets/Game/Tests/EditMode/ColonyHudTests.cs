@@ -278,7 +278,61 @@ namespace TrollStrategy.Tests
             Assert.That(_hud.Status.Text, Is.EqualTo(_interaction.Message));
         }
 
+        [Test]
+        public void Inspect_ForgeCard_ShowsRecipesInPictures_OpenOnesFirst_TheRestWithTheirLevel()
+        {
+            Assert.That(_session.DebugAddGold(20000).Ok, Is.True);
+            var definition = _catalog.GetBuilding(BuildingKind.Forge);
+            _interaction.SelectBuilding(Build(BuildingKind.Forge));
+            Refresh();
+
+            var rows = Shown("recipe");
+            int open = definition.Recipes.Count(r => r.MinLevel <= 1);
+            Assert.That(rows, Has.Count.EqualTo(definition.Recipes.Count));
+            Assert.That(rows.Take(open).Any(r => r.ClassListContains("is-locked")), Is.False,
+                "What the forge makes now comes first");
+            Assert.That(rows.Skip(open).All(r => r.ClassListContains("is-locked")), Is.True);
+            Assert.That(rows.Last().Q<Label>(className: "recipe__level").text, Does.StartWith("ур. "));
+            Assert.That(Shown("recipes__spoilage"), Has.Count.EqualTo(1), "The spoilage they share is said once");
+            var keys = _hud.Root.Query<Label>(className: "kv__key").ToList().Where(key => Ui.IsShown(key.parent))
+                .Select(key => key.text);
+            Assert.That(keys, Has.No.Member("Рецепт"), "The pictures replace the recipe text");
+
+            _interaction.UpgradeInspectedBuilding();
+            Refresh();
+            Assert.That(Shown("recipe").Count(r => r.ClassListContains("is-locked")),
+                Is.EqualTo(definition.Recipes.Count(r => r.MinLevel > 2)), "The new level opens its recipes on the card");
+        }
+
+        [Test]
+        public void Inspect_EnchanterCard_ShowsTheCrystalOnce_AndEveryPieceAsAPair()
+        {
+            Assert.That(_session.DebugAddGold(20000).Ok, Is.True);
+            var definition = _catalog.GetBuilding(BuildingKind.Enchanter);
+            _interaction.SelectBuilding(Build(BuildingKind.Enchanter));
+            Refresh();
+
+            Assert.That(Shown("recipe-pair"), Has.Count.EqualTo(definition.Recipes.Count));
+            Assert.That(Shown("recipe"), Is.Empty);
+            var shared = Shown("recipes__shared");
+            Assert.That(shared, Has.Count.EqualTo(1));
+            Assert.That(shared[0].Q<Label>(className: "recipe__count").text, Is.EqualTo("1"));
+            Assert.That(Shown("recipes__spoilage"), Has.Count.EqualTo(1));
+        }
+
         private void Refresh() => _hud.OnInteractionChanged(_session.CurrentSnapshot);
+
+        private System.Collections.Generic.List<VisualElement> Shown(string className) =>
+            _hud.Root.Query(className: className).ToList().Where(Ui.IsShown).ToList();
+
+        private string Build(BuildingKind kind)
+        {
+            var cell = _session.FindFirstBuildingCell(kind);
+            Assert.That(cell.HasValue, Is.True, kind.ToString());
+            var result = _session.Dispatch(new BuildBuildingCommand(kind, cell.Value));
+            Assert.That(result.Ok, Is.True, result.Error);
+            return _session.CurrentSnapshot.Buildings.Last(b => b.Kind == kind).Id;
+        }
 
         private string Text(string name) => _hud.Root.Q<Label>(name).text;
 

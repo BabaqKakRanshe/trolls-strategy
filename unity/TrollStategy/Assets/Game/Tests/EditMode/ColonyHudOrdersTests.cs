@@ -89,6 +89,7 @@ namespace TrollStrategy.Tests
             Refresh();
             Assert.That(_hud.HaulCargo.CargoKinds,
                 Is.EquivalentTo(ColonySimulation.ProvidedResources(BuildingKind.Mine, _catalog)));
+            Assert.That(_hud.HaulCargo.OffersFilter, Is.False, "A short list needs no filter");
             UiFeel.Press(_hud.HaulCargo.ConfirmButton);
             _interaction.ChooseBuilding("warehouse-1");
             Assert.That(Unit(goblin).Assignment.Kind, Is.EqualTo(AssignmentKind.Haul));
@@ -107,6 +108,37 @@ namespace TrollStrategy.Tests
             Refresh();
             Assert.That(_hud.HaulCargo.IsOpen, Is.False);
             Assert.That(_interaction.Mode.Type, Is.EqualTo(InteractionModeType.Neutral));
+        }
+
+        [Test]
+        public void LongCargoList_OpensOnWhatTheSourceHolds_TheOtherTabListsEveryGood()
+        {
+            var workers = new[] { Buy(UnitKind.Troll), Buy(UnitKind.Troll) };
+            string carrier = Buy(UnitKind.Goblin);
+            Assert.That(_session.Dispatch(new AssignWorkCommand(workers, _mine)).Ok, Is.True);
+            Assert.That(_session.Dispatch(new AssignHaulCommand(new[] { carrier }, _mine, "warehouse-1")).Ok, Is.True);
+            for (int i = 0; i < 4800 && Held("warehouse-1").Count == 0; i++) _session.Advance(.25f);
+            Assert.That(Held("warehouse-1"), Is.Not.Empty, "The warehouse gets its first goods within twenty minutes");
+
+            string goblin = Buy(UnitKind.Goblin);
+            _interaction.ClickUnit(goblin, false);
+            _interaction.BeginHaulTarget();
+            _interaction.ChooseBuilding("warehouse-1");
+            Refresh();
+
+            var dialog = _hud.HaulCargo;
+            var every = _catalog.GetBuilding(BuildingKind.Warehouse).StoredResources;
+            Assert.That(dialog.OffersFilter, Is.True);
+            Assert.That(dialog.StockedOnlyButton.ClassListContains("is-on"), Is.True);
+            Assert.That(dialog.ShownKinds, Is.EquivalentTo(Held("warehouse-1")));
+            Assert.That(dialog.CargoKinds, Is.EquivalentTo(every), "Every good keeps its card");
+
+            UiFeel.Press(dialog.AllGoodsButton);
+            Assert.That(dialog.AllGoodsButton.ClassListContains("is-on"), Is.True);
+            Assert.That(dialog.ShownKinds, Is.EquivalentTo(every));
+
+            UiFeel.Press(dialog.StockedOnlyButton);
+            Assert.That(dialog.ShownKinds, Is.EquivalentTo(Held("warehouse-1")));
         }
 
         [Test]
@@ -300,6 +332,9 @@ namespace TrollStrategy.Tests
         private void Refresh() => _hud.OnInteractionChanged(_session.CurrentSnapshot);
 
         private UnitSnapshot Unit(string id) => _session.CurrentSnapshot.Units.Single(u => u.Id == id);
+
+        private System.Collections.Generic.List<ResourceKind> Held(string buildingId) =>
+            _session.CurrentSnapshot.Buildings.Single(b => b.Id == buildingId).Stock.Select(s => s.Resource).ToList();
 
         private string Buy(UnitKind kind)
         {

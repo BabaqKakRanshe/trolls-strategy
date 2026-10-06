@@ -323,7 +323,7 @@ namespace TrollStrategy.Tests
         [Test]
         public void BuildingPrice_GrowsWithEveryStandingBuildingOfTheKind()
         {
-            _catalog.Economy.SetPriceGrowth(1.12f, 0f);
+            _catalog.Economy.SetPriceGrowth(1.12f, 1f);
             var session = TestColony.NewSession(_catalog);
             Assert.That(session.BuildingPrice(BuildingKind.Mine), Is.EqualTo(200));
 
@@ -344,7 +344,7 @@ namespace TrollStrategy.Tests
         [Test]
         public void BuildingPrice_RefusesWhenTheGrownPriceIsShort()
         {
-            _catalog.Economy.SetPriceGrowth(1.12f, 0f);
+            _catalog.Economy.SetPriceGrowth(1.12f, 1f);
             var state = TestColony.NewState(_catalog);
             Assert.That(ColonySimulation.ApplyCommand(state, new BuildMineCommand(new Cell(1, 1)), _catalog).Ok, Is.True);
             state.Gold = 223;
@@ -357,39 +357,52 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void HirePrice_GrowsWithPopulation_AndAGroupPaysEveryStep()
+        public void HirePrice_GrowsWithTheCreaturesOfTheKind_AndAGroupPaysEveryStep()
         {
-            _catalog.Economy.SetPriceGrowth(1f, 3f);
+            _catalog.Economy.SetPriceGrowth(1f, 1.1f);
             var session = TestColony.NewSession(_catalog);
             Assert.That(session.HirePrice(UnitKind.Goblin), Is.EqualTo(40));
-            Assert.That(session.HirePrice(UnitKind.Goblin, 3), Is.EqualTo(40 + 41 + 42), "40, 41.2 and 42.4, rounded");
+            Assert.That(session.HirePrice(UnitKind.Goblin, 3), Is.EqualTo(40 + 44 + 48), "40, 44 and 48.4, rounded");
 
             Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Goblin, 3, new Cell(7, 7))).Ok, Is.True);
-            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 123));
-            Assert.That(session.HirePrice(UnitKind.Troll), Is.EqualTo(185), "170 × 1.09, rounded");
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 132));
+            Assert.That(session.HirePrice(UnitKind.Goblin), Is.EqualTo(53), "40 × 1.1³, rounded");
+            Assert.That(session.HirePrice(UnitKind.Troll), Is.EqualTo(170), "Goblins leave the troll's price alone");
 
             Assert.That(session.Dispatch(new BuyUnitsCommand(UnitKind.Troll, 1, new Cell(8, 7))).Ok, Is.True);
-            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 123 - 185));
-            Assert.That(session.HirePrice(UnitKind.Goblin), Is.EqualTo(45), "40 × 1.12 with four in the colony");
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 132 - 170));
+            Assert.That(session.HirePrice(UnitKind.Troll), Is.EqualTo(187), "170 × 1.1, rounded");
+            Assert.That(session.HirePrice(UnitKind.Goblin), Is.EqualTo(53), "A troll leaves the goblin's price alone");
 
-            Assert.That(session.Dispatch(new SellUnitsCommand(new[] { "unit-4" })).Ok, Is.True);
-            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 123 - 185 + 85), "A sale returns half the catalog price");
-            Assert.That(session.HirePrice(UnitKind.Goblin), Is.EqualTo(44), "One fewer in the colony, a cheaper hire");
+            Assert.That(session.Dispatch(new SellUnitsCommand(new[] { "unit-1" })).Ok, Is.True);
+            Assert.That(session.CurrentSnapshot.Gold, Is.EqualTo(1234 - 132 - 170 + 20), "A sale returns half the catalog price");
+            Assert.That(session.HirePrice(UnitKind.Goblin), Is.EqualTo(48), "One goblin fewer, a cheaper goblin");
         }
 
         [Test]
         public void HirePrice_RefusesAGroupWhoseLastSteps_TheTreasuryCannotCover()
         {
-            _catalog.Economy.SetPriceGrowth(1f, 3f);
+            _catalog.Economy.SetPriceGrowth(1f, 1.1f);
             var state = TestColony.NewState(_catalog);
-            state.Gold = 122;
+            state.Gold = 131;
 
             var refused = ColonySimulation.ValidateUnitPurchase(state, UnitKind.Goblin, 3, new Cell(7, 7), _catalog);
 
-            Assert.That(refused.Ok, Is.False, "Three goblins cost 123, not 3 × 40");
+            Assert.That(refused.Ok, Is.False, "Three goblins cost 132, not 3 × 40");
             Assert.That(refused.Error, Is.EqualTo("Недостаточно золота"));
-            state.Gold = 123;
+            state.Gold = 132;
             Assert.That(ColonySimulation.ValidateUnitPurchase(state, UnitKind.Goblin, 3, new Cell(7, 7), _catalog).Ok, Is.True);
+        }
+
+        [Test]
+        public void HirePrice_StaysOutOfReach_WhenTheCompoundPriceOutgrowsTheTreasury()
+        {
+            _catalog.Economy.SetPriceGrowth(1f, 1.1f);
+            var goblin = _catalog.GetUnit(UnitKind.Goblin);
+
+            int price = ColonySimulation.HirePrice(goblin, 400, 5, _catalog.Economy);
+
+            Assert.That(price, Is.EqualTo(int.MaxValue), "40 × 1.1⁴⁰⁰ does not wrap into a negative price");
         }
 
         [Test]
