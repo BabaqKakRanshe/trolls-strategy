@@ -18,7 +18,7 @@ redesign of a screen is run (mockups, choice, checks) is `docs/ui-redesign-workf
 - A dialog that asks before the map may go on (the haul cargo) takes the full veil, so the island reads
   as out of reach.
 - The one other veil is the tutorial pointer's (`GuideOverlay`, `Guide.uss`): a light veil with a soft round
-  window around the step's target, the hand pointing at it and a white hint card «Шаг N из M». It shows
+  window (a place on the map: a ring on the ground and no veil) around the step's target, the hand pointing at it and a white hint card «Шаг N из M». It shows
   only in tutorial steps, is gone once the step is done, never catches the pointer, and adds no second
   veil over a dialog that has its own.
 
