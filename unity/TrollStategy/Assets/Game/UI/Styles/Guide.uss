@@ -2,7 +2,7 @@
  * The tutorial pointer (GuideOverlay) over the colony and the battle screens, and the marks the tutorial adds to
  * other parts: a haul goal's route in the quest card and the inspect card's "Вывозить на склад".
  *
- * The veil is the one exception to the "air" look outside the dialogs (AGENTS.md): a light veil with a soft window
+ * The veil is the one exception to the "air" look outside the dialogs (docs/ui-style.md): a light veil with a soft window
  * around the step's target, only during tutorial steps and only until the step is done. It never catches the
  * pointer. Colours are the theme's; this sheet sets layout and sizes only.
  */

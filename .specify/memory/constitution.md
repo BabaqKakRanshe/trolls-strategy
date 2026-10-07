@@ -91,7 +91,8 @@ Rationale: green tests and a working build are the definition of done.
 - Engine: Unity, project at `unity/TrollStategy`; targets Windows and WebGL (itch.io).
 - All UI is UI Toolkit (no uGUI, no TextMeshPro), following the "air" look, the `UI` prefab
   structure built by `UiSetup`, and `Theme.uss` as the only home of colours, fonts and button
-  styles. Detailed UI rules live in `AGENTS.md` § UI and are binding.
+  styles. Detailed UI rules live in `docs/ui-style.md` and `docs/ui-toolkit.md` (reached from `AGENTS.md` § UI)
+  and are binding.
 - Every button is bound with `UiFeel.Bind`; unavailable ones use `UiFeel.SetAvailable`.
 - Art follows `docs/art-asset-pipeline.md`; audio follows `docs/audio-direction.md` (generated
   cues in F major pentatonic, `Soundscape` owns music).

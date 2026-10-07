@@ -1,6 +1,6 @@
 # Project Architecture Rules
 
-These rules apply to every change in the Unity project at `unity/TrollStategy`.
+These rules apply to every change in the Unity project at `unity/TrollStategy`. Topic rules live in the docs the pointers below name: read the doc before working on its topic.
 
 ## Scope and ownership
 
@@ -11,7 +11,9 @@ These rules apply to every change in the Unity project at `unity/TrollStategy`.
 - `Runtime/Content` and its ScriptableObjects own gameplay values; UI and simulation read them from there.
 - `Runtime/Presentation` renders game state; `Runtime/UI` reads snapshots and submits commands.
 - `Runtime/Bootstrap` composes the Unity scene and services.
-- `Assets/Game/Bots` (Editor-only `TrollStrategy.Bots`) plays the campaign through `GameSession` snapshots and commands for balance checks; see `docs/campaign-bots.md`. Bots never read or write `GameState` and never get a rule of their own: what a player cannot do, a bot cannot do.
+- `Runtime/Support` (build stamp, frame meter, bug reports) knows no gameplay.
+- Battle deployment (who stands where, who wears what) is `BattleDeployment` in the application layer. `BattleSceneController` owns the arena, camera and replay clock and reaches the screen only through `IBattleScreen`.
+- Bots (`Assets/Game/Bots`, Editor-only `TrollStrategy.Bots`) play the campaign for balance checks through `GameSession` snapshots and commands, as a player does. Before changing bots or reading a bot run: read `docs/campaign-bots.md`.
 
 ## State, simulation, and assets
 
@@ -20,8 +22,7 @@ These rules apply to every change in the Unity project at `unity/TrollStategy`.
 - The economy runs on a fixed timestep (the step time in `EconomyConfig`); domain results never depend on render frame rate.
 - Randomness and derived IDs must be explicit and repeatable when new systems require them.
 - Keep save data serializable and versioned if persistence is added. Reject invalid references and ownership rather than silently repairing them.
-- The shared `assets/Strategy_Kit` is source art; imported assets must be checked against it when changed.
-- Preserve license evidence and the commercial-release gate (`commercialReleaseBlocked` in `assets/licenses.json`) for third-party art.
+- Third-party art, sounds and music: each gets an `assets/licenses.json` entry with its licence evidence, and the commercial-release gate (`commercialReleaseBlocked` there) is preserved. The repository is public: a source file whose licence forbids redistribution stays out of git.
 
 ## Presentation and validation
 
@@ -32,33 +33,15 @@ These rules apply to every change in the Unity project at `unity/TrollStategy`.
 
 ## UI
 
-- All UI is UI Toolkit; do not add uGUI canvases or TextMeshPro. Layout lives in `Assets/Game/UI/Uxml`, look in `Assets/Game/UI/Styles`. Colours, fonts and button styles live only in `Theme.uss`; screens and world labels add layout and sizes.
-- The look is "air": the island stays in view. Text over the world is ink with a white halo (`.halo`); the quest reads on the halo alone, other text that runs to several lines sits on mist (`.float`, or `.float--tight` hugging one text); no screen-edge vignette and no mist bands across the screen; white `.sheet`s with a baked shadow are only for dialogs and the hint card. A dialog that asks before the map may go on (the haul cargo) takes the full veil, so the island reads as out of reach. The one other veil is the tutorial pointer's (`GuideOverlay`, `Guide.uss`): a light veil with a soft window around the step's target, the hand pointing at it and a white hint card «Шаг N из M»; only in tutorial steps, gone once the step is done, never catching the pointer, and no second veil over a dialog that has its own. Reward moments have no card either: a quest reward is a white disc in the light (`glow.png`, `rays.png`) with the building's facts as pictures and numbers; a battle prize spins one white reel disc per digit, and its coins fly straight into the treasury counter, which `TopBar.ExpectGold` holds until they land. The catalog band runs the full width: tabs at its left end, tokens in the middle of the screen, the status line at its right end. While creatures are selected or the map waits for a pick, the orders (`ContextBar`) take the catalog's place in the same shape: who or what at the left end, round order tokens with their keys in the middle; the catalog tool drops the selection and brings the catalog back. The right-click orders (`CommandFan`) are an arc of round buttons over the click, the key's letter on each. A catalog tray shows whole tokens a page at a time (`CatalogPager`: eight on 1920 px, round arrows at its ends, a dot per page); a token never shrinks. A fighter's gear shows as tokens at the sides of its HP bar (`.hp-gear` in WorldUi.uss): the weapon on the left, armour and helmet on the right, free slots as hollows only while the squad is placed. The book (`WikiPanel`, K) reads everything from the content catalog and never keeps numbers of its own. Numbers show as a picture and a number, tools and catalog items as round `.btn-disc` buttons; names, details and keys go into `HudTooltip`, in words the player can act on (what a creature is good for, not its raw stats). One accent (roof blue), coin gold for spending and rewards, Nunito (tabular digits), sentence case, no letter-spacing and no "·" metadata. Soft shapes are PNGs in `UI/Sprites` (imported by `UiTextureImport`), pictograms are one-colour SVGs in `UI/Icons` tinted from USS. The halo is a `text-shadow`: a light `-unity-text-outline` eats into small letters and greys them. Panels that hold text carry a baked shadow, never `filter: drop-shadow`.
-- The screen UI is the `UI` prefab (`Assets/Game/UI/Prefabs/UI.prefab`): one GameObject per screen, band and panel, each a `UIDocument` nested in its parent's. Panels have their own UXML in `Uxml/Colony` or `Uxml/Battle`; bands and columns have none and take their layout classes from `UiDocumentClasses`. `UiSetup` describes the tree and `TrollStrategy/Dev/Setup UI` rebuilds the prefab from it, so change the structure there.
-- A nested `UIDocument` finds its parent when the component is added. Add it after the GameObject has its parent, or it becomes a separate panel. After a scene load Unity can attach nested documents out of their sorting order (the catalog band above the quest); `UiDocumentOrder` on the UI root puts them back every frame, so keep it there.
-- Screen parts in `Runtime/UI/Colony` and `Runtime/UI/Battle` are plain classes over their document's root, so EditMode tests drive them without a scene; `TestUi` clones the prefab's document tree. `ColonyHud` and `BattleHud` only connect the documents, session and input.
-- Battle deployment (who stands where, who wears what) is `BattleDeployment` in the application layer. `BattleSceneController` owns the arena, camera and replay clock and reaches the screen only through `IBattleScreen`.
-- Bind every button with `UiFeel.Bind` and mark unavailable ones with `UiFeel.SetAvailable`, so a press always answers with a sound or a refusal.
-- A button that holds a badge or other child needs its caption as a child label (`Ui.CaptionButton`); a text element with children stops measuring its own text.
-- The game imports no Unity theme: a built-in control (the menu's `Slider`) gets its parts drawn in `Theme.uss`, and a choice from a long list is a page or a grid of buttons, not a `DropdownField`, whose popup lands outside the HUD's documents and their styles.
-- Document roots and layout containers ignore the pointer; only panels and buttons catch it, and `UIInputUtils` asks the registered documents before a map or board click.
-- The support corner (`SupportHud`, `Uxml/Support`) sits above both HUDs in every build: version, FPS and the F8 tech panel with "send logs". `Runtime/Support` holds the build stamp, frame meter and bug reports and knows no gameplay; reports go to Unity User Reporting and fall back to a zip in `persistentDataPath/Reports`. Play statistics for the drop-off funnel: `CampaignTelemetry` (application) turns snapshots into events, `Telemetry` sends them to Unity Analytics once the player allows it (asked in the intro window, nothing is sent before the answer; the tech panel switches it). The dashboard drops events it has no schema for: keep `CampaignTelemetry.Schema` and `docs/analytics.md` in step. Player builds get their version, commit and edition from `BuildInfoStamp`: `TrollStrategy/Build Windows Player (Steam Demo)` stamps the Steam demo, every other build the itch.io alpha. The edition words the intro and the about page; their Steam buttons stay hidden while `GameLinks.SteamPage` is empty.
-- Text, numbers and bars over things in the world are `WorldPanel`s: world-space `UIDocument`s on `WorldPanelSettings` (100 px per world unit, no colliders) styled by `WorldUi.uss`; panels made in code get the settings from `GameBootstrap`. A `WorldPanel` owns its transform scale: as the camera backs off it grows so its largest text keeps 18 px on a 1080 px screen, and far away its content takes `.world-panel--far`, where styles drop details. Owners size it through `Scale`, never the transform; panels under a camera that does not zoom (battle) turn `KeepReadable` off and scale themselves.
+- All UI is UI Toolkit, never uGUI canvases or TextMeshPro. Layout lives in `Assets/Game/UI/Uxml`, look in `Assets/Game/UI/Styles`. Colours, fonts and button styles live only in `Theme.uss`; screens and world labels add layout and sizes.
+- Texts reach the screen through `Ui.SetText`, `Ui.Text`, `Ui.TextButton` and `Ui.CaptionButton` (world labels: `Localization.T`), never by setting `.text` on HUD elements: the Russian text is the translation key. Before writing or changing player-facing text: read `docs/localization.md`.
+- UI look ("air"): before changing USS, colours, icons, overlays, dialogs, reward moments, or the catalog and order bands: read `docs/ui-style.md`.
+- UI documents: before adding a screen, panel, button or world label, or changing the `UI` prefab or pointer input: read `docs/ui-toolkit.md`.
+- UI redesign: before redesigning a screen with the user: follow `docs/ui-redesign-workflow.md`.
 
-## Art handoff pipeline
+## Topic docs
 
-- Follow `docs/art-asset-pipeline.md` for resource and building icon work.
-- Keep resource output sprites configurable on building prefabs and semantic building icons configurable in `BuildingDefinition`.
-
-## Audio
-
-- Follow `docs/audio-direction.md`. Feedback cues are generated by `assets/audio/build_sfx.py`; change the recipe and regenerate rather than editing or filtering the WAVs.
-- Tuned cues stay in the music's key (F major pentatonic): shift them with `GameAudio.Step` or `GameAudio.Semitones`, never with a free pitch value.
-- `Soundscape` owns music and ambience; game code only calls `Soundscape.Enter` and `Soundscape.SetPaused`.
-- Every third-party sound or track gets an `assets/licenses.json` entry. This repository is public: do not commit source files whose licence forbids redistribution.
-
-## Localization
-
-- The game is written in Russian and the Russian text is the translation key (`Runtime/Presentation/Localization.cs`). Texts reach the screen through `Ui.SetText`, `Ui.Text`, `Ui.TextButton` and `Ui.CaptionButton`, which translate and remember the source; world labels call `Localization.T`. Do not set `.text` directly on HUD elements.
-- Template keys are interpolated strings: `$"Построить: {name}"` is the key `Построить: {0}`, and the filled part is translated as a name. Prefer whole sentences with holes over strings glued from pieces.
-- After adding or changing player-facing text run `python tools/localization/extract.py`, translate the new keys into every file in `tools/localization/translations` (check with `validate.py <code>`), then `python tools/localization/build.py` and the menu `TrollStrategy/Dev/Setup Localization Fonts`.
+- Art: before importing models, sprites or icons, or changing source art in `assets/Strategy_Kit`: read `docs/art-asset-pipeline.md`.
+- Audio: before adding or changing sounds, music, or calls to `GameAudio` or `Soundscape`: read `docs/audio-direction.md`.
+- Telemetry: before adding or changing a campaign event, its fields or the consent question: read `docs/analytics.md`.
+- Player builds: before changing editions (Steam demo, itch.io alpha), store links, the support corner or bug reports: read `docs/player-builds.md`.

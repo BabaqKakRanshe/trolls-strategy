@@ -64,7 +64,7 @@
 - Domain и Application не меняй: это всё вид. Правила, запасы и шансы не трогай.
 - FBX, раскладки и материалы в Assets/Vitaria руками не правь: только выгрузкой кита. Правки Unity-скриптов кита повтори в Strategy_Kit\Unity\Integration\TrollStrategy.
 - Сторонний арт не добавляй: репозиторий публичный. Всё — скриптами кита.
-- Новые тексты для игрока (если появятся) — через Ui и Localization, потом конвейер tools/localization (AGENTS.md, раздел Localization).
+- Новые тексты для игрока (если появятся) — через Ui и Localization, потом конвейер tools/localization (docs/localization.md).
 
 ## Отчёт
 
