@@ -1,7 +1,7 @@
 # UI style: "air"
 
 The look is "air": the island stays in view. Every screen, band and label serves that. Where the colours,
-fonts and button styles live is in `AGENTS.md` § UI; this page is what the screen looks like. How the
+fonts and button styles live is `CODING_STANDARDS.md` § UI code; this page is what the screen looks like. How the
 redesign of a screen is run (mockups, choice, checks) is `docs/ui-redesign-workflow.md`.
 
 ## Text over the world
@@ -61,7 +61,10 @@ the left, armour and helmet on the right, free slots as hollows only while the s
 - One accent (roof blue); coin gold for spending and rewards.
 - Nunito with tabular digits, sentence case, no letter-spacing and no "·" metadata.
 
-## Sprites and icons
+## Sprites, icons and what the engine draws
 
-- Soft shapes are PNGs in `UI/Sprites`, imported by `UiTextureImport`.
-- Pictograms are one-colour SVGs in `UI/Icons`, tinted from USS.
+UI Toolkit (Unity 6000.6) has no `box-shadow` and no gradients, so shadows, glow and mist are PNGs.
+
+- Soft shapes are PNGs in `UI/Sprites`, imported by `UiTextureImport`; 9-slice stretches them.
+- Pictograms are one-colour SVGs in `UI/Icons` (vector images), tinted from USS.
+- `backdrop-filter: blur` works only under URP and only on the screen.

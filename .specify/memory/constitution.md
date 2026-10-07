@@ -1,13 +1,11 @@
 <!--
 Sync Impact Report
-- Version change: (template) → 1.0.0
-- Principles added: I. Single Owner of Game State; II. Layered Architecture; III. Deterministic
-  Simulation; IV. Content Owns the Numbers; V. Bots Play by Player Rules; VI. Smallest Complete
-  Vertical Slice; VII. Verified at the Narrowest Boundary
-- Sections added: Platform and Presentation Constraints; Development Workflow; Governance
-- Sections removed: none
-- Source: AGENTS.md (2026-10-02). AGENTS.md stays the detailed runtime guidance; this file holds
-  the non-negotiable principles that every spec and plan is checked against.
+- Version change: 1.0.0 → 1.0.1 (PATCH: pointers only)
+- Modified: Platform and Presentation Constraints, Governance. The detailed runtime guidance moved
+  from AGENTS.md to CODING_STANDARDS.md; AGENTS.md now routes to it and to the topic docs.
+- Principles and sections: unchanged
+- Source of 1.0.0: AGENTS.md (2026-10-02). This file holds the non-negotiable principles that every
+  spec and plan is checked against.
 - Deferred TODOs: none
 -->
 # TrollStrategy Constitution
@@ -91,8 +89,8 @@ Rationale: green tests and a working build are the definition of done.
 - Engine: Unity, project at `unity/TrollStategy`; targets Windows and WebGL (itch.io).
 - All UI is UI Toolkit (no uGUI, no TextMeshPro), following the "air" look, the `UI` prefab
   structure built by `UiSetup`, and `Theme.uss` as the only home of colours, fonts and button
-  styles. Detailed UI rules live in `docs/ui-style.md` and `docs/ui-toolkit.md` (reached from `AGENTS.md` § UI)
-  and are binding.
+  styles. Detailed UI rules live in `CODING_STANDARDS.md` § UI code, `docs/ui-style.md` and
+  `docs/ui-toolkit.md` and are binding.
 - Every button is bound with `UiFeel.Bind`; unavailable ones use `UiFeel.SetAvailable`.
 - Art follows `docs/art-asset-pipeline.md`; audio follows `docs/audio-direction.md` (generated
   cues in F major pentatonic, `Soundscape` owns music).
@@ -113,12 +111,12 @@ Rationale: green tests and a working build are the definition of done.
 
 ## Governance
 
-- This constitution supersedes conflicting practice. `AGENTS.md` is the detailed runtime
-  guidance; when the two disagree, update both in the same change.
+- This constitution supersedes conflicting practice. `CODING_STANDARDS.md` is the detailed
+  runtime guidance (`AGENTS.md` routes to it); when the two disagree, update both in the same change.
 - Amendments: edit via `/speckit-constitution`, record the reason, bump the version.
 - Versioning: MAJOR — a principle removed or redefined; MINOR — a principle or section added or
   materially expanded; PATCH — wording and clarifications.
 - Compliance: every plan's Constitution Check and every review verifies the principles;
   deviations are listed with justification in the plan's Complexity Tracking.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-02 | **Last Amended**: 2026-10-02
+**Version**: 1.0.1 | **Ratified**: 2026-10-02 | **Last Amended**: 2026-10-07

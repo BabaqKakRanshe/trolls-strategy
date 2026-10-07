@@ -1,7 +1,7 @@
-# UI Toolkit: documents, buttons and world panels
+# UI Toolkit: the UI prefab, documents and world panels
 
-How the screen UI is built and wired. The look is `docs/ui-style.md`; where layout, look and the theme live
-is `AGENTS.md` § UI.
+How the screen UI is built and wired. The look is `docs/ui-style.md`. The UI code rules every edit needs
+(UI Toolkit only, `Theme.uss`, text, buttons, screen code) are `CODING_STANDARDS.md` § UI code.
 
 ## The UI prefab
 
@@ -18,19 +18,6 @@ is `AGENTS.md` § UI.
   parent, or it becomes a separate panel.
 - After a scene load Unity can attach nested documents out of their sorting order (the catalog band above
   the quest). `UiDocumentOrder` on the UI root puts them back every frame, so keep it there.
-
-## Screen code
-
-- Screen parts in `Runtime/UI/Colony` and `Runtime/UI/Battle` are plain classes over their document's
-  root, so EditMode tests drive them without a scene; `TestUi` clones the prefab's document tree.
-- `ColonyHud` and `BattleHud` only connect the documents, session and input.
-
-## Buttons
-
-- Bind every button with `UiFeel.Bind` and mark unavailable ones with `UiFeel.SetAvailable`, so a press
-  always answers with a sound or a refusal.
-- A button that holds a badge or other child needs its caption as a child label (`Ui.CaptionButton`): a
-  text element with children stops measuring its own text.
 
 ## Built-in controls
 

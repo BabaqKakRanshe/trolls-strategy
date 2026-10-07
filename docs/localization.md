@@ -1,9 +1,8 @@
 # Localization
 
 The game is written in Russian, and the Russian text is the translation key
-(`Runtime/Presentation/Localization.cs`). `Ui.SetText`, `Ui.Text`, `Ui.TextButton` and `Ui.CaptionButton`
-translate a text and remember its source; world labels call `Localization.T`. Which calls a text must go
-through is in `AGENTS.md` § UI.
+(`Runtime/Presentation/Localization.cs`). Which calls carry a text to the screen, and why: `CODING_STANDARDS.md`
+§ UI code.
 
 ## Template keys
 

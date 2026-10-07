@@ -3,8 +3,8 @@
 Как мы перевели HUD с тёмных плит с золотой каймой на стиль «Воздух», а потом переделали окна наград
 (макеты: https://claude.ai/artifact/D7f5VcnXr38dGNBrFErLdP) и полосу приказов. Ниже цикл одной
 переделки, инструменты, грабли и промпт, который можно дать другой нейросети, чтобы она работала так же.
-Правила самого стиля записаны в `docs/ui-style.md`, устройство документов и кнопок — в `docs/ui-toolkit.md`;
-здесь только способ работы.
+Правила самого стиля записаны в `docs/ui-style.md`, правила UI-кода — в `CODING_STANDARDS.md` (раздел
+«UI code») и `docs/ui-toolkit.md`; здесь только способ работы.
 
 ## Цикл одной переделки
 
@@ -12,10 +12,9 @@
    UXML окна в `UI/Uxml`, его класс в `Runtime/UI`, тесты, которые его трогают. Назвать конкретные
    признаки, а не «некрасиво»: плашка под текстом, коробка вокруг маленькой картинки, капс с разрядкой,
    «·» в подписях, хоткей на каждой кнопке, пять разных акцентов, цифры без смысла для игрока.
-2. **Проверить, что умеет движок.** UI Toolkit в Unity 6.6: есть `filter: drop-shadow` (размывает текст
-   внутри), `backdrop-filter: blur` (только URP, только экран), SVG как VectorImage с оттенком из USS,
-   `text-shadow`, 9-slice. Нет `box-shadow` и градиентов. Тени, свечение и дымка поэтому живут в PNG
-   (`UI/Sprites`). У каждого решения в макете должен быть понятный путь в USS или код.
+2. **Проверить, что умеет движок.** Сверить идеи с тем, что рисует UI Toolkit (`docs/ui-style.md`,
+   «Sprites, icons and what the engine draws»). У каждого решения в макете должен быть понятный путь в
+   USS или код.
 3. **Макет с вариантами.** Одна HTML-страница, опубликованная как артефакт:
    - сцена 1600×900 (экран игры 1920×1080 × 5/6), её масштабирует под ширину колонки;
    - фон — настоящий кадр острова без HUD (`unity/isle_report_*/`), поверх нарисован текущий HUD;
@@ -36,8 +35,9 @@
 7. **Проверка.** EditMode-тесты из меню. Скриншоты из Play Mode на 1920×1080 по сценарию: открыть
    окно, дождаться анимации, снять, вырезать нужный кусок и посмотреть. Нашли недочёт — правка и
    повторная съёмка. В конце сборка Windows-плеера.
-8. **Записать.** Одну-две фразы правила в `docs/ui-style.md` (вид) или `docs/ui-toolkit.md` (устройство),
-   уроки по инструментам — в память агента.
+8. **Записать.** Одну-две фразы правила в `docs/ui-style.md` (вид), `CODING_STANDARDS.md` (код, который
+   нужен любой правке UI) или `docs/ui-toolkit.md` (устройство документов), уроки по инструментам — в
+   память агента.
    Пользователю — короткий отчёт: что сделано, чем проверено, что осталось.
 
 ## Инструменты
@@ -54,7 +54,7 @@
 | Скрипты правок на Python | Замены по якорю с `assert s.count(old) == 1`. Если файл изменили, черновик берётся заново и скрипт повторяется на свежем файле. |
 | `compile.py` | Офлайн-компиляция Runtime, Editor и EditModeTests компилятором Unity (`Editor/Data/DotNetSdk`, `csc.dll`) по `.rsp` из `Library/Bee/artifacts/*.dag`, с подменой файлов из черновика. |
 | Unity MCP | `ManageEditor` (`GetState`, `GetProjectRoot`, Play, Stop), `RunCommand` (`AssetDatabase.Refresh`, проверки через рефлексию, сценарии съёмки), `ManageMenuItem`, `ReadConsole`. |
-| Меню проекта | `TrollStrategy/Tools/Run EditMode Tests` пишет `Builds/Tests/editmode-summary.txt`; `TrollStrategy/Build Windows Player` пишет `Builds/Windows/build-result.txt`. |
+| Меню проекта | Прогон EditMode-тестов и сборка Windows-плеера с файлами итогов: `CODING_STANDARDS.md`, «Tests and definition of done». |
 | Сценарий съёмки | Статический класс на `EditorApplication.update` со списком шагов «время, действие». Перед Play: `Application.runInBackground = true`, `PlayModeWindow.SetCustomRenderingResolution(1920, 1080, …)`. Игру двигают `GameBootstrap.Session` и `.Interaction`, `ColonyHud.View`, `UiFeel.Press`, `Session.DebugCompleteQuest`, `DebugAddGold`. Снимок — `ScreenCapture.CaptureScreenshot`, лог шагов пишется в файл. |
 | `ListAgents`, `SendMessage` | Договориться с параллельными сессиями перед заливкой и Play, сообщить итог и что редактор свободен. |
 
@@ -92,27 +92,15 @@
 f:/ClaudeGames/trollstrategy, Unity-проект лежит в unity/TrollStategy. С пользователем говори по-русски,
 коротко и по делу. Ничего не коммить без просьбы.
 
-Сначала прочитай: AGENTS.md, docs/ui-style.md (правила стиля «Воздух»), docs/ui-toolkit.md, docs/ui-redesign-workflow.md
-(способ работы, инструменты и грабли), Assets/Game/UI/Styles/Theme.uss, UXML нужного окна в
+Сначала прочитай: AGENTS.md, CODING_STANDARDS.md, docs/ui-style.md (правила стиля «Воздух»), docs/ui-toolkit.md,
+docs/ui-redesign-workflow.md (способ работы, инструменты и грабли), Assets/Game/UI/Styles/Theme.uss, UXML нужного окна в
 Assets/Game/UI/Uxml, его класс в Assets/Game/Runtime/UI и тесты, которые к нему обращаются.
-
-Стиль «Воздух», коротко:
-- остров всегда виден;
-- текст поверх мира — тёмные чернила с белым ореолом (text-shadow), без плашек;
-- дымка только под длинным текстом;
-- белые листы с запечённой тенью только у диалогов и подсказки;
-- цифры — картинка плюс число;
-- инструменты и предметы каталога — круглые диски .btn-disc;
-- названия, пояснения и клавиши — во всплывающей подсказке HudTooltip, словами, понятными игроку;
-- один акцент — синий цвет крыш, золото для денег и наград;
-- шрифт Nunito, обычный регистр, без разрядки и без «·».
-Новых цветов, шрифтов, uGUI и TextMeshPro не добавляй.
 
 Порядок работы:
 1. Назови конкретно, что в окне не так (плашки, коробки, капс, лишние хоткеи, лишние акценты, цифры
    без смысла).
-2. Сверь идеи с возможностями UI Toolkit 6.6: нет box-shadow и градиентов, тени и свечение — PNG в
-   UI/Sprites, пиктограммы — одноцветные SVG в UI/Icons с оттенком из USS.
+2. Сверь идеи с тем, что рисует UI Toolkit (docs/ui-style.md, «Sprites, icons and what the engine
+   draws»).
 3. Сделай HTML-страницу с вариантами и опубликуй как артефакт:
    - сцена 1600×900, фон — настоящий кадр острова, поверх HUD в текущем стиле;
    - настоящие иконки игры в data-URI;
@@ -126,12 +114,13 @@ Assets/Game/UI/Uxml, его класс в Assets/Game/Runtime/UI и тесты, 
 6. Если в редакторе работают другие сессии (ListAgents), заранее напиши им список своих файлов, дождись
    их сигнала, а после работы сообщи итог и что редактор свободен.
 7. Проверь:
-   - меню TrollStrategy/Tools/Run EditMode Tests, итог в Builds/Tests/editmode-summary.txt;
+   - меню TrollStrategy/Dev/Tools/Run EditMode Tests, итог в Builds/Tests/editmode-summary.txt;
    - скриншоты Play Mode на 1920×1080 по сценарию на EditorApplication.update, вырезки посмотри глазами;
    - найденное исправь и сними заново;
    - потом TrollStrategy/Build Windows Player, итог в Builds/Windows/build-result.txt;
    - после Play верни PlayerSettings.runInBackground = false.
-8. Допиши одну-две фразы нового правила в docs/ui-style.md (вид) или docs/ui-toolkit.md (устройство).
+8. Допиши одну-две фразы нового правила в docs/ui-style.md (вид), CODING_STANDARDS.md (код, который нужен
+   любой правке UI) или docs/ui-toolkit.md (устройство документов).
 
 Отчитайся пользователю:
 - что изменилось, словами игрока;
