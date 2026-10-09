@@ -150,7 +150,9 @@ namespace TrollStrategy.Bots
         // enough trolls for the squad, hired when allowed
         private bool Squad(BattleMissionDefinition mission, BotWait wait, bool hire)
         {
-            int need = Math.Min(_squadTrolls, _hands.Session.SquadLimit(mission));
+            int need = _profile.Force == BotForce.Large
+                ? _hands.Session.SquadLimit(mission)
+                : Math.Min(_squadTrolls, _hands.Session.SquadLimit(mission));
             int trolls = _hands.CountUnits(UnitKind.Troll);
             if (trolls >= need) return true;
             if (!hire || !_hands.IsUnlocked(UnitKind.Troll))

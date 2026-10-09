@@ -22,13 +22,15 @@ namespace TrollStrategy.Bots
         private readonly BotHands _hands;
         private readonly BattlePlanner _battles;
         private readonly BotProfile _profile;
+        private readonly QuestPlanner _planner;
         private readonly Dictionary<string, int> _lastOutput = new(StringComparer.Ordinal);
 
-        public EconomyKeeper(BotHands hands, BattlePlanner battles, BotProfile profile)
+        public EconomyKeeper(BotHands hands, BattlePlanner battles, BotProfile profile, QuestPlanner planner)
         {
             _hands = hands;
             _battles = battles;
             _profile = profile;
+            _planner = planner;
         }
 
         /// <summary>Gold growth may spend: the treasury less the profile's share of what the quest saves for.</summary>
@@ -64,8 +66,14 @@ namespace TrollStrategy.Bots
         public void Grow(BotWait wait)
         {
             _hands.SpendLimit = Spare(wait);
+            // a land buyer buys land first, as soon as spare gold covers it: the rest of growth takes what is left
+            if (_profile.BuysLand) GrowLand();
             int staffed = 0;
-            foreach (var building in Producers().OrderByDescending(b => _hands.IsRaw(b.Kind)).ToList())
+            // a colony of crafts fills its workshops first, the others their raw producers
+            var producers = _profile.Economy == BotEconomy.Crafts
+                ? Producers().OrderBy(b => _hands.IsRaw(b.Kind))
+                : Producers().OrderByDescending(b => _hands.IsRaw(b.Kind));
+            foreach (var building in producers.ToList())
             {
                 if (staffed >= MaxGrowthStaffPerLook) break;
                 var current = _hands.Building(building.Id);
@@ -73,8 +81,101 @@ namespace TrollStrategy.Bots
                 if (current.ProductionState != ProductionState.Working || !HasOutlet(current)) continue;
                 staffed += _hands.Staff(current, _hands.WorkerFor(current.Kind), 1, null, "рост: рабочий");
             }
-            GrowRaw();
+            // a bot growing upward raises a full building before it builds another; with none to raise it builds
+            if (_profile.Growth != BotGrowth.Up || !GrowUp())
+            {
+                if (_profile.Economy == BotEconomy.Crafts) GrowCrafts();
+                else GrowRaw();
+            }
             GrowUpgrades();
+            GrowForce();
+        }
+
+        // The cheapest level up of a producer that works full and has an outlet; false when none can rise.
+        private bool GrowUp()
+        {
+            var next = Producers().Where(b => b.UpgradeCost >= 0 && b.WorkerCount >= b.MaxWorkers &&
+                                              b.ProductionState == ProductionState.Working && HasOutlet(b))
+                .OrderBy(b => b.UpgradeCost).FirstOrDefault();
+            if (next == null) return false;
+            if (_hands.SpendLimit >= next.UpgradeCost * _profile.GrowthGoldFactor)
+                _hands.Upgrade(next, null, $"рост вверх: {next.Name} на уровень {next.Level + 1}");
+            return true;
+        }
+
+        // Crafts: gold from finished goods. A workshop waiting for an input gets one more producer of it once those it
+        // has work full; when every workshop is fed and full, the one whose product sells best gets a copy.
+        private void GrowCrafts()
+        {
+            var workshops = Producers().Where(b => !_hands.IsRaw(b.Kind)).ToList();
+            var hungry = workshops.FirstOrDefault(b => b.WorkerCount > 0 && b.ProductionState == ProductionState.MissingInputs);
+            if (hungry != null)
+            {
+                var missing = _hands.Def(hungry.Kind).Recipes.SelectMany(r => r.Inputs)
+                    .Where(i => _hands.StockOf(hungry, i.Resource) < i.Amount).Select(i => i.Resource).FirstOrDefault();
+                var makers = Producers().Where(b => _hands.Makes(b.Kind, missing)).ToList();
+                if (makers.Count == 0 || makers.Any(b => b.WorkerCount < b.MaxWorkers)) return;
+                var kind = Cheapest(d => _hands.Makes(d.Kind, missing));
+                if (kind == null || !CanSetUp(kind.Value)) return;
+                var maker = _hands.Build(kind.Value, null, $"рост: ещё {_hands.Session.ResourceName(missing).ToLowerInvariant()} для «{hungry.Name}»");
+                if (maker == null) return;
+                _hands.Staff(maker, _hands.WorkerFor(maker.Kind), 2, null, "рост: рабочие");
+                _hands.Haul(_hands.Building(maker.Id), _hands.Building(hungry.Id), 1, null, $"подвоз: в «{hungry.Name}»");
+                return;
+            }
+            var best = workshops.Where(b => b.WorkerCount >= b.MaxWorkers && b.ProductionState == ProductionState.Working)
+                .OrderByDescending(b => Value(b.Kind)).FirstOrDefault();
+            if (best == null || _hands.BuildingsOf(best.Kind).Count >= 1 + _profile.MaxRawProducers / 2) return;
+            if (!CanSetUp(best.Kind)) return;
+            var copy = _hands.Build(best.Kind, null, $"рост: ещё «{_hands.Def(best.Kind).DisplayName}» — её товар дороже всех");
+            if (copy != null) _hands.Staff(copy, _hands.WorkerFor(copy.Kind), 2, null, "рост: мастера");
+        }
+
+        // the best price among a building's products
+        private int Value(BuildingKind kind) => _hands.Def(kind).Recipes.SelectMany(r => r.Outputs)
+            .Select(o => _hands.Catalog.TryGetResource(o.Resource)?.SellPrice ?? 0).DefaultIfEmpty(0).Max();
+
+        private BuildingKind? Cheapest(Func<BuildingDefinition, bool> fits) => _hands.Catalog.Buildings
+            .Where(d => d != null && d.Constructible && _hands.IsUnlocked(d.Kind) && fits(d))
+            .OrderBy(d => _hands.Session.BuildingPrice(d.Kind)).Select(d => (BuildingKind?)d.Kind).FirstOrDefault();
+
+        // the building, two workers and two haulers, the growth factor times over
+        private bool CanSetUp(BuildingKind kind) =>
+            _hands.SpendLimit >= (_hands.Session.BuildingPrice(kind) + _hands.Session.HirePrice(_hands.WorkerFor(kind), 2) +
+                                  _hands.Session.HirePrice(_hands.HaulerKind(), 2)) * _profile.GrowthGoldFactor;
+
+        // The army strategy: a full squad of trolls ahead of the battles, or a weapon for every fighter of the squad.
+        private void GrowForce()
+        {
+            if (_profile.Force == BotForce.Small) return;
+            var mission = _battles.OpenMission();
+            if (mission == null) return;
+            int squad = _hands.Session.SquadLimit(mission);
+            if (_profile.Force == BotForce.Large)
+            {
+                // the army is the free trolls: those at work stay at work when the squad marches out
+                int army = _hands.Idle(UnitKind.Troll).Count;
+                if (!_hands.IsUnlocked(UnitKind.Troll) || army >= squad) return;
+                if (_hands.SpendLimit < _hands.Session.HirePrice(UnitKind.Troll) * _profile.GrowthGoldFactor) return;
+                _hands.Hire(UnitKind.Troll, 1, null, $"армия: тролль {army + 1} из {squad}");
+                return;
+            }
+            if (_hands.Snapshot.Equipment.Count < squad && _hands.IsUnlocked(BuildingKind.Armory))
+                _planner.EnsureEquipment(squad, new BotWait());
+        }
+
+        // Land with spare gold before a building needs it: the nearest block bought, then cleared; within a cap
+        // (wider for a bot that builds over the whole island).
+        private void GrowLand()
+        {
+            var land = _hands.Snapshot.Land;
+            if (land == null || land.Blocks.Any(b => b.Clearing)) return;
+            int cap = _profile.Layout == BotLayout.Spread ? 40 : 24;
+            bool wild = land.Blocks.Any(b => b.Wild);
+            if (!wild && (land.Blocks.Count(b => b.Owned) >= cap || !land.Blocks.Any(b => b.CanBuy))) return;
+            int cost = wild ? land.ClearGold : land.NextPrice + land.ClearGold;
+            if (_hands.SpendLimit < Math.Max(1, cost)) return;
+            _hands.ExpandLand(null, "земля про запас");
         }
 
         private void GrowRaw()
@@ -142,6 +243,12 @@ namespace TrollStrategy.Bots
         private void EmployIdle()
         {
             var idle = _hands.Snapshot.Units.Where(u => u.Assignment.Kind == AssignmentKind.Idle).ToList();
+            // a large army's free trolls are its squad, not workers waiting for a place
+            if (_profile.Force == BotForce.Large)
+            {
+                var army = idle.Where(u => u.UnitKind == UnitKind.Troll).Take(ArmySize()).Select(u => u.Id).ToHashSet();
+                idle.RemoveAll(u => army.Contains(u.Id));
+            }
             if (idle.Count == 0) return;
             var places = Producers().Where(b => b.WorkerCount > 0 && b.WorkerCount < b.MaxWorkers && HasOutlet(b))
                 .ToList();
@@ -161,6 +268,13 @@ namespace TrollStrategy.Bots
             foreach (var place in places)
                 if (orders.TryGetValue(place.Id, out var ids))
                     _hands.Dispatch(new AssignWorkCommand(ids, place.Id));
+        }
+
+        // the squad the open arena level takes; 0 before the arena opens
+        private int ArmySize()
+        {
+            var mission = _battles.OpenMission();
+            return mission != null ? _hands.Session.SquadLimit(mission) : 0;
         }
 
         // A producer with an outlet whose workers all fell in battle gets its chain's workers back.

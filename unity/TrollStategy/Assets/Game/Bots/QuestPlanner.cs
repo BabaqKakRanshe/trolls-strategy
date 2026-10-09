@@ -102,7 +102,7 @@ namespace TrollStrategy.Bots
         }
 
         /// <summary>Swords on their way to the armory until it holds <paramref name="items"/>; true once it does.</summary>
-        private bool EnsureEquipment(int items, BotWait wait)
+        internal bool EnsureEquipment(int items, BotWait wait)
         {
             if (_hands.Snapshot.Equipment.Count >= items) return true;
             var armory = _hands.First(BuildingKind.Armory) ?? _hands.Build(BuildingKind.Armory, wait, "склад экипировки");

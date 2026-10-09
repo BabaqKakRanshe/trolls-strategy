@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Боты с мышкой</title>
+<!-- Written by TrollStrategy/Bots/Show from Assets/Game/Bots/Show/BotShowGallery.html into Builds/Stats/bots/show.
+     Data: gallery-data.js next to this page (every recording's summary.json). -->
+<script src="gallery-data.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --border: rgba(11, 11, 11, 0.10); --hover: rgba(11, 11, 11, 0.05);
+    --accent: #2a78d6; --critical: #d03b3b; --good: #006300; --chip: rgba(42, 120, 214, 0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+      --accent: #3987e5; --critical: #e66767; --good: #0ca30c; --chip: rgba(57, 135, 229, 0.18);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+    --accent: #3987e5; --critical: #e66767; --good: #0ca30c; --chip: rgba(57, 135, 229, 0.18);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1400px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 24px 0 8px; }
+  .muted { color: var(--muted); }
+  .bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 12px 0; }
+  button { border: 1px solid var(--border); background: transparent; color: var(--ink); border-radius: 999px; padding: 4px 12px; font: inherit; cursor: pointer; }
+  button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .card h3 { margin: 0; font-size: 16px; }
+  .card video { width: 100%; border-radius: 8px; background: #000; aspect-ratio: 16 / 9; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { background: var(--chip); border-radius: 999px; padding: 2px 8px; font-size: 12px; }
+  .chip b { font-weight: 600; color: var(--ink-2); }
+  .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 8px; font-size: 13px; }
+  .facts b { display: block; font-size: 11px; color: var(--muted); font-weight: 500; }
+  .ok { color: var(--good); }
+  .bad { color: var(--critical); }
+  .desc { color: var(--ink-2); font-size: 12px; }
+  a.open { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { cursor: pointer; color: var(--ink-2); font-weight: 600; position: sticky; top: 0; background: var(--surface); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:hover td { background: var(--hover); }
+  .empty { padding: 40px; text-align: center; color: var(--muted); border: 1px dashed var(--border); border-radius: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <button id="theme" type="button" style="float:right">Тема</button>
+  <h1>Боты с мышкой</h1>
+  <div class="muted">Каждая запись — бот, который прошёл игру своей мышкой. Стратегия бота — его черты: откуда берёт золото, как строит, какую армию держит. Клик по «Смотреть» открывает видео с лентой ходов.</div>
+  <div class="bar" id="series"></div>
+  <div class="grid" id="cards"></div>
+  <h2>Сравнение</h2>
+  <div class="table-wrap"><table id="table"></table></div>
+</main>
+<script>
+(function () {
+  const shows = window.BOT_SHOWS || [];
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const themes = ["auto", "light", "dark"];
+  let theme = new URLSearchParams(location.search).get("theme") || "auto";
+  function applyTheme() {
+    if (theme === "auto") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", theme);
+    $("theme").textContent = { auto: "Тема: авто", light: "Тема: светлая", dark: "Тема: тёмная" }[theme];
+  }
+  $("theme").onclick = () => { theme = themes[(themes.indexOf(theme) + 1) % 3]; applyTheme(); };
+  applyTheme();
+
+  const clock = s => {
+    s = Math.max(0, Math.round(s || 0));
+    const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), r = s % 60;
+    return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(r).padStart(2, "0");
+  };
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  if (!shows.length) { $("cards").append(el("div", "empty", "Записей пока нет: TrollStrategy → Bots → Show → Record…")); return; }
+
+  // the series (ten different bots recorded in one go) and «all»
+  const seriesList = [...new Set(shows.map(s => s.series).filter(Boolean))];
+  let filter = seriesList.length ? seriesList[0] : "";
+  function bar() {
+    $("series").innerHTML = "";
+    const options = [["", "Все записи"], ...seriesList.map(s => [s, "Серия " + s.replace(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})$/, "$3.$2 $4:$5")])];
+    for (const [key, name] of options) {
+      const b = el("button", null, name);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(key === filter));
+      b.onclick = () => { filter = key; bar(); render(); };
+      $("series").append(b);
+    }
+  }
+
+  const columns = [
+    ["Бот", s => s.title, false],
+    ["Итог", s => s.outcome, false],
+    ["Задание", s => s.quest, true],
+    ["Колония", s => s.colonySeconds, true, clock],
+    ["Видео", s => s.videoSeconds, true, clock],
+    ["Золото", s => s.gold, true],
+    ["Зданий", s => s.buildings, true],
+    ["Существ", s => s.population, true],
+    ["Боёв", s => s.battles, true],
+    ["Ошибок новичка", s => s.blunders, true],
+    ["Ходов мышкой", s => s.moves, true],
+    ["Мимо интерфейса", s => s.past, true]
+  ];
+  const strategyKeys = [...new Set(shows.flatMap(s => Object.keys(s.strategy || {})))];
+  let sortBy = 3, ascending = true;
+
+  function render() {
+    const list = shows.filter(s => !filter || s.series === filter);
+    $("cards").innerHTML = "";
+    for (const s of list) {
+      const card = el("div", "card");
+      const head = el("div");
+      head.append(el("h3", null, s.title), el("div", s.completed ? "ok" : "bad", s.outcome + " — задание " + s.quest));
+      card.append(head);
+      if (s.video) {
+        const v = document.createElement("video");
+        v.src = s.folder + "/" + s.video; v.preload = "metadata"; v.muted = true; v.controls = true;
+        card.append(v);
+      }
+      const chips = el("div", "chips");
+      for (const [k, v] of Object.entries(s.strategy || {})) {
+        const c = el("span", "chip"); c.append(el("b", null, k + ": "), document.createTextNode(v)); chips.append(c);
+      }
+      card.append(chips);
+      const facts = el("div", "facts");
+      for (const [name, value] of [["Колония", clock(s.colonySeconds)], ["Видео", clock(s.videoSeconds)], ["Золото", s.gold],
+                                   ["Зданий", s.buildings], ["Существ", s.population], ["Боёв", s.battles],
+                                   ["Ходов мышкой", s.moves], ["Мимо интерфейса", s.past], ["Находок", s.problems]]) {
+        const d = el("div"); d.append(el("b", null, name), document.createTextNode(value)); facts.append(d);
+      }
+      card.append(facts);
+      if (s.description) card.append(el("div", "desc", s.description));
+      const a = el("a", "open", "Смотреть →"); a.href = s.folder + "/index.html"; card.append(a);
+      $("cards").append(card);
+    }
+
+    const table = $("table");
+    table.innerHTML = "";
+    const all = [...columns, ...strategyKeys.map(k => [k, s => (s.strategy || {})[k] || "", false])];
+    const tr = el("tr");
+    all.forEach(([name], i) => {
+      const th = el("th", null, name + (i === sortBy ? (ascending ? " ▲" : " ▼") : ""));
+      th.onclick = () => { if (sortBy === i) ascending = !ascending; else { sortBy = i; ascending = true; } render(); };
+      tr.append(th);
+    });
+    table.append(tr);
+    const key = all[sortBy][1];
+    const rows = list.slice().sort((a, b) => {
+      const x = key(a), y = key(b);
+      const c = typeof x === "number" ? x - y : String(x).localeCompare(String(y), "ru");
+      return ascending ? c : -c;
+    });
+    for (const s of rows) {
+      const row = el("tr");
+      all.forEach(([, get, numeric, format]) => {
+        const td = el("td", numeric ? "num" : null);
+        const value = get(s);
+        if (format) td.textContent = format(value);
+        else if (get === columns[0][1]) { const a = el("a", "open", value); a.href = s.folder + "/index.html"; td.append(a); }
+        else td.textContent = value;
+        row.append(td);
+      });
+      table.append(row);
+    }
+  }
+  bar();
+  render();
+})();
+</script>
+</body>
+</html>

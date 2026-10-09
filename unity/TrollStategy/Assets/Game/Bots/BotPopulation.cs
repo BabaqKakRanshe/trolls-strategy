@@ -118,6 +118,12 @@ namespace TrollStrategy.Bots
         private static string YesNo(double v) => v > 0 ? "да" : "нет";
 
         private static readonly string[] Hiring = { "гоблинов", "троллей", "выгодных", "сильных" };
+        // the first choice of each strategy is how every bot played before strategies came in
+        private static readonly string[] Economies = { "сырьё на рынок", "переработка", "арена" };
+        private static readonly string[] Paces = { "задания первыми", "хозяйство первым" };
+        private static readonly string[] Layouts = { "плотно у центра", "районами по цепочкам", "по всему острову" };
+        private static readonly string[] Growths = { "вширь: новые здания", "вверх: уровни" };
+        private static readonly string[] Forces = { "малый отряд", "большая армия", "снаряжение" };
 
         public static IReadOnlyList<BotTrait> Traits { get; } = new[]
         {
@@ -142,6 +148,19 @@ namespace TrollStrategy.Bots
             new BotTrait("placement", "Ставит здание на одно из лучших мест", "Место", BotTraitKind.Number,
                 v => v <= 1 ? "лучшее" : "из " + Count(v), 1, 6, 1),
             new BotTrait("risk", "Лезет на арену, когда отряд слабее, в доле взглядов", "Риск", BotTraitKind.Number,
+                BotTrait.Percent, 0, 0.3, 0.05),
+            // the strategy (since 2026-10-09): what the colony is built on, not only how much of it
+            new BotTrait("economy", "Откуда берёт золото сверх заданий", "Опора", BotTraitKind.Choice,
+                v => Economies[(int)v], choices: Economies),
+            new BotTrait("pace", "Что первым во взгляде", "Темп", BotTraitKind.Choice, v => Paces[(int)v], choices: Paces,
+                requires: "grows"),
+            new BotTrait("layout", "Как ставит здания", "Планировка", BotTraitKind.Choice, v => Layouts[(int)v],
+                choices: Layouts),
+            new BotTrait("upward", "Как растит хозяйство", "Вширь/вверх", BotTraitKind.Choice, v => Growths[(int)v],
+                choices: Growths, requires: "grows"),
+            new BotTrait("force", "Какую армию держит", "Армия", BotTraitKind.Choice, v => Forces[(int)v], choices: Forces),
+            new BotTrait("land", "Скупает землю про запас", "Земля", BotTraitKind.Flag, YesNo, chance: 0.35, requires: "grows"),
+            new BotTrait("novice", "Ошибается как новичок в доле взглядов", "Новичок", BotTraitKind.Number,
                 BotTrait.Percent, 0, 0.3, 0.05)
         };
 
@@ -171,22 +190,94 @@ namespace TrollStrategy.Bots
             var v = Values(seed);
             double Get(string key) => v[IndexOf(key)];
             int hiring = (int)Get("hiring");
+            var economy = (BotEconomy)(int)Get("economy");
+            var pace = (BotPace)(int)Get("pace");
             var hosts = new List<BuildingKind>();
-            if (Get("army") > 0) hosts.AddRange(new[] { BuildingKind.Barracks, BuildingKind.Armory });
+            // a colony living on prizes raises its squad's building before anything else
+            if (Get("army") > 0 || economy == BotEconomy.Arena) hosts.AddRange(new[] { BuildingKind.Barracks, BuildingKind.Armory });
             if (Get("guild") > 0) hosts.Add(BuildingKind.HaulersGuild);
             return new BotProfile(Id(seed), $"Бот {seed}", Describe(v),
                 thinkSeconds: (float)Get("think"), grows: Get("grows") > 0,
                 workerKind: hiring == 1 ? UnitKind.Troll : UnitKind.Goblin,
                 maxHaulersPerRoute: (int)Get("haulers"), maxRawProducers: (int)Get("raws"),
-                growthGoldFactor: (float)Get("spare"), reserveShare: (float)Get("reserve"),
-                squadTrolls: (int)Get("squad"), fightsForGold: Get("fights") > 0,
+                // a colony living on prizes puts less into its economy; one growing first saves little for the quest
+                growthGoldFactor: (float)Get("spare") * (economy == BotEconomy.Arena ? 1.5f : 1f),
+                reserveShare: (float)Get("reserve") * (pace == BotPace.EconomyFirst ? 0.4f : 1f),
+                squadTrolls: (int)Get("squad"), fightsForGold: Get("fights") > 0 || economy == BotEconomy.Arena,
                 actionSeconds: (float)Get("click"), questReadSeconds: (float)Get("read"),
                 roleHiring: hiring switch { 2 => 0.9f, 3 => 0.65f, _ => 0f },
                 upgradeHosts: hosts.ToArray(), seed: seed, inattention: (float)Get("inattention"),
-                placementChoice: (int)Get("placement"), arenaRisk: (float)Get("risk"));
+                placementChoice: (int)Get("placement"), arenaRisk: (float)Get("risk"),
+                economy: economy, pace: pace, layout: (BotLayout)(int)Get("layout"), growth: (BotGrowth)(int)Get("upward"),
+                force: (BotForce)(int)Get("force"), buysLand: Get("land") > 0, novice: (float)Get("novice"));
         }
 
         public static string Id(int seed) => "p" + seed.ToString(Invariant);
+
+        // Traits that make a different game rather than the same game at another pace count more when bots are told apart.
+        private static readonly HashSet<string> Strategic = new(StringComparer.Ordinal)
+        {
+            "economy", "pace", "layout", "upward", "force", "land", "novice", "hiring", "grows", "fights", "army", "guild"
+        };
+
+        /// <summary>The trait changes what game the bot plays (its strategy), not only its pace.</summary>
+        public static bool IsStrategic(string key) => Strategic.Contains(key);
+
+        /// <summary>
+        /// The <paramref name="count"/> personas among the first <paramref name="pool"/> that differ most from each other:
+        /// the first is the one farthest from all the others, each next the one farthest from those chosen. Every trait
+        /// counts, the strategy traits double, how often a bot looks and clicks half; a trait whose flag is off for both
+        /// counts nothing. The same list every time.
+        /// </summary>
+        public static List<BotProfile> MostDifferent(int count, int pool = DefaultCount)
+        {
+            pool = Math.Max(pool, count);
+            var values = Enumerable.Range(1, pool).Select(Values).ToList();
+            var chosen = new List<int>();
+            var nearest = Enumerable.Repeat(double.MaxValue, pool).ToArray();
+            int first = Enumerable.Range(0, pool).OrderByDescending(i => values.Sum(v => Distance(values[i], v))).ThenBy(i => i).First();
+            for (int next = first; chosen.Count < Math.Min(count, pool);)
+            {
+                chosen.Add(next);
+                for (int i = 0; i < pool; i++) nearest[i] = Math.Min(nearest[i], Distance(values[i], values[next]));
+                next = Enumerable.Range(0, pool).Where(i => !chosen.Contains(i))
+                    .OrderByDescending(i => nearest[i]).ThenBy(i => i).DefaultIfEmpty(-1).First();
+                if (next < 0) break;
+            }
+            return chosen.Select(i => Persona(i + 1)).ToList();
+        }
+
+        /// <summary>How far apart two personas' traits are, each trait scaled to 0…1.</summary>
+        public static double Distance(double[] a, double[] b)
+        {
+            double sum = 0;
+            for (int i = 0; i < Traits.Count; i++)
+            {
+                var trait = Traits[i];
+                if (trait.Requires != null)
+                {
+                    int flag = IndexOf(trait.Requires);
+                    if (a[flag] <= 0 && b[flag] <= 0) continue;
+                }
+                double d = trait.Kind switch
+                {
+                    BotTraitKind.Choice => a[i] == b[i] ? 0 : 1,
+                    BotTraitKind.Flag => Math.Abs(a[i] - b[i]),
+                    _ => Math.Abs(Scaled(trait, a[i]) - Scaled(trait, b[i]))
+                };
+                double weight = Strategic.Contains(trait.Key) ? 2 : trait.Key is "think" or "click" or "read" ? 0.5 : 1;
+                sum += weight * d * d;
+            }
+            return Math.Sqrt(sum);
+        }
+
+        private static double Scaled(BotTrait trait, double value)
+        {
+            if (trait.Max <= trait.Min) return 0;
+            return trait.LogScale && trait.Min > 0
+                ? Math.Log(value / trait.Min) / Math.Log(trait.Max / trait.Min)
+                : (value - trait.Min) / (trait.Max - trait.Min);
+        }
 
         /// <summary>A persona by its id ("p17"), or the reference bot of the tests ("typical"); null when there is none.</summary>
         public static BotProfile Find(string id)
@@ -219,7 +310,11 @@ namespace TrollStrategy.Bots
             text.Append($", троллей до первого боя {F("squad")}. ");
             text.Append($"Не смотрит за хозяйством в {F("inattention")} взглядов, ставит здание на " +
                         (v[IndexOf("placement")] <= 1 ? "лучшее место" : $"одно из {Count(v[IndexOf("placement")])} лучших мест") +
-                        $", лезет на арену слабее врага в {F("risk")} взглядов.");
+                        $", лезет на арену слабее врага в {F("risk")} взглядов. ");
+            text.Append($"Золото сверх заданий: {F("economy")}; строит {F("layout")}; армия: {F("force")}");
+            if (On("grows"))
+                text.Append($"; {F("pace")}, растёт {F("upward")}" + (On("land") ? ", скупает землю про запас" : ""));
+            text.Append(v[IndexOf("novice")] > 0 ? $"; ошибается как новичок в {F("novice")} взглядов." : ".");
             return text.ToString();
         }
 

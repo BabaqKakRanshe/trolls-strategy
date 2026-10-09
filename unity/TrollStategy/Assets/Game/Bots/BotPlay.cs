@@ -38,7 +38,7 @@ namespace TrollStrategy.Bots
             _hands = new BotHands(session, Run, profile);
             var battles = new BattlePlanner(_hands, Run, profile);
             _planner = new QuestPlanner(_hands, battles, profile);
-            _keeper = new EconomyKeeper(_hands, battles, profile);
+            _keeper = new EconomyKeeper(_hands, battles, profile, _planner);
             _record = StartRecord();
             _hireable = Hireable();
         }
@@ -50,6 +50,16 @@ namespace TrollStrategy.Bots
         public float WaitSeconds { get; private set; }
         /// <summary>The colony time the next look is due at.</summary>
         public int NextLookMs => LookedAtMs + (int)Math.Round(WaitSeconds * 1000f);
+        /// <summary>What the latest look found the quest waiting for, in words; null when nothing held it.</summary>
+        public string WaitReason { get; private set; }
+        /// <summary>What the latest look found the quest waiting for.</summary>
+        public BotWaitKind WaitKind { get; private set; }
+
+        /// <summary>
+        /// Sends the bot's commands through <paramref name="sender"/> (the command and what it is for) instead of
+        /// straight to the session: the show bot performs them at the HUD.
+        /// </summary>
+        internal void SendThrough(Func<IGameCommand, string, CommandResult> sender) => _hands.Sender = sender;
 
         /// <summary>
         /// Looks at the colony once: claims what is done, works on the quest and the economy. False once the game is
@@ -92,14 +102,31 @@ namespace TrollStrategy.Bots
                 return Stop();
             }
 
+            // a bot that grows first puts its spare gold into the colony before the quest's steps take theirs
+            bool economyFirst = _profile.Grows && _profile.Pace == BotPace.EconomyFirst;
+            bool? attentive = null;
+            if (economyFirst)
+            {
+                attentive = !_hands.Dice.Chance(_profile.Inattention);
+                if (attentive.Value)
+                {
+                    var early = new BotWait();
+                    _keeper.Keep(early);
+                    _keeper.Grow(early);
+                }
+            }
             var wait = _planner.Pursue(quest);
+            WaitReason = wait.Reason;
+            WaitKind = wait.Kind;
             // a player does not watch the whole colony every time: some looks go to the quest alone
-            if (!_hands.Dice.Chance(_profile.Inattention))
+            if (attentive ?? !_hands.Dice.Chance(_profile.Inattention))
             {
                 _keeper.Keep(wait);
-                if (_profile.Grows) _keeper.Grow(wait);
+                if (_profile.Grows && !economyFirst) _keeper.Grow(wait);
             }
             if (_profile.FightsForGold) _keeper.FightForGold(wait);
+            // a newcomer now and then makes a move a seasoned player would not
+            if (_hands.Dice.Chance(_profile.Novice)) Blunder();
             _hands.Refresh();
 
             // a stall is a quest whose goals do not move while the treasury does not grow toward its step
@@ -140,6 +167,26 @@ namespace TrollStrategy.Bots
             _record.BusyMs += (int)Math.Round(busySeconds * 1000f);
             WaitSeconds = _profile.ThinkSeconds + busySeconds;
             return true;
+        }
+
+        // One newcomer's move among those the colony allows now: the building placed last moved, a free creature sold,
+        // a hauler taken off its route, a look at the book.
+        private void Blunder()
+        {
+            var moves = new List<Func<bool>>();
+            var placed = _hands.Snapshot.Buildings.LastOrDefault(b => _hands.Def(b.Kind).Constructible);
+            if (placed != null) moves.Add(() => _hands.MoveBuilding(placed));
+            var idle = _hands.Snapshot.Units.FirstOrDefault(u => u.Assignment.Kind == AssignmentKind.Idle);
+            if (idle != null && _hands.Snapshot.Units.Count > 3) moves.Add(() => _hands.SellUnit(idle));
+            var hauler = _hands.Snapshot.Units.LastOrDefault(u => u.Assignment.Kind == AssignmentKind.Haul);
+            if (hauler != null) moves.Add(() => _hands.ReleaseUnit(hauler));
+            moves.Add(() =>
+            {
+                _hands.Peek();
+                return true;
+            });
+            moves[_hands.Dice.Pick(moves.Count)]();
+            _hands.Refresh();
         }
 
         private bool Stop()

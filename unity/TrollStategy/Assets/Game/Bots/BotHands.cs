@@ -67,9 +67,25 @@ namespace TrollStrategy.Bots
 
         public void Refresh() => Snapshot = Session.CurrentSnapshot;
 
+        /// <summary>
+        /// Where the commands go: null sends them to the session at once; the show bot's hands
+        /// (<see cref="BotPilot"/>) perform each at the HUD over a few seconds and answer with the session's result.
+        /// </summary>
+        public Func<IGameCommand, string, CommandResult> Sender { get; set; }
+
+        /// <summary>What the bot is doing now, in the planner's words; null outside a reasoned action.</summary>
+        public string Intent { get; private set; }
+
         public bool Dispatch(IGameCommand command)
         {
-            var result = Session.Dispatch(command);
+            // a look at the book changes nothing in the colony: it costs the player's time, and the hands show it
+            if (command is BotPeek)
+            {
+                Sender?.Invoke(command, Intent);
+                _run.CommandsAccepted++;
+                return true;
+            }
+            var result = Sender != null ? Sender(command, Intent) : Session.Dispatch(command);
             if (result.Ok)
             {
                 _run.CommandsAccepted++;
@@ -78,8 +94,32 @@ namespace TrollStrategy.Bots
             else
             {
                 _run.Refused($"{command.GetType().Name}: {result.Error}");
+                // at the HUD the colony ran on while the hands worked
+                if (Sender != null) Refresh();
             }
             return result.Ok;
+        }
+
+        /// <summary>Names the action under way until the scope ends; an inner action names its own.</summary>
+        private IntentScope Why(string why)
+        {
+            var scope = new IntentScope(this, Intent);
+            Intent = why;
+            return scope;
+        }
+
+        private readonly struct IntentScope : IDisposable
+        {
+            private readonly BotHands _hands;
+            private readonly string _previous;
+
+            public IntentScope(BotHands hands, string previous)
+            {
+                _hands = hands;
+                _previous = previous;
+            }
+
+            public void Dispose() => _hands.Intent = _previous;
         }
 
         // ---------- queries
@@ -166,6 +206,7 @@ namespace TrollStrategy.Bots
         /// </summary>
         public bool StopSelling(ResourceKind resource, BuildingSnapshot source, BuildingSnapshot consumer, bool everyone)
         {
+            using var _ = Why($"{Session.ResourceName(resource).ToLowerInvariant()} нужнее в здании «{consumer.Name}», чем на продаже");
             bool ordered = false;
             var haulers = Snapshot.Units.Where(u => u.Assignment.Kind == AssignmentKind.Haul &&
                 u.Assignment.SourceId == source.Id && u.Assignment.DestinationId != consumer.Id &&
@@ -272,6 +313,7 @@ namespace TrollStrategy.Bots
         /// <summary>Hires up to <paramref name="amount"/> creatures; returns the new ids (fewer when gold runs short).</summary>
         public List<string> Hire(UnitKind kind, int amount, BotWait wait, string why)
         {
+            using var _ = Why(why);
             var hired = new List<string>();
             kind = Hireable(kind);
             int fits = amount;
@@ -298,39 +340,37 @@ namespace TrollStrategy.Bots
         /// <summary>Idle creatures of the kind first, then new hires; returns up to <paramref name="amount"/> ids.</summary>
         public List<string> Obtain(UnitKind kind, int amount, BotWait wait, string why)
         {
+            using var _ = Why(why);
             kind = Hireable(kind);
-            var ids = Idle(kind).Take(amount).Select(u => u.Id).ToList();
+            var ids = Idle(kind).Skip(kind == UnitKind.Troll ? ArmyReserve() : 0).Take(amount).Select(u => u.Id).ToList();
             if (ids.Count < amount) ids.AddRange(Hire(kind, amount - ids.Count, wait, why));
             return ids;
         }
 
+        /// <summary>
+        /// Free trolls a large army keeps as its squad (<see cref="BotForce.Large"/>): work and hauling take others.
+        /// The squad the open arena level takes; 0 for another army or before the arena opens.
+        /// </summary>
+        public int ArmyReserve()
+        {
+            if (_profile.Force != BotForce.Large) return 0;
+            BattleMissionDefinition top = null;
+            foreach (var mission in Session.ArenaLadder())
+                if (Session.IsMissionUnlocked(mission.MissionId)) top = mission;
+            return top != null ? Session.SquadLimit(top) : 0;
+        }
+
         public int Staff(BuildingSnapshot building, UnitKind kind, int amount, BotWait wait, string why)
         {
+            using var _ = Why(why);
             if (building == null || !building.IsWorkplace) return 0;
             int take = Math.Min(amount, building.MaxWorkers - building.WorkerCount);
             if (take <= 0) return 0;
             kind = Hireable(kind);
-            // one worker and nobody idle to send: the card's "hire here", when it offers this very creature
-            if (take == 1 && Idle(kind).Count == 0 && Session.SuggestedWorker(building.Kind) == kind &&
-                HireHere(building, kind, wait, why))
-                return 1;
+            // hired in the catalog, then sent to work, as a player does: the card's "hire here" left the game
             var ids = Obtain(kind, take, wait, why);
             if (ids.Count == 0) return 0;
             return Dispatch(new AssignWorkCommand(ids, building.Id)) ? ids.Count : 0;
-        }
-
-        // A workplace card's "hire here": one press hires the worker and sends it to the building.
-        private bool HireHere(BuildingSnapshot building, UnitKind kind, BotWait wait, string why)
-        {
-            int cost = Session.HirePrice(kind);
-            if (!Affordable(cost, wait, why)) return false;
-            var cell = Session.FindSpawnCell();
-            if (!Session.CanBuyUnits(kind, 1, cell).Ok) return false;
-            if (!Dispatch(new HireWorkerCommand(kind, building.Id, cell))) return false;
-            Spent(cost);
-            _run.Hired++;
-            CountHire(kind, 1);
-            return true;
         }
 
         private void CountHire(UnitKind kind, int amount)
@@ -343,6 +383,7 @@ namespace TrollStrategy.Bots
         public int Haul(BuildingSnapshot source, BuildingSnapshot destination, int amount, BotWait wait, string why,
             IReadOnlyList<ResourceKind> cargo = null, UnitKind? kind = null)
         {
+            using var _ = Why(why);
             if (amount <= 0 || !CanHaul(source, destination)) return 0;
             var ids = Obtain(kind ?? HaulerKind(), amount, wait, why);
             if (ids.Count == 0) return 0;
@@ -351,6 +392,7 @@ namespace TrollStrategy.Bots
 
         public bool Upgrade(BuildingSnapshot building, BotWait wait, string why)
         {
+            using var _ = Why(why);
             if (building == null || building.UpgradeCost < 0) return false;
             int cost = building.UpgradeCost;
             if (!Affordable(cost, wait, why)) return false;
@@ -365,6 +407,7 @@ namespace TrollStrategy.Bots
         /// </summary>
         public BuildingSnapshot Build(BuildingKind kind, BotWait wait, string why)
         {
+            using var _ = Why(why);
             if (!IsUnlocked(kind) || !Def(kind).Constructible)
             {
                 wait?.Note($"не открыто: {Def(kind).DisplayName}");
@@ -417,18 +460,31 @@ namespace TrollStrategy.Bots
             foreach (var unit in Snapshot.Units)
                 unitCells.Add(new Cell((int)Math.Floor(unit.Position.X / cs), (int)Math.Floor(unit.Position.Y / cs)));
 
+            // the layout: near the core, near the buildings it trades with, or away from all of them with wider lanes
+            int lane = _profile.Layout == BotLayout.Spread ? 2 : 1;
+            var target = _profile.Layout == BotLayout.Districts ? District(kind, core) : core;
+            var centres = Snapshot.Buildings.Select(b => (X: b.Cell.X + b.Width * 0.5f, Y: b.Cell.Y + b.Height * 0.5f)).ToList();
             var candidates = new List<(float Score, Cell Cell)>();
             for (int y = 0; y + def.Height <= Economy.GridHeight; y++)
             for (int x = 0; x + def.Width <= Economy.GridWidth; x++)
             {
                 if (!OnClearedLand(x, y, def.Width, def.Height)) continue;
-                if (Snapshot.Buildings.Any(b => ColonySimulation.FootprintsOverlap(new Cell(x - 1, y - 1),
-                        def.Width + 2, def.Height + 2, b.Cell, b.Width, b.Height)))
+                if (Snapshot.Buildings.Any(b => ColonySimulation.FootprintsOverlap(new Cell(x - lane, y - lane),
+                        def.Width + 2 * lane, def.Height + 2 * lane, b.Cell, b.Width, b.Height)))
                     continue;
                 if (unitCells.Any(c => ColonySimulation.BuildingOccupiesCell(new Cell(x, y), def.Width, def.Height, c)))
                     continue;
-                float dx = x + def.Width * 0.5f - core.X, dy = y + def.Height * 0.5f - core.Y;
-                candidates.Add((dx * dx + dy * dy, new Cell(x, y)));
+                float cx = x + def.Width * 0.5f, cy = y + def.Height * 0.5f;
+                float dx = cx - target.X, dy = cy - target.Y;
+                float score = dx * dx + dy * dy;
+                if (_profile.Layout == BotLayout.Spread)
+                {
+                    // as far from the other buildings as six cells, then the nearer to the core of those
+                    float nearest = centres.Count == 0 ? 0f
+                        : centres.Min(c => (float)Math.Sqrt((c.X - cx) * (c.X - cx) + (c.Y - cy) * (c.Y - cy)));
+                    score = -Math.Min(nearest, 6f) * 1000f + score;
+                }
+                candidates.Add((score, new Cell(x, y)));
             }
             int choice = Math.Max(1, _profile.PlacementChoice);
             var valid = new List<Cell>(choice);
@@ -439,6 +495,61 @@ namespace TrollStrategy.Bots
                 if (valid.Count == choice) break;
             }
             return valid.Count > 0 ? valid[Dice.Pick(valid.Count)] : null;
+        }
+
+        /// <summary>
+        /// The middle of the buildings a new one of the kind trades with (it supplies them or they supply it): a chain
+        /// grows in one district. Markets and stockpiles take everything, so they do not count; the core when none stands.
+        /// </summary>
+        private (float X, float Y) District(BuildingKind kind, (float X, float Y) core)
+        {
+            var related = Snapshot.Buildings.Where(b => !IsOutlet(b) && b.Kind != kind &&
+                (ColonySimulation.IsValidHaulRoute(kind, b.Kind, Catalog) ||
+                 ColonySimulation.IsValidHaulRoute(b.Kind, kind, Catalog))).ToList();
+            if (related.Count == 0) return core;
+            return (related.Average(b => b.Cell.X + b.Width * 0.5f), related.Average(b => b.Cell.Y + b.Height * 0.5f));
+        }
+
+        // ---------- a newcomer's moves (BotProfile.Novice): allowed, but they cost time and gold
+
+        /// <summary>Moves a building to another free spot: the newcomer changed their mind about its place.</summary>
+        public bool MoveBuilding(BuildingSnapshot building)
+        {
+            if (building == null) return false;
+            using var _ = Why($"передумал, где стоять зданию «{building.Name}»");
+            var cell = FindBuildingCell(building.Kind);
+            if (cell == null || cell.Value.Equals(building.Cell)) return false;
+            if (!Dispatch(new MoveBuildingCommand(building.Id, cell.Value))) return false;
+            _run.Blunders++;
+            return true;
+        }
+
+        /// <summary>Sells a creature back for a part of its price.</summary>
+        public bool SellUnit(UnitSnapshot unit)
+        {
+            if (unit == null) return false;
+            using var _ = Why("нанял лишнего — продаю");
+            if (!Dispatch(new SellUnitsCommand(new[] { unit.Id }))) return false;
+            _run.Blunders++;
+            return true;
+        }
+
+        /// <summary>Takes a hauler off its route; the keeper of the economy sends it to work again later.</summary>
+        public bool ReleaseUnit(UnitSnapshot unit)
+        {
+            if (unit == null) return false;
+            using var _ = Why("снял носильщика, не подумав");
+            if (!Dispatch(new ReleaseUnitsCommand(new[] { unit.Id }))) return false;
+            _run.Blunders++;
+            return true;
+        }
+
+        /// <summary>Leafs through the book: nothing changes in the colony, the player's time goes.</summary>
+        public void Peek()
+        {
+            using var _ = Why("читаю, что делает здание");
+            Dispatch(new BotPeek());
+            _run.Blunders++;
         }
 
         private bool OnClearedLand(int x, int y, int width, int height)
@@ -460,6 +571,7 @@ namespace TrollStrategy.Bots
         /// </summary>
         public bool BuyUpgrade(BotWait wait, string why, BuildingKind? host = null)
         {
+            using var _ = Why(why);
             var left = Snapshot.Upgrades.Where(u => !u.IsMaxed && (host == null || u.Host == host)).ToList();
             if (left.Count == 0)
             {
@@ -488,6 +600,7 @@ namespace TrollStrategy.Bots
         /// <summary>Buys one more block of land next to the colony's own, nearest the core.</summary>
         public bool BuyLandBlock(BotWait wait, string why)
         {
+            using var _ = Why(why);
             var land = Snapshot.Land;
             if (land == null)
             {
@@ -517,6 +630,7 @@ namespace TrollStrategy.Bots
         /// <summary>Clears owned wild land, or buys the block nearest the core next to the colony's land.</summary>
         public void ExpandLand(BotWait wait, string why)
         {
+            using var _ = Why(why);
             var land = Snapshot.Land;
             if (land == null)
             {

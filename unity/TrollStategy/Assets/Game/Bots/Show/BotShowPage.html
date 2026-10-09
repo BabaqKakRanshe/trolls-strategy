@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Бот с мышкой</title>
+<!-- Written by TrollStrategy/Bots/Show from Assets/Game/Bots/Show/BotShowPage.html into every recording's folder.
+     Data: show-data.js next to this page; the video is video.mp4 with its subtitles video.srt / video.vtt. -->
+<script src="show-data.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --border: rgba(11, 11, 11, 0.10); --hover: rgba(11, 11, 11, 0.05);
+    --accent: #2a78d6; --critical: #d03b3b; --good: #006300; --wait: #8f8d86; --quest: #4a3aa7;
+    --now: rgba(42, 120, 214, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+      --accent: #3987e5; --critical: #e66767; --good: #0ca30c; --wait: #6f6d68; --quest: #9085e9;
+      --now: rgba(57, 135, 229, 0.20);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --border: rgba(255, 255, 255, 0.10); --hover: rgba(255, 255, 255, 0.06);
+    --accent: #3987e5; --critical: #e66767; --good: #0ca30c; --wait: #6f6d68; --quest: #9085e9;
+    --now: rgba(57, 135, 229, 0.20);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1400px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 0 0 8px; }
+  .muted { color: var(--muted); }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 16px; align-items: start; margin-top: 14px; }
+  @media (max-width: 1100px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .player { position: sticky; top: 12px; }
+  video { width: 100%; border-radius: 8px; background: #000; display: block; }
+  .caption { margin-top: 10px; min-height: 64px; }
+  .caption .doing { font-size: 17px; font-weight: 650; }
+  .caption .why { color: var(--ink-2); }
+  .caption .problem { color: var(--critical); }
+  .novideo { padding: 40px 16px; text-align: center; color: var(--muted); border: 1px dashed var(--border); border-radius: 8px; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 16px; margin: 12px 0 0; }
+  .facts div { min-width: 0; }
+  .facts b { display: block; font-size: 12px; color: var(--muted); font-weight: 500; }
+  .tools { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .tools button { border: 1px solid var(--border); background: transparent; color: var(--ink); border-radius: 999px; padding: 4px 10px; font: inherit; cursor: pointer; }
+  .tools button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .timeline { max-height: calc(100vh - 140px); overflow: auto; margin: 0; padding: 0; list-style: none; }
+  .timeline li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; padding: 6px 8px; border-radius: 8px; cursor: pointer; }
+  .timeline li:hover { background: var(--hover); }
+  .timeline li.now { background: var(--now); }
+  .timeline time { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .timeline .text { min-width: 0; overflow-wrap: anywhere; }
+  .timeline .why { color: var(--ink-2); font-size: 13px; }
+  .kind-Wait .text { color: var(--wait); }
+  .kind-Quest .text { color: var(--quest); font-weight: 650; }
+  .kind-Fallback .text, .bad { color: var(--critical); }
+  .refused { color: var(--critical); font-size: 13px; }
+  .problems { margin-top: 16px; }
+  .problems ul { margin: 0; padding-left: 18px; }
+  .problems li { margin: 6px 0; cursor: pointer; }
+  .problems img { display: block; max-width: 360px; width: 100%; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); }
+  .theme { float: right; }
+</style>
+</head>
+<body>
+<main>
+  <button class="theme tools" id="theme" type="button" style="border:1px solid var(--border);background:transparent;color:var(--ink);border-radius:999px;padding:4px 10px;font:inherit;cursor:pointer">Тема</button>
+  <h1 id="title">Бот с мышкой</h1>
+  <div class="muted">Бот играет настоящую игру своей мышкой и клавиатурой: курсор, клики и его мысли видны в видео. Клик по ходу справа перематывает видео.</div>
+  <div class="facts" id="facts"></div>
+  <div class="layout">
+    <section class="card player">
+      <div id="video-box"></div>
+      <div class="caption" id="caption"></div>
+      <div class="problems" id="problems"></div>
+    </section>
+    <section class="card">
+      <h2>Ход игры</h2>
+      <div class="tools" id="filters"></div>
+      <ol class="timeline" id="timeline"></ol>
+    </section>
+  </div>
+</main>
+<script>
+(function () {
+  const data = window.BOT_SHOW;
+  const $ = id => document.getElementById(id);
+  const root = document.documentElement;
+  const themes = ["auto", "light", "dark"];
+  let theme = new URLSearchParams(location.search).get("theme") || "auto";
+  function applyTheme() {
+    if (theme === "auto") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", theme);
+    $("theme").textContent = { auto: "Тема: авто", light: "Тема: светлая", dark: "Тема: тёмная" }[theme];
+  }
+  $("theme").onclick = () => { theme = themes[(themes.indexOf(theme) + 1) % 3]; applyTheme(); };
+  applyTheme();
+  if (!data) { $("title").textContent = "Нет данных: show-data.js не найден рядом со страницей"; return; }
+
+  const clock = s => {
+    s = Math.max(0, Math.floor(s));
+    const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), r = s % 60;
+    return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(r).padStart(2, "0");
+  };
+  const text = (tag, cls, value) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = value; return e; };
+
+  document.title = data.title;
+  $("title").textContent = data.title;
+  for (const f of data.facts) { const d = document.createElement("div"); d.append(text("b", null, f.name), text("span", null, f.value)); $("facts").append(d); }
+
+  let video = null;
+  if (data.video) {
+    video = document.createElement("video");
+    video.src = data.video; video.controls = true; video.preload = "metadata";
+    $("video-box").append(video);
+  } else $("video-box").append(text("div", "novideo", "Этот прогон шёл без записи: только ход игры."));
+
+  const events = data.events;
+  const seek = t => { if (video) { video.currentTime = t; video.play().catch(() => {}); } };
+
+  // the moves the HUD could not make, with their pictures
+  const problems = events.filter(e => e.problem);
+  if (problems.length) {
+    $("problems").append(text("h2", "bad", "Где интерфейс не дал сделать ход: " + problems.length));
+    const list = document.createElement("ul");
+    for (const e of problems) {
+      const li = document.createElement("li");
+      li.append(text("span", null, clock(e.t) + " — " + e.text + ": "), text("span", "bad", e.problem));
+      if (e.picture) { const img = document.createElement("img"); img.src = e.picture; img.loading = "lazy"; img.alt = e.problem; li.append(img); }
+      li.onclick = () => seek(e.t);
+      list.append(li);
+    }
+    $("problems").append(list);
+  } else $("problems").append(text("div", "muted", "Интерфейс справился с каждым ходом бота."));
+
+  const kinds = [["all", "Всё"], ["Command", "Ходы"], ["Quest", "Задания"], ["Wait", "Ожидание"], ["problem", "Находки"]];
+  let filter = "all";
+  const items = [];
+  function render() {
+    $("timeline").innerHTML = "";
+    items.length = 0;
+    for (const e of events) {
+      const show = filter === "all" || (filter === "problem" ? !!e.problem : e.kind === filter || (filter === "Command" && e.kind === "Fallback"));
+      if (!show) continue;
+      const li = document.createElement("li");
+      li.className = "kind-" + e.kind;
+      const body = document.createElement("div");
+      body.className = "text";
+      body.append(text("div", null, e.kind === "Quest" ? "Задание " + e.text : e.text));
+      if (e.why) body.append(text("div", "why", "Зачем: " + e.why));
+      if (e.refused) body.append(text("div", "refused", "Отказ игры: " + e.refused));
+      if (e.problem) body.append(text("div", "refused", (e.kind === "Fallback" ? "Мимо интерфейса: " : "Находка: ") + e.problem));
+      li.append(text("time", null, clock(e.t)), body);
+      li.onclick = () => seek(e.t);
+      $("timeline").append(li);
+      items.push({ e, li });
+    }
+  }
+  for (const [key, name] of kinds) {
+    const b = text("button", null, name);
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(key === filter));
+    b.onclick = () => { filter = key; for (const x of $("filters").children) x.setAttribute("aria-pressed", "false"); b.setAttribute("aria-pressed", "true"); render(); };
+    $("filters").append(b);
+  }
+  render();
+
+  // what the bot does at the video's moment, under the video, and the line in the timeline
+  let current = null;
+  function follow() {
+    const t = video ? video.currentTime : 0;
+    let at = null;
+    for (const e of events) { if (e.t <= t + 0.05) at = e; else break; }
+    if (at === current) return;
+    current = at;
+    const c = $("caption");
+    c.innerHTML = "";
+    if (at) {
+      c.append(text("div", "doing", at.kind === "Quest" ? "Задание " + at.text : at.text));
+      if (at.why) c.append(text("div", "why", "Зачем: " + at.why));
+      if (at.problem) c.append(text("div", "problem", at.problem));
+    }
+    for (const { e, li } of items) {
+      const now = e === at;
+      li.classList.toggle("now", now);
+      if (now && video && !video.paused) li.scrollIntoView({ block: "nearest" });
+    }
+  }
+  if (video) video.addEventListener("timeupdate", follow);
+  follow();
+})();
+</script>
+</body>
+</html>

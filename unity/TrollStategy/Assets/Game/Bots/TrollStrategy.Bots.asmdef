@@ -2,7 +2,8 @@
     "name": "TrollStrategy.Bots",
     "rootNamespace": "TrollStrategy.Bots",
     "references": [
-        "TrollStrategy.Runtime"
+        "TrollStrategy.Runtime",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"

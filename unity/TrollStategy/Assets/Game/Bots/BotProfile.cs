@@ -4,6 +4,57 @@ using TrollStrategy.Content;
 
 namespace TrollStrategy.Bots
 {
+    /// <summary>Where a bot's gold comes from beyond the quests.</summary>
+    public enum BotEconomy
+    {
+        /// <summary>More raw producers, their goods sold at the market.</summary>
+        RawGoods,
+        /// <summary>Finished goods: copies of the workshop whose product sells best, raw producers only for a hungry workshop.</summary>
+        Crafts,
+        /// <summary>Arena prizes: fights for gold whenever it may, the barracks and the armory first.</summary>
+        Arena
+    }
+
+    /// <summary>What comes first in a look.</summary>
+    public enum BotPace
+    {
+        /// <summary>The quest's steps, then growth with what the quest leaves.</summary>
+        QuestFirst,
+        /// <summary>Growth first, saving little for the quest; the quest's steps after.</summary>
+        EconomyFirst
+    }
+
+    /// <summary>Where a new building goes.</summary>
+    public enum BotLayout
+    {
+        /// <summary>Near the colony's core, one cell between buildings.</summary>
+        Compact,
+        /// <summary>Near the buildings it trades with: chains stand together.</summary>
+        Districts,
+        /// <summary>Away from the others, two cells between buildings, over the whole island.</summary>
+        Spread
+    }
+
+    /// <summary>How growth adds capacity.</summary>
+    public enum BotGrowth
+    {
+        /// <summary>New buildings.</summary>
+        Wide,
+        /// <summary>Levels of full, working buildings first; new buildings once none can rise.</summary>
+        Up
+    }
+
+    /// <summary>The army a bot keeps.</summary>
+    public enum BotForce
+    {
+        /// <summary>The trolls the first battle needs, one more after each loss.</summary>
+        Small,
+        /// <summary>A full squad of trolls hired ahead of the battles.</summary>
+        Large,
+        /// <summary>Gear for the whole squad: the forge works for the armory until every fighter has a weapon.</summary>
+        Gear
+    }
+
     /// <summary>
     /// How a bot plays: how often it looks at the colony, what a click costs it, whether it invests beyond what the
     /// quests ask, whom it puts to work and when it fights. Every profile follows the same quest planner and keeps
@@ -17,7 +68,9 @@ namespace TrollStrategy.Bots
             float growthGoldFactor = 2f, float reserveShare = 1f, int squadTrolls = 2, bool fightsForGold = false,
             float actionSeconds = 0f, float questReadSeconds = 0f, float roleHiring = 0f,
             BuildingKind[] upgradeHosts = null, int seed = 0, float inattention = 0f, int placementChoice = 1,
-            float arenaRisk = 0f)
+            float arenaRisk = 0f, BotEconomy economy = BotEconomy.RawGoods, BotPace pace = BotPace.QuestFirst,
+            BotLayout layout = BotLayout.Compact, BotGrowth growth = BotGrowth.Wide, BotForce force = BotForce.Small,
+            bool buysLand = false, float novice = 0f)
         {
             Id = id;
             Title = title;
@@ -39,6 +92,13 @@ namespace TrollStrategy.Bots
             Inattention = inattention;
             PlacementChoice = placementChoice;
             ArenaRisk = arenaRisk;
+            Economy = economy;
+            Pace = pace;
+            Layout = layout;
+            Growth = growth;
+            Force = force;
+            BuysLand = buysLand;
+            Novice = novice;
         }
 
         public string Id { get; }
@@ -87,6 +147,26 @@ namespace TrollStrategy.Bots
         public int PlacementChoice { get; }
         /// <summary>Share of looks in which a squad the arena window calls weaker climbs anyway.</summary>
         public float ArenaRisk { get; }
+
+        // the strategy: what the bot builds its colony on, not only how much of it (since 2026-10-09)
+
+        /// <summary>Where gold comes from beyond the quests: raw goods, finished goods or the arena.</summary>
+        public BotEconomy Economy { get; }
+        /// <summary>Whether growth or the quest's steps come first in a look (for a bot that grows).</summary>
+        public BotPace Pace { get; }
+        /// <summary>Where new buildings go: near the core, by chains, or over the whole island.</summary>
+        public BotLayout Layout { get; }
+        /// <summary>Whether growth builds new buildings or raises the levels of those it has.</summary>
+        public BotGrowth Growth { get; }
+        /// <summary>The army: the trolls a battle needs, a full squad ahead, or gear for every fighter.</summary>
+        public BotForce Force { get; }
+        /// <summary>Buys and clears land with spare gold before a building needs it.</summary>
+        public bool BuysLand { get; }
+        /// <summary>
+        /// Share of looks with a newcomer's move: it moves a building it just placed, sells a creature it hired, takes a
+        /// hauler off its route or leafs through the book. Moves a player makes and the game allows; they cost time and gold.
+        /// </summary>
+        public float Novice { get; }
 
         private static readonly BuildingKind[] Guild = { BuildingKind.HaulersGuild };
 

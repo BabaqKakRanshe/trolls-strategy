@@ -1,0 +1,76 @@
+/* The show bot's layer over the game (BotOverlay): developer captions, not game UI. It sits above the HUD and
+   never takes the pointer. Its own colours on purpose: the caption must not read as part of the game. */
+
+.botshow {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.botshow__rings {
+    position: absolute;
+}
+
+.botshow__cursor {
+    position: absolute;
+    width: 24px;
+    height: 32px;
+}
+
+.botshow__key {
+    position: absolute;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    border-radius: 8px;
+    background-color: rgba(30, 33, 46, 0.86);
+    color: rgb(255, 255, 255);
+    font-size: 18px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+}
+
+.botshow__card {
+    position: absolute;
+    left: 50%;
+    top: 6px;
+    translate: -50% 0;
+    max-width: 760px;
+    padding: 6px 16px 8px 16px;
+    border-radius: 14px;
+    background-color: rgba(24, 27, 40, 0.82);
+    align-items: center;
+}
+
+.botshow__title {
+    color: rgb(166, 206, 255);
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.botshow__doing {
+    color: rgb(255, 255, 255);
+    font-size: 20px;
+    -unity-font-style: bold;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    margin-top: 2px;
+}
+
+.botshow__why {
+    color: rgb(214, 220, 232);
+    font-size: 16px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    margin-top: 2px;
+}
+
+.botshow__badge {
+    color: rgb(255, 214, 102);
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}

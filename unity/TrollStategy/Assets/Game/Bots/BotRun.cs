@@ -105,6 +105,8 @@ namespace TrollStrategy.Bots
         /// <summary>For a stall or a time limit: what the bot last waited for, without the quest.</summary>
         public string StopWait { get; set; }
         public int EndMs { get; set; }
+        /// <summary>A newcomer's moves (<see cref="BotProfile.Novice"/>): buildings moved, creatures sold, the book read.</summary>
+        public int Blunders { get; set; }
         public int FinalGold { get; set; }
         public int FinalPopulation { get; set; }
         public int FinalBuildings { get; set; }
