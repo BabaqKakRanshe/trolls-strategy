@@ -1,0 +1,566 @@
+/*
+ * Save-game mockups (private copy only). New classes for the three variants; everything else comes from
+ * Theme.uss, ColonyHud.uss and Progression.uss. Overrides of existing classes use two classes so they win.
+ */
+
+.glyph--save {
+    background-image: url("../Icons/save.svg");
+}
+
+.glyph--trash {
+    background-image: url("../Icons/trash.svg");
+}
+
+.glyph--scroll {
+    background-image: url("../Icons/scroll.svg");
+}
+
+/* ---------------------------------------------------------------- shared: a picture and a number */
+
+.save-facts {
+    flex-direction: row;
+    align-items: center;
+}
+
+.save-fact {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+.save-fact__icon {
+    width: 36px;
+    height: 36px;
+    margin-right: 2px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.save-fact__glyph {
+    width: 22px;
+    height: 22px;
+    margin-right: 6px;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.save-fact__value {
+    font-size: 20px;
+}
+
+.save-facts--small .save-fact {
+    margin-right: 12px;
+}
+
+.save-facts--small .save-fact__icon {
+    width: 28px;
+    height: 28px;
+}
+
+.save-facts--small .save-fact__glyph {
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+}
+
+.save-facts--small .save-fact__value {
+    font-size: 16px;
+}
+
+.save-when {
+    flex-direction: row;
+    align-items: center;
+}
+
+.save-when__glyph {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.save-when__text {
+    font-size: 15px;
+    color: var(--ink-soft);
+}
+
+.save-callout {
+    margin-top: 14px;
+}
+
+/* the quiet tick in the status line */
+.save-tick {
+    flex-direction: row;
+    align-items: center;
+}
+
+.save-tick__glyph {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: var(--good);
+}
+
+/* ---------------------------------------------------------------- 1. the colony card on the launch notice */
+
+.colony-card {
+    margin-top: 16px;
+    padding: 14px 18px 14px 18px;
+}
+
+.colony-card__title {
+    margin-top: 2px;
+    font-size: 26px;
+    white-space: normal;
+}
+
+.colony-card__facts {
+    margin-top: 10px;
+}
+
+.colony-card__when {
+    margin-top: 8px;
+}
+
+.colony-card.is-faded > .t-caption,
+.colony-card.is-faded > .colony-card__title,
+.colony-card.is-faded > .save-facts {
+    opacity: 0.45;
+}
+
+.callout.colony-card__callout {
+    margin-top: 10px;
+    background-color: var(--paper);
+}
+
+.btn.launch-button {
+    margin-right: 10px;
+}
+
+.save-pause-note {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.save-pause-note__glyph {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    -unity-background-image-tint-color: var(--good);
+}
+
+.save-pause-note__text {
+    font-size: 19px;
+    color: var(--ink-soft);
+}
+
+/* ---------------------------------------------------------------- 2. slots */
+
+.save-last {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 16px;
+    padding: 10px 16px 10px 10px;
+    border-radius: 20px;
+    background-color: var(--paper-soft);
+}
+
+.save-last__thumb {
+    width: 160px;
+    height: 90px;
+    flex-shrink: 0;
+    margin-right: 14px;
+    border-radius: 12px;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.save-last__text {
+    flex-shrink: 1;
+}
+
+.save-last__title {
+    font-size: 22px;
+    white-space: normal;
+}
+
+.save-last__chapter {
+    font-size: 15px;
+}
+
+.btn.intro-play.save-launch-tight {
+    min-width: 0;
+}
+
+.menu-dialog.saves-dialog {
+    width: 980px;
+}
+
+.save-list {
+    margin-top: 2px;
+}
+
+.save-row {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 18px 10px 10px;
+    margin-bottom: 8px;
+    border-radius: 22px;
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: var(--paper-soft);
+}
+
+.save-row.is-on {
+    border-color: var(--accent);
+    background-color: var(--accent-soft);
+}
+
+.save-row__thumb {
+    width: 176px;
+    height: 99px;
+    flex-shrink: 0;
+    margin-right: 16px;
+    border-radius: 14px;
+    background-color: var(--paper);
+    -unity-background-scale-mode: scale-and-crop;
+    align-items: center;
+    justify-content: center;
+}
+
+.save-row__thumb--empty {
+    border-width: 2px;
+    border-color: var(--paper-line);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.save-row__empty-glyph {
+    width: 30px;
+    height: 30px;
+    -unity-background-image-tint-color: var(--ink-faint);
+}
+
+.save-row__main {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.save-row__title {
+    margin-top: 1px;
+    font-size: 21px;
+    white-space: normal;
+}
+
+.save-row__facts {
+    margin-top: 6px;
+}
+
+.save-row__note {
+    margin-top: 6px;
+    font-size: 15px;
+    white-space: normal;
+}
+
+.save-row__faded {
+    opacity: 0.5;
+}
+
+.save-row__side {
+    flex-shrink: 0;
+    align-items: flex-end;
+    margin-left: 12px;
+}
+
+.save-row__when {
+    font-size: 16px;
+    -unity-text-align: middle-right;
+}
+
+.save-row__play {
+    margin-top: 6px;
+}
+
+.save-row__saved {
+    flex-direction: row;
+    align-items: center;
+    padding: 2px 12px 2px 8px;
+    border-radius: 14px;
+    background-color: var(--paper);
+}
+
+.save-row__saved-glyph {
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+    -unity-background-image-tint-color: var(--good);
+}
+
+.save-row__saved-text {
+    font-size: 15px;
+    color: var(--good);
+}
+
+.save-row.is-broken .save-row__thumb {
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.4);
+}
+
+.save-row__lock {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    border-width: 2px;
+    border-color: var(--paper);
+    background-color: var(--ink-faint);
+    align-items: center;
+    justify-content: center;
+}
+
+.save-row__lock > .glyph {
+    width: 20px;
+    height: 20px;
+    -unity-background-image-tint-color: var(--paper);
+}
+
+.menu-buttons.saves-footer {
+    margin-top: 10px;
+}
+
+.saves-footer__glyph {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.btn--danger > .saves-footer__glyph {
+    -unity-background-image-tint-color: var(--bad);
+}
+
+.save-compare {
+    flex-direction: row;
+    align-items: stretch;
+    margin-bottom: 4px;
+}
+
+.save-compare__card {
+    flex-grow: 1;
+    flex-basis: 0;
+    padding: 14px 16px 14px 16px;
+}
+
+.save-compare__thumb {
+    height: 214px;
+    margin: 8px 0 10px 0;
+    border-radius: 14px;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.save-compare__title {
+    margin-bottom: 6px;
+    font-size: 21px;
+    white-space: normal;
+}
+
+.save-compare__card > .save-when {
+    margin-top: 8px;
+}
+
+.save-compare__arrow {
+    width: 44px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.save-compare__glyph {
+    width: 22px;
+    height: 22px;
+    rotate: 90deg;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+/* ---------------------------------------------------------------- 3. the chronicle */
+
+.chronicle {
+    align-items: center;
+}
+
+.chronicle--game {
+    margin-top: -30px;
+}
+
+.chronicle__eyebrow {
+    font-size: 19px;
+    -unity-text-align: middle-center;
+}
+
+.chronicle__title {
+    font-size: 64px;
+    -unity-text-align: middle-center;
+}
+
+.chronicle__note {
+    margin-top: 2px;
+    font-size: 19px;
+    -unity-text-align: middle-center;
+}
+
+.catalog-pager.chronicle__rail {
+    margin-top: 64px;
+}
+
+.chronicle__tray {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.token.chapter {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.chapter__number {
+    position: absolute;
+    left: 24px;
+    top: 20px;
+    padding: 0 8px;
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: var(--paper-line);
+    background-color: var(--paper);
+    font-size: 15px;
+    color: var(--ink-soft);
+}
+
+.chapter__when {
+    font-size: 14px;
+    color: var(--ink-soft);
+    -unity-text-align: upper-center;
+}
+
+.chapter--broken .token__art {
+    opacity: 0.35;
+}
+
+.chapter--broken > .token__name {
+    color: var(--ink-faint);
+}
+
+.arena-rail__badge.chapter__lock {
+    top: 22px;
+    right: 22px;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+}
+
+.arena-rail__badge.chapter__lock > .glyph {
+    width: 15px;
+    height: 15px;
+}
+
+.chapter__glyph {
+    width: 44px;
+    height: 44px;
+}
+
+.chapter--broken .chapter__glyph {
+    -unity-background-image-tint-color: var(--ink-faint);
+}
+
+.menu-pause__actions.chronicle__actions {
+    margin-top: 24px;
+}
+
+.chronicle-card {
+    flex-direction: row;
+    align-items: center;
+    min-width: 780px;
+    margin-top: 6px;
+}
+
+.chronicle-card__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-right: 28px;
+}
+
+.chronicle-card__eyebrow {
+    font-size: 16px;
+}
+
+.chronicle-card__title {
+    font-size: 30px;
+}
+
+.chronicle-card__facts {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+.btn.chronicle-card__button {
+    min-height: 56px;
+    padding: 0 26px;
+    border-radius: 28px;
+    font-size: 18px;
+}
+
+.chronicle-card__glyph {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    -unity-background-image-tint-color: var(--paper);
+}
+
+.chronicle-line {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 14px;
+}
+
+.chronicle-line__glyph {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: var(--accent);
+}
+
+.chronicle-line__text {
+    font-size: 19px;
+    color: var(--ink-soft);
+}
+
+.chronicle-link > .glyph {
+    width: 17px;
+    height: 17px;
+    margin-right: 5px;
+}
+
+.chapter-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.chapter-row__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-left: 14px;
+}
+
+.chapter-row__title {
+    margin-bottom: 4px;
+    font-size: 26px;
+    white-space: normal;
+}
+
+.chapter-row__when {
+    margin-top: 6px;
+    font-size: 15px;
+}
+
+.chapter.is-picked > .token__name {
+    color: var(--accent-deep);
+}
+
+.chapter.is-picked > .btn-disc.token__disc {
+    -unity-background-image-tint-color: var(--accent-pulse);
+}
