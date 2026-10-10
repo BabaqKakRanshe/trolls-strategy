@@ -1,11 +1,19 @@
 """
-Арена боя «Луг» (Arena_Meadow) для Vitaria: ассеты арены, сцена, превью, экспорт в Unity.
+Арены боя Vitaria: «Луг» (Arena_Meadow), «Болото» (Arena_Swamp), «Снега» (Arena_Snow), «Кладбище»
+(Arena_Graveyard), «Лес» (Arena_Forest), «Горная застава» (Arena_MountainPass) — ассеты, сцена, превью, экспорт
+в Unity.
 
 Запуск (как add_buildings.py):
   Blender GUI:  открыть vitaria_kit.blend > Scripting > Open > build_arena.py > Run Script
   Консоль:      blender -b vitaria_kit.blend --python build_arena.py [-- --render --no-save --no-export]
   Через bpy:    python build_arena.py --blend <путь к vitaria_kit.blend> [--render]
   Черновик:     python build_arena.py --fresh --render      (пустой файл, только превью)
+  Окружение:    --env swamp — «Болото» (vitaria_arena/swamp.py), --env snow — «Снега» (snow.py),
+                --env graveyard — «Кладбище» (graveyard.py), --env forest — «Лес» (forest.py),
+                --env mountainpass — «Горная застава» (mountainpass.py); без ключа — «Луг», как было.
+                Сборка окружения не трогает «Луг»: его сцену, FBX, раскладку и общие ассеты арены
+                (плитки, реквизит, огонь) — выгружается только своё: Models/Arena/<Окружение>/,
+                Layout/arena_<окружение>_layout.json, своя палитра и вода, превью arena_<окружение>_*.png.
 
 Повторный запуск безопасен — это и есть способ обновить арену после правки vitaria_arena/*.py.
 
@@ -36,8 +44,37 @@ FBX_KW = dict(use_selection=True, object_types={"MESH"}, apply_unit_scale=True, 
 KIT_USED = ["Tree_Pine_A", "Tree_Pine_B", "Tree_Pine_C", "Tree_Round_A", "Tree_Round_B", "Bush_A", "Bush_B",
             "Bush_Berry", "Rock_Small", "Rock_Medium", "Rock_Large", "Tree_Stump", "Prop_Crate", "Prop_Barrel", "Prop_Sack", "Prop_Fence"]
 BACKDROP = ["bld_castle", "bld_tower_round", "bld_cottage", "bld_house_stone", "bld_house_timber", "bld_watchtower"]
+# Окружение задаёт composition-модуль (M.NAME, M.PREFIX, M.TERRAIN_DIR); у «Луга» имена прежние
+ENV = "meadow"
 SCENE = "Arena_Meadow"
-SCROLL = {"Arena_Meadow_Water": 0.04, "Arena_Meadow_River": 0.22, "Arena_Meadow_Falls": 0.6}
+PFX = "AM_"                  # префикс коллекций, камеры и солнца сцены окружения
+TERRAIN_DIR = "Meadow"       # Models/Arena/<TERRAIN_DIR>: рельеф, вода, россыпь и небо окружения
+PREVIEW_SLUG = "meadow"      # превью Previews/arena_<slug>_<кадр>.png
+SCROLL = {"_Water": 0.04, "_River": 0.22, "_Falls": 0.6}   # по окончанию имени меша: повторов текстуры в секунду
+
+
+def configure(M):
+    """Имена сцены и выгрузки по окружению (M — composition-модуль)."""
+    global SCENE, PFX, TERRAIN_DIR, PREVIEW_SLUG
+    SCENE = M.NAME
+    PREVIEW_SLUG = env_slug(M)
+    PFX = getattr(M, "PREFIX", "AM_")
+    TERRAIN_DIR = getattr(M, "TERRAIN_DIR", "Meadow")
+
+
+def env_slug(M):
+    """'Arena_Meadow' -> 'meadow': раскладка arena_<slug>_layout.json, превью arena_<slug>_*.png."""
+    return M.NAME.split("_", 1)[1].lower()
+
+
+def scroll_of(name, M=None):
+    own = getattr(M, "SCROLL", {}) if M is not None else {}
+    if name in own:
+        return own[name]
+    for suf, v in SCROLL.items():
+        if name.startswith("Arena_") and name.endswith(suf):
+            return v
+    return None
 BOARD_SHARE = 0.69       # поле 9x5 (19 м) при 27 м и 16:9 занимает 69% ширины кадра
 GROUPS = ["Terrain", "Water", "Backdrop", "Nature", "Props", "FX"]      # то, что уходит в игру
 SOCKETS = []             # точки для частиц игры: (вид, (x, y, z) арены, размер) — заполняет build_scene
@@ -59,11 +96,12 @@ FX_ROLES = {             # меши эффектов по ролям — рас�
 def parse_args():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
     o = {"blend": None, "fresh": False, "render": False, "save": SAVE, "export": EXPORT, "ref": None,
-         "res": 100, "samples": 48, "shots": "mock,hero", "root": None, "prev": None, "layout": None, "tag": ""}
+         "res": 100, "samples": 48, "shots": "mock,hero", "root": None, "prev": None, "layout": None, "tag": "",
+         "env": "meadow"}
     i = 0
     while i < len(argv):
         a = argv[i]
-        if a in ("--blend", "--ref", "--root", "--prev", "--shots", "--layout", "--tag") and i + 1 < len(argv):
+        if a in ("--blend", "--ref", "--root", "--prev", "--shots", "--layout", "--tag", "--env") and i + 1 < len(argv):
             o[a[2:]] = argv[i + 1]
             i += 1
         elif a in ("--res", "--samples") and i + 1 < len(argv):
@@ -129,14 +167,32 @@ def palette_material(V, tex_dir):
     return mat
 
 
-WATER_MATS = {"lake": "Vitaria_Water", "falls": "Vitaria_Waterfall"}
+def variant_material(V, tex_dir, variant):
+    """Vitaria_Palette_<variant>: копия палитры с текстурой варианта биома (build_vitaria.PALETTE_VARIANTS) —
+    ею красятся рельеф, россыпь и небо окружения; в Unity FBX-слот ремапится по имени на свой материал."""
+    img = V.build_palette_variant(tex_dir, variant)
+    name = "Vitaria_Palette_" + variant
+    mat = bpy.data.materials.get(name)
+    if mat is None:
+        mat = bpy.data.materials["Vitaria_Palette"].copy()
+        mat.name = name
+    for n in mat.node_tree.nodes:
+        if n.type == "TEX_IMAGE" and n.image and n.image.name.startswith("Vitaria_Palette") and \
+                "Emission" not in n.image.name:
+            n.image = img
+    return mat
 
 
-def water_materials(TR, tex_dir):
-    """Два материала воды с одной раскладкой UV: спокойная (озеро, река) и струи водопадов.
-    Имя материала = имя PNG; в Unity постпроцессор переназначает оба по имени."""
+WATER_MATS = {"lake": "Vitaria_Water", "falls": "Vitaria_Waterfall", "swamp": "Vitaria_Water_Swamp"}
+
+
+def water_materials(TR, tex_dir, styles=("lake", "falls")):
+    """Материалы воды с одной раскладкой UV: спокойная (озеро, река), струи водопадов, стоячая вода болота.
+    Имя материала = имя PNG; в Unity постпроцессор переназначает их по имени. Пишутся только styles —
+    сборка «Болота» не перезаписывает воду «Луга»."""
     out = {}
-    for style, name in WATER_MATS.items():
+    for style in styles:
+        name = WATER_MATS[style]
         path = os.path.join(tex_dir, name + ".png")
         TR.make_water_texture(path, style)
         img = bpy.data.images.get(name)
@@ -156,8 +212,9 @@ def water_materials(TR, tex_dir):
             t.location = (-420, 200)
             t.interpolation = "Linear"
             nt.links.new(t.outputs["Color"], bsdf.inputs["Base Color"])
-            bsdf.inputs["Roughness"].default_value = 0.32 if style == "lake" else 0.5
-            bsdf.inputs["Specular IOR Level"].default_value = 0.45 if style == "lake" else 0.25
+            # болото: стоячая вода блестит сильнее озера — в ней отражается небо, как на макете
+            bsdf.inputs["Roughness"].default_value = {"lake": 0.32, "swamp": 0.22}.get(style, 0.5)
+            bsdf.inputs["Specular IOR Level"].default_value = {"lake": 0.45, "swamp": 0.5}.get(style, 0.25)
             if style == "falls":                      # струи чуть светятся — как пена на макете
                 nt.links.new(t.outputs["Color"], bsdf.inputs["Emission Color"])
                 bsdf.inputs["Emission Strength"].default_value = 0.08
@@ -214,7 +271,7 @@ def kit_object(me, coll, tag, title=""):
     return o
 
 
-def build_assets(V, VA, ref_dir, mat, kit_root, fresh):
+def build_assets(V, VA, ref_dir, mat, kit_root, fresh, smat=None, palette_assets=(), backdrop=True):
     meshes = {}
     # базовый кит: в .blend уже есть; в черновике собираем из генератора
     kit_fns = {n: fn for _, n, fn in V.KIT}
@@ -229,6 +286,17 @@ def build_assets(V, VA, ref_dir, mat, kit_root, fresh):
         meshes[n] = me
         kit_object(me, kit_arena, "Arena", title)
         print("arena asset %-20s" % n)
+    # ассеты окружения (у «Болота» — vitaria_arena/swamp_assets.py): своя коллекция Kit_<Окружение>
+    for cat, n, title, fn in VA.env_asset_entries(reload=True):
+        # плитки поля биома и прочее из PALETTE_ASSETS окружения — в палитре биома (Vitaria_Palette_<Биом>)
+        own = smat is not None and n.startswith(tuple(palette_assets))
+        me = bpy.data.meshes.get(n)
+        if me is not None:
+            me.materials.clear()
+        me = build_mesh(V, n, fn, smat if own else mat)
+        meshes[n] = me
+        kit_object(me, ensure_coll("Kit_" + cat, kit_root), cat, title)
+        print("%s asset %-20s" % (cat.lower(), n))
     kit_bd = ensure_coll("Kit_Backdrop", kit_root)
     if ref_dir:
         if ref_dir not in sys.path:
@@ -256,7 +324,7 @@ def build_assets(V, VA, ref_dir, mat, kit_root, fresh):
                 print("backdrop      %-20s  труб: %d" % (m.NAME, len(rec)))
         finally:
             PC.chimney = orig
-    else:
+    elif backdrop:
         print("!! Ref_Buildings/Source не найден — фон без замка и домов")
     return meshes
 
@@ -265,7 +333,14 @@ def build_assets(V, VA, ref_dir, mat, kit_root, fresh):
 # витрина кита: ряды арены и фона под рядами build_vitaria (Buildings 0, Nature -12,
 # Props -25, Resources -33), те же подписи и отступы
 # =========================================================================================
-SHOW_ROWS = [("Kit_Arena", 60.0, -44.0, 0.8, 0.2, 99, 6.0), ("Kit_Backdrop", 60.0, -55.0, 1.2, 0.3, 99, 8.0)]
+# плитки поля «Луга» (блок tiles раскладки); окружение может задать свой TILES — перекрашенные нейтральные
+TILES = {"neutral": ["Hex_Tile_A", "Hex_Tile_A", "Hex_Tile_B", "Hex_Tile_C"], "player": "Hex_Tile_Blue",
+         "enemy": "Hex_Tile_Red", "obstacles": ["Obst_Boulders", "Obst_Stump", "Obst_Bush"]}
+SHOW_ROWS = [("Kit_Arena", 60.0, -44.0, 0.8, 0.2, 99, 6.0), ("Kit_Backdrop", 60.0, -55.0, 1.2, 0.3, 99, 8.0),
+             ("Kit_Swamp", 60.0, -66.0, 0.8, 0.2, 99, 6.0), ("Kit_Snow", 60.0, -77.0, 0.8, 0.2, 99, 6.0),
+             ("Kit_Graveyard", 60.0, -88.0, 0.8, 0.2, 99, 6.0), ("Kit_Forest", 60.0, -99.0, 0.8, 0.2, 99, 7.0),
+             ("Kit_MountainPass", 60.0, -118.0, 0.8, 0.2, 99, 7.0),   # вершины по 25 м: ряд ниже
+             ("Kit_Preview", 60.0, -150.0, 0.8, 0.2, 99, 6.0)]          # бойцы-заглушки превью (в игру не идут)
 SHOW_ORDER = ["Hex_Tile_A", "Hex_Tile_B", "Hex_Tile_C", "Hex_Tile_Blue", "Hex_Tile_Red", "Obst_Boulders",
               "Obst_Stump", "Obst_Bush", "Prop_Brazier", "FX_Flame_Small", "Prop_Campfire", "FX_Flame_Large",
               "Prop_Banner_Blue", "Prop_Banner_Blue_Cloth", "Prop_Banner_Red", "Prop_Banner_Red_Cloth",
@@ -320,9 +395,9 @@ def reset_scene():
             bpy.data.objects.remove(o, do_unlink=True)
         bpy.data.scenes.remove(old)
     for c in list(bpy.data.collections):
-        if c.name.startswith("AM_"):
+        if c.name.startswith(PFX):
             bpy.data.collections.remove(c)
-    for n in ("AM_Camera", "AM_Sun"):
+    for n in (PFX + "Camera", PFX + "Sun"):
         for coll in (bpy.data.cameras, bpy.data.lights):
             x = coll.get(n)
             if x is not None and x.users == 0:
@@ -331,7 +406,7 @@ def reset_scene():
     scn.unit_settings.system = "METRIC"
     colls = {}
     for g in GROUPS + ["Preview", "Rig", "Sky"]:
-        c = bpy.data.collections.new("AM_" + g)
+        c = bpy.data.collections.new(PFX + g)
         scn.collection.children.link(c)
         colls[g] = c
     return scn, colls
@@ -420,12 +495,16 @@ def place(meshes, coll, asset, x, y, z, rz=0.0, s=1.0, tilt=(0.0, 0.0), name=Non
 NATURE = ("Tree_", "Bush_", "Rock_", "Grass_", "Flowers_", "Env_Tuft", "Env_Flowers")
 MERGE_PREFIX = NATURE + ("Prop_Fence", "Prop_Barrel", "Prop_Crate", "Prop_Sack")
 MERGE_STATS = {}
+EXTRA_RADII = {}             # радиусы занятости ассетов окружения (M.RADII): префикс -> м при масштабе 1
 
 
 def radius_of(asset, s):
     base = {"Tree_Pine": 0.95, "Tree_Round": 1.0, "Bush_": 0.55, "Rock_Large": 0.9, "Rock_Medium": 0.5,
             "Rock_Small": 0.25, "Grass_": 0.14, "Flowers_": 0.16, "Env_Tuft": 0.16, "Env_Flowers": 0.18,
             "Tree_Stump": 0.4}
+    for k, v in EXTRA_RADII.items():
+        if asset.startswith(k):
+            return v * s
     for k, v in base.items():
         if asset.startswith(k):
             return v * s
@@ -453,10 +532,18 @@ class Spots:
         return True
 
 
-def build_scene(V, VA, meshes, mat, wmat):
+def build_scene(V, VA, meshes, mat, wmat, smat=None):
+    """smat — палитра окружения (Vitaria_Palette_<Биом>) для рельефа, россыпи и неба; None — общая палитра."""
     mods = VA.load()
     M, TR, B = mods["meadow"], mods["terrain"], mods["board"]
     LM = mods["landmarks"]
+    N = M.NAME
+    smat = smat or mat
+    # своя природа и мелочь окружения (префиксы его ассетов) — в россыпь и слияние, как деревья кита
+    nature = NATURE + tuple(getattr(M, "NATURE_EXTRA", ()))
+    merge_prefix = MERGE_PREFIX + tuple(getattr(M, "NATURE_EXTRA", ())) + tuple(getattr(M, "MERGE_EXTRA", ()))
+    EXTRA_RADII.clear()
+    EXTRA_RADII.update(getattr(M, "RADII", {}))
     scn, C = reset_scene()
     rng = random.Random(77)
     SOCKETS.clear()
@@ -469,7 +556,7 @@ def build_scene(V, VA, meshes, mat, wmat):
         ts[name].occluders = [ts[o].outline for o in occ]
     for name, fl in getattr(M, "FLOORS", {}).items():          # парящий остров: короткие столбы над соседками
         ts[name].floors = [(ts[f].outline, ts[f].z - ts[f].hills) for f in fl]
-    ground, cliffs = V.Asset("Arena_Meadow_Ground"), V.Asset("Arena_Meadow_Cliffs")
+    ground, cliffs = V.Asset(N + "_Ground"), V.Asset(N + "_Cliffs")
     for t in ts.values():
         t.build_top(ground)
         t.build_lip(ground)
@@ -478,16 +565,21 @@ def build_scene(V, VA, meshes, mat, wmat):
     if deep and deep.get("union"):                 # парящий остров: наружный обрыв одной лентой пластов
         outline, n_loops = TR.build_island_strata(cliffs, list(ts.values()), deep, M.FADE)
         print("island strata: %d outline points, %d contours" % (len(outline), n_loops))
-    roads = V.Asset("Arena_Meadow_Roads")
+    roads = V.Asset(N + "_Roads")
     road_pts = []
     for tname, ctrl, half in M.ROADS:
         road_pts += [(p.x, p.y, half) for p in TR.build_road(roads, ctrl, ts[tname], half=half, seed=len(road_pts))]
-    water, river = V.Asset("Arena_Meadow_Water"), V.Asset("Arena_Meadow_River")
-    falls, foam = V.Asset("Arena_Meadow_Falls"), V.Asset("Arena_Meadow_Foam")
+    water, river = V.Asset(N + "_Water"), V.Asset(N + "_River")
+    falls, foam = V.Asset(N + "_Falls"), V.Asset(N + "_Foam")
     W = M.WATER
     if W:                                           # у парящего острова озера нет
         TR.water_plane(water, W["x0"], W["x1"], W["y0"], W["y1"], flow=W["flow"], tile=W["tile"])
-    TR.river_ribbon(river, M.RIVER, M.RIVER_HALF + 0.35, z=TR.RIVER_Z, tile=4.0, seed=3)
+    if getattr(M, "RIVER", None):
+        TR.river_ribbon(river, M.RIVER, M.RIVER_HALF + 0.35, z=TR.RIVER_Z, tile=4.0, seed=3)
+    # своё у окружения: у «Болота» — пруды в низинах (вода), мох и корни по обрыву
+    extra = getattr(M, "terrain_extra", None)
+    if extra:
+        extra(V, TR, ts, dict(ground=ground, cliffs=cliffs, water=water))
     for k, fd in enumerate(M.FALLS):
         if isinstance(fd, dict):
             # водопад острова: в облака (z_bot), без пены; z_top — вода сверху, иначе трава источника
@@ -509,8 +601,8 @@ def build_scene(V, VA, meshes, mat, wmat):
         end = TR.waterfall(falls, pt, nr, width, z_top, TR.WATER_Z - 0.05, seed=k, reach=reach, stream=stream)
         TR.foam_patch(foam, (end.x, end.y), width * 0.75, seed=k * 3 + 1, n=10)
         SOCKETS.append(("mist", (end.x, end.y, TR.WATER_Z + 0.15), round(width, 2)))
-    for name, a in (("Arena_Meadow_Ground", ground), ("Arena_Meadow_Cliffs", cliffs), ("Arena_Meadow_Roads", roads),
-                    ("Arena_Meadow_Foam", foam)):
+    for name, a in ((N + "_Ground", ground), (N + "_Cliffs", cliffs), (N + "_Roads", roads),
+                    (N + "_Foam", foam)):
         if not a.bm.faces:                          # пены у острова нет: пустой меш в игру не уходит
             a.bm.free()
             continue
@@ -518,13 +610,14 @@ def build_scene(V, VA, meshes, mat, wmat):
         a.bm.to_mesh(me)
         a.bm.free()
         me.materials.clear()
-        me.materials.append(mat)
+        me.materials.append(smat)
         me.validate()
         meshes[name] = me
         o = bpy.data.objects.new(name, me)
         C["Terrain"].objects.link(o)
-    for name, a, style in (("Arena_Meadow_Water", water, "lake"), ("Arena_Meadow_River", river, "lake"),
-                           ("Arena_Meadow_Falls", falls, "falls")):
+    still = getattr(M, "WATER_STYLE", "lake")      # стоячая вода окружения: у «Болота» — swamp
+    for name, a, style in ((N + "_Water", water, still), (N + "_River", river, still),
+                           (N + "_Falls", falls, "falls")):
         if not a.bm.faces:                          # озера у острова нет
             a.bm.free()
             continue
@@ -550,13 +643,15 @@ def build_scene(V, VA, meshes, mat, wmat):
             print("!! нет ассета", asset)
             continue
         on = p["on"]
-        if asset == "Env_Bridge":
+        if p.get("zabs") is not None:
+            z = p["zabs"]                           # по воде (кувшинки, кочки) и мостки — абсолютная высота
+        elif asset == "Env_Bridge":
             z = ts[on].z + (p["z"] or 0.0)          # мост — по уровню берега, а не по рельефу под ним
         elif p["z"] is not None:
             z = ts[on].height(p["x"], p["y"]) + p["z"]
         else:
             z = ts[on].height(p["x"], p["y"])
-        grp = "Backdrop" if asset.startswith(("Bld_", "Env_")) else ("Nature" if asset.startswith(NATURE) else "Props")
+        grp = "Backdrop" if asset.startswith(("Bld_", "Env_")) else ("Nature" if asset.startswith(nature) else "Props")
         o = place(meshes, C[grp], asset, p["x"], p["y"], z - (0.02 if grp == "Nature" else 0.0), p["rz"], p["s"], p["tilt"])
         placed.append(o)
         r = {"Bld_Castle": 4.6, "Bld_Tower_Round": 1.9, "Bld_Cottage": 2.1, "Bld_House_Stone": 2.2,
@@ -581,6 +676,20 @@ def build_scene(V, VA, meshes, mat, wmat):
             place(meshes, C["Props"], asset + "_Cloth", p["x"] + hang.x, p["y"] + hang.y, z + hang.z, p["rz"], p["s"])
         if asset == "Env_Bridge":
             spots.add(p["x"], p["y"], 3.4)
+        # навесное окружения: огонь факела (отдельный меш, мерцает) и точки частиц над ним. Смещения (ox, oy) — в
+        # осях ассета, поворачиваются с ним (горн кузни сбоку от середины); сокет — (вид, dz, размер[, ox, oy])
+        att = getattr(M, "ATTACHMENTS", {}).get(asset)
+        if att:
+            turn = Matrix.Rotation(math.radians(p["rz"]), 3, "Z")
+            if "fx" in att:
+                fa, ox, oy, oz, fs = att["fx"]
+                off = turn @ Vector((ox * p["s"], oy * p["s"], 0.0))
+                place(meshes, C["FX"], fa, p["x"] + off.x, p["y"] + off.y, z + oz * p["s"],
+                      rng.uniform(0, 360), fs * p["s"])
+            for sk in att.get("sockets", ()):
+                kind, dz, size = sk[:3]
+                off = turn @ Vector((sk[3] * p["s"], sk[4] * p["s"], 0.0)) if len(sk) > 3 else Vector()
+                SOCKETS.append((kind, (p["x"] + off.x, p["y"] + off.y, z + dz * p["s"]), size))
 
     # трубы домов фона: верх каждой трубы — сокет дыма (грань swatch-а black, смотрит вверх, выше 1.5 м)
     for o in placed:
@@ -590,22 +699,44 @@ def build_scene(V, VA, meshes, mat, wmat):
                 w = mw @ q
                 SOCKETS.append(("smoke", (w.x, w.y, w.z + 0.08), round(0.7 * o.scale.x, 2)))
 
-    # заборы вдоль ломаных (сегмент Prop_Fence = 1 м вдоль X, лицом -Y)
-    for tname, pts in M.FENCES:
+    # заборы вдоль ломаных (сегмент Prop_Fence = 1 м вдоль X, лицом -Y). Запись окружения может быть словарём:
+    # свой сегмент (asset, длина seg — столб в начале сегмента), столб в конце ломаной (end), доля случайного
+    # разворота и наклона сегментов (jitter: у каменной стены меньше, чем у жердей) и столб по ломаной (align_end)
+    for fence in M.FENCES:
+        jit, align = 1.0, False
+        if isinstance(fence, dict):
+            tname, pts = fence["on"], fence["pts"]
+            fa, seg, end = fence.get("asset", "Prop_Fence"), fence.get("seg", 1.0), fence.get("end")
+            jit, align = fence.get("jitter", 1.0), fence.get("align_end", False)
+        else:
+            (tname, pts), fa, seg, end = fence, "Prop_Fence", 1.0, None
+        ang = 0.0
         for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
             L = math.hypot(x1 - x0, y1 - y0)
-            n = max(1, int(round(L / 1.0)))
+            n = max(1, int(round(L / seg)))
             ang = math.degrees(math.atan2(y1 - y0, x1 - x0))
             for k in range(n):
                 t = (k + 0.5) / n
                 x, y = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t
-                place(meshes, C["Props"], "Prop_Fence", x, y, ts[tname].height(x, y), ang + rng.uniform(-3, 3),
-                      tilt=(rng.uniform(-2, 2), rng.uniform(-2, 2)))
+                sx = L / n / seg if end else 1.0             # сегменты от столба до столба: ровно по ломаной
+                o = place(meshes, C["Props"], fa, x, y, ts[tname].height(x, y), ang + rng.uniform(-3, 3) * jit,
+                          tilt=(rng.uniform(-2, 2) * jit, rng.uniform(-2, 2) * jit))
+                if end:
+                    o.scale = (sx, 1.0, 1.0)
                 spots.add(x, y, 0.45)
+        if end:
+            x, y = pts[-1]
+            rz = rng.uniform(0, 360)
+            place(meshes, C["Props"], end, x, y, ts[tname].height(x, y), ang if align else rz)
+            spots.add(x, y, 0.3)
 
     # ---------------------------------------------------------------- россыпь природы
+    scatter_ok = getattr(M, "scatter_ok", None)        # окружение: не в воде прудов, не на мостках
+
     def keep_out(tname, x, y, r):
         if tname == "arena" and B.dist_to_board(x, y) < M.KEEP_OUT_BOARD + r * 0.6:
+            return True
+        if scatter_ok is not None and not scatter_ok(tname, x, y, r):
             return True
         return False
 
@@ -679,13 +810,13 @@ def build_scene(V, VA, meshes, mat, wmat):
 
     # ---------------------------------------------------------------- слияние мелочи
     # Деревья, кусты, камни, трава, цветы, заборы, бочки, ящики и мешки — статичный декор: сотни
-    # объектов сливаются в один меш Arena_Meadow_Scatter (одна отрисовка с общим материалом).
+    # объектов сливаются в один меш <окружение>_Scatter (одна отрисовка с общим материалом).
     # Отдельными остаются здания, мост, мельница, крылья, реквизит лагерей и огонь.
-    merge = V.Asset("Arena_Meadow_Scatter")
+    merge = V.Asset(N + "_Scatter")
     gone = []
     for g in ("Nature", "Props"):
         for o in list(C[g].objects):
-            if o.type == "MESH" and o.data.name.startswith(MERGE_PREFIX):
+            if o.type == "MESH" and o.data.name.startswith(merge_prefix):
                 mw = Matrix.LocRotScale(o.location, o.rotation_euler.to_quaternion(), o.scale)
                 merge.add_mesh(o.data, mw)
                 gone.append(o)
@@ -693,22 +824,25 @@ def build_scene(V, VA, meshes, mat, wmat):
                 MERGE_STATS[o.data.name] = MERGE_STATS.get(o.data.name, 0) + len(o.data.loop_triangles)
     for o in gone:
         bpy.data.objects.remove(o, do_unlink=True)
-    me = bpy.data.meshes.get("Arena_Meadow_Scatter") or bpy.data.meshes.new("Arena_Meadow_Scatter")
+    me = bpy.data.meshes.get(N + "_Scatter") or bpy.data.meshes.new(N + "_Scatter")
     merge.bm.to_mesh(me)
     merge.bm.free()
     me.materials.clear()
-    me.materials.append(mat)
+    me.materials.append(smat)
     me.validate()
-    meshes["Arena_Meadow_Scatter"] = me
-    C["Nature"].objects.link(bpy.data.objects.new("Arena_Meadow_Scatter", me))
+    meshes[N + "_Scatter"] = me
+    C["Nature"].objects.link(bpy.data.objects.new(N + "_Scatter", me))
     print("merged %d scatter objects: %s" % (len(gone), ", ".join(
         "%s %d" % kv for kv in sorted(MERGE_STATS.items(), key=lambda kv: -kv[1]))))
 
     # ---------------------------------------------------------------- небо острова: облака, дальние островки
     if getattr(M, "CLOUDS", None) or getattr(M, "DISTANT", None):
         import build_colony as BC
-        BC.build_sky(V, sys.modules[__name__], TR, M, meshes, C, mat, ts)
-        sky = V.Asset("Arena_Meadow_Sky")
+        BC.build_sky(V, sys.modules[__name__], TR, M, meshes, C, smat, ts)
+        # своё в небе окружения (дальние вершины «Горной заставы»): (ассет, x, y, z подошвы, поворот, масштаб)
+        for asset, x, y, z, rz, s in getattr(M, "SKY_PROPS", ()):
+            place(meshes, C["Sky"], asset, x, y, z, rz, s)
+        sky = V.Asset(N + "_Sky")
         parts = [o for o in C["Sky"].objects if o.type == "MESH"]
         # облака и деревья островков, которых камера боя не видит ни на одном экране, в игру не идут
         views = battle_views(M, B)
@@ -721,53 +855,59 @@ def build_scene(V, VA, meshes, mat, wmat):
         parts = [o for o in C["Sky"].objects if o.type == "MESH"]
         for o in parts:
             sky.add_mesh(o.data, Matrix.LocRotScale(o.location, o.rotation_euler.to_quaternion(), o.scale))
-            if o.data.name.startswith("Arena_Meadow_"):
+            if o.data.name.startswith(N + "_"):
                 meshes.pop(o.data.name, None)          # дальние островки — внутри неба, отдельно не выгружаются
         for o in parts:
             bpy.data.objects.remove(o, do_unlink=True)
-        me = bpy.data.meshes.get("Arena_Meadow_Sky") or bpy.data.meshes.new("Arena_Meadow_Sky")
+        me = bpy.data.meshes.get(N + "_Sky") or bpy.data.meshes.new(N + "_Sky")
         sky.bm.to_mesh(me)
         sky.bm.free()
         me.materials.clear()
-        me.materials.append(mat)
+        me.materials.append(smat)
         me.validate()
-        meshes["Arena_Meadow_Sky"] = me
-        C["Sky"].objects.link(bpy.data.objects.new("Arena_Meadow_Sky", me))
+        meshes[N + "_Sky"] = me
+        C["Sky"].objects.link(bpy.data.objects.new(N + "_Sky", me))
         print("sky: %d pieces merged" % len(parts))
 
     # ---------------------------------------------------------------- превью поля (в игру не идёт)
-    zones = {"player": "Hex_Tile_Blue", "enemy": "Hex_Tile_Red"}
+    tiles = getattr(M, "TILES", None) or TILES
+    zones = {"player": tiles["player"], "enemy": tiles["enemy"]}
     for (cx, cy) in B.cells():
         x, y = B.cell_center(cx, cy)
         kind = zones.get(B.zone(cx, cy))
         if kind is None:
-            kind = ["Hex_Tile_A", "Hex_Tile_A", "Hex_Tile_B", "Hex_Tile_C"][(cx * 7 + cy * 13) % 4]
+            kind = tiles["neutral"][(cx * 7 + cy * 13) % len(tiles["neutral"])]
         place(meshes, C["Preview"], kind, x, y, 0.0, 60 * ((cx * 5 + cy * 3) % 6), name="Cell_%d_%d" % (cx, cy))
+    # бойцы-заглушки на клетках (только превью: масштаб поля и реквизита рядом с отрядом)
+    for asset, cx, cy, rz in getattr(M, "PREVIEW_FIGHTERS", ()):
+        if asset in meshes:
+            x, y = B.cell_center(cx, cy)
+            place(meshes, C["Preview"], asset, x, y, 0.0, rz, name="Fighter_%d_%d" % (cx, cy))
 
     # ---------------------------------------------------------------- камера, солнце, мир
     cam = M.CAMERA
-    cd = bpy.data.cameras.new("AM_Camera")
+    cd = bpy.data.cameras.new(PFX + "Camera")
     # FOV задан по вертикали, как Camera.fieldOfView в Unity: объектив считаем от высоты сенсора
     # (свойство angle у Blender берёт ширину сенсора и даёт кадр в полтора раза уже)
     cd.sensor_fit = "VERTICAL"
     cd.sensor_height = 24.0
     cd.lens = 12.0 / math.tan(math.radians(cam["fov"]) / 2)
     cd.clip_start, cd.clip_end = 0.3, 300
-    co = bpy.data.objects.new("AM_Camera", cd)
+    co = bpy.data.objects.new(PFX + "Camera", cd)
     p = math.radians(cam["pitch"])
     T = Vector(cam["target"])
     co.location = T + cam["distance"] * Vector((0, -math.cos(p), math.sin(p)))
     co.rotation_euler = (T - co.location).to_track_quat("-Z", "Y").to_euler()
     C["Rig"].objects.link(co)
     scn.camera = co
-    sd = bpy.data.lights.new("AM_Sun", "SUN")
+    sd = bpy.data.lights.new(PFX + "Sun", "SUN")
     sd.energy = M.SUN["energy"]
     sd.color = M.SUN["color"]
     sd.angle = math.radians(3)
-    so = bpy.data.objects.new("AM_Sun", sd)
+    so = bpy.data.objects.new(PFX + "Sun", sd)
     so.rotation_euler = Vector(M.SUN["direction"]).normalized().to_track_quat("-Z", "Y").to_euler()
     C["Rig"].objects.link(so)
-    wname = "AM_World_Isle" if getattr(M, "LOOKDEV", None) else "AM_World"     # look-dev меняет узлы мира
+    wname = PFX + ("World_Isle" if getattr(M, "LOOKDEV", None) else "World")     # look-dev меняет узлы мира
     world = bpy.data.worlds.get(wname) or bpy.data.worlds.new(wname)
     world.use_nodes = True
     bg = next(n for n in world.node_tree.nodes if n.type == "BACKGROUND")
@@ -806,11 +946,11 @@ def render_shots(scn, cam, prev_dir, shots, res, samples, look=None, tag=""):
         w, h = sizes[sh]
         if sh == "top":                              # план сверху для отладки раскладки
             if top_cam is None:
-                td = bpy.data.cameras.new("AM_TopCam")
+                td = bpy.data.cameras.new(PFX + "TopCam")
                 td.type = "ORTHO"
                 td.ortho_scale = 56
                 td.clip_end = 300
-                top_cam = bpy.data.objects.new("AM_TopCam", td)
+                top_cam = bpy.data.objects.new(PFX + "TopCam", td)
                 top_cam.location = (2.0, 4.0, 60.0)
                 scn.collection.objects.link(top_cam)
             scn.camera = top_cam
@@ -822,7 +962,7 @@ def render_shots(scn, cam, prev_dir, shots, res, samples, look=None, tag=""):
         if look and sh in look.get("shots", {}):    # туман, резкость, свечение, грейдинг кадра (как у колонии)
             import build_colony as BC
             BC.lookdev_shot(scn, look, sh, h * res / 100.0)
-        path = os.path.join(prev_dir, "arena_meadow_%s%s.png" % (sh, tag))
+        path = os.path.join(prev_dir, "arena_%s_%s%s.png" % (PREVIEW_SLUG, sh, tag))
         scn.render.filepath = path
         if bpy.context.window is not None:              # в GUI рендерим активную сцену окна
             bpy.context.window.scene = scn
@@ -921,31 +1061,52 @@ def export_all(VA, meshes, scn, cam, sun, unity, root):
     import build_vitaria as V
     fx = fx_material()
     base = os.path.join(unity, "Models", "Arena")
+    N = M.NAME
+    own = ENV != "meadow"            # окружение кроме «Луга»: общие ассеты арены и «Луг» не перевыгружаются
     info = []
-    arena_names = [n for c, n, _, _ in VA.asset_entries() if c == "Arena"]      # декор плато — только в Scatter
-    backdrop = [n for n in meshes if n.startswith("Bld_") and n not in arena_names]
-    terrain = [n for n in meshes if n.startswith("Arena_Meadow_")]
+    terrain = [n for n in meshes if n.startswith(N + "_")]
+    if not own:
+        arena_names = [n for c, n, _, _ in VA.asset_entries() if c == "Arena"]      # декор плато — только в Scatter
+        backdrop = [n for n in meshes if n.startswith("Bld_") and n not in arena_names]
+        env_assets = []
+    else:
+        # свои ассеты окружения, которые в раскладке стоят отдельным объектом (факел, огонь), — в папку
+        # окружения; то, что слито в россыпь, отдельно не нужно. Плитки, знамёна, палатка, огонь — из «Луга»
+        arena_names, backdrop = [], []
+        used = {o.data.name for g in GROUPS for o in bpy.data.collections[PFX + g].objects if o.type == "MESH"}
+        tiles = getattr(M, "TILES", None) or {}
+        used |= set(tiles.get("neutral", ())) | {tiles.get("player"), tiles.get("enemy")} | set(tiles.get("obstacles", ()))
+        env_assets = [n for c, n, _, _ in VA.env_asset_entries() if n in used]
     for n in arena_names:
         hot = split_emissive(V, meshes[n], fx)
         if hot:
             print("fx faces %-24s %d" % (n, hot))
         export_mesh(meshes[n], os.path.join(base, n + ".fbx"))
+    for n in env_assets:
+        hot = split_emissive(V, meshes[n], fx)
+        if hot:
+            print("fx faces %-24s %d" % (n, hot))
+        export_mesh(meshes[n], os.path.join(base, TERRAIN_DIR, n + ".fbx"))
     for n in backdrop:
         export_mesh(meshes[n], os.path.join(base, "Backdrop", n + ".fbx"))
     for n in terrain:
-        export_mesh(meshes[n], os.path.join(base, "Meadow", n + ".fbx"))
-    for n in arena_names + backdrop + terrain:
+        if own:
+            hot = split_emissive(V, meshes[n], fx)
+            if hot:
+                print("fx faces %-24s %d" % (n, hot))
+        export_mesh(meshes[n], os.path.join(base, TERRAIN_DIR, n + ".fbx"))
+    for n in arena_names + env_assets + backdrop + terrain:
         t, sz = tris_size(meshes[n])
-        cat = "Arena" if n in arena_names else ("Backdrop" if n in backdrop else "Meadow")
+        cat = "Arena" if n in arena_names else ("Backdrop" if n in backdrop else TERRAIN_DIR)
         info.append({"asset": n, "category": cat, "tris": t, "size_unity": sz})
         print("fbx %-26s %6d tris" % (n, t))
 
     # раскладка: всё из коллекций GROUPS, координаты Unity относительно середины поля
     items = []
     total = 0
-    sky = bpy.data.collections.get("AM_Sky")
+    sky = bpy.data.collections.get(PFX + "Sky")
     for g in GROUPS + (["Sky"] if sky is not None and len(sky.objects) else []):
-        for o in bpy.data.collections["AM_" + g].objects:
+        for o in bpy.data.collections[PFX + g].objects:
             if o.type != "MESH":
                 continue
             p, q, s = to_unity(o.matrix_world)
@@ -958,8 +1119,9 @@ def export_all(VA, meshes, scn, cam, sun, unity, root):
                 it["sway"] = [SWAY[0], SWAY[1], round((sum(map(ord, o.name)) % 97) / 97.0, 3)]
             if o.data.name.startswith("FX_Flame"):
                 it["flicker"] = 1.0
-            if o.data.name in SCROLL:
-                it["scroll"] = SCROLL[o.data.name]          # повторов текстуры в секунду вдоль V
+            sc = scroll_of(o.data.name, M)
+            if sc is not None:
+                it["scroll"] = sc                           # повторов текстуры в секунду вдоль V
             items.append(it)
             o.data.calc_loop_triangles()
             total += len(o.data.loop_triangles)
@@ -983,8 +1145,7 @@ def export_all(VA, meshes, scn, cam, sun, unity, root):
         "sun": {"forward": to_unity_vec(sun_fwd), "color": list(M.SUN["color"]), "intensity": 1.3},
         "ambient": {"sky": [0.64, 0.72, 0.82], "equator": [0.52, 0.58, 0.5], "ground": [0.28, 0.26, 0.24]},
         "background": [0.33, 0.45, 0.6],
-        "tiles": {"neutral": ["Hex_Tile_A", "Hex_Tile_A", "Hex_Tile_B", "Hex_Tile_C"], "player": "Hex_Tile_Blue",
-                  "enemy": "Hex_Tile_Red", "obstacles": ["Obst_Boulders", "Obst_Stump", "Obst_Bush"]},
+        "tiles": getattr(M, "TILES", None) or TILES,
         # меши эффектов (Models/Arena/FX_*.fbx) по ролям и точки частиц окружения
         "fx": FX_ROLES,
         "sockets": [{"kind": k, "p": to_unity_vec(p), "size": sz} for k, p, sz in SOCKETS],
@@ -1008,7 +1169,7 @@ def export_all(VA, meshes, scn, cam, sun, unity, root):
         layout = ordered
     lay_dir = os.path.join(unity, "Layout")
     os.makedirs(lay_dir, exist_ok=True)
-    with open(os.path.join(lay_dir, "arena_meadow_layout.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(lay_dir, "arena_%s_layout.json" % env_slug(M)), "w", encoding="utf-8") as f:
         json.dump(layout, f, indent=1, ensure_ascii=False)
     print("layout: %d objects, %d tris in game view" % (len(items), total))
     # asset_list.json: строки арены заменяются, остальное как было
@@ -1021,7 +1182,8 @@ def export_all(VA, meshes, scn, cam, sun, unity, root):
             rows = []
     names = {x["asset"] for x in info}
     # Backdrop есть и у колонии (build_colony): чужие строки фона не трогаем, свои заменяются по имени
-    rows = [r for r in rows if r.get("asset") not in names and r.get("category") not in ("Arena", "Meadow")]
+    drop = (TERRAIN_DIR,) if own else ("Arena", "Meadow")          # строки других окружений не трогаем
+    rows = [r for r in rows if r.get("asset") not in names and r.get("category") not in drop]
     rows += info
     with open(list_path, "w", encoding="utf-8") as f:
         json.dump(rows, f, indent=1)
@@ -1044,31 +1206,45 @@ def main():
     VA = importlib.reload(VA)
     if o["layout"]:
         VA.LAYOUT = o["layout"]
+    global ENV
+    ENV = VA.ENV = o["env"]
     VA.load(reload=True)
     root = os.path.normpath(o["root"] or os.path.join(here, ".."))
     unity = os.path.join(root, "Unity", "Assets", "Vitaria")
     tex_dir = os.path.join(unity, "Textures")
     mods = VA.load()
+    M = mods["meadow"]
+    configure(M)
     mat = palette_material(V, tex_dir)
-    wmat = water_materials(mods["terrain"], tex_dir)
+    # вода: «Луг» — озеро/река и водопады; окружение пишет только свою (воду «Луга» не перезаписывает)
+    styles = ("lake", "falls") if ENV == "meadow" else \
+        tuple(s for s in [getattr(M, "WATER_STYLE", "lake")] + (["falls"] if M.FALLS else []) if s)
+    wmat = water_materials(mods["terrain"], tex_dir, styles)
+    # палитра окружения: рельеф, россыпь и небо «Болота» красятся своим вариантом палитры
+    smat = variant_material(V, tex_dir, M.PALETTE_VARIANT) if getattr(M, "PALETTE_VARIANT", None) else None
     kit_root = bpy.data.collections.get("Vitaria_Kit")
     if kit_root is None:
         kit_root = bpy.data.collections.new("Vitaria_Kit")
         bpy.context.scene.collection.children.link(kit_root)
-    ref_dir = find_ref(here, o["ref"])
-    meshes = build_assets(V, VA, ref_dir, mat, kit_root, o["fresh"])
+    # фон из Ref_Buildings (замок, дома) нужен только окружениям, которые его ставят
+    ref_dir = find_ref(here, o["ref"]) if getattr(M, "BACKDROP_USED", True) else None
+    meshes = build_assets(V, VA, ref_dir, mat, kit_root, o["fresh"], smat, getattr(M, "PALETTE_ASSETS", ()),
+                          getattr(M, "BACKDROP_USED", True))
     if not o["fresh"]:
         showcase(kit_root)
-    M = mods["meadow"]
     if getattr(M, "CLOUDS", None) or getattr(M, "DISTANT", None):
         import vitaria_colony as VC                  # облака острова — ассеты колонии
         for cat, n, title, fn in VC.asset_entries(reload=True):
             if n.startswith("Env_CloudPuff"):
                 meshes[n] = build_mesh(V, n, fn, mat)
-    scn, cam, sun = build_scene(V, VA, meshes, mat, wmat)
+    scn, cam, sun = build_scene(V, VA, meshes, mat, wmat, smat)
     # сохранение и выгрузка — до look-dev: он меняет общие материалы (оттенок воды, пятна травы: между текстурой
     # и BSDF встают узлы, и FBX теряет ссылку на текстуру). Look-dev — только для превью
     if o["save"] and bpy.data.filepath:
+        # палитры биомов и вода пишутся по абсолютному пути машины сборки: в .blend пути — относительно него
+        # (//../Unity/Assets/Vitaria/Textures/...), иначе на другом компьютере текстуры не находятся и в Material
+        # Preview рельеф и россыпь окружений фиолетовые
+        bpy.ops.file.make_paths_relative()
         bpy.ops.wm.save_mainfile()
         print("saved", bpy.data.filepath)
     if o["export"]:
@@ -1077,6 +1253,12 @@ def main():
     if look and o["render"]:
         import build_colony as BC
         BC.lookdev_scene(scn, look, sun)
+        if look.get("sky_bounce") is False:
+            # облака и дальние островки не подсвечивают обрыв снизу отражённым светом: в игре его нет
+            # (солнце и ровный амбиент), а у тёмных пластов «Болота» он съедал весь тон
+            sky = bpy.data.collections.get(PFX + "Sky")
+            for ob in (sky.all_objects if sky is not None else ()):
+                ob.visible_diffuse = False
     if o["render"]:
         prev = o["prev"] or os.path.join(root, "Previews")
         render_shots(scn, cam, prev, o["shots"], o["res"], o["samples"], look=look, tag=o["tag"])

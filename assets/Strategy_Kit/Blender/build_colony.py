@@ -802,8 +802,10 @@ def build_sky(V, BA, TR, M, meshes, C, mat, ts):
             t.build_cliff(c, boulders=False)
             sp = BA.Spots()
             placed, tries = 0, 0
-            kinds = ["Tree_Pine_A", "Tree_Pine_B", "Tree_Round_A", "Tree_Round_B"] if not small else \
-                ["Tree_Pine_B", "Tree_Round_B"]
+            dt = getattr(M, "DISTANT_TREES", None)      # окружение арены: свои деревья (ели в снегу), (крупные, малые)
+            kinds = (dt[1] if small else dt[0]) if dt else \
+                (["Tree_Pine_A", "Tree_Pine_B", "Tree_Round_A", "Tree_Round_B"] if not small else
+                 ["Tree_Pine_B", "Tree_Round_B"])
             while placed < n_trees and tries < 300:
                 tries += 1
                 x, y = irng.uniform(ix - r, ix + r), irng.uniform(iy - r, iy + r)
@@ -882,7 +884,8 @@ def lookdev_materials(LD):
     трава (строки рамп grass/arena_grass палитры) — мягкие пятна шума по мировым координатам."""
     import build_vitaria as V
     w = LD.get("water")
-    for mname, tint in (("Vitaria_Water", w and w["tint"]), ("Vitaria_Waterfall", w and w["falls_tint"])):
+    for mname, tint in (("Vitaria_Water", w and w["tint"]), ("Vitaria_Waterfall", w and w["falls_tint"]),
+                        ("Vitaria_Water_Swamp", w and w.get("swamp_tint"))):
         mat = bpy.data.materials.get(mname)
         if mat is None or not tint:
             continue
@@ -910,7 +913,11 @@ def lookdev_materials(LD):
             out = sh.outputs[2]
         nt.links.new(out, bsdf.inputs["Base Color"])
     g = LD.get("grass_noise")
-    mat = bpy.data.materials.get("Vitaria_Palette")
+    for pname in LD.get("palettes", ["Vitaria_Palette"]):      # окружение арены: и его вариант палитры
+        _grass_noise(V, bpy.data.materials.get(pname), g)
+
+
+def _grass_noise(V, mat, g):
     if g and mat is not None:
         nt = mat.node_tree
         bsdf = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")

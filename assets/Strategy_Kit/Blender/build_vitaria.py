@@ -51,7 +51,7 @@ def parse_args():
 # ----------------------------------------------------------------------------------------
 # Версия кита: пишется в раскладки (kitVersion) и в Unity/Assets/Vitaria/kit_version.json (build_all.py).
 # Поднимать при любом изменении, которое меняет модели, палитру или раскладки в Unity.
-KIT_VERSION = "2026.10.02"
+KIT_VERSION = "2026.10.10.1"
 
 TEX = 256
 NCELL = 16                      # 16x16 swatches of 16px
@@ -118,6 +118,9 @@ PALETTE = [
     # стальные слитки, меч, латы (steel — светлая кромка, есть выше); багряная ткань — рулон, плюмаж шлема
     ("steel_mid", "#8d9db5"), ("steel_dark", "#56637b"),
     ("cloth", "#b8323f"), ("cloth_light", "#d9535a"), ("cloth_dark", "#86202e"),
+    # --- арена «Болото» (vitaria_arena/swamp_assets.py): серо-зелёный висячий мох ив и обрывов, тёмный ил
+    # у кочек и коряг в воде, кость черепа на столбе. В палитре 128 ячеек над рампами — свободны ещё две
+    ("moss_hang", "#97a24c"), ("bog_dark", "#2e4337"), ("bone", "#e4d9bf"),
 ]
 EMISSIVE = {"glow", "glow_hot", "lantern_glow", "arcane", "rune", "ember"}
 # Темы кровли: перекраска синей черепицы кита (roof*) целиком по мешу — вместе с флагами и тентами
@@ -150,6 +153,130 @@ RAMPS = [
 # поэтому дописывание рампы не сдвигает уже выгруженные модели.
 _RAMP_ROWS = [14, 15] + [13 - i for i in range(len(RAMPS) - 2)]
 RAMP_ROW0 = min(_RAMP_ROWS)      # выше этой строки — только swatch-и
+
+# Палитры биомов арены (Vitaria_Palette_<Биом>.png): та же раскладка ячеек и рамп, у части swatch-ей и рамп —
+# другие цвета. Рельеф, россыпь и небо биома выгружаются с материалом Vitaria_Palette_<Биом> и берут цвета
+# отсюда, как и перекрашенные плитки поля биома (Hex_Tile_<Биом>_*: та же геометрия, что у Hex_Tile_*);
+# зоны расстановки, реквизит лагерей и огонь — с общей палитрой: синяя и красная зоны во всех биомах одни.
+# Новых ячеек вариант не занимает (палитра почти полна: рампа заняла бы строку из 16 ячеек).
+PALETTE_VARIANTS = {
+    # болото (по макету Swamp): оливково-жёлтая мшистая земля, ил вместо дорожной грязи, тёмные
+    # сине-серые пласты обрыва с мшистой кромкой, приглушённая влажная зелень листвы; яркая зелень —
+    # только у кувшинок и ряски (leaf_light). Плитки поля — оливковые, светлее земли, с той же светлой
+    # фаской-сеткой; зоны (синие и красные плитки) — общей палитрой, как во всех биомах
+    "Swamp": dict(
+        ramps={
+            "grass": [(0.0, "#4f5e2e"), (0.35, "#5f6f35"), (0.7, "#71803d"), (1.0, "#838e47")],
+            "dirt": [(0.0, "#4a4231"), (0.3, "#5a5139"), (0.7, "#6a6142"), (1.0, "#7a704b")],
+            "cliff_fade": [(0.0, "#a9b7bf"), (0.3, "#7c8a93"), (0.55, "#535e64"), (0.7, "#434c50"),
+                           (0.8, "#3c4447"), (0.86, "#454e3a"), (0.92, "#505c36"), (1.0, "#5b6a35")],
+            "hex_grass": [(0.0, "#717d3d"), (0.35, "#7a8642"), (0.7, "#838f48"), (1.0, "#8c984e")],
+        },
+        swatches={
+            "sod": "#5c6c32", "sod_dark": "#45542a", "soil_dark": "#3b3526", "grass_lip": "#687838",
+            "pine_dark": "#2c4134", "pine_mid": "#3a5340", "pine_light": "#4b6a4c",
+            "leaf_dark": "#3f5232", "leaf_mid": "#56693a", "leaf_light": "#7aa843", "bush": "#475f33",
+            "blade": "#78903f", "blade_dark": "#5b7431", "moss": "#6b7a35",
+            "bark": "#5a4b3c", "bark_dark": "#3f352c",
+            "water": "#41685a", "water_dark": "#2f5045",
+            "hex_rim": "#b9bb88", "hex_side": "#4f5a2a",
+        }),
+    # снега (по макету Snow): белый снег с голубыми тенями (рампа grass), лёд прудов и ручьёв (рампа dirt — грязи
+    # в снегах нет), сине-серые скалы со снегом на уступах (cliff_fade: выше 0.9 — снег), ледяные бледно-голубые
+    # плитки поля с белой фаской-сеткой, тёмная холодная хвоя под снегом (snow — sod/moss), сухая трава, лёд
+    # глыб и сосулек (water — синий лёд, foam — белёсый)
+    "Snow": dict(
+        ramps={
+            "grass": [(0.0, "#bcd1ea"), (0.35, "#d0e0f2"), (0.7, "#e1ecf8"), (1.0, "#eef5fc")],
+            "dirt": [(0.0, "#5f9fca"), (0.3, "#7fb6da"), (0.7, "#a2cde8"), (1.0, "#c8e5f4")],
+            "cliff_fade": [(0.0, "#b3c8de"), (0.3, "#8290a8"), (0.55, "#555c70"), (0.72, "#43495c"),
+                           (0.84, "#3c4254"), (0.9, "#dce7f2"), (1.0, "#eef4fa")],
+            "hex_grass": [(0.0, "#88b1dc"), (0.35, "#96bce3"), (0.7, "#a5c7ea"), (1.0, "#b3d1ef")],
+        },
+        swatches={
+            "sod": "#eef4f8", "sod_dark": "#c6d5e4", "soil_dark": "#58637a", "grass_lip": "#f4f8fb",
+            "moss": "#e3ecf3",
+            "pine_dark": "#1c3d36", "pine_mid": "#264f44", "pine_light": "#336251",
+            "leaf_dark": "#2f4a3e", "leaf_mid": "#3d5a49", "leaf_light": "#4e6b55", "bush": "#33503f",
+            "blade": "#b79b6b", "blade_dark": "#8e7552",
+            "bark": "#5a4536", "bark_dark": "#3d2e25",
+            "rock": "#4f586c", "rock_dark": "#383f52",
+            "water": "#69b7e6", "water_dark": "#3d88c8", "foam": "#d2ecfa",
+            "hex_rim": "#f5f9fc", "hex_side": "#8eabc3",
+        }),
+    # кладбище (по макету Graveyard): тёмная мшистая трава, сырая земля могил (рампа dirt), серые скалы со мхом на
+    # уступах (cliff_fade: выше 0.86 — мох), серые каменные плитки поля со светлой фаской-сеткой (hex_grass),
+    # холодный серый камень надгробий и часовни (stone_*), сланец крыши (slate_*), кованое железо (iron_*),
+    # сухая трава (blade), тёмная мёртвая кора (bark), выветренное дерево телеги и мостков (wood_*)
+    "Graveyard": dict(
+        ramps={
+            "grass": [(0.0, "#4b5330"), (0.35, "#586237"), (0.7, "#666f3f"), (0.9, "#727c47"), (1.0, "#565f36")],
+            "dirt": [(0.0, "#3a352f"), (0.3, "#47413a"), (0.7, "#554e45"), (1.0, "#635b50")],
+            "cliff_fade": [(0.0, "#8b95a7"), (0.3, "#636a71"), (0.55, "#4b5054"), (0.7, "#42474a"),
+                           (0.8, "#3c4143"), (0.86, "#4a4c34"), (0.92, "#575a38"), (1.0, "#64663f")],
+            "hex_grass": [(0.0, "#5f5a53"), (0.35, "#6a655e"), (0.7, "#757069"), (1.0, "#807a72")],
+            "cloud": [(0.0, "#7c879b"), (0.45, "#98a3b6"), (1.0, "#b4bdcc")],
+        },
+        swatches={
+            "sod": "#5a5d36", "sod_dark": "#44472b", "soil_dark": "#2c2925", "grass_lip": "#62653a",
+            "moss": "#676e37", "moss_hang": "#727a3d",
+            "blade": "#8a8250", "blade_dark": "#6b6840",
+            "bark": "#4a423c", "bark_dark": "#2f2a26",
+            "rock": "#676a6d", "rock_dark": "#484c50",
+            "stone_dark": "#48454e", "stone_mid": "#68676d", "stone_light": "#8c8b90", "stone_warm": "#77746f",
+            "slate": "#3d4b5f", "slate_dark": "#2c3646", "slate_light": "#4f5e74",
+            "iron_dark": "#2b2f35", "iron": "#4a5059",
+            "wood_dark": "#3f332a", "wood_mid": "#5e4c3d", "wood_mid2": "#685543", "wood_light": "#7d6a56",
+            "soil_mid": "#4d4439", "leaf_dark": "#3e4a2b",
+            "hex_rim": "#aaa69d", "hex_side": "#55524c",
+        }),
+    # лес (по макету Forest): сочная зелёная трава, светлая тропа (рампа dirt), серые скальные столбы с мхом на
+    # уступах (cliff_fade: выше 0.86 — мох), моховые плитки поля со светлой фаской-сеткой (hex_grass), тёмная
+    # сине-зелёная хвоя елей (pine_*), жёлто-зелёная листва лиственных (leaf_*), тёплый серый камень валунов (rock),
+    # бурая кора, вода ручья (water — бирюзовее озера «Луга»), кремовые ножки грибов (cream)
+    "Forest": dict(
+        ramps={
+            "grass": [(0.0, "#5c7f31"), (0.35, "#688b37"), (0.7, "#76973f"), (1.0, "#84a248")],
+            "dirt": [(0.0, "#7b5d3d"), (0.3, "#93734e"), (0.7, "#a98a62"), (1.0, "#bc9e74")],
+            "cliff_fade": [(0.0, "#a6bccf"), (0.3, "#7a858d"), (0.55, "#666a6b"), (0.7, "#5c6061"),
+                           (0.8, "#55595a"), (0.86, "#4f5f31"), (0.92, "#5a6d36"), (1.0, "#667c3d")],
+            "hex_grass": [(0.0, "#869c44"), (0.35, "#8fa54a"), (0.7, "#98ae51"), (1.0, "#a1b658")],
+        },
+        swatches={
+            "sod": "#587a30", "sod_dark": "#3f5a27", "soil_dark": "#3a2f24", "grass_lip": "#6a8c38",
+            "moss": "#5f7d31", "moss_hang": "#6a8636",
+            "pine_dark": "#1b4639", "pine_mid": "#285e4a", "pine_light": "#367658",
+            "leaf_dark": "#46652a", "leaf_mid": "#62833a", "leaf_light": "#7f9d42", "bush": "#4f722e",
+            "blade": "#7c9d40", "blade_dark": "#5f8233",
+            "bark": "#5d4532", "bark_dark": "#3f2f23",
+            "rock": "#86847e", "rock_dark": "#5e5d5c",
+            "water": "#4aa8d8", "water_dark": "#347fb8", "foam": "#e3f3fb",
+            "cream": "#eadfc6",
+            "hex_rim": "#d2dc98", "hex_side": "#4f7a2c",
+        }),
+    # горная застава (по промпту: ясный день высоко в горах): альпийская трава, светлый щебень дороги (рампа dirt),
+    # серый гранит обрыва со светлыми уступами и лишайником у кромки (cliff_fade), бледно-зелёные плитки поля
+    # альпийского луга (hex_grass), серый гранит кладки стен и башен (stone_*) и скал (rock), сухая альпийская трава
+    # (blade), тёмная хвоя горных сосен, снег дальних вершин (foam)
+    "MountainPass": dict(
+        ramps={
+            "grass": [(0.0, "#78983b"), (0.35, "#85a343"), (0.7, "#93ae4c"), (1.0, "#a1b957")],
+            "dirt": [(0.0, "#7a6c58"), (0.3, "#8f816b"), (0.7, "#a6977e"), (1.0, "#b5a78c")],
+            "cliff_fade": [(0.0, "#a9c6e4"), (0.3, "#7f8a97"), (0.55, "#6c737c"), (0.72, "#7b828a"),
+                           (0.86, "#8e949b"), (0.93, "#9ca28f"), (1.0, "#a8ad8e")],
+            "hex_grass": [(0.0, "#889f52"), (0.35, "#91a859"), (0.7, "#9ab160"), (1.0, "#a3b967")],
+        },
+        swatches={
+            "sod": "#6c8a37", "sod_dark": "#526d2c", "soil_dark": "#4a453d", "grass_lip": "#7f9e41",
+            "moss": "#7d9440", "moss_hang": "#8a9a4a",
+            "stone_dark": "#5e636a", "stone_mid": "#7f858c", "stone_light": "#a5abb1", "stone_warm": "#918d86",
+            "rock": "#878d94", "rock_dark": "#62676e",
+            "blade": "#9fb257", "blade_dark": "#7e9341",
+            "pine_dark": "#1d4438", "pine_mid": "#295b48", "pine_light": "#367154",
+            "foam": "#eef3f8",
+            "hex_rim": "#dfe6b8", "hex_side": "#66803a",
+        }),
+}
 
 def hex2rgb(h):
     return tuple(int(h[i:i + 2], 16) / 255.0 for i in (1, 3, 5))
@@ -230,21 +357,46 @@ def lerp_stops(stops, t):
             return tuple(a[j] + (b[j] - a[j]) * k for j in range(3))
     return hex2rgb(stops[-1][1])
 
-def build_palette_images(tex_dir):
+def _palette_arrays(swatches=None, ramps=None):
+    """Пиксели палитры (albedo, emission); swatches/ramps — замены цветов варианта биома {имя: цвет/стопы}."""
     import numpy as np
+    swatches, ramps = swatches or {}, ramps or {}
     sw = TEX // NCELL
     albedo = np.zeros((TEX, TEX, 4), dtype=np.float32); albedo[..., 3] = 1
     emis = np.zeros((TEX, TEX, 4), dtype=np.float32); emis[..., 3] = 1
     for i, (name, hx) in enumerate(PALETTE):
         c, r = i % NCELL, i // NCELL
-        albedo[r * sw:(r + 1) * sw, c * sw:(c + 1) * sw, :3] = hex2rgb(hx)
+        albedo[r * sw:(r + 1) * sw, c * sw:(c + 1) * sw, :3] = hex2rgb(swatches.get(name, hx))
         if name in EMISSIVE:
             emis[r * sw:(r + 1) * sw, c * sw:(c + 1) * sw, :3] = hex2rgb(hx)
     for name, stops in RAMPS:
         r = RAMP_ROW[name]
+        stops = ramps.get(name, stops)
         for px in range(TEX):
             t = clamp((px + 0.5 - 2.0) / (TEX - 4.0))
             albedo[r * sw:(r + 1) * sw, px, :3] = lerp_stops(stops, t)
+    return albedo, emis
+
+def build_palette_variant(tex_dir, variant):
+    """Vitaria_Palette_<variant>.png — палитра биома арены (PALETTE_VARIANTS). Возвращает картинку Blender."""
+    import numpy as np
+    pv = PALETTE_VARIANTS[variant]
+    albedo, _ = _palette_arrays(pv.get("swatches"), pv.get("ramps"))
+    name = "Vitaria_Palette_" + variant
+    img = bpy.data.images.get(name)
+    if img is None or tuple(img.size) != (TEX, TEX):
+        if img is not None:
+            bpy.data.images.remove(img)
+        img = bpy.data.images.new(name, TEX, TEX, alpha=False)
+    img.pixels.foreach_set(np.flipud(albedo).ravel())
+    img.filepath_raw = os.path.join(tex_dir, name + ".png")
+    img.file_format = "PNG"
+    img.save()
+    return img
+
+def build_palette_images(tex_dir):
+    import numpy as np
+    albedo, emis = _palette_arrays()
     imgs = []
     for name, arr in (("Vitaria_Palette", albedo), ("Vitaria_Palette_Emission", emis)):
         img = bpy.data.images.new(name, TEX, TEX, alpha=False)

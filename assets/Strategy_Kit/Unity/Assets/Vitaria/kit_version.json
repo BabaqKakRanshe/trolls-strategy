@@ -1,16 +1,10 @@
 {
- "kitVersion": "2026.10.02",
- "built": "2026-10-02",
+ "kitVersion": "2026.10.10.1",
+ "built": "2026-10-10",
  "steps": [
   {
-   "step": "buildings"
-  },
-  {
-   "step": "icons"
-  },
-  {
-   "step": "resources"
+   "step": "arena"
   }
  ],
- "note": "добавлены Bld_Tavern, Bld_HaulersGuild (Models/Buildings) и 9 ресурсов Res_Coal, Res_GoldNugget, Res_Straw, Res_GoldenWheat, Res_Meat, Res_Milk, Res_Scrap, Res_Feast, Res_BattleAxe (Models/Resources); атласы иконок перерисованы (resources-icons 1024x2048, 24 кадра; buildings-icons 512, 16 кадров). Остальные модели, палитра и раскладки прежние (раскладки — kitVersion 2026.09.29); затем ресурсы третьей очереди и снаряжение: 41 модель в Models/Resources (мука, хлеб, сыр, эль, шерсть, ткань, сталь; мечи, топор, копьё, лук, молот, брони, шлем, щиты и их зачарованные версии; сноп, шкура, кожа и кристаллы теперь тоже модели), палитра +5 цветов в конце, атлас resources-icons 2048x2048, 59 кадров (прежние 24 на своих местах); затем уровни зданий поля: 32 модели Bld_<Имя>_L2 и _L3 (Models/Buildings) — уровень 1 тот же, уровни на том же месте и в том же следе; затем уровни зданий поля перестроены: вместо уровня 1 с флажками и золотом — то же здание, перестроенное (камень вместо дерева, второй объём, два этажа, машина ремесла), те же 32 имени FBX Bld_<Имя>_L2 и _L3; уровень 1, палитра и иконки прежние"
+ "note": "арена «Горная застава» (Arena_MountainPass, build_arena.py --env mountainpass): Models/Arena/MountainPass — Arena_MountainPass_Ground, _Cliffs, _Scatter (стена, ворота, бастионы, башни, кузня, скалы, сосны), _Sky (облака и дальние вершины) и нейтральные плитки поля Hex_Tile_Mount_A/B/C; Layout/arena_mountainpass_layout.json (формат и кадр «Луга»); палитра биома Textures/Vitaria_Palette_MountainPass.png (с .meta), материал Materials/Vitaria_Palette_MountainPass.mat (с .meta); воды нет; Editor/VitariaTools.cs ремапит материал по имени; новых цветов в палитре нет. «Луг», «Болото», «Снега», «Кладбище», «Лес», общие ассеты арены и остальные модели и раскладки прежние (раскладки «Луга» — kitVersion 2026.09.29, «Болота» — 2026.10.09, «Снегов» — 2026.10.09.2, «Кладбища» — 2026.10.09.3, «Леса» — 2026.10.09.4)"
 }

@@ -9,7 +9,7 @@
 этап игры — это только видимость и сдвиг объектов: так же, как это будет делать игра.
 Ассеты и look-dev — общие с build_colony.py.
 """
-import bpy, os, sys, math, random, importlib, zlib
+import bpy, os, sys, json, math, random, importlib, zlib
 from mathutils import Matrix, Vector, Euler, noise
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -30,10 +30,98 @@ GAME_AMBIENT = [0.55, 0.62, 0.76]              # sRGB, RenderSettings.ambientLig
 GAME_SKY = [0.64, 0.78, 0.94]
 
 
-def game_look(sun_fwd):
+# Вид окружений арены поверх вида колонии: блоки и поля, которые у окружения свои (остальное — как у колонии).
+# Формат тот же, что у game_look, вложенные блоки сливаются по ключам.
+LOOK_VARIANTS = {
+    # «Болото» (макет Swamp): туманное утро — мягкое солнце слева, голубовато-серое небо и дымка цвета неба
+    # (на поле туман почти не заходит: начинается за задним рядом), сочная, но не кислотная зелень
+    "swamp": {
+        "sun": {"color": [1.0, 0.95, 0.84], "intensity": 1.6, "shadowStrength": 0.82},
+        "ambient": {"color": [0.5, 0.56, 0.58]},
+        "background": [0.66, 0.72, 0.75],
+        "fog": {"color": [0.66, 0.72, 0.75], "startPerDistance": 0.9, "endPerDistance": 3.2},
+        "post": {"exposure": -0.1, "saturation": 2.0, "contrast": 8.0, "temperature": -2.0,
+                 "gain": [1.02, 1.02, 0.98, 0.0], "lift": [1.0, 1.0, 1.01, 0.0]},
+        "haze": {"color": [0.66, 0.72, 0.75], "edgeColor": [0.92, 0.95, 0.96], "edgeIntensity": 0.45},
+    },
+    # «Снега» (макет Snow): морозный день — низкое солнце колонии, но белее (снег остаётся голубым, а не серым),
+    # холодный голубой амбиент (тени уходят в синеву), бледно-голубые небо и дымка; холод — светом и постом
+    # (temperature), а не тёмной палитрой. Снег ярче травы: экспозиция ниже, чем у колонии, порог свечения выше —
+    # иначе светится весь снег и кадр мылится (в Blender так же: LOOKDEV bloom threshold 2.2)
+    "snow": {
+        "sun": {"color": [1.0, 0.96, 0.9], "intensity": 1.65, "shadowStrength": 0.85},
+        "ambient": {"color": [0.56, 0.66, 0.86]},
+        "background": [0.75, 0.83, 0.91],
+        "fog": {"color": [0.75, 0.83, 0.91], "startPerDistance": 0.9, "endPerDistance": 3.4},
+        "post": {"exposure": -0.15, "saturation": 2.0, "contrast": 8.0, "temperature": -6.0,
+                 "bloomThreshold": 1.1, "bloomIntensity": 0.25,
+                 "gain": [0.98, 1.0, 1.04, 0.0], "lift": [1.0, 1.0, 1.03, 0.0]},
+        "haze": {"color": [0.76, 0.84, 0.92], "edgeColor": [0.95, 0.97, 1.0], "edgeIntensity": 0.5},
+    },
+    # «Кладбище» (макет Graveyard): ночь — луна высоко слева спереди, белый с холодком свет (синее — и красная зона
+    # уходит в розовое), синий амбиент, сизые небо и дымка, виньетка; тёплые огни фонарей и факелов светятся
+    # сильнее (порог свечения ниже). Ночь — светом, туманом и постом, а не тёмной палитрой: зоны поля читаются
+    # как на «Луге»
+    "graveyard": {
+        "sun": {"color": [0.9, 0.94, 1.0], "intensity": 1.6, "shadowStrength": 0.82},
+        "ambient": {"color": [0.42, 0.48, 0.62]},
+        "background": [0.5, 0.56, 0.66],
+        "fog": {"color": [0.5, 0.56, 0.66], "startPerDistance": 0.85, "endPerDistance": 2.9},
+        "post": {"exposure": -0.05, "saturation": 2.0, "contrast": 10.0, "temperature": -8.0,
+                 "bloomThreshold": 0.7, "bloomIntensity": 0.6,
+                 "gain": [0.99, 1.0, 1.03, 0.0], "lift": [0.99, 1.0, 1.03, 0.0], "vignette": 0.2},
+        "haze": {"color": [0.5, 0.56, 0.66], "edgeColor": [0.68, 0.74, 0.84], "edgeIntensity": 0.45},
+    },
+    # «Лес» (макет Forest, настроение — прохладные сумерки в чаще): солнце слева спереди, мягче и чуть холоднее
+    # колониального, сине-зелёный амбиент (тени под елями уходят в прохладу), голубовато-серые небо и дымка; тёплые
+    # огни костра и факелов светятся сильнее (порог свечения ниже). Прохлада — светом, туманом и постом, а не
+    # тёмной палитрой; экспозиция выше колониальной — свет слабее, а зоны поля должны читаться как на «Луге»
+    "forest": {
+        "sun": {"color": [1.0, 0.9, 0.78], "intensity": 1.45, "shadowStrength": 0.82},
+        "ambient": {"color": [0.46, 0.55, 0.66]},
+        "background": [0.53, 0.62, 0.7],
+        "fog": {"color": [0.53, 0.62, 0.7], "startPerDistance": 0.9, "endPerDistance": 3.1},
+        "post": {"exposure": 0.1, "saturation": 2.0, "contrast": 8.0, "temperature": -6.0,
+                 "bloomThreshold": 0.8, "bloomIntensity": 0.5,
+                 "gain": [0.97, 1.0, 1.04, 0.0], "lift": [1.0, 1.0, 1.03, 0.0], "vignette": 0.18},
+        "haze": {"color": [0.55, 0.64, 0.72], "edgeColor": [0.82, 0.88, 0.93], "edgeIntensity": 0.45},
+    },
+    # «Горная застава» (настроение — ясный день высоко в горах): солнце справа спереди, высокое и почти белое,
+    # тени чёткие; чистое синее небо, дымка и туман цвета неба, голубой амбиент. Воздух прозрачный: туман
+    # начинается дальше, чем у колонии, контраст выше. Зоны поля читаются как на «Луге»
+    "mountainpass": {
+        "sun": {"color": [1.0, 0.96, 0.9], "intensity": 1.75, "shadowStrength": 0.9},
+        "ambient": {"color": [0.52, 0.62, 0.8]},
+        "background": [0.56, 0.74, 0.95],
+        "fog": {"color": [0.56, 0.74, 0.95], "startPerDistance": 1.0, "endPerDistance": 3.6},
+        "post": {"exposure": -0.1, "saturation": 4.0, "contrast": 10.0, "temperature": -3.0,
+                 "gain": [1.0, 1.0, 1.02, 0.0], "lift": [1.0, 1.0, 1.02, 0.0]},
+        # дымка глубже колониальной: дальние вершины поднимаются из облаков, их склоны тонут ниже
+        "haze": {"color": [0.6, 0.76, 0.95], "startDepth": 3.0, "fullDepth": 22.0, "edgeColor": [0.92, 0.96, 1.0],
+                 "edgeIntensity": 0.5},
+    },
+}
+
+
+def _merge(base, over):
+    for k, v in over.items():
+        if isinstance(v, dict) and isinstance(base.get(k), dict):
+            _merge(base[k], v)
+        else:
+            base[k] = v
+    return base
+
+
+def game_look(sun_fwd, variant=None):
     """Вид острова в игре (Unity): солнце, амбиент, фон, туман, пост и дымка — блоки isle_layout.json.
     Бой на острове (build_arena, vitaria_arena/isle.py) берёт их отсюда же: колония и бой выглядят одинаково.
+    variant — окружение арены (LOOK_VARIANTS: "swamp"), поверх вида колонии.
     sun_fwd — направление солнца в осях Unity."""
+    look = _base_look(sun_fwd)
+    return _merge(look, json.loads(json.dumps(LOOK_VARIANTS[variant]))) if variant else look
+
+
+def _base_look(sun_fwd):
     return {
         "sun": {"forward": sun_fwd, "color": list(SUN_COLOR), "intensity": 1.8, "shadowStrength": 0.92},
         # плоский амбиент Unity темнее и холоднее мира Blender: с ним тени не заливаются и уходят в синеву

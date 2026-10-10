@@ -1,0 +1,532 @@
+{
+ "name": "Arena_Forest",
+ "kitVersion": "2026.10.09.4",
+ "board": {
+  "width": 9,
+  "height": 5,
+  "hexAcrossFlats": 2.0,
+  "note": "координаты относительно середины поля (BattleBoardView.middle)"
+ },
+ "objects": [
+  {
+   "name": "Arena_Forest_Ground",
+   "asset": "Arena_Forest_Ground",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Arena_Forest_Cliffs",
+   "asset": "Arena_Forest_Cliffs",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Arena_Forest_Water",
+   "asset": "Arena_Forest_Water",
+   "group": "Water",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "scroll": 0.22
+  },
+  {
+   "name": "Arena_Forest_Falls",
+   "asset": "Arena_Forest_Falls",
+   "group": "Water",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "scroll": 0.6
+  },
+  {
+   "name": "Arena_Forest_Scatter",
+   "asset": "Arena_Forest_Scatter",
+   "group": "Nature",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Campfire.002",
+   "asset": "Prop_Campfire",
+   "group": "Props",
+   "p": [
+    -6.2,
+    0.0049,
+    6.38
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Blue.005",
+   "asset": "Prop_Banner_Blue",
+   "group": "Props",
+   "p": [
+    -12.35,
+    0.0074,
+    3.2
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Blue_Cloth.005",
+   "asset": "Prop_Banner_Blue_Cloth",
+   "group": "Props",
+   "p": [
+    -12.35,
+    2.6274,
+    3.15
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "sway": [
+    5.0,
+    0.35,
+    0.67
+   ]
+  },
+  {
+   "name": "Prop_Banner_Red.005",
+   "asset": "Prop_Banner_Red",
+   "group": "Props",
+   "p": [
+    11.25,
+    0.0008,
+    3.85
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Red_Cloth.005",
+   "asset": "Prop_Banner_Red_Cloth",
+   "group": "Props",
+   "p": [
+    11.25,
+    2.6208,
+    3.8
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "sway": [
+    5.0,
+    0.35,
+    0.546
+   ]
+  },
+  {
+   "name": "FX_Flame_Large.002",
+   "asset": "FX_Flame_Large",
+   "group": "FX",
+   "p": [
+    -6.2,
+    0.0649,
+    6.38
+   ],
+   "r": [
+    -0.0,
+    -0.80738,
+    -0.0,
+    0.590032
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.012",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    -10.55,
+    1.7325,
+    5.4
+   ],
+   "r": [
+    0.0,
+    0.520069,
+    0.0,
+    0.854124
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.013",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    11.85,
+    1.7485,
+    1.15
+   ],
+   "r": [
+    0.0,
+    0.727906,
+    0.0,
+    0.685677
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "Arena_Forest_Sky",
+   "asset": "Arena_Forest_Sky",
+   "group": "Sky",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  }
+ ],
+ "camera": {
+  "position": [
+   -0.0,
+   20.74366,
+   -18.88296
+  ],
+  "forward": [
+   0.0,
+   -0.76828,
+   0.64011
+  ],
+  "up": [
+   0.0,
+   0.64011,
+   0.76828
+  ],
+  "fov": 32.2,
+  "referenceAspect": 1.7778
+ },
+ "framing": {
+  "pitch": 50.2,
+  "fov": 32.2,
+  "distance": 27.0,
+  "focusOffset": -1.6,
+  "boardWidthShare": 0.69
+ },
+ "sun": {
+  "forward": [
+   0.55138,
+   -0.70176,
+   0.45113
+  ],
+  "color": [
+   1.0,
+   0.9,
+   0.78
+  ],
+  "intensity": 1.45,
+  "shadowStrength": 0.82
+ },
+ "ambient": {
+  "color": [
+   0.46,
+   0.55,
+   0.66
+  ],
+  "sky": [
+   0.46,
+   0.55,
+   0.66
+  ],
+  "equator": [
+   0.46,
+   0.55,
+   0.66
+  ],
+  "ground": [
+   0.46,
+   0.55,
+   0.66
+  ]
+ },
+ "background": [
+  0.53,
+  0.62,
+  0.7
+ ],
+ "fog": {
+  "color": [
+   0.53,
+   0.62,
+   0.7
+  ],
+  "startPerDistance": 0.9,
+  "endPerDistance": 3.1
+ },
+ "post": {
+  "exposure": 0.1,
+  "saturation": 2.0,
+  "contrast": 8.0,
+  "temperature": -6.0,
+  "bloomThreshold": 0.8,
+  "bloomIntensity": 0.5,
+  "bloomScatter": 0.6,
+  "dofStartPerDistance": 1.4,
+  "dofEndPerDistance": 2.0,
+  "dofMaxRadius": 1.0,
+  "vignette": 0.18,
+  "vignetteSmoothness": 0.45,
+  "lift": [
+   1.0,
+   1.0,
+   1.03,
+   0.0
+  ],
+  "gamma": [
+   1.0,
+   1.0,
+   1.0,
+   0.0
+  ],
+  "gain": [
+   0.97,
+   1.0,
+   1.04,
+   0.0
+  ]
+ },
+ "haze": {
+  "color": [
+   0.55,
+   0.64,
+   0.72
+  ],
+  "startDepth": 2.0,
+  "fullDepth": 16.0,
+  "opacity": 1.0,
+  "edgeColor": [
+   0.82,
+   0.88,
+   0.93
+  ],
+  "edgeIntensity": 0.45,
+  "edgeStart": 0.35,
+  "edgeFull": 1.1,
+  "edgeTop": 0.25
+ },
+ "tiles": {
+  "neutral": [
+   "Hex_Tile_Forest_A",
+   "Hex_Tile_Forest_A",
+   "Hex_Tile_Forest_B",
+   "Hex_Tile_Forest_C"
+  ],
+  "player": "Hex_Tile_Blue",
+  "enemy": "Hex_Tile_Red",
+  "obstacles": [
+   "Obst_Boulders",
+   "Obst_Stump",
+   "Obst_Bush"
+  ]
+ },
+ "fx": {
+  "dust": [
+   "FX_Dust_Puff_A",
+   "FX_Dust_Puff_B",
+   "FX_Dust_Puff_C"
+  ],
+  "smoke": [
+   "FX_Smoke_Puff_A",
+   "FX_Smoke_Puff_B"
+  ],
+  "debrisStone": [
+   "FX_Debris_Stone_A",
+   "FX_Debris_Stone_B",
+   "FX_Debris_Stone_C"
+  ],
+  "debrisEarth": [
+   "FX_Debris_Earth_A",
+   "FX_Debris_Earth_B"
+  ],
+  "debrisWood": [
+   "FX_Debris_Wood_A",
+   "FX_Debris_Wood_B"
+  ],
+  "rock": [
+   "FX_Rock_Throw"
+  ],
+  "spark": [
+   "FX_Spark_Shard"
+  ]
+ },
+ "sockets": [
+  {
+   "kind": "embers",
+   "p": [
+    -6.2,
+    0.45494,
+    6.38
+   ],
+   "size": 0.9
+  },
+  {
+   "kind": "smoke",
+   "p": [
+    -6.2,
+    1.05494,
+    6.38
+   ],
+   "size": 1.0
+  },
+  {
+   "kind": "embers",
+   "p": [
+    -10.55,
+    2.08246,
+    5.4
+   ],
+   "size": 0.4
+  },
+  {
+   "kind": "embers",
+   "p": [
+    11.85,
+    2.09848,
+    1.15
+   ],
+   "size": 0.4
+  }
+ ],
+ "tris": 111225
+}

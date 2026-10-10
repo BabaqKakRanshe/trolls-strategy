@@ -1,0 +1,594 @@
+{
+ "name": "Arena_Graveyard",
+ "kitVersion": "2026.10.09.3",
+ "board": {
+  "width": 9,
+  "height": 5,
+  "hexAcrossFlats": 2.0,
+  "note": "координаты относительно середины поля (BattleBoardView.middle)"
+ },
+ "objects": [
+  {
+   "name": "Arena_Graveyard_Ground",
+   "asset": "Arena_Graveyard_Ground",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Arena_Graveyard_Cliffs",
+   "asset": "Arena_Graveyard_Cliffs",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Arena_Graveyard_Water",
+   "asset": "Arena_Graveyard_Water",
+   "group": "Water",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "scroll": 0.01
+  },
+  {
+   "name": "Arena_Graveyard_Scatter",
+   "asset": "Arena_Graveyard_Scatter",
+   "group": "Nature",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Blue.004",
+   "asset": "Prop_Banner_Blue",
+   "group": "Props",
+   "p": [
+    -12.2,
+    0.0111,
+    2.9
+   ],
+   "r": [
+    -0.0,
+    -0.996195,
+    -0.0,
+    0.087156
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Blue_Cloth.004",
+   "asset": "Prop_Banner_Blue_Cloth",
+   "group": "Props",
+   "p": [
+    -12.2087,
+    2.6311,
+    2.8508
+   ],
+   "r": [
+    -0.0,
+    -0.996195,
+    -0.0,
+    0.087156
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "sway": [
+    5.0,
+    0.35,
+    0.66
+   ]
+  },
+  {
+   "name": "Prop_Brazier.002",
+   "asset": "Prop_Brazier",
+   "group": "Props",
+   "p": [
+    -11.5,
+    0.0008,
+    -4.85
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Red.004",
+   "asset": "Prop_Banner_Red",
+   "group": "Props",
+   "p": [
+    11.15,
+    -0.0006,
+    3.7
+   ],
+   "r": [
+    0.0,
+    0.996195,
+    0.0,
+    0.087156
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Red_Cloth.004",
+   "asset": "Prop_Banner_Red_Cloth",
+   "group": "Props",
+   "p": [
+    11.1587,
+    2.6194,
+    3.6508
+   ],
+   "r": [
+    0.0,
+    0.996195,
+    0.0,
+    0.087156
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "sway": [
+    5.0,
+    0.35,
+    0.536
+   ]
+  },
+  {
+   "name": "FX_Flame_Small.006",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    -9.85,
+    1.7446,
+    6.3
+   ],
+   "r": [
+    -0.0,
+    -0.80738,
+    -0.0,
+    0.590031
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.007",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    -12.85,
+    1.7515,
+    2.15
+   ],
+   "r": [
+    0.0,
+    0.520069,
+    0.0,
+    0.854124
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.008",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    -11.5,
+    1.0808,
+    -4.85
+   ],
+   "r": [
+    0.0,
+    0.727906,
+    0.0,
+    0.685677
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.009",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    -6.75,
+    1.7402,
+    5.35
+   ],
+   "r": [
+    -0.0,
+    -0.848603,
+    -0.0,
+    0.52903
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.010",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    4.6,
+    1.7438,
+    6.05
+   ],
+   "r": [
+    0.0,
+    0.935375,
+    0.0,
+    0.353659
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.011",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    12.0,
+    1.7462,
+    1.45
+   ],
+   "r": [
+    0.0,
+    0.074585,
+    0.0,
+    0.997215
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "Arena_Graveyard_Sky",
+   "asset": "Arena_Graveyard_Sky",
+   "group": "Sky",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  }
+ ],
+ "camera": {
+  "position": [
+   -0.0,
+   20.74366,
+   -18.88296
+  ],
+  "forward": [
+   0.0,
+   -0.76828,
+   0.64011
+  ],
+  "up": [
+   0.0,
+   0.64011,
+   0.76828
+  ],
+  "fov": 32.2,
+  "referenceAspect": 1.7778
+ },
+ "framing": {
+  "pitch": 50.2,
+  "fov": 32.2,
+  "distance": 27.0,
+  "focusOffset": -1.6,
+  "boardWidthShare": 0.69
+ },
+ "sun": {
+  "forward": [
+   0.42152,
+   -0.8029,
+   0.42152
+  ],
+  "color": [
+   0.9,
+   0.94,
+   1.0
+  ],
+  "intensity": 1.6,
+  "shadowStrength": 0.82
+ },
+ "ambient": {
+  "color": [
+   0.42,
+   0.48,
+   0.62
+  ],
+  "sky": [
+   0.42,
+   0.48,
+   0.62
+  ],
+  "equator": [
+   0.42,
+   0.48,
+   0.62
+  ],
+  "ground": [
+   0.42,
+   0.48,
+   0.62
+  ]
+ },
+ "background": [
+  0.5,
+  0.56,
+  0.66
+ ],
+ "fog": {
+  "color": [
+   0.5,
+   0.56,
+   0.66
+  ],
+  "startPerDistance": 0.85,
+  "endPerDistance": 2.9
+ },
+ "post": {
+  "exposure": -0.05,
+  "saturation": 2.0,
+  "contrast": 10.0,
+  "temperature": -8.0,
+  "bloomThreshold": 0.7,
+  "bloomIntensity": 0.6,
+  "bloomScatter": 0.6,
+  "dofStartPerDistance": 1.4,
+  "dofEndPerDistance": 2.0,
+  "dofMaxRadius": 1.0,
+  "vignette": 0.2,
+  "vignetteSmoothness": 0.45,
+  "lift": [
+   0.99,
+   1.0,
+   1.03,
+   0.0
+  ],
+  "gamma": [
+   1.0,
+   1.0,
+   1.0,
+   0.0
+  ],
+  "gain": [
+   0.99,
+   1.0,
+   1.03,
+   0.0
+  ]
+ },
+ "haze": {
+  "color": [
+   0.5,
+   0.56,
+   0.66
+  ],
+  "startDepth": 2.0,
+  "fullDepth": 16.0,
+  "opacity": 1.0,
+  "edgeColor": [
+   0.68,
+   0.74,
+   0.84
+  ],
+  "edgeIntensity": 0.45,
+  "edgeStart": 0.35,
+  "edgeFull": 1.1,
+  "edgeTop": 0.25
+ },
+ "tiles": {
+  "neutral": [
+   "Hex_Tile_Grave_A",
+   "Hex_Tile_Grave_A",
+   "Hex_Tile_Grave_B",
+   "Hex_Tile_Grave_C"
+  ],
+  "player": "Hex_Tile_Blue",
+  "enemy": "Hex_Tile_Red",
+  "obstacles": [
+   "Obst_Boulders",
+   "Obst_Stump",
+   "Obst_Bush"
+  ]
+ },
+ "fx": {
+  "dust": [
+   "FX_Dust_Puff_A",
+   "FX_Dust_Puff_B",
+   "FX_Dust_Puff_C"
+  ],
+  "smoke": [
+   "FX_Smoke_Puff_A",
+   "FX_Smoke_Puff_B"
+  ],
+  "debrisStone": [
+   "FX_Debris_Stone_A",
+   "FX_Debris_Stone_B",
+   "FX_Debris_Stone_C"
+  ],
+  "debrisEarth": [
+   "FX_Debris_Earth_A",
+   "FX_Debris_Earth_B"
+  ],
+  "debrisWood": [
+   "FX_Debris_Wood_A",
+   "FX_Debris_Wood_B"
+  ],
+  "rock": [
+   "FX_Rock_Throw"
+  ],
+  "spark": [
+   "FX_Spark_Shard"
+  ]
+ },
+ "sockets": [
+  {
+   "kind": "embers",
+   "p": [
+    -9.85,
+    2.09458,
+    6.3
+   ],
+   "size": 0.4
+  },
+  {
+   "kind": "embers",
+   "p": [
+    -12.85,
+    2.10151,
+    2.15
+   ],
+   "size": 0.4
+  },
+  {
+   "kind": "embers",
+   "p": [
+    -11.5,
+    1.30085,
+    -4.85
+   ],
+   "size": 0.6
+  },
+  {
+   "kind": "embers",
+   "p": [
+    -6.75,
+    2.09015,
+    5.35
+   ],
+   "size": 0.4
+  },
+  {
+   "kind": "embers",
+   "p": [
+    4.6,
+    2.09379,
+    6.05
+   ],
+   "size": 0.4
+  },
+  {
+   "kind": "embers",
+   "p": [
+    12.0,
+    2.09623,
+    1.45
+   ],
+   "size": 0.4
+  }
+ ],
+ "tris": 115790
+}

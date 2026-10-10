@@ -12,7 +12,9 @@ By default writes next to the .blend:  <blend folder>/../Unity/Assets/Vitaria/..
   ../../../asset_list.json        triangles and sizes; warns when a kit asset changed a lot
 
 Rules the script relies on:
-  * kit assets live in collections Vitaria_Kit/Kit_<Category>
+  * kit assets live in collections Vitaria_Kit/Kit_<Category>; the arena biome kits (Kit_Swamp, Kit_Snow,
+    Kit_Graveyard, Kit_Forest, Kit_MountainPass) and the preview fighters (Kit_Preview) are skipped:
+    build_arena.py exports them (Models/Arena/<Biome>)
   * the scene lives in Vitaria_Scene/Scene_<Category>
   * a scene object whose mesh is shared with a kit object is an instance of that asset;
     any other scene mesh is exported as its own asset named after the mesh.
@@ -22,6 +24,9 @@ Rules the script relies on:
 import bpy, os, sys, json, math
 from mathutils import Matrix, Vector
 
+# коллекции витрины, которые выгружает build_arena.py (ассеты биомов арены — в Models/Arena/<Биом>, бойцы-заглушки
+# превью в игру не идут): здесь их не выгружаем, иначе имена моделей задвоятся (Models/Snow и Models/Arena/Snow)
+ARENA_ENV_KITS = ("Kit_Swamp", "Kit_Snow", "Kit_Graveyard", "Kit_Forest", "Kit_MountainPass", "Kit_Preview")
 AMBIENT = {"sky": [0.62, 0.70, 0.80], "equator": [0.50, 0.55, 0.47], "ground": [0.27, 0.24, 0.20]}
 BACKGROUND = [0.176, 0.216, 0.165]
 SUN_INTENSITY_UNITY = 1.35
@@ -107,6 +112,8 @@ def main():
     # --- kit
     kit_by_mesh, assets = {}, {}
     for coll in bpy.data.collections["Vitaria_Kit"].children:
+        if coll.name in ARENA_ENV_KITS:
+            continue
         cat = coll.name.replace("Kit_", "", 1)
         for o in coll.all_objects:
             if o.type != "MESH":

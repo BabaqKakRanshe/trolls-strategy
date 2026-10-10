@@ -2228,5 +2228,405 @@
    19.546,
    43.365
   ]
+ },
+ {
+  "asset": "Prop_Torch",
+  "category": "Swamp",
+  "tris": 268,
+  "size_unity": [
+   0.39,
+   1.805,
+   0.37
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Swamp_A",
+  "category": "Swamp",
+  "tris": 72,
+  "size_unity": [
+   1.965,
+   0.105,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Swamp_B",
+  "category": "Swamp",
+  "tris": 192,
+  "size_unity": [
+   1.965,
+   0.148,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Swamp_C",
+  "category": "Swamp",
+  "tris": 162,
+  "size_unity": [
+   1.965,
+   0.152,
+   2.269
+  ]
+ },
+ {
+  "asset": "Arena_Swamp_Ground",
+  "category": "Swamp",
+  "tris": 7419,
+  "size_unity": [
+   31.432,
+   0.7,
+   18.328
+  ]
+ },
+ {
+  "asset": "Arena_Swamp_Cliffs",
+  "category": "Swamp",
+  "tris": 13092,
+  "size_unity": [
+   31.444,
+   25.537,
+   18.12
+  ]
+ },
+ {
+  "asset": "Arena_Swamp_Water",
+  "category": "Swamp",
+  "tris": 217,
+  "size_unity": [
+   26.917,
+   0.0,
+   16.522
+  ]
+ },
+ {
+  "asset": "Arena_Swamp_Scatter",
+  "category": "Swamp",
+  "tris": 41631,
+  "size_unity": [
+   31.824,
+   7.651,
+   19.357
+  ]
+ },
+ {
+  "asset": "Arena_Swamp_Sky",
+  "category": "Swamp",
+  "tris": 44817,
+  "size_unity": [
+   78.104,
+   23.005,
+   63.596
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Snow_A",
+  "category": "Snow",
+  "tris": 72,
+  "size_unity": [
+   1.965,
+   0.105,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Snow_B",
+  "category": "Snow",
+  "tris": 192,
+  "size_unity": [
+   1.965,
+   0.148,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Snow_C",
+  "category": "Snow",
+  "tris": 162,
+  "size_unity": [
+   1.965,
+   0.152,
+   2.269
+  ]
+ },
+ {
+  "asset": "Arena_Snow_Ground",
+  "category": "Snow",
+  "tris": 4407,
+  "size_unity": [
+   31.391,
+   0.59,
+   18.331
+  ]
+ },
+ {
+  "asset": "Arena_Snow_Cliffs",
+  "category": "Snow",
+  "tris": 15235,
+  "size_unity": [
+   32.512,
+   26.032,
+   18.718
+  ]
+ },
+ {
+  "asset": "Arena_Snow_Scatter",
+  "category": "Snow",
+  "tris": 31834,
+  "size_unity": [
+   34.204,
+   13.914,
+   19.237
+  ]
+ },
+ {
+  "asset": "Arena_Snow_Sky",
+  "category": "Snow",
+  "tris": 46121,
+  "size_unity": [
+   81.271,
+   22.968,
+   56.576
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Grave_A",
+  "category": "Graveyard",
+  "tris": 72,
+  "size_unity": [
+   1.965,
+   0.105,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Grave_B",
+  "category": "Graveyard",
+  "tris": 192,
+  "size_unity": [
+   1.965,
+   0.148,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Grave_C",
+  "category": "Graveyard",
+  "tris": 162,
+  "size_unity": [
+   1.965,
+   0.152,
+   2.269
+  ]
+ },
+ {
+  "asset": "Arena_Graveyard_Ground",
+  "category": "Graveyard",
+  "tris": 5218,
+  "size_unity": [
+   32.547,
+   0.609,
+   19.83
+  ]
+ },
+ {
+  "asset": "Arena_Graveyard_Cliffs",
+  "category": "Graveyard",
+  "tris": 15504,
+  "size_unity": [
+   33.111,
+   25.53,
+   19.611
+  ]
+ },
+ {
+  "asset": "Arena_Graveyard_Water",
+  "category": "Graveyard",
+  "tris": 82,
+  "size_unity": [
+   24.439,
+   0.0,
+   16.598
+  ]
+ },
+ {
+  "asset": "Arena_Graveyard_Scatter",
+  "category": "Graveyard",
+  "tris": 42048,
+  "size_unity": [
+   33.853,
+   9.952,
+   20.074
+  ]
+ },
+ {
+  "asset": "Arena_Graveyard_Sky",
+  "category": "Graveyard",
+  "tris": 50294,
+  "size_unity": [
+   81.271,
+   24.516,
+   55.046
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Forest_A",
+  "category": "Forest",
+  "tris": 72,
+  "size_unity": [
+   1.965,
+   0.105,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Forest_B",
+  "category": "Forest",
+  "tris": 192,
+  "size_unity": [
+   1.965,
+   0.148,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Forest_C",
+  "category": "Forest",
+  "tris": 162,
+  "size_unity": [
+   1.965,
+   0.152,
+   2.269
+  ]
+ },
+ {
+  "asset": "Arena_Forest_Ground",
+  "category": "Forest",
+  "tris": 8301,
+  "size_unity": [
+   33.284,
+   0.953,
+   21.264
+  ]
+ },
+ {
+  "asset": "Arena_Forest_Cliffs",
+  "category": "Forest",
+  "tris": 18068,
+  "size_unity": [
+   34.235,
+   26.143,
+   21.579
+  ]
+ },
+ {
+  "asset": "Arena_Forest_Water",
+  "category": "Forest",
+  "tris": 296,
+  "size_unity": [
+   5.296,
+   0.25,
+   10.245
+  ]
+ },
+ {
+  "asset": "Arena_Forest_Falls",
+  "category": "Forest",
+  "tris": 528,
+  "size_unity": [
+   40.516,
+   19.09,
+   36.1
+  ]
+ },
+ {
+  "asset": "Arena_Forest_Scatter",
+  "category": "Forest",
+  "tris": 36365,
+  "size_unity": [
+   33.9,
+   8.205,
+   22.103
+  ]
+ },
+ {
+  "asset": "Arena_Forest_Sky",
+  "category": "Forest",
+  "tris": 45302,
+  "size_unity": [
+   78.104,
+   25.469,
+   62.19
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Mount_A",
+  "category": "MountainPass",
+  "tris": 72,
+  "size_unity": [
+   1.965,
+   0.105,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Mount_B",
+  "category": "MountainPass",
+  "tris": 192,
+  "size_unity": [
+   1.965,
+   0.148,
+   2.269
+  ]
+ },
+ {
+  "asset": "Hex_Tile_Mount_C",
+  "category": "MountainPass",
+  "tris": 162,
+  "size_unity": [
+   1.965,
+   0.152,
+   2.269
+  ]
+ },
+ {
+  "asset": "Arena_MountainPass_Ground",
+  "category": "MountainPass",
+  "tris": 7358,
+  "size_unity": [
+   32.97,
+   1.698,
+   20.293
+  ]
+ },
+ {
+  "asset": "Arena_MountainPass_Cliffs",
+  "category": "MountainPass",
+  "tris": 14200,
+  "size_unity": [
+   33.602,
+   27.945,
+   20.414
+  ]
+ },
+ {
+  "asset": "Arena_MountainPass_Scatter",
+  "category": "MountainPass",
+  "tris": 37608,
+  "size_unity": [
+   33.099,
+   6.948,
+   20.519
+  ]
+ },
+ {
+  "asset": "Arena_MountainPass_Sky",
+  "category": "MountainPass",
+  "tris": 31339,
+  "size_unity": [
+   83.734,
+   40.5,
+   61.825
+  ]
  }
 ]

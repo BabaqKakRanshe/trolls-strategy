@@ -1,0 +1,602 @@
+{
+ "name": "Arena_MountainPass",
+ "kitVersion": "2026.10.10.1",
+ "board": {
+  "width": 9,
+  "height": 5,
+  "hexAcrossFlats": 2.0,
+  "note": "координаты относительно середины поля (BattleBoardView.middle)"
+ },
+ "objects": [
+  {
+   "name": "Arena_MountainPass_Ground",
+   "asset": "Arena_MountainPass_Ground",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Arena_MountainPass_Cliffs",
+   "asset": "Arena_MountainPass_Cliffs",
+   "group": "Terrain",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Arena_MountainPass_Scatter",
+   "asset": "Arena_MountainPass_Scatter",
+   "group": "Nature",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Blue.006",
+   "asset": "Prop_Banner_Blue",
+   "group": "Props",
+   "p": [
+    -11.3,
+    -0.0047,
+    4.05
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Blue_Cloth.006",
+   "asset": "Prop_Banner_Blue_Cloth",
+   "group": "Props",
+   "p": [
+    -11.3,
+    2.6153,
+    4.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "sway": [
+    5.0,
+    0.35,
+    0.68
+   ]
+  },
+  {
+   "name": "Prop_WeaponRack.002",
+   "asset": "Prop_WeaponRack",
+   "group": "Props",
+   "p": [
+    -11.75,
+    0.0187,
+    -1.45
+   ],
+   "r": [
+    0.0,
+    0.906308,
+    0.0,
+    0.422618
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Brazier.003",
+   "asset": "Prop_Brazier",
+   "group": "Props",
+   "p": [
+    -11.35,
+    -0.0012,
+    -3.05
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Red.006",
+   "asset": "Prop_Banner_Red",
+   "group": "Props",
+   "p": [
+    11.3,
+    -0.0124,
+    3.95
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Prop_Banner_Red_Cloth.006",
+   "asset": "Prop_Banner_Red_Cloth",
+   "group": "Props",
+   "p": [
+    11.3,
+    2.6076,
+    3.9
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "sway": [
+    5.0,
+    0.35,
+    0.557
+   ]
+  },
+  {
+   "name": "FX_Flame_Small.014",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    -1.75,
+    1.8915,
+    5.405
+   ],
+   "r": [
+    -0.0,
+    -0.80738,
+    -0.0,
+    0.590032
+   ],
+   "s": [
+    0.55,
+    0.55,
+    0.55
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.015",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    1.75,
+    1.891,
+    5.405
+   ],
+   "r": [
+    0.0,
+    0.520069,
+    0.0,
+    0.854124
+   ],
+   "s": [
+    0.55,
+    0.55,
+    0.55
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.016",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    -11.35,
+    1.0788,
+    -3.05
+   ],
+   "r": [
+    0.0,
+    0.727906,
+    0.0,
+    0.685677
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.017",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    -11.0,
+    1.7533,
+    2.75
+   ],
+   "r": [
+    -0.0,
+    -0.848603,
+    -0.0,
+    0.52903
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.018",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    12.2798,
+    0.885,
+    -1.1554
+   ],
+   "r": [
+    0.0,
+    0.935375,
+    0.0,
+    0.353659
+   ],
+   "s": [
+    0.85,
+    0.85,
+    0.85
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "FX_Flame_Small.019",
+   "asset": "FX_Flame_Small",
+   "group": "FX",
+   "p": [
+    11.0,
+    1.7249,
+    2.95
+   ],
+   "r": [
+    0.0,
+    0.074585,
+    0.0,
+    0.997215
+   ],
+   "s": [
+    0.72,
+    0.72,
+    0.72
+   ],
+   "flicker": 1.0
+  },
+  {
+   "name": "Arena_MountainPass_Sky",
+   "asset": "Arena_MountainPass_Sky",
+   "group": "Sky",
+   "p": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    -1.0,
+    -0.0,
+    0.0
+   ],
+   "s": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  }
+ ],
+ "camera": {
+  "position": [
+   -0.0,
+   20.74366,
+   -18.88296
+  ],
+  "forward": [
+   0.0,
+   -0.76828,
+   0.64011
+  ],
+  "up": [
+   0.0,
+   0.64011,
+   0.76828
+  ],
+  "fov": 32.2,
+  "referenceAspect": 1.7778
+ },
+ "framing": {
+  "pitch": 50.2,
+  "fov": 32.2,
+  "distance": 27.0,
+  "focusOffset": -1.6,
+  "boardWidthShare": 0.69
+ },
+ "sun": {
+  "forward": [
+   -0.41916,
+   -0.75848,
+   0.499
+  ],
+  "color": [
+   1.0,
+   0.96,
+   0.9
+  ],
+  "intensity": 1.75,
+  "shadowStrength": 0.9
+ },
+ "ambient": {
+  "color": [
+   0.52,
+   0.62,
+   0.8
+  ],
+  "sky": [
+   0.52,
+   0.62,
+   0.8
+  ],
+  "equator": [
+   0.52,
+   0.62,
+   0.8
+  ],
+  "ground": [
+   0.52,
+   0.62,
+   0.8
+  ]
+ },
+ "background": [
+  0.56,
+  0.74,
+  0.95
+ ],
+ "fog": {
+  "color": [
+   0.56,
+   0.74,
+   0.95
+  ],
+  "startPerDistance": 1.0,
+  "endPerDistance": 3.6
+ },
+ "post": {
+  "exposure": -0.1,
+  "saturation": 4.0,
+  "contrast": 10.0,
+  "temperature": -3.0,
+  "bloomThreshold": 0.9,
+  "bloomIntensity": 0.35,
+  "bloomScatter": 0.6,
+  "dofStartPerDistance": 1.4,
+  "dofEndPerDistance": 2.0,
+  "dofMaxRadius": 1.0,
+  "vignette": 0.0,
+  "vignetteSmoothness": 0.45,
+  "lift": [
+   1.0,
+   1.0,
+   1.02,
+   0.0
+  ],
+  "gamma": [
+   1.0,
+   1.0,
+   1.0,
+   0.0
+  ],
+  "gain": [
+   1.0,
+   1.0,
+   1.02,
+   0.0
+  ]
+ },
+ "haze": {
+  "color": [
+   0.6,
+   0.76,
+   0.95
+  ],
+  "startDepth": 3.0,
+  "fullDepth": 22.0,
+  "opacity": 1.0,
+  "edgeColor": [
+   0.92,
+   0.96,
+   1.0
+  ],
+  "edgeIntensity": 0.5,
+  "edgeStart": 0.35,
+  "edgeFull": 1.1,
+  "edgeTop": 0.25
+ },
+ "tiles": {
+  "neutral": [
+   "Hex_Tile_Mount_A",
+   "Hex_Tile_Mount_A",
+   "Hex_Tile_Mount_B",
+   "Hex_Tile_Mount_C"
+  ],
+  "player": "Hex_Tile_Blue",
+  "enemy": "Hex_Tile_Red",
+  "obstacles": [
+   "Obst_Boulders",
+   "Obst_Stump",
+   "Obst_Bush"
+  ]
+ },
+ "fx": {
+  "dust": [
+   "FX_Dust_Puff_A",
+   "FX_Dust_Puff_B",
+   "FX_Dust_Puff_C"
+  ],
+  "smoke": [
+   "FX_Smoke_Puff_A",
+   "FX_Smoke_Puff_B"
+  ],
+  "debrisStone": [
+   "FX_Debris_Stone_A",
+   "FX_Debris_Stone_B",
+   "FX_Debris_Stone_C"
+  ],
+  "debrisEarth": [
+   "FX_Debris_Earth_A",
+   "FX_Debris_Earth_B"
+  ],
+  "debrisWood": [
+   "FX_Debris_Wood_A",
+   "FX_Debris_Wood_B"
+  ],
+  "rock": [
+   "FX_Rock_Throw"
+  ],
+  "spark": [
+   "FX_Spark_Shard"
+  ]
+ },
+ "sockets": [
+  {
+   "kind": "embers",
+   "p": [
+    -1.75,
+    2.19152,
+    5.405
+   ],
+   "size": 0.3
+  },
+  {
+   "kind": "embers",
+   "p": [
+    1.75,
+    2.19098,
+    5.405
+   ],
+   "size": 0.3
+  },
+  {
+   "kind": "embers",
+   "p": [
+    -11.35,
+    1.29876,
+    -3.05
+   ],
+   "size": 0.6
+  },
+  {
+   "kind": "embers",
+   "p": [
+    -11.0,
+    2.10334,
+    2.75
+   ],
+   "size": 0.4
+  },
+  {
+   "kind": "embers",
+   "p": [
+    12.27977,
+    1.23501,
+    -1.1554
+   ],
+   "size": 0.5
+  },
+  {
+   "kind": "smoke",
+   "p": [
+    12.45636,
+    3.87501,
+    -1.0615
+   ],
+   "size": 0.8
+  },
+  {
+   "kind": "embers",
+   "p": [
+    11.0,
+    2.07495,
+    2.95
+   ],
+   "size": 0.4
+  }
+ ],
+ "tris": 94465
+}

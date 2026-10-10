@@ -10,7 +10,10 @@ blender -b --python <шаг> -- <аргументы>.
 
 Шаги по порядку (порядок важен: колония и иконки берут здания из .blend, который сохранил первый шаг):
   buildings  add_buildings.py   палитра, 12 производственных зданий по контракту -> Models/Buildings
-  arena      build_arena.py     арена «Луг» -> Models/Arena, Layout/arena_meadow_layout.json
+  arena      build_arena.py     арены «Луг», «Болото» (--env swamp), «Снега» (--env snow), «Кладбище»
+                                (--env graveyard), «Лес» (--env forest) и «Горная застава» (--env mountainpass)
+                                -> Models/Arena (+ Meadow/, Swamp/, Snow/, Graveyard/, Forest/, MountainPass/),
+                                Layout/arena_<окружение>_layout.json
   colony     build_colony.py    «Долина», казарма и склад, фон, детали префабов -> Models/Colony, Models/Buildings,
                                 Layout/colony_meadow_layout.json (с --previews ещё превью 16:9, 21:9, 4:3 и «отстроенная»)
   isle       build_isle.py      остров колонии, растущий блоками -> Models/Isle, Layout/isle_layout.json
@@ -57,6 +60,11 @@ def steps(o):
         colony += ["--render", "--shots", "hero,wide,ipad"]
     out = [("buildings", ["add_buildings.py", "--blend", b]),
            ("arena", ["build_arena.py", "--blend", b]),
+           ("arena", ["build_arena.py", "--blend", b, "--env", "swamp"]),
+           ("arena", ["build_arena.py", "--blend", b, "--env", "snow"]),
+           ("arena", ["build_arena.py", "--blend", b, "--env", "graveyard"]),
+           ("arena", ["build_arena.py", "--blend", b, "--env", "forest"]),
+           ("arena", ["build_arena.py", "--blend", b, "--env", "mountainpass"]),
            ("colony", colony)]
     if o["previews"]:
         out.append(("colony", ["build_colony.py", "--blend", b, "--render", "--shots", "hero", "--preview", "grown",

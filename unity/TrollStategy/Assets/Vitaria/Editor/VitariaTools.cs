@@ -9,9 +9,11 @@
 //   5. Align Main Camera     — camera position / FOV / background identical to the Blender preview
 //
 // Battle arenas (Models/Arena, Layout/arena_*_layout.json) are assembled into a prefab by the game
-// (TrollStrategy > Arena > Build Arena Prefabs); here they only get their import profile, the two water
-// materials (Vitaria_Water, Vitaria_Waterfall), whose textures scroll at runtime, and Vitaria_FX for the
-// faces that glow (arena flames, coals, sparks).
+// (TrollStrategy > Arena > Build Arena Prefabs); here they only get their import profile, the water
+// materials (Vitaria_Water, Vitaria_Waterfall, Vitaria_Water_<Biome>), whose textures scroll at runtime,
+// Vitaria_FX for the faces that glow (arena flames, coals, sparks) and the biome palettes
+// (Vitaria_Palette_<Biome>: the palette's cell layout with the biome's colours, for an arena's terrain,
+// scatter, sky and recoloured board tiles). All of them ship as .mat files and are remapped by name.
 
 using System;
 using System.Collections.Generic;
@@ -33,10 +35,17 @@ namespace Vitaria.EditorTools
         public const string SourceMaterialName = "Vitaria_Palette";
         public const string ArenaModelsRoot = ModelsRoot + "/Arena";
         // Water keeps its own materials: a small tiling texture scrolled along V by the arena script.
-        public static readonly string[] WaterMaterialNames = { "Vitaria_Water", "Vitaria_Waterfall" };
-        // Every material besides the palette an FBX may use: water, and Vitaria_FX — the palette with emission
-        // on, for the glowing faces of arena flames, coals and sparks (the colony's palette keeps emission off).
-        public static readonly string[] ExtraMaterialNames = { "Vitaria_Water", "Vitaria_Waterfall", "Vitaria_FX" };
+        public static readonly string[] WaterMaterialNames = { "Vitaria_Water", "Vitaria_Waterfall", "Vitaria_Water_Swamp" };
+        // Every material besides the palette an FBX may use: water, Vitaria_FX — the palette with emission
+        // on, for the glowing faces of arena flames, coals and sparks (the colony's palette keeps emission off) —
+        // and the arena biome palettes (Vitaria_Palette_Swamp, Vitaria_Palette_Snow, Vitaria_Palette_Graveyard,
+        // Vitaria_Palette_Forest, Vitaria_Palette_MountainPass: the biome's terrain, scatter, sky and board tiles;
+        // the Graveyard's ponds use Vitaria_Water_Swamp, the Forest's stream and falls — Vitaria_Water and
+        // Vitaria_Waterfall of the Meadow).
+        public static readonly string[] ExtraMaterialNames =
+            { "Vitaria_Water", "Vitaria_Waterfall", "Vitaria_FX", "Vitaria_Water_Swamp", "Vitaria_Palette_Swamp",
+              "Vitaria_Palette_Snow", "Vitaria_Palette_Graveyard", "Vitaria_Palette_Forest",
+              "Vitaria_Palette_MountainPass" };
         public static string WaterMaterialPath(string name) { return Root + "/Materials/" + name + ".mat"; }
 
         /// <summary>Remaps every Vitaria material the FBX files use (palette, water, FX) to the project assets.</summary>

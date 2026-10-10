@@ -211,8 +211,10 @@ class Terrace:
                  grid=0.7, grass=(0.42, 0.95), col_w=(1.3, 2.8), lip=True, cliff=True,
                  open_ranges=(), step=0.42, lean=0.1, batter=0.42, ramp="arena_grass", wide=0.22,
                  shelves=None, shelf_jit=0.3, notch=0.18, calm=None, patches=None, extra_pts=None, fade=None,
-                 deep=None):
+                 deep=None, sink=None):
         self.name, self.z, self.bottom, self.seed = name, z, bottom, seed
+        # sink(x, y) -> м вниз: низины внутри террасы (пруды «Болота»); None — как раньше
+        self.sink = sink
         self.hills, self.flat, self.grid, self.grass = hills, flat, grid, grass
         # calm(x, y) -> 0..1: где пятна травы гасятся к середине рампы (поле под стройку колонии)
         self.calm = calm
@@ -271,6 +273,8 @@ class Terrace:
         if self.flat is not None:
             w = self.flat(x, y)
             z = z * (1 - w) + self.z * w
+        if self.sink is not None:
+            z -= self.sink(x, y)
         return z
 
     def grass_t(self, x, y, rim=None):
@@ -637,6 +641,7 @@ def strata_bands(a, P, N, closed, z_tops, deep, fade, bottom_of):
     ns = d.get("nseed", 0.5)
     ramp, z0, z1 = fade[:3]
     jamp = fade[3] if len(fade) > 3 else 0.05
+    ledge = d.get("ledge", 0.09)            # сдвиг по рампе уступов между пластами (вверх — светлее/мшистее)
 
     def rnd(key, salt):
         return random.Random(key * 7919 + salt).uniform(-1.0, 1.0)
@@ -704,7 +709,7 @@ def strata_bands(a, P, N, closed, z_tops, deep, fade, bottom_of):
                 pr = (OFF[i][b + 1] + OFF[i2][b + 1]) - (OFF[i][b] + OFF[i2][b] - 2 * leans[b]) > 0
                 want = Vector((0, 0, 1 if pr else -1))
                 face((bot[b][i], bot[b][i2], top[b + 1][i2], top[b + 1][i]), want,
-                     lambda z, nz, b=b: clamp((z - z0) / (z1 - z0) + jit[b] + (0.09 if nz > 0 else -0.09)))
+                     lambda z, nz, b=b: clamp((z - z0) / (z1 - z0) + jit[b] + (ledge if nz > 0 else -0.09)))
     loose = [v for row in top + bot for v in row if not v.link_faces]
     if loose:
         bmesh.ops.delete(bm, geom=loose, context="VERTS")
@@ -873,6 +878,11 @@ WATER_STYLES = {
                  length=(26, 90), strength=0.55, bands=0.55),
     "falls": dict(base="#4aa6df", deep="#3288c8", lite="#8ccbee", foam="#d2ebf7", streaks=64, foam_share=0.3,
                   length=(20, 80), strength=0.9, bands=0.8),
+    # Vitaria_Water_Swamp: стоячая вода болота — тёмная зелено-бирюзовая, светлые разводы неба и пятна ряски;
+    # почти не течёт (scroll в раскладке малый)
+    # пятна вместо полос: UV болота квадратные (V — 4 повтора U), пятно круглое и на воде
+    "swamp": dict(base="#3f6b5c", deep="#2f5447", lite="#71a08b", foam="#7f9c4a", blobs=34, foam_share=0.4,
+                  radius=(3.0, 10.0), strength=0.5, bands=0.12, seed=13),
 }
 
 
@@ -881,7 +891,7 @@ def make_water_texture(path, style="lake"):
     import numpy as np
     st = WATER_STYLES[style]
     w, h = WATER_TEX
-    rng = np.random.default_rng(7 if style == "lake" else 11)
+    rng = np.random.default_rng(st.get("seed", 7 if style == "lake" else 11))
 
     def rgb(hx):
         return np.array([int(hx[i:i + 2], 16) for i in (1, 3, 5)], np.float32) / 255
@@ -892,11 +902,21 @@ def make_water_texture(path, style="lake"):
     band = 0.5 + st["bands"] * (0.3 * np.sin(u * np.pi * 2 * 3 + 0.7) + 0.2 * np.sin(u * np.pi * 2 * 7 + 2.1))
     for y in range(h):
         img[y] = deep + (base - deep) * band[:, None].clip(0, 1)
-    for _ in range(st["streaks"]):
+    if st.get("blobs"):
+        yy, xx = np.mgrid[0:h, 0:w]
+        for _ in range(st["blobs"]):
+            cx, cy = rng.integers(0, w), rng.integers(0, h)
+            r = rng.uniform(*st["radius"])
+            col = foam if rng.random() < st["foam_share"] else lite
+            dx = np.minimum(np.abs(xx - cx), w - np.abs(xx - cx))
+            dy = np.minimum(np.abs(yy - cy), h - np.abs(yy - cy))
+            k = (np.clip(1.0 - np.sqrt(dx * dx + dy * dy) / r, 0.0, 1.0) ** 1.4 * st["strength"])[..., None]
+            img = img * (1 - k) + col * k
+    for _ in range(st.get("streaks", 0)):
         cx = rng.integers(0, w)
         cy = rng.integers(0, h)
         ln = rng.integers(*st["length"])
-        wd = rng.integers(1, 3 if style == "lake" else 4)
+        wd = rng.integers(*st.get("width", (1, 3 if style == "lake" else 4)))
         col = foam if rng.random() < st["foam_share"] else lite
         for dy in range(ln):
             yy = (cy + dy) % h
@@ -1032,3 +1052,83 @@ def foam_patch(a, c, r, seed=0, n=9, z=WATER_Z):
         x, y = c[0] + math.cos(ang) * d, c[1] + math.sin(ang) * d
         a.add(p_ico(rr, 1, loc=(x, y, z + rr * 0.12), scl=(1.0, rng.uniform(0.7, 1.0), 0.42), jitter=0.2,
                     rng=rng, cut=-rr * 0.1), lambda f: "foam" if f.normal.z > -0.2 else "water_dark")
+
+
+# =========================================================================================
+# стоячая вода и пятна по рельефу (окружения арены: «Болото»)
+# =========================================================================================
+def signed_dist(x, y, pts):
+    """> 0 внутри контура, < 0 снаружи (м)."""
+    d = dist_to_outline(x, y, pts)
+    return d if point_in_poly(x, y, pts) else -d
+
+
+def offset_outline(pts, d):
+    """Контур, сдвинутый по нормали на d (> 0 — наружу)."""
+    nr = edge_normals(pts)
+    return [p + n * d for p, n in zip(pts, nr)]
+
+
+def water_poly(a, outline, z, tile=3.0, rot=0.0):
+    """Плоская вода по контуру (пруд в низине). UV квадратные в мире: U — 1 повтор на tile м, V — на 4·tile
+    (текстура воды 64 x 256), повёрнуты на rot градусов; V скроллит игра (раскладка scroll)."""
+    bm, uvl = a.bm, a.uv
+    pts2 = [Vector((p.x, p.y)) for p in outline]
+    res = geometry.delaunay_2d_cdt(pts2, [], [list(range(len(pts2)))], 1, 1e-5)
+    vco, faces = res[0], res[2]
+    ca, sa = math.cos(math.radians(rot)), math.sin(math.radians(rot))
+    vs = [bm.verts.new((v.x, v.y, z)) for v in vco]
+    for f in faces:
+        try:
+            nf = bm.faces.new([vs[i] for i in f])
+        except ValueError:
+            continue
+        nf.normal_update()
+        if nf.normal.z < 0:
+            nf.normal_flip()
+        for l in nf.loops:
+            x, y = l.vert.co.x, l.vert.co.y
+            u, v = x * ca + y * sa, -x * sa + y * ca
+            l[uvl].uv = (u / tile, v / (4.0 * tile))
+    return len(faces)
+
+
+def decal(a, terrace, outline, ramp, t_of, lift=0.022, grid=0.55, swatch=None):
+    """Пятно по рельефу террасы (ил у берега, грязь у поля): контур + внутренняя сетка, высота — рельеф + lift,
+    цвет — рампа ramp, t_of(x, y, r) -> 0..1, r — расстояние до края пятна; или один swatch (мох)."""
+    bm, uvl = a.bm, a.uv
+    pts2 = [Vector((p.x, p.y)) for p in outline]
+    xs = [p.x for p in pts2]
+    ys = [p.y for p in pts2]
+    inner = []
+    yy = min(ys) + grid * 0.5
+    row = 0
+    while yy < max(ys):
+        xx = min(xs) + grid * (0.5 + 0.5 * (row % 2))
+        while xx < max(xs):
+            if point_in_poly(xx, yy, outline) and dist_to_outline(xx, yy, outline) > grid * 0.45:
+                inner.append(Vector((xx, yy)))
+            xx += grid
+        yy += grid * 0.866
+        row += 1
+    res = geometry.delaunay_2d_cdt(pts2 + inner, [], [list(range(len(pts2)))], 1, 1e-5)
+    vco, faces = res[0], res[2]
+    verts = []
+    for v in vco:
+        r = dist_to_outline(v.x, v.y, outline)
+        verts.append((bm.verts.new((v.x, v.y, terrace.height(v.x, v.y) + lift)),
+                      None if swatch else t_of(v.x, v.y, r)))
+    n = 0
+    for f in faces:
+        try:
+            nf = bm.faces.new([verts[i][0] for i in f])
+        except ValueError:
+            continue
+        nf.normal_update()
+        if nf.normal.z < 0:
+            nf.normal_flip()
+        tm = {verts[i][0]: verts[i][1] for i in f}
+        for l in nf.loops:
+            l[uvl].uv = SW_UV[swatch] if swatch else ramp_uv(ramp, tm[l.vert])
+        n += 1
+    return n
