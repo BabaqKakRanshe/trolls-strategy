@@ -35,7 +35,7 @@ namespace TrollStrategy.Editor.Setup
                 {
                     // Tutorial: one new idea per step.
                     Tutorial("tutorial-goblin", "Первый работник",
-                        "Внизу, во вкладке «Существа», нажми на гоблина: он сам встанет у склада.",
+                        "Внизу, во вкладке «Существа», нажми на гоблина, потом — на клетку у склада.",
                         Goals(QuestGoal.OwnUnits(UnitKind.Goblin, 1)),
                         Rewards(QuestReward.UnlockBuilding(BuildingKind.Mine))),
                     Tutorial("tutorial-mine", "Своя шахта",
@@ -44,7 +44,7 @@ namespace TrollStrategy.Editor.Setup
                         Rewards(QuestReward.Coins(100))),
                     // the troll comes with the first won battle: a goblin digs the first ore
                     Tutorial("tutorial-work", "За работу!",
-                        "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, нажми на шахту и в её карточке — «Вывозить на склад»: новый гоблин начнёт носить руду на склад.",
+                        "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, кликни по нему → «Перенос» (H): сначала шахта — откуда носить, потом склад — куда. Те же приказы открывает правый клик.",
                         Goals(QuestGoal.AnyWorkAt(BuildingKind.Mine, 1),
                             QuestGoal.HaulRoute(UnitKind.Goblin, BuildingKind.Mine, BuildingKind.Warehouse)),
                         Rewards(QuestReward.Coins(100))),
@@ -211,6 +211,9 @@ namespace TrollStrategy.Editor.Setup
                 },
                 repeatGrowthPercent: 25);
             progression.SetRepeatArenaLevels(5, 30);
+            // the public builds end early: the itch.io alpha with the tutorial, the Steam demo with "Растущее поселение"
+            // (medians of 16 and 43 minutes for the bot population, 2026-10-09)
+            progression.SetShortBuildEnds("tutorial-gear", "population");
             EditorUtility.SetDirty(progression);
 
             catalog.SetProgression(progression);

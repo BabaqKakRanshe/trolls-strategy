@@ -83,7 +83,7 @@ namespace TrollStrategy.UI
                 tooltip.Attach(_catalogButton, () => "Каталог", () => "Здания и существа, лоток внизу экрана.", Hotkeys.Catalog.Label);
                 tooltip.Attach(_wikiButton, () => "Справочник",
                     () => "Существа, здания, товары, улучшения и арена: кто что делает и сколько стоит.", Hotkeys.Wiki.Label);
-                tooltip.Attach(_menuButton, () => "Меню", () => "Пауза, настройки звука, графики и языка, об игре, начать заново.",
+                tooltip.Attach(_menuButton, () => "Меню", () => "Пауза, сохранения, настройки звука, графики и языка, об игре, начать заново.",
                     Hotkeys.Menu.Label);
             }
             RefreshBattle();

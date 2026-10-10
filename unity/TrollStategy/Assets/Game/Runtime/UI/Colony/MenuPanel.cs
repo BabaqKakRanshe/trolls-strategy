@@ -14,16 +14,18 @@ namespace TrollStrategy.UI
         Settings,
         Languages,
         About,
-        Restart
+        Restart,
+        Saves
     }
 
     /// <summary>
     /// The pause menu (Esc with nothing to cancel, or the menu tool). Its first page has no card: the title on the
-    /// halo over the island and round actions (continue, settings, about the game, a bug report, start over) with their
+    /// halo over the island and round actions (continue, the saves, settings, about the game, a bug report, start over) with their
     /// words in the hint. The other pages are a white sheet with a back arrow: settings (music, sounds, nature,
     /// graphics with an automatic choice, interface size, the language on a page of its own), about the game and
     /// its author, and the question before starting over. The colony stands still while it is open. Settings
-    /// live in <see cref="GameSettings"/>; starting over goes to the bootstrap.
+    /// live in <see cref="GameSettings"/>; starting over goes to the bootstrap. The saves are a wider sheet of slots
+    /// (<see cref="SaveSheet"/>) whose questions take its place and its title.
     /// </summary>
     public sealed class MenuPanel
     {
@@ -44,7 +46,8 @@ namespace TrollStrategy.UI
             { MenuPage.Settings, "Настройки" },
             { MenuPage.Languages, "Язык" },
             { MenuPage.About, "Об игре" },
-            { MenuPage.Restart, "Начать заново?" }
+            { MenuPage.Restart, "Начать заново?" },
+            { MenuPage.Saves, "Сохранения" }
         };
 
         public const string AboutGame =
@@ -88,11 +91,20 @@ namespace TrollStrategy.UI
             _pages[MenuPage.Languages] = Ui.Require<VisualElement>(root, "menu-languages");
             _pages[MenuPage.About] = Ui.Require<VisualElement>(root, "menu-about");
             _pages[MenuPage.Restart] = Ui.Require<VisualElement>(root, "menu-restart");
+            _pages[MenuPage.Saves] = Ui.Require<VisualElement>(root, "menu-saves");
             UiFeel.Bind(Ui.Require<Button>(root, "menu-close"), Close, Sfx.UiBack);
             UiFeel.Bind(Ui.Require<Button>(root, "menu-back"), Back, Sfx.UiBack);
 
             var actions = Ui.Require<VisualElement>(root, "menu-actions");
             ContinueButton = AddAction(actions, "play", "Продолжить", "Esc", "is-primary", Close, null);
+            if (context.Saves != null)
+            {
+                SavesButton = AddAction(actions, "save", "Сохранения", null, null, () => Show(MenuPage.Saves),
+                    "Сохранить колонию в ячейку или открыть прежнюю.");
+                // a load that passed its check closes the menu: the scene opens the save
+                SaveSlots = new SaveSheet(_pages[MenuPage.Saves], context.Saves, context.Catalog, true, tooltip, Close);
+                SaveSlots.Changed += ShowSavesTitle;
+            }
             SettingsButton = AddAction(actions, "settings", "Настройки", null, null, () => Show(MenuPage.Settings),
                 "Звук, графика, размер интерфейса и язык.");
             AboutButton = AddAction(actions, "info", "Об игре", null, null, () => Show(MenuPage.About),
@@ -121,6 +133,16 @@ namespace TrollStrategy.UI
         /// <summary>"Сообщить об ошибке"; null while the game has no way to send a report.</summary>
         public Button ReportButton { get; }
         public Button RestartButton { get; }
+        /// <summary>«Сохранения»; null while the game has no saves (tests).</summary>
+        public Button SavesButton { get; }
+        /// <summary>The saves page's slots and questions; null without saves.</summary>
+        public SaveSheet SaveSlots { get; }
+        /// <summary>The «Начать заново?» page's warning, as shown.</summary>
+        public string RestartText => _restartText?.text;
+        public const string RestartOverAutosave =
+            "Колония начнётся с самого начала, а нынешняя пропадёт: новая займёт место автосохранения после п" +
+            "ервого приказа. Чтобы оставить нынешнюю, сначала сохраните её в ячейку.";
+        private Label _restartText;
         public Button LanguageButton { get; private set; }
         public Button RestartConfirmButton { get; private set; }
         public Slider MusicSlider => _music.Slider;
@@ -151,6 +173,7 @@ namespace TrollStrategy.UI
         {
             if (!IsOpen) return;
             Ui.Show(_overlay, false);
+            SaveSlots?.Release();
             _context.SetPaused?.Invoke(false);
         }
 
@@ -165,6 +188,9 @@ namespace TrollStrategy.UI
                 case MenuPage.Languages:
                     Show(MenuPage.Settings);
                     break;
+                // a question on the saves' sheet goes back to its list first
+                case MenuPage.Saves when SaveSlots != null && SaveSlots.Back():
+                    break;
                 default:
                     Show(MenuPage.Pause);
                     break;
@@ -174,16 +200,47 @@ namespace TrollStrategy.UI
         /// <summary>Shows a page of the open menu; tools and tests use it to reach a page directly.</summary>
         public void Show(MenuPage page)
         {
+            if (page == MenuPage.Saves && SaveSlots == null) page = MenuPage.Pause;
+            // the saves' pictures go with their page
+            if (Page == MenuPage.Saves && page != MenuPage.Saves) SaveSlots?.Release();
             Page = page;
             bool sheet = page != MenuPage.Pause;
             Ui.Show(_pause, !sheet);
             Ui.Show(_dialog, sheet);
             foreach (var (key, element) in _pages) Ui.Show(element, key == page);
-            Ui.SetText(_title, Titles[page]);
+            _dialog.EnableInClassList("saves-dialog", page == MenuPage.Saves);
+            if (page == MenuPage.Saves) SaveSlots.Open();
+            if (page == MenuPage.Restart) Ui.SetText(_restartText, RestartWarningNow());
+            Ui.SetText(_title, page == MenuPage.Saves ? SaveSlots.Title : Titles[page]);
             if (page == MenuPage.Settings || page == MenuPage.Languages) RefreshSettings();
             if (page == MenuPage.About)
                 Ui.SetText(_aboutText, AboutGame + "\n" + (_context.Edition == BuildEdition.SteamDemo ? AboutDemo : AboutAlpha));
             if (IsOpen) UiMotion.PopIn(sheet ? _dialog : _pause, .16f);
+        }
+
+        // While only the autosave keeps this colony, starting over loses it once the new colony gives its first
+        // order: the page says so and how to keep it, as the launch window's «Новая колония» does.
+        private string RestartWarningNow()
+        {
+            var saves = _context.Saves;
+            if (saves == null) return RestartWarning;
+            foreach (var slot in saves.List())
+                if (slot.Loadable && !slot.IsAutosave) return RestartWarning;
+            return RestartOverAutosave;
+        }
+
+        /// <summary>The saves changed while their page may be up (an autosave): the list follows.</summary>
+        public void SavesChanged()
+        {
+            if (IsOpen && Page == MenuPage.Saves) SaveSlots?.Refresh();
+        }
+
+        // a question opened or closed on the saves' sheet: its title is the page's
+        private void ShowSavesTitle()
+        {
+            if (Page != MenuPage.Saves || SaveSlots == null) return;
+            Ui.SetText(_title, SaveSlots.Title);
+            if (IsOpen) UiMotion.PopIn(_dialog, .16f);
         }
 
         private Button AddAction(VisualElement parent, string glyph, string name, string key, string modifier,
@@ -312,7 +369,8 @@ namespace TrollStrategy.UI
         {
             var warning = Ui.Box("callout callout--danger");
             warning.Add(GameLinks.Glyph("restart", "callout__glyph"));
-            warning.Add(Ui.Text(RestartWarning, "callout__text"));
+            _restartText = Ui.Text(RestartWarning, "callout__text");
+            warning.Add(_restartText);
             page.Add(warning);
             var buttons = Ui.Box("menu-buttons");
             var cancel = Ui.CaptionButton("Отмена", null, "btn menu-buttons__button");

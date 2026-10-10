@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Saves.uss" />
     <ui:VisualElement name="intro-overlay" class="overlay overlay--deep">
         <ui:VisualElement name="intro-dialog" class="sheet intro-dialog">
             <!-- what this build is, and the way into the game -->
@@ -19,6 +20,54 @@
             <ui:VisualElement class="intro-dialog__side panel-soft">
                 <ui:Label text="Заходите в гости" class="t-caption" />
                 <ui:VisualElement name="intro-links" class="link-rows" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <!-- the saved colonies (SaveSheet, load and delete), on the same veil in place of the window -->
+        <ui:VisualElement name="intro-saves" class="sheet menu-dialog saves-dialog">
+            <ui:VisualElement class="dialog__header">
+                <ui:Button name="intro-saves-back" class="btn btn-close btn-back">
+                    <ui:VisualElement class="glyph glyph--chevron" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Label name="intro-saves-title" text="Загрузить колонию" class="menu-dialog__title t-black" />
+                <ui:Button name="intro-saves-close" text="×" class="btn btn-close" />
+            </ui:VisualElement>
+            <ui:VisualElement name="intro-saves-page" class="menu-page" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <!-- the end of a short public build: the version is done, what the full game adds, and the way on -->
+    <ui:VisualElement name="end-overlay" class="overlay overlay--deep">
+        <ui:VisualElement name="end-dialog" class="sheet intro-dialog">
+            <ui:VisualElement class="intro-dialog__main">
+                <ui:Label name="end-title" class="intro-dialog__title t-black" />
+                <ui:Label name="end-body" class="intro-dialog__text" />
+                <ui:VisualElement class="end-group">
+                    <ui:Label text="Здания" class="t-caption" />
+                    <ui:VisualElement name="end-buildings" class="end-teasers" />
+                </ui:VisualElement>
+                <ui:VisualElement class="end-group">
+                    <ui:Label text="Существа" class="t-caption" />
+                    <ui:VisualElement name="end-creatures" class="end-teasers" />
+                </ui:VisualElement>
+                <ui:VisualElement class="spacer" />
+                <ui:Label name="end-note" class="intro-dialog__note t-muted" />
+                <ui:VisualElement name="end-actions" class="intro-dialog__actions" />
+            </ui:VisualElement>
+            <ui:VisualElement class="intro-dialog__side panel-soft">
+                <!-- the alpha asks for a rating on itch.io; the links below are the way for a player who has more to say -->
+                <ui:VisualElement name="end-rate" class="end-rate">
+                    <ui:VisualElement class="end-rate__stars" picking-mode="Ignore">
+                        <ui:VisualElement class="glyph glyph--star end-rate__star" picking-mode="Ignore" />
+                        <ui:VisualElement class="glyph glyph--star end-rate__star" picking-mode="Ignore" />
+                        <ui:VisualElement class="glyph glyph--star end-rate__star" picking-mode="Ignore" />
+                        <ui:VisualElement class="glyph glyph--star end-rate__star" picking-mode="Ignore" />
+                        <ui:VisualElement class="glyph glyph--star end-rate__star" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label text="Понравилась игра?" class="end-rate__title t-bold" />
+                    <ui:Label text="Оценка на itch.io помогает другим найти игру." class="end-rate__text t-muted" />
+                    <ui:VisualElement name="end-rate-action" />
+                </ui:VisualElement>
+                <ui:Label text="Заходите в гости" class="t-caption" />
+                <ui:VisualElement name="end-links" class="link-rows" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

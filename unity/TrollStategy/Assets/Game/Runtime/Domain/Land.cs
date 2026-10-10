@@ -55,6 +55,12 @@ namespace TrollStrategy.Domain
 
         public float ClearSecondsLeft(int x, int y) => Inside(x, y) ? _clearLeftMs[y * BlocksPerSide + x] / 1000f : 0f;
 
+        /// <summary>Milliseconds of colony time the block's clearing still needs; 0 when it is not being cleared.</summary>
+        public int ClearLeftMs(int x, int y) => Inside(x, y) ? _clearLeftMs[y * BlocksPerSide + x] : 0;
+
+        /// <summary>Milliseconds the block's clearing takes in all; 0 when it is not being cleared.</summary>
+        public int ClearTotalMs(int x, int y) => Inside(x, y) ? _clearTotalMs[y * BlocksPerSide + x] : 0;
+
         /// <summary>Share of the clearing done, 0..1; 0 for a block that is not being cleared.</summary>
         public float ClearProgress(int x, int y)
         {
@@ -77,6 +83,16 @@ namespace TrollStrategy.Domain
             _blocks[i] = block;
             _clearLeftMs[i] = 0;
             _clearTotalMs[i] = 0;
+        }
+
+        /// <summary>Puts a block back as a saved game had it, its clearing timer included (the save checks the values).</summary>
+        public void Restore(int x, int y, LandBlock block, int clearLeftMs, int clearTotalMs)
+        {
+            if (!Inside(x, y)) throw new ArgumentOutOfRangeException($"({x}, {y})");
+            int i = y * BlocksPerSide + x;
+            _blocks[i] = block;
+            _clearLeftMs[i] = clearLeftMs;
+            _clearTotalMs[i] = clearTotalMs;
         }
 
         internal void StartClearing(int x, int y, int milliseconds)

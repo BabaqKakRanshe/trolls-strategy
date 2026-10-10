@@ -88,7 +88,6 @@ namespace TrollStrategy.UI
         private readonly ActionButton[] _actions = new ActionButton[ActionCount];
         private readonly VisualElement _actionRow;
         // the tutorial's first haul in one press (specs/006-tutorial-guidance, FR-018)
-        private readonly Button _haulToWarehouse;
         private int _rowCount;
         private int _actionCount;
         private string _shownId;
@@ -126,24 +125,6 @@ namespace TrollStrategy.UI
             _tooltip?.Attach(_wikiButton, () => "Подробнее", () => _wikiHint, Hotkeys.Wiki.Label);
 
             var actions = _actionRow = Ui.Require<VisualElement>(root, "inspect-actions");
-            // "Вывозить на склад": above the card's actions while the quest asks to carry from here to the warehouse
-            _haulToWarehouse = Ui.TextButton(string.Empty, "btn btn--primary inspect-haul");
-            _haulToWarehouse.Add(Ui.Art(RewardArt.BuildingIcon(context.Catalog, BuildingKind.Warehouse), "Склад", "inspect-haul__art"));
-            var haulWords = Ui.Box("inspect-haul__words");
-            haulWords.pickingMode = PickingMode.Ignore;
-            var haulTitle = Ui.Text("Вывозить на склад", "btn__title");
-            var haulHint = Ui.Text("свободный работник будет носить отсюда", "btn__hint");
-            haulTitle.pickingMode = PickingMode.Ignore;
-            haulHint.pickingMode = PickingMode.Ignore;
-            haulWords.Add(haulTitle);
-            haulWords.Add(haulHint);
-            _haulToWarehouse.Add(haulWords);
-            UiFeel.Bind(_haulToWarehouse, () => context.Interaction.HaulInspectedToWarehouse());
-            tooltip?.Attach(_haulToWarehouse, () => "Вывозить на склад",
-                () => context.Interaction.HaulToWarehouseBlocker ??
-                      "Ближайший свободный работник будет носить отсюда на склад всё, что здесь делают.");
-            actions.parent.Insert(actions.parent.IndexOf(actions), _haulToWarehouse);
-            Ui.Show(_haulToWarehouse, false);
             for (int i = 0; i < ActionCount; i++)
             {
                 var button = Ui.StackButton("action", out var title, out var hint);
@@ -157,8 +138,6 @@ namespace TrollStrategy.UI
         public bool IsShown => Ui.IsShown(_panel);
         public string Title => _title.text;
         public StaffList Staff => _staff;
-        /// <summary>"Вывозить на склад"; shown while the quest asks to carry from the shown building to the warehouse.</summary>
-        public Button HaulToWarehouseButton => _haulToWarehouse;
         /// <summary>The card's "more": the book on the shown building or creature, or null.</summary>
         public Action WikiLink { get; private set; }
         public Button WikiButton => _wikiButton;
@@ -253,7 +232,6 @@ namespace TrollStrategy.UI
             _shownId = null;
             _staff.Hide();
             _recipes.Hide();
-            Ui.Show(_haulToWarehouse, false);
             SetWikiLink(null, null);
             Ui.Show(_panel, false);
         }
@@ -306,7 +284,8 @@ namespace TrollStrategy.UI
                 int highest = _context.Session.HighestMissionLevel;
                 AddRow("Арена", highest > 0 ? $"уровень {highest}" : "нет побед");
                 var milestone = _context.Session.NextMilestone();
-                AddRow("Следующая веха", milestone != null ? $"уровень {milestone.Level}" : "все пройдены");
+                AddRow("Следующая веха", milestone != null ? $"уровень {milestone.Level}"
+                    : snapshot.Progress.ArenaCap > 0 ? "в полной игре" : "все пройдены");
             }
             if (building.Kind == BuildingKind.Barracks)
                 note = "Здесь отдыхают свободные существа. Улучшения бараков делают сильнее отряд на арене. " +
@@ -322,7 +301,6 @@ namespace TrollStrategy.UI
             RenderUpgrades(building.Kind, snapshot);
             RenderSlots(building);
             _staff.Show(building, snapshot);
-            ShowHaulToWarehouse(building, snapshot);
 
             BeginActions();
             var interaction = _context.Interaction;
@@ -340,17 +318,6 @@ namespace TrollStrategy.UI
                     removable, interaction.DemolishInspectedBuilding);
             }
             EndActions();
-        }
-
-        // shown while the quest asks to carry from this kind of building to the warehouse; without a free creature it
-        // stays, unavailable, and its hint says why
-        private void ShowHaulToWarehouse(BuildingSnapshot building, GameSnapshot snapshot)
-        {
-            var focus = QuestFocus.From(snapshot);
-            bool asked = building.Kind != BuildingKind.Warehouse && focus.HaulFrom == building.Kind &&
-                         focus.HaulTo == BuildingKind.Warehouse;
-            Ui.Show(_haulToWarehouse, asked);
-            if (asked) UiFeel.SetAvailable(_haulToWarehouse, _context.Interaction.HaulToWarehouseBlocker == null);
         }
 
         private void RenderUnit(UnitSnapshot unit, GameSnapshot snapshot)
@@ -381,7 +348,6 @@ namespace TrollStrategy.UI
             _recipes.Hide();
             _staff.Hide();
             HideUpgrades();
-            Ui.Show(_haulToWarehouse, false);
 
             var selected = _context.Interaction.SelectedIds;
             var note = new List<string>();

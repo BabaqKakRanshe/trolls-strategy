@@ -18,11 +18,11 @@ namespace TrollStrategy.Presentation.Units
         // the carried goods' middle over the head, along the billboard: half the 0.75 m icon and a little air, m
         private const float CargoGap = .45f;
         // the selection ring on the lawn: across as a share of the body's width, never under this radius, m,
-        // and squashed from front to back like the shadow under it
+        // and squashed from front to back like the shadow under it; its dashes turn one dash on in this many s
         private const float RingWidthShare = .85f;
         private const float RingMinRadius = .3f;
         private const float RingAspect = .75f;
-        private const int RingPoints = 24;
+        private const float RingDashSeconds = 2.5f;
         // a frame without art: the body the battle's fighters assume
         private static readonly Rect DefaultBody = Rect.MinMaxRect(-.15f, -.1f, .15f, .2f);
 
@@ -54,8 +54,7 @@ namespace TrollStrategy.Presentation.Units
         private float _animTimer;
         private int _currentFrame;
         private float _movementSpeed;
-        private LineRenderer _selectionRing;
-        private float _ringRadius = -1f;
+        private int _ringFrame = -1;
         private SpriteRenderer _shadow;
         private bool _isSelected;
         private bool _worksInside;
@@ -190,21 +189,19 @@ namespace TrollStrategy.Presentation.Units
         // far side, so a selected creature stays in plain view.
         private void LaySelection(Vector3 feet, float radius)
         {
-            var ground = feet + Vector3.back * .003f;
-            if (_selectionCircle != null)
-            {
-                _selectionCircle.transform.SetLocalPositionAndRotation(ground, Quaternion.identity);
-                _selectionCircle.transform.localScale = new Vector3(radius * 2f, radius * 2f * RingAspect, 1f);
-            }
-            if (_selectionRing == null) return;
-            _selectionRing.transform.SetLocalPositionAndRotation(ground, Quaternion.identity);
-            if (Mathf.Approximately(radius, _ringRadius)) return;
-            _ringRadius = radius;
-            for (int i = 0; i < RingPoints; i++)
-            {
-                float angle = i * Mathf.PI * 2f / RingPoints;
-                _selectionRing.SetPosition(i, new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius * RingAspect, 0f));
-            }
+            if (_selectionCircle == null) return;
+            _selectionCircle.transform.SetLocalPositionAndRotation(feet + Vector3.back * .003f, Quaternion.identity);
+            _selectionCircle.transform.localScale = new Vector3(radius * 2f, radius * 2f * RingAspect, 1f);
+        }
+
+        // the dashes march round the feet; frames, not a turn of the transform, which would turn the squashed ellipse too
+        private void TurnSelection()
+        {
+            if (!_isSelected || _selectionCircle == null || !_selectionCircle.gameObject.activeSelf) return;
+            int frame = Mathf.FloorToInt(Time.time / RingDashSeconds * FeelSprites.DashedRingFrames) % FeelSprites.DashedRingFrames;
+            if (frame == _ringFrame) return;
+            _ringFrame = frame;
+            _selectionCircle.sprite = FeelSprites.DashedRing(frame);
         }
 
         /// <summary>A blob shadow flat on the lawn, drawn under every creature (as under the battle's fighters).</summary>
@@ -225,49 +222,7 @@ namespace TrollStrategy.Presentation.Units
             if (_spriteRenderer != null) _spriteRenderer.enabled = visible;
             if (_shadow != null) _shadow.enabled = visible;
             if (_collider != null) _collider.enabled = visible;
-            if (_selectionRing != null) _selectionRing.enabled = _isSelected && visible;
             if (_selectionCircle != null) _selectionCircle.gameObject.SetActive(_isSelected && visible);
-        }
-
-        private static Sprite _proceduralSelectionSprite;
-
-        private static Sprite GetSelectionSprite()
-        {
-            if (_proceduralSelectionSprite != null) return _proceduralSelectionSprite;
-
-            int size = 64;
-            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
-            tex.filterMode = FilterMode.Bilinear;
-            float center = (size - 1) * 0.5f;
-            float radius = center - 2f;
-            float innerRadius = radius - 5f;
-
-            Color transparent = new Color(0, 0, 0, 0);
-            Color ringColor = ColonyPalette.Gold;
-            Color fillColor = ColonyPalette.WithAlpha(ColonyPalette.Gold, 0.28f);
-
-            for (int y = 0; y < size; y++)
-            {
-                for (int x = 0; x < size; x++)
-                {
-                    float d = Vector2.Distance(new Vector2(x, y), new Vector2(center, center));
-                    if (d <= radius && d >= innerRadius)
-                    {
-                        tex.SetPixel(x, y, ringColor);
-                    }
-                    else if (d < innerRadius)
-                    {
-                        tex.SetPixel(x, y, fillColor);
-                    }
-                    else
-                    {
-                        tex.SetPixel(x, y, transparent);
-                    }
-                }
-            }
-            tex.Apply();
-            _proceduralSelectionSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
-            return _proceduralSelectionSprite;
         }
 
         private void EnsureSelectionVisuals()
@@ -276,37 +231,15 @@ namespace TrollStrategy.Presentation.Units
             {
                 var circleGo = new GameObject("SelectionCircle");
                 circleGo.transform.SetParent(transform, false);
-
                 _selectionCircle = circleGo.AddComponent<SpriteRenderer>();
-                _selectionCircle.sprite = GetSelectionSprite();
+            }
+            if (_ringFrame < 0)
+            {
+                // over the shadow (18), under every creature's body (20)
+                _selectionCircle.sprite = FeelSprites.DashedRing(0);
                 _selectionCircle.sortingOrder = 19;
                 _selectionCircle.color = Color.white;
-            }
-
-            if (_selectionRing == null)
-            {
-                var ringGo = new GameObject("SelectionRing");
-                ringGo.transform.SetParent(transform, false);
-
-                _selectionRing = ringGo.AddComponent<LineRenderer>();
-                _selectionRing.useWorldSpace = false;
-                _selectionRing.loop = true;
-                _selectionRing.positionCount = RingPoints;
-                _selectionRing.startWidth = 0.055f;
-                _selectionRing.endWidth = 0.055f;
-                // over the shadow (18), under every creature's body (20)
-                _selectionRing.sortingOrder = 19;
-
-                Shader shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
-                if (shader == null) shader = Shader.Find("Sprites/Default");
-                if (shader == null) shader = Shader.Find("Hidden/Internal-Colored");
-                if (shader != null) _selectionRing.material = new Material(shader);
-
-                var goldColor = ColonyPalette.Gold;
-                _selectionRing.startColor = goldColor;
-                _selectionRing.endColor = goldColor;
-
-                _ringRadius = -1f;
+                _ringFrame = 0;
             }
 
             if (_collider == null)
@@ -366,6 +299,7 @@ namespace TrollStrategy.Presentation.Units
         private void Update()
         {
             AdvanceVisual(Time.deltaTime);
+            TurnSelection();
         }
 
         private static Sprite _fallbackOreSprite;

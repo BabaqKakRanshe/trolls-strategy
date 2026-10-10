@@ -72,6 +72,13 @@ namespace TrollStrategy.Presentation.Island
         public bool ReadInput { get => _readInput; set => _readInput = value; }
         /// <summary>The first-launch flight is on; input waits until it lands or is skipped.</summary>
         public bool IsPlayingIntro => _intro;
+        /// <summary>
+        /// How far the player's own input has moved the camera, in sides of the land it frames (keys, the screen's edge,
+        /// a drag, a pinch); the camera's flights do not count. The tutorial's controls lesson reads it.
+        /// </summary>
+        public float PlayerPanned { get; private set; }
+        /// <summary>How much the player's own input has zoomed the camera: the sum of |ln| of every wheel or pinch step.</summary>
+        public float PlayerZoomed { get; private set; }
 
         /// <summary>
         /// The first-launch flight: from high above the whole island down to the view the scene set, over
@@ -252,14 +259,14 @@ namespace TrollStrategy.Presentation.Island
                     ? Vector2.zero
                     : EdgeDirection(pointer, new Vector2(Screen.width, Screen.height), _edgeBand);
                 if (edge != Vector2.zero)
-                    PanWorld(new Vector3(edge.x, 0f, edge.y) * (_goalSide * _keyPanSpeed * Time.unscaledDeltaTime));
+                    PlayerPan(new Vector3(edge.x, 0f, edge.y) * (_goalSide * _keyPanSpeed * Time.unscaledDeltaTime));
 
                 // a wheel notch is 120 on some platforms and 1 on others; trackpads send small steps every frame
                 float wheel = mouse.scroll.ReadValue().y;
                 if (Mathf.Abs(wheel) > .01f && !UIInputUtils.IsOverDocument(pointer))
                 {
                     float notches = Mathf.Clamp(Mathf.Abs(wheel) >= 20f ? wheel / 120f : wheel, -3f, 3f);
-                    Zoom(Mathf.Pow(1f - _wheelStep, notches));
+                    PlayerZoom(Mathf.Pow(1f - _wheelStep, notches));
                 }
             }
 
@@ -271,7 +278,7 @@ namespace TrollStrategy.Presentation.Island
                 float z = (keyboard.upArrowKey.isPressed || keyboard.wKey.isPressed ? 1f : 0f) -
                           (keyboard.downArrowKey.isPressed || keyboard.sKey.isPressed ? 1f : 0f);
                 if (x != 0f || z != 0f)
-                    PanWorld(new Vector3(x, 0f, z) * (_goalSide * _keyPanSpeed * Time.unscaledDeltaTime));
+                    PlayerPan(new Vector3(x, 0f, z) * (_goalSide * _keyPanSpeed * Time.unscaledDeltaTime));
             }
 
             var touch = Touchscreen.current;
@@ -311,7 +318,7 @@ namespace TrollStrategy.Presentation.Island
             }
             if (spread > 1f)
             {
-                Zoom(_pinchDistance / spread);
+                PlayerZoom(_pinchDistance / spread);
                 _pinchDistance = spread;
             }
             if (GroundPoint(middle, out var point)) DragTo(_pinchAnchor, point);
@@ -341,8 +348,23 @@ namespace TrollStrategy.Presentation.Island
 
         // moves the view so that the ground point grabbed at `anchor` comes back under the pointer (now over `under`);
         // both were cast from the camera where it stands now, so the shift applies to the current target
+        // the player's own moves, counted for the tutorial's controls lesson
+        private void PlayerPan(Vector3 delta)
+        {
+            PlayerPanned += delta.magnitude / Mathf.Max(.01f, _goalSide);
+            PanWorld(delta);
+        }
+
+        private void PlayerZoom(float factor)
+        {
+            PlayerZoomed += Mathf.Abs(Mathf.Log(Mathf.Max(.01f, factor)));
+            Zoom(factor);
+        }
+
+        // only the player drags the ground (the mouse, a finger, a pinch)
         private void DragTo(Vector3 anchor, Vector3 under)
         {
+            PlayerPanned += (anchor - under).magnitude / Mathf.Max(.01f, _side);
             _goal = ClampTarget(_target + (anchor - under));
             _target = _goal;
             _velocity = Vector3.zero;

@@ -12,10 +12,14 @@ namespace TrollStrategy.UI
     {
         private const float VisibleSeconds = 6f;
         private const float FirstVisibleSeconds = 14f;
+        // a word from the game itself (a save) goes sooner than a message
+        private const float NoteSeconds = 4f;
+        private const string NoteClass = "status--note";
         private static readonly Color RefusalColor = new(.72f, .21f, .14f, 1f);
 
         private readonly VisualElement _panel;
         private readonly Label _text;
+        private readonly VisualElement _glyph;
         private float _fadeAt = -1f;
 
         public StatusLine(VisualElement root)
@@ -24,15 +28,21 @@ namespace TrollStrategy.UI
             _text = Ui.Require<Label>(root, "status-text");
             _panel.pickingMode = PickingMode.Ignore;
             _text.pickingMode = PickingMode.Ignore;
+            _glyph = GameLinks.Glyph("check", "status__glyph");
+            _panel.Insert(_panel.IndexOf(_text), _glyph);
+            Ui.Show(_glyph, false);
         }
 
         public bool IsShown => Ui.IsShown(_panel) && !_panel.ClassListContains("is-faded");
         public string Text => _text.text;
+        /// <summary>The line carries a word from the game (a save) with its check, not a message.</summary>
+        public bool ShowsNote => IsShown && _panel.ClassListContains(NoteClass);
 
         /// <summary>Shows the controller's message; the first one (the colony's opening goal) stays longer.</summary>
         public void Show(InteractionController interaction, bool first = false)
         {
             string message = interaction.Message;
+            Mark(false);
             if (interaction.Mode.Type != InteractionModeType.Neutral || string.IsNullOrWhiteSpace(message))
             {
                 Ui.Show(_panel, false);
@@ -43,6 +53,28 @@ namespace TrollStrategy.UI
             Ui.Show(_panel, true);
             _panel.RemoveFromClassList("is-faded");
             _fadeAt = Time.unscaledTime + (first ? FirstVisibleSeconds : VisibleSeconds);
+        }
+
+        /// <summary>
+        /// A short word from the game itself, after a check (a cross when it went wrong): «Колония сохранена». It
+        /// fades sooner than a message, and the next message takes its place.
+        /// </summary>
+        public void ShowNote(string text, bool good)
+        {
+            Ui.SetText(_text, text);
+            _glyph.EnableInClassList("glyph--check", good);
+            _glyph.EnableInClassList("glyph--cancel", !good);
+            _glyph.EnableInClassList("is-bad", !good);
+            Mark(true);
+            Ui.Show(_panel, true);
+            _panel.RemoveFromClassList("is-faded");
+            _fadeAt = Time.unscaledTime + NoteSeconds;
+        }
+
+        private void Mark(bool note)
+        {
+            _panel.EnableInClassList(NoteClass, note);
+            Ui.Show(_glyph, note);
         }
 
         public void Tick()

@@ -1,6 +1,6 @@
 /*
- * The tutorial pointer (GuideOverlay) over the colony and the battle screens, and the marks the tutorial adds to
- * other parts: a haul goal's route in the quest card and the inspect card's "Вывозить на склад".
+ * The tutorial pointer (GuideOverlay) over the colony and the battle screens, and the mark the tutorial adds to
+ * another part: a haul goal's route in the quest card.
  *
  * The veil is the one exception to the "air" look outside the dialogs (AGENTS.md): a light veil with a soft window
  * around the step's target, only during tutorial steps and only until the step is done. It never catches the
@@ -21,25 +21,23 @@
     background-color: var(--veil-deep);
 }
 
-/* the window: spot.png is veil at its border and clear in its middle, with a soft rounded edge between */
+/* the window: spot.png is veil at its corners and clear in a round middle, with a soft edge between; stretched, it
+   rounds a wide target into an ellipse */
 .guide-window {
     position: absolute;
     background-image: url("../Sprites/spot.png");
-    -unity-slice-left: 48;
-    -unity-slice-right: 48;
-    -unity-slice-top: 48;
-    -unity-slice-bottom: 48;
+    -unity-background-scale-mode: stretch-to-fill;
     -unity-background-image-tint-color: var(--veil-deep);
 }
 
-/* hand.png: the fingertip is at 38.5, 5.5 of the 90 x 108 picture; it turns about the fingertip */
-.guide-hand {
+/* the touch on the step's target: GuideOverlay draws it on this layer, over the veil, in the marks' colours
+   (.guide-route): a dot in --guide-touch in a white rim presses, and a wave goes out from the press */
+.guide-touch {
     position: absolute;
-    width: 90px;
-    height: 108px;
-    background-image: url("../Sprites/hand.png");
-    -unity-background-scale-mode: scale-to-fit;
-    transform-origin: 38.5px 5.5px;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }
 
 /* the hint card: a .sheet like HudTooltip's, with the step, the action and one line */
@@ -67,6 +65,47 @@
     white-space: normal;
 }
 
+/* the keys a step names: keycaps and mouse pictures in a row, or a list of keys with their names in two columns */
+.guide-card__keys {
+    margin-top: 10px;
+}
+
+.guide-keys__row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.guide-key {
+    flex-direction: row;
+    align-items: center;
+    margin-right: 8px;
+}
+
+.guide-key--named {
+    width: 190px;
+    margin-right: 0;
+}
+
+.guide-key__cap {
+    min-width: 34px;
+    font-size: 17px;
+    -unity-text-align: middle-center;
+}
+
+.guide-key__glyph {
+    width: 32px;
+    height: 32px;
+    margin-left: 4px;
+    -unity-background-image-tint-color: var(--ink);
+}
+
+.guide-key__name {
+    margin-left: 8px;
+    font-size: 16px;
+    color: var(--ink-soft);
+}
+
 /* the way to a target off the screen: a round button at the edge, its chevron pointing there */
 .guide-edge {
     position: absolute;
@@ -82,15 +121,28 @@
     -unity-background-image-tint-color: var(--accent-deep);
 }
 
-/* the arrow from the haul's source to the pointer; its colours are read by GuideOverlay */
+/* the marks on the ground: the arrow from the haul's source to the pointer and the pin over a place on the map;
+   their colours are read by GuideOverlay */
 .guide-route {
     position: absolute;
     left: 0;
     top: 0;
     right: 0;
     bottom: 0;
-    --route-color: var(--accent);
-    --route-halo: var(--paper);
+    --mark-ink: var(--ink);
+    --mark-paper: var(--paper);
+    /* the haul's arrow: the colour of the tutorial's touch */
+    --mark-touch: var(--guide-touch);
+}
+
+/* a good's picture riding a token of the haul's arrow; GuideOverlay places and sizes it */
+.guide-route__cargo {
+    position: absolute;
+}
+
+/* the picture in the pin's disc (a creature's portrait, a building's icon); GuideOverlay sizes and places it */
+.guide-pin__art {
+    position: absolute;
 }
 
 /* a haul goal's route in the quest card: where from, an arrow, where to */
@@ -112,23 +164,4 @@
     margin-right: 2px;
     font-size: 17px;
     color: var(--ink-soft);
-}
-
-/* the inspect card's "Вывозить на склад": one wide button above the card's actions */
-.inspect-haul {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.inspect-haul__art {
-    width: 44px;
-    height: 44px;
-    margin-right: 10px;
-    flex-shrink: 0;
-}
-
-.inspect-haul__words {
-    flex-shrink: 1;
-    align-items: flex-start;
 }

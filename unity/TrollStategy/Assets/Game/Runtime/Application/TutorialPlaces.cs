@@ -6,14 +6,18 @@ using TrollStrategy.Domain;
 namespace TrollStrategy.Application
 {
     /// <summary>
-    /// Where the tutorial suggests putting things: the free cell nearest the warehouse door for a hire, the place by
-    /// that door for a new building, the free creature nearest a building for an order. It only reads: every cell it
+    /// Where the tutorial suggests putting things: the free cell nearest the warehouse door for a hire, a place west
+    /// of the warehouse (the left of the screen, where the start land is open) for a new building, the free creature
+    /// nearest a building for an order. It only reads: every cell it
     /// offers passes the same check as the purchase (<see cref="GameSession.CanBuyUnits"/>,
     /// <see cref="GameSession.CanPlaceBuilding"/>), so the pointer, the first worker's quick hire and the map of free
     /// cells agree with what the session accepts.
     /// </summary>
     public static class TutorialPlaces
     {
+        /// <summary>Cells left free between the warehouse and the building the tutorial suggests beside it.</summary>
+        public const int LaneCells = 2;
+
         /// <summary>The colony's first warehouse, or null.</summary>
         public static BuildingSnapshot Warehouse(GameSnapshot snapshot)
         {
@@ -38,17 +42,18 @@ namespace TrollStrategy.Application
         }
 
         /// <summary>
-        /// The lower-left cell of the place nearest the warehouse door where a building of the kind fits now; null
-        /// without a warehouse or room.
+        /// The lower-left cell of the place nearest the warehouse's west side, a free lane of
+        /// <see cref="LaneCells"/> between them, where a building of the kind fits now; null without a warehouse or room.
         /// </summary>
         public static Cell? BuildingCell(GameSession session, BuildingKind kind)
         {
             if (session == null) return null;
-            var door = DoorCell(session);
+            var warehouse = Warehouse(session.CurrentSnapshot);
             var definition = session.Catalog.GetBuilding(kind);
-            if (door == null || definition == null) return null;
-            // anchors around the one that centres the footprint on the door, nearest first
-            var start = new Cell(door.Value.X - definition.Width / 2, door.Value.Y - definition.Height / 2);
+            if (warehouse == null || definition == null) return null;
+            // anchors around the one level with the warehouse to its west, nearest first
+            var start = new Cell(warehouse.Cell.X - LaneCells - definition.Width,
+                warehouse.Cell.Y + (warehouse.Height - definition.Height) / 2);
             foreach (var cell in Rings(start, Reach(session)))
                 if (session.CanPlaceBuilding(kind, cell).Ok) return cell;
             return null;

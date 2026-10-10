@@ -277,7 +277,7 @@ namespace TrollStrategy.Application
 
     /// <summary>
     /// The player's progress as the HUD shows it: the current quest and what is open. A sandbox game has
-    /// no quests and everything open.
+    /// no quests and everything open; a short public build ends after its last quest.
     /// </summary>
     public sealed class ProgressSnapshot
     {
@@ -293,11 +293,15 @@ namespace TrollStrategy.Application
         public ProgressSnapshot(bool enabled, int level, QuestSnapshot quest,
             IReadOnlyCollection<BuildingKind> unlockedBuildings, IReadOnlyCollection<UnitKind> unlockedUnits,
             IReadOnlyCollection<string> unlockedMissions, IReadOnlyDictionary<BuildingKind, int> buildingUnlockLevels,
-            IReadOnlyDictionary<UnitKind, int> unitUnlockLevels, IReadOnlyDictionary<string, int> missionUnlockLevels)
+            IReadOnlyDictionary<UnitKind, int> unitUnlockLevels, IReadOnlyDictionary<string, int> missionUnlockLevels,
+            int lastLevel = 0, bool over = false, int arenaCap = 0)
         {
             Enabled = enabled;
             Level = level;
             Quest = quest;
+            LastLevel = lastLevel;
+            Over = over;
+            ArenaCap = arenaCap;
             _buildings = unlockedBuildings ?? System.Array.Empty<BuildingKind>();
             _units = unlockedUnits ?? System.Array.Empty<UnitKind>();
             _missions = unlockedMissions ?? System.Array.Empty<string>();
@@ -312,6 +316,12 @@ namespace TrollStrategy.Application
         public int Level { get; }
         /// <summary>The current quest; null in a sandbox game or when no quest follows.</summary>
         public QuestSnapshot Quest { get; }
+        /// <summary>The number of this game's last quest (a short public build); 0 when the chain goes on.</summary>
+        public int LastLevel { get; }
+        /// <summary>A short game's last quest is taken: no quest follows and nothing new opens.</summary>
+        public bool Over { get; }
+        /// <summary>The highest arena level a finished short game may open; 0 while the ladder is open.</summary>
+        public int ArenaCap { get; }
 
         public bool IsBuildingUnlocked(BuildingKind kind) => !Enabled || Contains(_buildings, kind);
         public bool IsUnitUnlocked(UnitKind kind) => !Enabled || Contains(_units, kind);

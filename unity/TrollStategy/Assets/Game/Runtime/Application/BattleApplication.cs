@@ -7,6 +7,9 @@ namespace TrollStrategy.Application
 {
     public static class BattleApplication
     {
+        /// <summary>Why a finished short game cannot fight a level above those open at its end.</summary>
+        public const string FullGameOnly = "Этот уровень арены — в полной игре";
+
         /// <summary>
         /// Whether the colony may fight this mission now: no battle running, the level open and rested, and the
         /// stake in the treasury (when the <paramref name="catalog"/> sets one).
@@ -18,8 +21,8 @@ namespace TrollStrategy.Application
             if (state.ActiveBattle != null) return CommandResult.Fail("Сначала завершите текущий бой");
             if (debugBypassTime) return CommandResult.Success();
             if (!Progression.IsMissionUnlocked(state, mission.MissionId))
-                return CommandResult.Fail(mission.Level > 1
-                    ? "Сначала победите на предыдущем уровне арены"
+                return CommandResult.Fail(!Progression.MayOpenMission(state, mission.Level) ? FullGameOnly
+                    : mission.Level > 1 ? "Сначала победите на предыдущем уровне арены"
                     : "Бой откроется по заданию");
             if (state.ActiveTimeMs < UnlockAtMs(mission)) return CommandResult.Fail("Миссия ещё не открыта");
             if (state.ActiveTimeMs < state.ReadyAtOf(mission.MissionId))
@@ -252,7 +255,9 @@ namespace TrollStrategy.Application
                 var next = NextMission(mission, catalog);
                 if (state.Progress != null)
                 {
-                    if (next != null) state.Progress.UnlockedMissions.Add(next.MissionId);
+                    // a finished short game keeps its ladder: nothing above its cap opens
+                    if (next != null && Progression.MayOpenMission(state, next.Level))
+                        state.Progress.UnlockedMissions.Add(next.MissionId);
                     if (first && mission.UnlockUnit.HasValue) state.Progress.UnlockedUnits.Add(mission.UnlockUnit.Value);
                 }
             }

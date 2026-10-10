@@ -9,6 +9,13 @@ namespace TrollStrategy.Domain
     public class ProgressState
     {
         public int QuestIndex { get; set; }
+        // Colony time the current quest began at; the funnel counts a quest's time from it, a loaded game too.
+        public int QuestStartMs { get; set; }
+        // How many quests of the chain this game plays: a short public build ends after them. 0 plays the whole
+        // chain and the repeatable quests after it.
+        public int ChainLength { get; set; }
+        // The highest arena level a finished short game may still open; 0 leaves the ladder open.
+        public int ArenaCap { get; set; }
         // One entry per goal of the current quest. A goal once met stays met, so selling the goblin that
         // finished "hire a goblin" does not take the quest back.
         public List<bool> GoalDone { get; set; } = new();
@@ -21,6 +28,9 @@ namespace TrollStrategy.Domain
         public ProgressState Clone() => new()
         {
             QuestIndex = QuestIndex,
+            QuestStartMs = QuestStartMs,
+            ChainLength = ChainLength,
+            ArenaCap = ArenaCap,
             GoalDone = new List<bool>(GoalDone),
             GoalBaseline = new List<int>(GoalBaseline),
             UnlockedBuildings = new HashSet<BuildingKind>(UnlockedBuildings),
@@ -32,15 +42,27 @@ namespace TrollStrategy.Domain
     /// <summary>
     /// Quest and unlock rules. A game without progress state (sandbox) has everything open and no quests.
     /// Goals are checked after every committed command and simulation step; a met goal stays met. Claiming a
-    /// finished quest applies all its rewards and begins the next quest in one step.
+    /// finished quest applies all its rewards and begins the next quest in one step. A short game (the itch.io alpha,
+    /// the Steam demo) names its last quest: once that is claimed no quest follows, and the arena opens no level above
+    /// those open then.
     /// </summary>
     public static class Progression
     {
-        public static void Start(GameState state, GameContentCatalog catalog)
+        /// <summary>
+        /// Begins the chain with its opening unlocks. <paramref name="lastQuestId"/> ends a short game after that
+        /// quest; null or empty plays the whole chain. Throws when the chain has no such quest.
+        /// </summary>
+        public static void Start(GameState state, GameContentCatalog catalog, string lastQuestId = null)
         {
             var definition = catalog?.Progression ??
                 throw new InvalidOperationException("Content catalog has no progression");
             var progress = new ProgressState();
+            if (!string.IsNullOrEmpty(lastQuestId))
+            {
+                int last = IndexOf(definition, lastQuestId);
+                if (last < 0) throw new InvalidOperationException($"The quest chain has no quest \"{lastQuestId}\"");
+                progress.ChainLength = last + 1;
+            }
             foreach (var unit in definition.StartingUnits) progress.UnlockedUnits.Add(unit);
             foreach (var building in definition.StartingBuildings) progress.UnlockedBuildings.Add(building);
             foreach (var mission in definition.StartingMissions)
@@ -58,9 +80,18 @@ namespace TrollStrategy.Domain
         public static bool IsMissionUnlocked(GameState state, string missionId) =>
             state.Progress == null || (missionId != null && state.Progress.UnlockedMissions.Contains(missionId));
 
-        /// <summary>The quest the player works on now; null in a sandbox game or after the last quest.</summary>
+        /// <summary>A short game whose last quest is claimed: no quest follows and nothing new opens.</summary>
+        public static bool IsOver(GameState state) =>
+            state.Progress != null && state.Progress.ChainLength > 0 &&
+            state.Progress.QuestIndex >= state.Progress.ChainLength;
+
+        /// <summary>Whether a win may still open this arena level: always, but in a finished short game only up to its cap.</summary>
+        public static bool MayOpenMission(GameState state, int level) =>
+            state.Progress == null || state.Progress.ArenaCap <= 0 || level <= state.Progress.ArenaCap;
+
+        /// <summary>The quest the player works on now; null in a sandbox game, after the last quest or once a short game is over.</summary>
         public static QuestDefinition CurrentQuest(GameState state, GameContentCatalog catalog) =>
-            state.Progress == null || catalog?.Progression == null
+            state.Progress == null || catalog?.Progression == null || IsOver(state)
                 ? null
                 : QuestAt(catalog.Progression, state.Progress.QuestIndex);
 
@@ -235,6 +266,8 @@ namespace TrollStrategy.Domain
                 }
             }
             progress.QuestIndex++;
+            // a short game ends here: the arena keeps the levels open now and opens no higher one
+            if (IsOver(state)) progress.ArenaCap = Math.Max(1, HighestOpenLevel(state, catalog));
             Activate(state, catalog);
             return CommandResult.Success();
         }
@@ -255,6 +288,7 @@ namespace TrollStrategy.Domain
             var progress = state.Progress;
             progress.GoalDone.Clear();
             progress.GoalBaseline.Clear();
+            progress.QuestStartMs = state.ActiveTimeMs;
             var quest = CurrentQuest(state, catalog);
             if (quest == null) return;
             foreach (var goal in quest.Goals)
@@ -281,6 +315,23 @@ namespace TrollStrategy.Domain
                 rewards.Add(reward.Kind == QuestRewardKind.Gold ? reward.WithGold(Scale(reward.Gold, percent)) : reward);
             return new QuestDefinition($"{template.Id}#{cycle + 1}", template.Title, template.Description, false,
                 goals, rewards);
+        }
+
+        private static int IndexOf(ProgressionDefinition definition, string questId)
+        {
+            var chain = definition.Quests;
+            for (int i = 0; i < chain.Count; i++)
+                if (chain[i] != null && chain[i].Id == questId) return i;
+            return -1;
+        }
+
+        private static int HighestOpenLevel(GameState state, GameContentCatalog catalog)
+        {
+            int highest = 0;
+            foreach (var mission in catalog.Missions)
+                if (mission != null && state.Progress.UnlockedMissions.Contains(mission.MissionId))
+                    highest = Math.Max(highest, mission.Level);
+            return highest;
         }
 
         private static int Scale(int value, int percent) => (int)Math.Min(int.MaxValue, (long)value * percent / 100);

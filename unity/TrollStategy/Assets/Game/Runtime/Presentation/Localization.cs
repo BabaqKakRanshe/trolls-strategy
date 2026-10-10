@@ -59,14 +59,17 @@ namespace TrollStrategy.Presentation
             s_loaded = null;
         }
 
-        /// <summary>The language in use: the player's choice, else the system's when the game has it, else English.</summary>
+        /// <summary>The language the game starts in until the player picks one.</summary>
+        public const string Default = "en";
+
+        /// <summary>The language in use: the player's choice, else <see cref="Default"/>.</summary>
         public static string Current
         {
             get
             {
                 string chosen = GameSettings.Language;
                 if (!string.IsNullOrEmpty(chosen) && Languages.Exists(l => l.Code == chosen)) return chosen;
-                return SystemCode();
+                return Default;
             }
         }
 
@@ -251,30 +254,6 @@ namespace TrollStrategy.Presentation
                 Translation = value,
                 Holes = holes.ToArray()
             };
-        }
-
-        private static string SystemCode()
-        {
-            switch (UnityEngine.Application.systemLanguage)
-            {
-                case SystemLanguage.Russian:
-                case SystemLanguage.Belarusian: return "ru";
-                case SystemLanguage.Ukrainian: return "uk";
-                case SystemLanguage.German: return "de";
-                case SystemLanguage.French: return "fr";
-                case SystemLanguage.Spanish: return "es";
-                case SystemLanguage.Italian: return "it";
-                case SystemLanguage.Portuguese: return "pt";
-                case SystemLanguage.Polish: return "pl";
-                case SystemLanguage.Czech: return "cs";
-                case SystemLanguage.Turkish: return "tr";
-                case SystemLanguage.Japanese: return "ja";
-                case SystemLanguage.Korean: return "ko";
-                case SystemLanguage.Chinese:
-                case SystemLanguage.ChineseSimplified:
-                case SystemLanguage.ChineseTraditional: return "zh";
-                default: return "en";
-            }
         }
 
         [Serializable]

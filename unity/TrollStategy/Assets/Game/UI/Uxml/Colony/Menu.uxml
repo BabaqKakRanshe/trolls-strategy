@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <ui:Style src="../../Styles/Theme.uss" />
     <ui:Style src="../../Styles/ColonyHud.uss" />
+    <ui:Style src="../../Styles/Saves.uss" />
     <ui:VisualElement name="menu-overlay" class="overlay">
         <!-- the first page has no card: the title on the halo and four round actions, their words in the hint -->
         <ui:VisualElement name="menu-pause" class="menu-pause" picking-mode="Ignore">
@@ -21,6 +22,8 @@
             <ui:VisualElement name="menu-languages" class="menu-page" />
             <ui:VisualElement name="menu-about" class="menu-page" />
             <ui:VisualElement name="menu-restart" class="menu-page" />
+            <!-- the saved colonies (SaveSheet): a wider sheet, its questions in its place -->
+            <ui:VisualElement name="menu-saves" class="menu-page" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -12,7 +12,8 @@ namespace TrollStrategy.Tests
 {
     /// <summary>
     /// The tutorial pointer (specs/006-tutorial-guidance): the next press of every tutorial step as the colony and the
-    /// deployment HUDs show it, the first worker's hire by the warehouse door and the mine card's one-press haul.
+    /// deployment HUDs show it, every hire placed by the player, the hauls given by the order and the first launch's
+    /// question about the hints.
     /// </summary>
     public class TutorialGuideTests
     {
@@ -23,11 +24,13 @@ namespace TrollStrategy.Tests
         private InteractionController _interaction;
         private ColonyHudView _hud;
         private bool _hintsBefore;
+        private bool _hintsChosenBefore;
 
         [SetUp]
         public void SetUp()
         {
             _hintsBefore = GameSettings.TutorialHints;
+            _hintsChosenBefore = GameSettings.TutorialHintsChosen;
             GameSettings.SetTutorialHints(true);
             _catalog = AssetDatabase.LoadAssetAtPath<GameContentCatalog>(CatalogPath);
             Assert.That(_catalog, Is.Not.Null, CatalogPath);
@@ -38,7 +41,12 @@ namespace TrollStrategy.Tests
         }
 
         [TearDown]
-        public void TearDown() => GameSettings.SetTutorialHints(_hintsBefore);
+        public void TearDown()
+        {
+            GameSettings.SetTutorialHints(_hintsBefore);
+            // an editor that never answered keeps asking at its next start
+            if (!_hintsChosenBefore) UnityEngine.PlayerPrefs.DeleteKey("settings.tutorialHints");
+        }
 
         [Test]
         public void BothHuds_HaveThePointersLayer()
@@ -48,41 +56,41 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void FirstWorker_PointsAtTheGoblinToken_InOneStep()
+        public void FirstWorker_PointsAtTheGoblinToken_ThenAtTheCellByTheWarehouse()
         {
             var step = _hud.CurrentStep;
             Assert.That(step.Target.Element, Is.SameAs(_hud.Catalog.HireButton(UnitKind.Goblin)));
             Assert.That(step.Title, Is.EqualTo("Найми первого работника"));
-            Assert.That(step.Text, Does.Contain("Гоблин").And.Contain("у склада"));
-            Assert.That((step.Number, step.Count), Is.EqualTo((1, 1)));
+            Assert.That(step.Text, Does.Contain("Гоблин"));
+            Assert.That((step.Number, step.Count), Is.EqualTo((1, 2)));
             Assert.That(step.Veil, Is.True);
             Assert.That(_hud.Guide.IsShowing, Is.True);
             Assert.That(_hud.Guide.CardTitle, Is.EqualTo(step.Title));
-            Assert.That(_hud.Guide.CardStep, Is.Empty, "One step: no count on the card");
-        }
-
-        [Test]
-        public void FirstWorker_TokenHiresByTheWarehouseDoor_AndTheCameraGoesThere()
-        {
-            var expected = TutorialPlaces.HireCell(_session, UnitKind.Goblin);
-            Assert.That(expected, Is.Not.Null);
-            WorldPosition? focus = null;
-            _interaction.FocusRequested += position => focus = position;
+            Assert.That(_hud.Guide.CardStep, Is.EqualTo("Шаг 1 из 2"));
 
             UiFeel.Press(_hud.Catalog.HireButton(UnitKind.Goblin));
-
-            var units = _session.CurrentSnapshot.Units;
-            Assert.That(units.Count, Is.EqualTo(1));
-            Assert.That(CellOf(units[0].Position), Is.EqualTo(expected.Value));
-            Assert.That(_interaction.Mode.Type, Is.EqualTo(InteractionModeType.Neutral), "No cell to pick: it is already hired");
-            Assert.That(focus, Is.EqualTo(TutorialPlaces.CenterOf(expected.Value, _catalog)));
-            Assert.That(_session.CurrentSnapshot.Progress.Quest.IsComplete, Is.True);
+            Refresh();
+            Assert.That(_session.CurrentSnapshot.Units, Is.Empty, "The player puts the first worker down too");
+            Assert.That(_interaction.Mode.Type, Is.EqualTo(InteractionModeType.PlacingUnits));
+            var cell = TutorialPlaces.HireCell(_session, UnitKind.Goblin);
+            Assert.That(cell, Is.Not.Null);
+            Assert.That(_hud.CurrentStep.Target.Kind, Is.EqualTo(GuideTargetKind.Cell));
+            Assert.That(_hud.CurrentStep.Target.Cell, Is.EqualTo(cell.Value));
+            Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Title), Is.EqualTo((2, "Сюда")));
+            // the pin over the cell shows the goblin, as its token does
+            var portrait = RewardArt.Tight(_catalog.GetUnit(UnitKind.Goblin).PortraitSprite);
+            Assert.That(portrait, Is.Not.Null);
+            Assert.That(_hud.CurrentStep.Target.Art, Is.SameAs(portrait));
 
             // the door is in front of the warehouse: the cell is next to it
             var warehouse = TutorialPlaces.Warehouse(_session.CurrentSnapshot);
             var door = ColonyNavigation.DoorwayAt(warehouse.Kind, warehouse.Cell, _catalog).Approach;
-            Assert.That(System.Math.Abs(expected.Value.X + .5f - door.X), Is.LessThanOrEqualTo(2.5f));
-            Assert.That(System.Math.Abs(expected.Value.Y + .5f - door.Y), Is.LessThanOrEqualTo(2.5f));
+            Assert.That(System.Math.Abs(cell.Value.X + .5f - door.X), Is.LessThanOrEqualTo(2.5f));
+            Assert.That(System.Math.Abs(cell.Value.Y + .5f - door.Y), Is.LessThanOrEqualTo(2.5f));
+
+            _interaction.PlaceUnits(cell.Value);
+            Assert.That(_session.CurrentSnapshot.Units.Count, Is.EqualTo(1));
+            Assert.That(_session.CurrentSnapshot.Progress.Quest.IsComplete, Is.True);
         }
 
         [Test]
@@ -97,9 +105,10 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void TutorialStart_LeadsFromTheFirstWorkerThroughTheMineToTheNextHire()
+        public void TutorialStart_LeadsFromTheFirstWorkerThroughTheMineToTheFirstHaul()
         {
             UiFeel.Press(_hud.Catalog.HireButton(UnitKind.Goblin));
+            _interaction.PlaceUnits(TutorialPlaces.HireCell(_session, UnitKind.Goblin).Value);
             Claim();
             Assert.That(_session.CurrentSnapshot.Progress.Quest.Id, Is.EqualTo("tutorial-mine"));
 
@@ -112,9 +121,16 @@ namespace TrollStrategy.Tests
             var place = TutorialPlaces.BuildingCell(_session, BuildingKind.Mine);
             Assert.That(place, Is.Not.Null);
             Assert.That(_session.CanPlaceBuilding(BuildingKind.Mine, place.Value).Ok, Is.True);
+            // west of the warehouse (the left of the screen), a lane between them
+            var store = TutorialPlaces.Warehouse(_session.CurrentSnapshot);
+            Assert.That(place.Value.X + _catalog.GetBuilding(BuildingKind.Mine).Width,
+                Is.LessThanOrEqualTo(store.Cell.X - TutorialPlaces.LaneCells));
             Assert.That(_hud.CurrentStep.Target.Kind, Is.EqualTo(GuideTargetKind.Footprint));
             Assert.That(_hud.CurrentStep.Target.Cell, Is.EqualTo(place.Value));
             Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Title), Is.EqualTo((2, "Сюда")));
+            Assert.That(_hud.CurrentStep.Target.Art,
+                Is.Not.Null.And.SameAs(RewardArt.BuildingIcon(_catalog.GetBuilding(BuildingKind.Mine))),
+                "The pin over the place shows the mine");
             _interaction.PlaceBuilding(place.Value);
             Claim();
             Assert.That(_session.CurrentSnapshot.Progress.Quest.Id, Is.EqualTo("tutorial-work"));
@@ -127,6 +143,7 @@ namespace TrollStrategy.Tests
             _interaction.ClickUnit(goblin, false);
             Refresh();
             Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.ContextBar.WorkButton));
+            Assert.That(_hud.CurrentStep.Text, Does.Contain("правой кнопкой"), "The right click's fan gives the same orders");
             UiFeel.Press(_hud.ContextBar.WorkButton);
             Refresh();
             string mine = _session.CurrentSnapshot.Buildings.First(b => b.Kind == BuildingKind.Mine).Id;
@@ -136,72 +153,317 @@ namespace TrollStrategy.Tests
             _interaction.ChooseBuilding(mine);
             Refresh();
 
-            // the haul needs a free goblin: back to the catalog (the digger is still selected), its creatures, the token
-            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.TopBar.CatalogButton));
-            Assert.That(_hud.CurrentStep.Title, Is.EqualTo("Вернись к каталогу"));
-            UiFeel.Press(_hud.TopBar.CatalogButton);
-            Refresh();
+            // the digger leaves the selection with its order, so the catalog is back at once: its creatures, the token
+            Assert.That(_interaction.SelectedIds, Is.Empty);
+            Assert.That(_hud.Catalog.IsCovered, Is.False);
             PressTabIfPointed();
             Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.Catalog.HireButton(UnitKind.Goblin)));
             Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Count), Is.EqualTo((1, 2)));
             UiFeel.Press(_hud.Catalog.HireButton(UnitKind.Goblin));
             Refresh();
-            Assert.That(_interaction.Mode.Type, Is.EqualTo(InteractionModeType.PlacingUnits), "Only the colony's first creature is placed for the player");
+            Assert.That(_interaction.Mode.Type, Is.EqualTo(InteractionModeType.PlacingUnits));
             var cell = TutorialPlaces.HireCell(_session, UnitKind.Goblin);
             Assert.That(_hud.CurrentStep.Target.Kind, Is.EqualTo(GuideTargetKind.Cell));
             Assert.That(_hud.CurrentStep.Target.Cell, Is.EqualTo(cell.Value));
             Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Title), Is.EqualTo((2, "Сюда")));
             Assert.That(_hud.Guide.CardStep, Is.EqualTo("Шаг 2 из 2"));
+            _interaction.PlaceUnits(cell.Value);
+            Refresh();
+
+            // the haul from the mine to the warehouse is the order: the new goblin, «Перенос», the mine, what, the warehouse
+            string warehouse = TutorialPlaces.Warehouse(_session.CurrentSnapshot).Id;
+            Assert.That(_hud.CurrentStep.Target.Kind, Is.EqualTo(GuideTargetKind.Unit));
+            Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Count), Is.EqualTo((1, 5)));
+            _interaction.ClickUnit(_hud.CurrentStep.Target.Id, false);
+            Refresh();
+            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.ContextBar.HaulButton));
+            UiFeel.Press(_hud.ContextBar.HaulButton);
+            Refresh();
+            Assert.That(_hud.CurrentStep.Target.Id, Is.EqualTo(mine));
+            Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Title), Is.EqualTo((3, "1. Откуда: Шахта")));
+            _interaction.ChooseBuilding(mine);
+            Refresh();
+            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.HaulCargo.ConfirmButton));
+            UiFeel.Press(_hud.HaulCargo.ConfirmButton);
+            Refresh();
+            Assert.That(_hud.CurrentStep.Target.Id, Is.EqualTo(warehouse));
+            Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Title), Is.EqualTo((5, "2. Куда: Склад")));
+            _interaction.ChooseBuilding(warehouse);
+            Assert.That(_session.CurrentSnapshot.Progress.Quest.IsComplete, Is.True);
+
+            // «Первая выручка»: the hauler is still selected, but busy; the pointer does not take it off its route
+            Claim();
+            Assert.That(_interaction.SelectedIds, Is.Not.Empty);
+            Assert.That(_hud.CurrentStep.Target.Element, Is.Not.SameAs(_hud.ContextBar.HaulButton));
+            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.TopBar.CatalogButton), "No one is free: a hire first");
         }
 
         [Test]
-        public void MineCard_HaulsToTheWarehouse_InOnePress()
+        public void HaulQuest_WithoutAFreeGoblin_PlacesTheHireInsteadOfCancellingIt()
         {
-            string mine = ReachWork(freeGoblin: true);
-            string idle = _session.CurrentSnapshot.Units.First(u => u.Assignment.Kind == AssignmentKind.Idle).Id;
-            Assert.That(_hud.CurrentStep.Target.Kind, Is.EqualTo(GuideTargetKind.Building));
-            Assert.That(_hud.CurrentStep.Target.Id, Is.EqualTo(mine));
+            ReachWork(freeGoblin: false);
+            Advance("tutorial-market");
+            Refresh();
+            OpenCatalogIfPointed();
+            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.Catalog.HireButton(UnitKind.Goblin)));
             Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Count), Is.EqualTo((1, 2)));
 
-            _interaction.SelectBuilding(mine);
+            UiFeel.Press(_hud.Catalog.HireButton(UnitKind.Goblin));
             Refresh();
-            var button = _hud.Inspect.HaulToWarehouseButton;
-            Assert.That(Ui.IsShown(button), Is.True, "The quest asks to carry from the mine to the warehouse");
-            Assert.That(UiFeel.IsAvailable(button), Is.True);
-            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(button));
-            Assert.That(_hud.CurrentStep.Number, Is.EqualTo(2));
+            // playtest 2026-10-07: «Сначала отмени», and the cancel led back to the token, round and round
+            Assert.That(_hud.CurrentStep.Title, Is.Not.EqualTo("Сначала отмени"));
+            Assert.That(_hud.CurrentStep.Target.Kind, Is.EqualTo(GuideTargetKind.Cell));
+            Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Count), Is.EqualTo((2, 2)));
 
-            UiFeel.Press(button);
-            var assignment = _session.CurrentSnapshot.Units.First(u => u.Id == idle).Assignment;
-            Assert.That(assignment.Kind, Is.EqualTo(AssignmentKind.Haul));
-            Assert.That(assignment.SourceId, Is.EqualTo(mine));
-            Assert.That(assignment.DestinationId, Is.EqualTo(TutorialPlaces.Warehouse(_session.CurrentSnapshot).Id));
-            Assert.That(_session.CurrentSnapshot.Progress.Quest.IsComplete, Is.True);
+            _interaction.PlaceUnits(_hud.CurrentStep.Target.Cell);
+            Refresh();
+            Assert.That(_hud.CurrentStep.Target.Kind, Is.EqualTo(GuideTargetKind.Unit), "The new goblin is the carrier");
+            Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Count), Is.EqualTo((1, 5)));
         }
 
         [Test]
-        public void MineCard_WithoutAFreeGoblin_IsUnavailable_AndSaysWhy()
+        public void WorkQuest_WithoutAFreeGoblin_PlacesTheHireInsteadOfCancellingIt()
         {
-            string mine = ReachWork(freeGoblin: false);
-            _interaction.SelectBuilding(mine);
+            UiFeel.Press(_hud.Catalog.HireButton(UnitKind.Goblin));
+            _interaction.PlaceUnits(TutorialPlaces.HireCell(_session, UnitKind.Goblin).Value);
+            Claim();
+            var place = _session.FindFirstBuildingCell(BuildingKind.Mine);
+            Assert.That(_session.Dispatch(new BuildBuildingCommand(BuildingKind.Mine, place.Value)).Ok, Is.True);
+            Claim();
+            Assert.That(_session.Dispatch(new SellUnitsCommand(_session.CurrentSnapshot.Units.Select(u => u.Id).ToList())).Ok,
+                Is.True);
             Refresh();
-            var button = _hud.Inspect.HaulToWarehouseButton;
-            Assert.That(Ui.IsShown(button), Is.True);
-            Assert.That(UiFeel.IsAvailable(button), Is.False);
-            Assert.That(_interaction.HaulToWarehouseBlocker, Does.Contain("Гоблин"));
-            PressTabIfPointed();
-            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.Catalog.HireButton(UnitKind.Goblin)),
-                "Without a free goblin the pointer leads to the hire first");
+            OpenCatalogIfPointed();
+            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.Catalog.HireButton(UnitKind.Goblin)));
+            UiFeel.Press(_hud.Catalog.HireButton(UnitKind.Goblin));
+            Refresh();
+            Assert.That(_hud.CurrentStep.Target.Kind, Is.EqualTo(GuideTargetKind.Cell));
+            Assert.That((_hud.CurrentStep.Number, _hud.CurrentStep.Count), Is.EqualTo((2, 2)));
         }
 
         [Test]
-        public void MineCard_HasNoHaulButton_WhenTheQuestAsksNothingOfIt()
+        public void OrderStep_PointsAtTheRightClickFan_WhenItIsOpen()
+        {
+            ReachWork(freeGoblin: true);
+            Assert.That(_hud.CurrentStep.Target.Kind, Is.EqualTo(GuideTargetKind.Unit));
+            _interaction.ClickUnit(_hud.CurrentStep.Target.Id, false);
+            Refresh();
+            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.ContextBar.HaulButton));
+            Assert.That(_hud.CurrentStep.Text, Does.Contain("правой кнопкой"));
+
+            _interaction.ToggleCommands(true);
+            _hud.Fan.Refresh();
+            Refresh();
+            Assert.That(_hud.Fan.IsShown, Is.True);
+            Assert.That(_hud.CurrentStep.Target.Element, Is.SameAs(_hud.Fan.HaulButton));
+            Assert.That(_hud.CurrentStep.Number, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void BuildingCard_HasNoHaulShortcut()
         {
             string mine = ReachWork(freeGoblin: true);
-            Advance("tutorial-market");
             _interaction.SelectBuilding(mine);
             Refresh();
-            Assert.That(Ui.IsShown(_hud.Inspect.HaulToWarehouseButton), Is.False);
+            Assert.That(_hud.Root.Q<Button>(className: "inspect-haul"), Is.Null, "Hauls go by the order, at the bottom or in the fan");
+        }
+
+        [Test]
+        public void PlacesOnTheMap_GetAPinOverThem_InsteadOfTheWindowAndTheHand()
+        {
+            Assert.That(GuidePlace.OnGround(GuideTarget.Place(new Cell(1, 1), 3, 3)), Is.True);
+            Assert.That(GuidePlace.OnGround(GuideTarget.At(new Cell(1, 1))), Is.True);
+            Assert.That(GuidePlace.OnGround(GuideTarget.Building("warehouse-1")), Is.False);
+            Assert.That(GuidePlace.OnGround(GuideTarget.Unit("unit-1")), Is.False);
+            Assert.That(GuidePlace.OnGround(GuideTarget.Of(_hud.TopBar.CatalogButton)), Is.False);
+
+            // seen straight from above at 10 px a cell, down the screen as the map goes up: the corners round the place
+            var corners = GuidePlace.Corners(new Cell(10, 20), 3, 2, 1f, p => new UnityEngine.Vector2(p.X * 10f, p.Y * 10f));
+            Assert.That(corners, Is.EqualTo(new[]
+            {
+                new UnityEngine.Vector2(100f, 200f), new UnityEngine.Vector2(130f, 200f),
+                new UnityEngine.Vector2(130f, 220f), new UnityEngine.Vector2(100f, 220f)
+            }));
+            Assert.That(GuidePlace.Corners(new Cell(0, 0), 1, 1, 1f, _ => null), Is.Null, "Nothing to draw off the camera");
+            Assert.That(GuidePlace.CellSide(corners, 3, 2), Is.EqualTo(10f).Within(.001f));
+
+            // the light keeps inside the grid's lines
+            var light = new UnityEngine.Vector2[4];
+            GuidePlace.Inset(corners, 3, 2, GuidePlace.LightInset, light);
+            Assert.That(light[0].x, Is.EqualTo(100f + 10f * GuidePlace.LightInset).Within(.001f));
+            Assert.That(light[2].y, Is.EqualTo(220f - 10f * GuidePlace.LightInset).Within(.001f));
+
+            // the pin floats over the place's middle, its tail's tip just above it, and rises and falls
+            float radius = GuidePlace.PinRadius(3, 2);
+            Assert.That(radius, Is.GreaterThan(GuidePlace.PinRadius(1, 1)), "A building's place gets a bigger pin than a cell");
+            var low = GuidePlace.PinCentre(corners, radius, 0f);
+            var high = GuidePlace.PinCentre(corners, radius, 1f);
+            var tip = GuidePlace.PinTip(low, radius);
+            Assert.That(tip.x, Is.EqualTo(115f).Within(.001f));
+            Assert.That(tip.y, Is.EqualTo(210f - GuidePlace.Hover).Within(.001f));
+            Assert.That(low.y - high.y, Is.EqualTo(GuidePlace.FloatHeight).Within(.001f));
+            Assert.That(GuidePlace.Float(0f), Is.EqualTo(0f).Within(.001f));
+            Assert.That(GuidePlace.Float(GuidePlace.FloatSeconds / 2f), Is.EqualTo(1f).Within(.001f));
+
+            // the tail's sides touch the disc: each meets the radius there at a right angle
+            var (from, to) = GuidePlace.PinArc;
+            foreach (float angle in new[] { from, to })
+            {
+                var touch = low + new UnityEngine.Vector2(UnityEngine.Mathf.Cos(angle), UnityEngine.Mathf.Sin(angle)) * radius;
+                Assert.That(UnityEngine.Vector2.Dot(touch - low, tip - touch), Is.EqualTo(0f).Within(.01f));
+            }
+        }
+
+        [Test]
+        public void ControlsLesson_ComesFirst_TheCameraTheZoomTheKeys_ThenTheFirstWorker()
+        {
+            bool learned = GameSettings.ControlsLearned;
+            GameSettings.SetControlsLearned(false);
+            try
+            {
+                float panned = 0f, zoomed = 0f;
+                var hud = TestUi.Colony(new ColonyHudContext(_session, _interaction)
+                {
+                    ToggleGuides = () => { },
+                    GuidesVisible = () => false,
+                    OpenBattle = _ => { },
+                    CameraPanned = () => panned,
+                    CameraZoomed = () => zoomed
+                });
+                void Frame()
+                {
+                    hud.Tick(.2f);
+                    hud.OnInteractionChanged(_session.CurrentSnapshot);
+                }
+
+                Frame();
+                var step = hud.CurrentStep;
+                Assert.That(step.Target.Kind, Is.EqualTo(GuideTargetKind.Card), "Nothing to point at: the card alone");
+                Assert.That((step.Number, step.Count, step.Title), Is.EqualTo((1, 3, "Осмотри остров")));
+                Assert.That(step.Keys.Select(k => k.ToString()), Is.EqualTo(new[] { "W", "A", "S", "D", "mouse-right" }));
+                Assert.That(hud.Guide.CardKeys, Is.EqualTo(new[] { "W", "A", "S", "D", "mouse-right" }));
+
+                panned = .3f;
+                Frame();
+                Assert.That(hud.Lesson.Current, Is.EqualTo(ControlsLesson.Stage.Move), "Not far enough yet");
+                panned = 1f;
+                Frame();
+                Frame();
+                Assert.That((hud.CurrentStep.Number, hud.CurrentStep.Title), Is.EqualTo((2, "Ближе и дальше")));
+                Assert.That(hud.Guide.CardKeys, Is.EqualTo(new[] { "mouse-wheel" }));
+
+                zoomed = .5f;
+                Frame();
+                Frame();
+                step = hud.CurrentStep;
+                Assert.That((step.Number, step.Title), Is.EqualTo((3, "Клавиши")));
+                Assert.That(step.Keys.Select(k => k.Label), Is.EqualTo(ControlsLesson.ToolKeys.Select(k => k.Key.Label)));
+                Assert.That(step.Keys.All(k => !string.IsNullOrEmpty(k.Name)), Is.True, "Every key with what it opens");
+
+                hud.Lesson.NoteKey();
+                Frame();
+                Assert.That(hud.Lesson.IsDone, Is.True);
+                Assert.That(GameSettings.ControlsLearned, Is.True, "Once per player");
+                Assert.That(hud.CurrentStep.Target.Element, Is.SameAs(hud.Catalog.HireButton(UnitKind.Goblin)));
+            }
+            finally
+            {
+                GameSettings.SetControlsLearned(learned);
+            }
+        }
+
+        [Test]
+        public void ControlsLesson_KeysCardGoesByItself_AndATouchScreenSkipsTheLesson()
+        {
+            var lesson = new ControlsLesson(() => 0f, () => 0f, learned: false);
+            Assert.That(lesson.Current, Is.EqualTo(ControlsLesson.Stage.Move));
+            bool learned = GameSettings.ControlsLearned;
+            try
+            {
+                var keys = new ControlsLesson(() => 5f, () => 5f, learned: false);
+                keys.Tick(.1f, true);
+                keys.Tick(.1f, true);
+                Assert.That(keys.Current, Is.EqualTo(ControlsLesson.Stage.Move), "Counted from when its card came up");
+                float panned = 0f, zoomed = 0f;
+                var walk = new ControlsLesson(() => panned, () => zoomed, learned: false);
+                walk.Tick(.1f, true);
+                panned = 1f;
+                walk.Tick(.1f, true);
+                walk.Tick(.1f, true);
+                zoomed = 1f;
+                walk.Tick(.1f, true);
+                Assert.That(walk.Current, Is.EqualTo(ControlsLesson.Stage.Keys));
+                walk.Tick(ControlsLesson.KeysSeconds / 2f, false);
+                Assert.That(walk.Current, Is.EqualTo(ControlsLesson.Stage.Keys), "Time runs only while the card is up");
+                walk.Tick(ControlsLesson.KeysSeconds + 1f, true);
+                Assert.That(walk.IsDone, Is.True);
+            }
+            finally
+            {
+                GameSettings.SetControlsLearned(learned);
+            }
+
+            bool touch = false;
+            var fingers = new ControlsLesson(() => 0f, () => 0f, learned: false, () => touch);
+            touch = true;
+            fingers.Tick(.1f, true);
+            Assert.That(fingers.IsDone, Is.True, "No keys and no wheel on a touch screen");
+            Assert.That(new ControlsLesson(null, null, learned: false).IsDone, Is.True, "No camera, no lesson");
+        }
+
+        [Test]
+        public void OrderSteps_ShowTheirKeysOnTheCard()
+        {
+            ReachWork(freeGoblin: true);
+            _interaction.ClickUnit(_hud.CurrentStep.Target.Id, false);
+            Refresh();
+            Assert.That(_hud.CurrentStep.Keys.Select(k => k.ToString()), Is.EqualTo(new[] { "H", "mouse-right" }));
+            Assert.That(_hud.Guide.CardKeys, Is.EqualTo(new[] { "H", "mouse-right" }));
+        }
+
+        [Test]
+        public void Pointer_WaitsWhileTheCameraFliesIn()
+        {
+            bool flying = true;
+            var hud = TestUi.Colony(new ColonyHudContext(_session, _interaction)
+            {
+                ToggleGuides = () => { },
+                GuidesVisible = () => false,
+                OpenBattle = _ => { },
+                CameraBusy = () => flying
+            });
+            hud.OnInteractionChanged(_session.CurrentSnapshot);
+            Assert.That(hud.CurrentStep.IsShown, Is.False, "Nothing covers the flight over the island");
+            flying = false;
+            hud.OnInteractionChanged(_session.CurrentSnapshot);
+            Assert.That(hud.CurrentStep.IsShown, Is.True);
+        }
+
+        [Test]
+        public void FirstLaunch_AsksAboutTheHints_AndPlayWaitsForTheAnswer()
+        {
+            var intro = _hud.Intro;
+            intro.Open();
+            intro.AskHints(true);
+            Assert.That(intro.ShowsHints, Is.True);
+            Assert.That(intro.AsksHints, Is.True);
+            Assert.That(UiFeel.IsAvailable(intro.PlayButton), Is.False, "«Играть» waits for an answer");
+            intro.Close();
+            Assert.That(intro.IsOpen, Is.True, "Neither Esc nor Enter skips the question");
+
+            UiFeel.Press(intro.HintsOffButton);
+            Assert.That(GameSettings.TutorialHints, Is.False);
+            Assert.That(GameSettings.TutorialHintsChosen, Is.True);
+            Assert.That(intro.HintsOffButton.ClassListContains("is-on"), Is.True);
+            Assert.That(UiFeel.IsAvailable(intro.PlayButton), Is.True);
+            Refresh();
+            Assert.That(_hud.CurrentStep.IsShown, Is.False, "No hand, veil or card");
+
+            UiFeel.Press(intro.HintsOnButton);
+            Assert.That(GameSettings.TutorialHints, Is.True);
+            Assert.That(intro.HintsOnButton.ClassListContains("is-on"), Is.True);
+            intro.AskHints(false);
+            Assert.That(intro.ShowsHints, Is.False, "Answered once, not asked again");
         }
 
         [Test]
@@ -352,8 +614,17 @@ namespace TrollStrategy.Tests
             Refresh();
         }
 
-        private static Cell CellOf(WorldPosition position) =>
-            new((int)System.Math.Floor(position.X), (int)System.Math.Floor(position.Y));
+        // the catalog and its creatures, when the pointer asks for them first
+        private void OpenCatalogIfPointed()
+        {
+            var element = _hud.CurrentStep.Target.Element;
+            if (element == _hud.TopBar.CatalogButton)
+            {
+                UiFeel.Press(_hud.TopBar.CatalogButton);
+                Refresh();
+            }
+            PressTabIfPointed();
+        }
 
         private void Hire()
         {

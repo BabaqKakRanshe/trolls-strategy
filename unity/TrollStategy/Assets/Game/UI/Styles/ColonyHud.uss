@@ -458,6 +458,23 @@
     -unity-text-align: upper-right;
 }
 
+/* A word from the game itself (a save): one line, a check before it */
+.status.status--note {
+    flex-direction: row;
+    align-items: center;
+}
+
+.status__glyph {
+    width: 22px;
+    height: 22px;
+    margin-right: 8px;
+    -unity-background-image-tint-color: var(--good);
+}
+
+.status__glyph.is-bad {
+    -unity-background-image-tint-color: var(--bad);
+}
+
 /*
  * The orders tray (ContextBar): while creatures are selected or the map waits for a pick, the catalog steps
  * down and the orders take its place. The left end says who or what, as the catalog's tabs stand there; the
@@ -1661,10 +1678,10 @@
     font-size: 19px;
 }
 
-/* room above the discs for a hint card, so it never covers the title */
+/* room above the discs for a hint card of three lines, so it never touches the note under the title */
 .menu-pause__actions {
     flex-direction: row;
-    margin-top: 100px;
+    margin-top: 128px;
 }
 
 .pause-action {
@@ -1905,4 +1922,78 @@
     font-size: 17px;
     white-space: normal;
     -unity-text-align: middle-center;
+}
+
+/* The notice that closes a short build: the intro's sheet with a row of pictures for each kind it still keeps closed */
+.end-group {
+    margin-top: 14px;
+}
+
+.end-teasers {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 2px;
+}
+
+/* disc.png's circle sits in the middle of this box, as the orders' portrait; the picture lies on it */
+.end-teaser {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    margin: -6px -4px;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../Sprites/disc.png");
+}
+
+.end-teaser__art {
+    width: 38px;
+    height: 38px;
+}
+
+.end-more {
+    margin-left: 12px;
+}
+
+/* The alpha's request for a rating on itch.io: a white card over the links, five stars, why, and the way there */
+.end-rate {
+    margin-bottom: 18px;
+    padding: 14px 14px 16px 14px;
+    border-radius: 16px;
+    background-color: var(--paper);
+}
+
+.end-rate__stars {
+    flex-direction: row;
+}
+
+.end-rate__star {
+    width: 22px;
+    height: 22px;
+    margin-right: 3px;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--coin);
+}
+
+.end-rate__title {
+    margin-top: 8px;
+    font-size: 17px;
+}
+
+.end-rate__text {
+    margin-top: 2px;
+    font-size: 14px;
+    white-space: normal;
+}
+
+.end-rate__button {
+    min-height: 44px;
+    margin-top: 12px;
+}
+
+.end-rate__glyph {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    -unity-background-scale-mode: scale-to-fit;
 }

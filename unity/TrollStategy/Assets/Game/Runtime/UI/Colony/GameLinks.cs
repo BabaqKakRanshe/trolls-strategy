@@ -17,11 +17,20 @@ namespace TrollStrategy.UI
 
         public static bool HasSteamPage => !string.IsNullOrEmpty(SteamPage);
 
+        /// <summary>
+        /// The game's page on itch.io, where the alpha lives. The alpha's end asks for a rating there: its "/rate"
+        /// opens the rating form straight away (after the login, for a guest), since the page shows no rate button
+        /// to a guest or on a phone. Empty hides the request.
+        /// </summary>
+        public static readonly string ItchPage = "https://prosti-gospodi.itch.io/trollstead";
+
+        public static bool HasItchPage => !string.IsNullOrEmpty(ItchPage);
+
         public static readonly (string Name, string Glyph, string Url)[] Community =
         {
             ("Telegram", "telegram", "https://t.me/milyu_gamedev"),
             ("YouTube", "youtube", "https://www.youtube.com/@prosti_gospodi_gd"),
-            ("Discord", "discord", "https://discord.gg/JujneGkDd"),
+            ("Discord", "discord", "https://discord.gg/AWgUaRnRem"),
             ("Чат игроков", "players", "https://t.me/+n8mmLmvWdAI3ZWMy"),
             ("Почта", "mail", "mailto:vladimir.milyutin.98@gmail.com")
         };
@@ -86,6 +95,11 @@ namespace TrollStrategy.UI
         public static void OpenSteamPage()
         {
             if (HasSteamPage) UnityEngine.Application.OpenURL(SteamPage);
+        }
+
+        public static void OpenItchRating()
+        {
+            if (HasItchPage) UnityEngine.Application.OpenURL(ItchPage + "/rate?source=game");
         }
 
         public static VisualElement Glyph(string glyph, string classes = null)

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using TrollStrategy.Domain;
 using UnityEngine.UIElements;
 
@@ -18,13 +20,41 @@ namespace TrollStrategy.UI
         /// <summary>A building's place on the colony map: its lower-left cell and its size.</summary>
         Footprint,
         /// <summary>A cell of the battle board: the fighter standing there.</summary>
-        BattleCell
+        BattleCell,
+        /// <summary>Nothing to point at: the card stands alone (the controls lesson), its keys on it.</summary>
+        Card
+    }
+
+    /// <summary>A key or a mouse gesture a tutorial card shows: a keycap with its letter or a mouse picture, and a name in a list.</summary>
+    public readonly struct GuideKey
+    {
+        private GuideKey(string label, string glyph, string name)
+        {
+            Label = label;
+            Glyph = glyph;
+            Name = name;
+        }
+
+        /// <summary>The key's letter on its keycap; null for a mouse picture.</summary>
+        public string Label { get; }
+        /// <summary>The picture's glyph (glyph--&lt;name&gt; in Theme.uss); null for a key.</summary>
+        public string Glyph { get; }
+        /// <summary>What the key does, when the card lists keys; null beside a sentence.</summary>
+        public string Name { get; }
+
+        public static GuideKey Of(string label, string name = null) => new(label, null, name);
+        public static GuideKey Mouse(string glyph) => new(null, glyph, null);
+        public static readonly GuideKey RightButton = Mouse("mouse-right");
+        public static readonly GuideKey Wheel = Mouse("mouse-wheel");
+
+        public override string ToString() => Label ?? Glyph;
     }
 
     /// <summary>The one thing the next press of a tutorial step should hit.</summary>
     public readonly struct GuideTarget
     {
-        private GuideTarget(GuideTargetKind kind, VisualElement element, string id, Cell cell, int width, int height)
+        private GuideTarget(GuideTargetKind kind, VisualElement element, string id, Cell cell, int width, int height,
+            UnityEngine.Sprite art = null)
         {
             Kind = kind;
             Element = element;
@@ -32,6 +62,7 @@ namespace TrollStrategy.UI
             Cell = cell;
             Width = width;
             Height = height;
+            Art = art;
         }
 
         public GuideTargetKind Kind { get; }
@@ -40,6 +71,8 @@ namespace TrollStrategy.UI
         public Cell Cell { get; }
         public int Width { get; }
         public int Height { get; }
+        /// <summary>On a place on the colony map: the picture of what goes there, on the pin over it.</summary>
+        public UnityEngine.Sprite Art { get; }
         /// <summary>A place on a map rather than a button of the HUD.</summary>
         public bool InWorld => Kind == GuideTargetKind.Building || Kind == GuideTargetKind.Unit ||
                                Kind == GuideTargetKind.Cell || Kind == GuideTargetKind.Footprint ||
@@ -49,10 +82,12 @@ namespace TrollStrategy.UI
             element != null ? new GuideTarget(GuideTargetKind.Element, element, null, default, 0, 0) : default;
         public static GuideTarget Building(string id) => new(GuideTargetKind.Building, null, id, default, 0, 0);
         public static GuideTarget Unit(string id) => new(GuideTargetKind.Unit, null, id, default, 0, 0);
-        public static GuideTarget At(Cell cell) => new(GuideTargetKind.Cell, null, null, cell, 1, 1);
-        public static GuideTarget Place(Cell cell, int width, int height) =>
-            new(GuideTargetKind.Footprint, null, null, cell, width, height);
+        public static GuideTarget At(Cell cell, UnityEngine.Sprite art = null) =>
+            new(GuideTargetKind.Cell, null, null, cell, 1, 1, art);
+        public static GuideTarget Place(Cell cell, int width, int height, UnityEngine.Sprite art = null) =>
+            new(GuideTargetKind.Footprint, null, null, cell, width, height, art);
         public static GuideTarget Fighter(Cell cell) => new(GuideTargetKind.BattleCell, null, null, cell, 1, 1);
+        public static GuideTarget Card => new(GuideTargetKind.Card, null, null, default, 0, 0);
 
         public override string ToString() => Kind switch
         {
@@ -72,7 +107,8 @@ namespace TrollStrategy.UI
     {
         public static readonly GuideStep None = new(default, null, null, 0, 0, false, null);
 
-        public GuideStep(GuideTarget target, string title, string text, int number, int count, bool veil, string key)
+        public GuideStep(GuideTarget target, string title, string text, int number, int count, bool veil, string key,
+            IReadOnlyList<GuideKey> keys = null)
         {
             Target = target;
             Title = title;
@@ -81,6 +117,7 @@ namespace TrollStrategy.UI
             Count = count;
             Veil = veil;
             Key = key;
+            Keys = keys ?? Array.Empty<GuideKey>();
         }
 
         public GuideTarget Target { get; }
@@ -95,6 +132,8 @@ namespace TrollStrategy.UI
         public bool Veil { get; }
         /// <summary>Tells one step from the next: a new key brings the veil back and lets the camera come once more.</summary>
         public string Key { get; }
+        /// <summary>The keys and mouse gestures of the step, as keycaps and pictures under the card's line.</summary>
+        public IReadOnlyList<GuideKey> Keys { get; }
         public bool IsShown => Target.Kind != GuideTargetKind.None;
 
         public override string ToString() => IsShown ? $"{Number}/{Count} {Title} → {Target}" : "no step";

@@ -156,6 +156,19 @@ namespace TrollStrategy.Editor.Tools
                     board.CanPlace(cell) && deployment.UnitAt(cell) == null));
             }
 
+            // a game of the itch.io alpha played to its end, for the notice that closes the version
+            GameSnapshot endOfAlpha = null;
+            GameSnapshot EndOfAlpha()
+            {
+                var game = new GameSession(catalog, layout, campaign: true, catalog.Progression.AlphaLastQuestId);
+                for (int i = 0; i < 100 && game.CurrentSnapshot.Progress.Quest != null; i++)
+                {
+                    game.DebugCompleteQuest();
+                    game.Dispatch(new ClaimQuestRewardCommand());
+                }
+                return game.CurrentSnapshot;
+            }
+
             // -hudLanguages ru,en limits the run to those languages
             var args = Environment.GetCommandLineArgs();
             int only = Array.IndexOf(args, "-hudLanguages");
@@ -203,9 +216,17 @@ namespace TrollStrategy.Editor.Tools
                     view.Intro.Open();
                 } });
                 Pending.Enqueue(new Shot { Name = $"{code}-intro-demo", Setup = () => view.Intro.SetEdition(BuildEdition.SteamDemo) });
+                Pending.Enqueue(new Shot { Name = $"{code}-end", Setup = () =>
+                {
+                    view.Intro.Close();
+                    view.DemoEnd.SetEdition(BuildEdition.Alpha);
+                    view.DemoEnd.Open(endOfAlpha ??= EndOfAlpha());
+                } });
+                Pending.Enqueue(new Shot { Name = $"{code}-end-demo", Setup = () => view.DemoEnd.SetEdition(BuildEdition.SteamDemo) });
                 Pending.Enqueue(new Shot { Name = $"{code}-guild", Setup = () =>
                 {
                     view.Intro.Close();
+                    view.DemoEnd.Close();
                     var guild = session.CurrentSnapshot.Buildings.FirstOrDefault(b => b.Kind == BuildingKind.HaulersGuild);
                     if (guild != null) interaction.SelectBuilding(guild.Id);
                     view.Refresh(session.CurrentSnapshot);

@@ -212,7 +212,8 @@ namespace TrollStrategy.Content
 
     /// <summary>
     /// The player's path through the game: what is open at the start, the authored quest chain (tutorial first,
-    /// then quests that unlock the remaining buildings) and the repeatable quests that follow the chain.
+    /// then quests that unlock the remaining buildings) and the repeatable quests that follow the chain. The short
+    /// public builds (the itch.io alpha, the Steam demo) end the chain early, each after its own quest.
     /// </summary>
     [CreateAssetMenu(fileName = "Progression", menuName = "TrollStrategy/Content/Progression")]
     public class ProgressionDefinition : ScriptableObject
@@ -234,6 +235,12 @@ namespace TrollStrategy.Content
         [Tooltip("The highest arena level a repeatable quest asks for: the top of the ladder.")]
         [SerializeField, Min(1)] private int _repeatArenaLevelCap = 30;
 
+        [Header("Short public builds")]
+        [Tooltip("The itch.io alpha ends after this quest of the chain; empty plays the whole game.")]
+        [SerializeField] private string _alphaLastQuest = string.Empty;
+        [Tooltip("The Steam demo ends after this quest of the chain; empty plays the whole game.")]
+        [SerializeField] private string _steamDemoLastQuest = string.Empty;
+
         public IReadOnlyList<UnitKind> StartingUnits => _startingUnits ?? Array.Empty<UnitKind>();
         public IReadOnlyList<BuildingKind> StartingBuildings => _startingBuildings ?? Array.Empty<BuildingKind>();
         public IReadOnlyList<string> StartingMissions => _startingMissions ?? Array.Empty<string>();
@@ -243,12 +250,23 @@ namespace TrollStrategy.Content
         public int RepeatGrowthPercent => _repeatGrowthPercent;
         public int RepeatArenaLevelStep => Math.Max(1, _repeatArenaLevelStep);
         public int RepeatArenaLevelCap => Math.Max(1, _repeatArenaLevelCap);
+        /// <summary>The quest the itch.io alpha ends after; empty when it plays the whole game.</summary>
+        public string AlphaLastQuestId => _alphaLastQuest ?? string.Empty;
+        /// <summary>The quest the Steam demo ends after; empty when it plays the whole game.</summary>
+        public string SteamDemoLastQuestId => _steamDemoLastQuest ?? string.Empty;
 
         /// <summary>How a repeatable arena quest climbs the ladder: <paramref name="step"/> levels a cycle, up to <paramref name="cap"/>.</summary>
         public void SetRepeatArenaLevels(int step, int cap)
         {
             _repeatArenaLevelStep = Math.Max(1, step);
             _repeatArenaLevelCap = Math.Max(1, cap);
+        }
+
+        /// <summary>Where the short public builds end: the ids of their last quests in the chain.</summary>
+        public void SetShortBuildEnds(string alphaLastQuest, string steamDemoLastQuest)
+        {
+            _alphaLastQuest = alphaLastQuest ?? string.Empty;
+            _steamDemoLastQuest = steamDemoLastQuest ?? string.Empty;
         }
 
         public void Init(IEnumerable<UnitKind> startingUnits, IEnumerable<BuildingKind> startingBuildings,

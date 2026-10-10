@@ -1,6 +1,10 @@
 {
 "entries": [
 {
+"k": "Этот уровень арены — в полной игре",
+"v": "Tato úroveň arény je v plné hře"
+},
+{
 "k": "Миссия не найдена",
 "v": "Mise nenalezena"
 },
@@ -437,10 +441,6 @@
 "v": "Najato tvorů: {0}."
 },
 {
-"k": "{0} нанят и стоит у склада.",
-"v": "Najato: {0}. Stojí u skladu."
-},
-{
 "k": "Постройка «{0}» откроется за задание.",
 "v": "Budova „{0}“ se otevře za úkol."
 },
@@ -527,26 +527,6 @@
 {
 "k": "Сначала укажите, откуда носить товар.",
 "v": "Nejdřív urči, odkud zboží nosit."
-},
-{
-"k": "{0} носит на склад: {1}.",
-"v": "{0} nosí do skladu: {1}."
-},
-{
-"k": "Сначала выберите здание.",
-"v": "Nejdřív vyber budovu."
-},
-{
-"k": "Отсюда на склад не носят.",
-"v": "Odsud se do skladu nenosí."
-},
-{
-"k": "Нет свободного существа «{0}»: найми его в каталоге.",
-"v": "Není volný tvor „{0}“: najmi ho v katalogu."
-},
-{
-"k": "Нет свободных существ: найми работника в каталоге.",
-"v": "Nejsou volní tvorové: najmi dělníka v katalogu."
 },
 {
 "k": "Награда за бой: +{0} зол.",
@@ -1473,6 +1453,30 @@
 "v": "Hotovo"
 },
 {
+"k": "Осмотри остров",
+"v": "Rozhlédni se po ostrově"
+},
+{
+"k": "Двигай камеру клавишами W A S D или стрелками, или тяни карту правой кнопкой мыши.",
+"v": "Posouvej kameru klávesami W A S D nebo šipkami, nebo táhni mapu pravým tlačítkem myši."
+},
+{
+"k": "Ближе и дальше",
+"v": "Blíž a dál"
+},
+{
+"k": "Крути колесо мыши: остров приблизится или отдалится.",
+"v": "Toč kolečkem myši: ostrov se přiblíží nebo vzdálí."
+},
+{
+"k": "Клавиши",
+"v": "Klávesy"
+},
+{
+"k": "Кнопки справа нажимаются и с клавиатуры. Попробуй любую.",
+"v": "Tlačítka vpravo jdou stisknout i z klávesnice. Zkus kterékoli."
+},
+{
 "k": "Сюда",
 "v": "Sem"
 },
@@ -1483,10 +1487,6 @@
 {
 "k": "Найми первого работника",
 "v": "Najmi prvního dělníka"
-},
-{
-"k": "Нажми на жетон «{0}»: он сам встанет у склада.",
-"v": "Klikni na žeton „{0}“: sám se postaví u skladu."
 },
 {
 "k": "Найми работника",
@@ -1525,8 +1525,8 @@
 "v": "Práce"
 },
 {
-"k": "Нажми «Работа» (E), потом на здание.",
-"v": "Klikni na „Práce“ (E), pak na budovu."
+"k": "Нажми «Работа» (E) внизу или кликни правой кнопкой мыши, потом по зданию.",
+"v": "Klikni dole na „Práce“ (E) nebo klikni pravým tlačítkem myši, pak na budovu."
 },
 {
 "k": "Выбери работника",
@@ -1535,22 +1535,6 @@
 {
 "k": "Кликни по свободному существу на острове.",
 "v": "Klikni na volného tvora na ostrově."
-},
-{
-"k": "Вывозить на склад",
-"v": "Vozit do skladu"
-},
-{
-"k": "Ближайший свободный работник начнёт носить отсюда на склад.",
-"v": "Nejbližší volný dělník začne nosit odsud do skladu."
-},
-{
-"k": "Здание «{0}»",
-"v": "Budova „{0}“"
-},
-{
-"k": "Нажми на него: в карточке есть «Вывозить на склад».",
-"v": "Klikni na ni: na kartě je „Vozit do skladu“."
 },
 {
 "k": "Изменить груз",
@@ -1589,8 +1573,8 @@
 "v": "Přeprava"
 },
 {
-"k": "Нажми «Перенос» (H): дальше два здания, откуда и куда.",
-"v": "Klikni na „Přeprava“ (H): dál dvě budovy, odkud a kam."
+"k": "Нажми «Перенос» (H) внизу или кликни правой кнопкой мыши: дальше два здания, откуда и куда.",
+"v": "Klikni dole na „Přeprava“ (H) nebo klikni pravým tlačítkem myši: dál dvě budovy, odkud a kam."
 },
 {
 "k": "Выбери носильщика",
@@ -1655,6 +1639,14 @@
 {
 "k": "Нажми «Отмена» (Esc).",
 "v": "Klikni na „Zrušit“ (Esc)."
+},
+{
+"k": "Колония сохранена",
+"v": "Kolonie uložena"
+},
+{
+"k": "Колонию сохранить не удалось",
+"v": "Kolonii se nepodařilo uložit"
 },
 {
 "k": "Потом кликни по зданию: туда встанут работать.",
@@ -1743,6 +1735,66 @@
 {
 "k": "Расчистить, {0} с",
 "v": "Vyklidit, {0} s"
+},
+{
+"k": "Каталог",
+"v": "Katalog"
+},
+{
+"k": "Сетка",
+"v": "Mřížka"
+},
+{
+"k": "Справочник",
+"v": "Příručka"
+},
+{
+"k": "Задание",
+"v": "Úkol"
+},
+{
+"k": "Свободный",
+"v": "Volný"
+},
+{
+"k": "Меню",
+"v": "Nabídka"
+},
+{
+"k": "Вы прошли обучение, и на этом альфа-версия кончается. В полной игре колония растёт дальше: новые здания, существа и уровни арены.",
+"v": "Prošel jsi výukou a tady alfa verze končí. V plné hře kolonie roste dál: nové budovy, tvorové a úrovně arény."
+},
+{
+"k": "На этом демо-версия кончается. В полной игре колония растёт дальше: новые здания, существа и уровни арены.",
+"v": "Tady demo verze končí. V plné hře kolonie roste dál: nové budovy, tvorové a úrovně arény."
+},
+{
+"k": "Можно остаться на острове: колония живёт, рынок и арена работают, но новых заданий в этой версии нет.",
+"v": "Můžeš zůstat na ostrově: kolonie žije, trh i aréna fungují, ale nové úkoly v této verzi nejsou."
+},
+{
+"k": "Оценить на itch.io",
+"v": "Ohodnotit na itch.io"
+},
+{
+"k": "Остаться на острове",
+"v": "Zůstat na ostrově"
+},
+{
+"k": "Демо-версия пройдена",
+"v": "Demo verze dohrána"
+},
+{
+"k": "Альфа-версия пройдена",
+"v": "Alfa verze dohrána"
+},
+{
+"k": "В желаемое",
+"v": "Do seznamu přání"
+},
+{
+"k": "Демо в Steam",
+"v": "Demo na Steamu"
 },
 {
 "k": "Чат игроков",
@@ -1857,18 +1909,6 @@
 "v": "Podrobněji"
 },
 {
-"k": "Склад",
-"v": "Sklad"
-},
-{
-"k": "свободный работник будет носить отсюда",
-"v": "volný dělník bude nosit odsud"
-},
-{
-"k": "Ближайший свободный работник будет носить отсюда на склад всё, что здесь делают.",
-"v": "Nejbližší volný dělník bude nosit odsud do skladu všechno, co se tu vyrábí."
-},
-{
 "k": "Уровень {0}, {1}×{2}",
 "v": "Úroveň {0}, {1}×{2}"
 },
@@ -1915,6 +1955,10 @@
 {
 "k": "Следующая веха",
 "v": "Další milník"
+},
+{
+"k": "в полной игре",
+"v": "v plné hře"
 },
 {
 "k": "все пройдены",
@@ -2033,20 +2077,32 @@
 "v": "maximum"
 },
 {
-"k": "Привет! Это альфа-версия игры: колония троллей и гоблинов на парящем острове. Она ещё растёт — что-то не доделано, что-то не сбалансировано, а прогресс пока не сохраняется.",
-"v": "Ahoj! Tohle je alfa verze hry: kolonie trollů a goblinů na vznášejícím se ostrově. Pořád roste — něco není dodělané, něco není vyvážené a postup se zatím neukládá."
+"k": "Привет! Это альфа-версия игры: колония троллей и гоблинов на парящем острове. Она ещё растёт — что-то не доделано, что-то не сбалансировано. Колония сохраняется сама, а в меню её можно сохранить в ячейку.",
+"v": "Ahoj! Tohle je alfa verze hry: kolonie trollů a goblinů na vznášejícím se ostrově. Pořád roste — něco není dodělané, něco není vyvážené. Kolonie se ukládá sama a v nabídce ji můžeš uložit do pozice."
 },
 {
-"k": "Привет! Это демо-версия игры: колония троллей и гоблинов на парящем острове. Полная игра ещё в работе: что-то будет меняться, а прогресс пока не сохраняется.",
-"v": "Ahoj! Tohle je demo verze hry: kolonie trollů a goblinů na vznášejícím se ostrově. Plná hra se ještě dělá: něco se změní a postup se zatím neukládá."
+"k": "Привет! Это демо-версия игры: колония троллей и гоблинов на парящем острове. Полная игра ещё в работе: что-то будет меняться. Колония сохраняется сама, а в меню её можно сохранить в ячейку.",
+"v": "Ahoj! Tohle je demo verze hry: kolonie trollů a goblinů na vznášejícím se ostrově. Plná hra se ještě dělá: něco se změní. Kolonie se ukládá sama a v nabídce ji můžeš uložit do pozice."
 },
 {
 "k": "Можно игре отправлять анонимную статистику: до какого задания доходят игроки? Так мы находим, где играть трудно. Ответ можно поменять по F8.",
 "v": "Smí hra odesílat anonymní statistiku: k jakému úkolu hráči dojdou? Tak zjišťujeme, kde se hraje těžko. Odpověď lze změnit klávesou F8."
 },
 {
+"k": "Новая колония займёт место автосохранения после первого приказа, и эта колония пропадёт. Чтобы её оставить, нажмите «Продолжить» и сохраните её в ячейку через меню.",
+"v": "Nová kolonie po prvním rozkazu zabere místo automatického uložení a tato kolonie zmizí. Chceš-li ji zachovat, stiskni „Pokračovat“ a ulož ji přes nabídku do pozice."
+},
+{
+"k": "Показывать в обучении, куда нажимать: рукой, подсветкой и карточкой с шагом? Это можно поменять в меню.",
+"v": "Ukazovat v tutoriálu, kam klikat: rukou, zvýrazněním a kartou s krokem? Dá se to změnit v menu."
+},
+{
 "k": "Играть",
 "v": "Hrát"
+},
+{
+"k": "Загрузить",
+"v": "Načíst"
 },
 {
 "k": "Анонимная статистика",
@@ -2061,6 +2117,22 @@
 "v": "Neodesílat"
 },
 {
+"k": "Подсказки обучения",
+"v": "Nápověda k výuce"
+},
+{
+"k": "Показывать",
+"v": "Zobrazit"
+},
+{
+"k": "Скрыть",
+"v": "Skrýt"
+},
+{
+"k": "Новая колония",
+"v": "Nová kolonie"
+},
+{
 "k": "Демо-версия",
 "v": "Demo verze"
 },
@@ -2069,20 +2141,36 @@
 "v": "Alfa verze"
 },
 {
-"k": "В желаемое",
-"v": "Do seznamu přání"
-},
-{
-"k": "Демо в Steam",
-"v": "Demo na Steamu"
-},
-{
 "k": "Добавьте игру в желаемое, чтобы не пропустить выход.",
 "v": "Přidej si hru do seznamu přání, abys nepropásl vydání."
 },
 {
 "k": "В Steam можно добавить игру в желаемое, чтобы не пропустить выход.",
 "v": "Na Steamu si můžeš hru přidat do seznamu přání, abys nepropásl vydání."
+},
+{
+"k": "Открыть последнее сохранение и играть дальше.",
+"v": "Otevři poslední uložení a hraj dál."
+},
+{
+"k": "Выбрать колонию из автосохранения или ячейки.",
+"v": "Vyber kolonii z automatického uložení nebo z pozice."
+},
+{
+"k": "Начать остров с начала. Ячейки останутся, а автосохранение займёт новая колония.",
+"v": "Začni ostrov od začátku. Pozice zůstanou a automatické uložení zabere nová kolonie."
+},
+{
+"k": "Сохранённые колонии этой версией не открыть. Почему, видно в списке.",
+"v": "Uložené kolonie nejdou v této verzi otevřít. Proč, je vidět v seznamu."
+},
+{
+"k": "Из другой версии",
+"v": "Z jiné verze"
+},
+{
+"k": "Начать новую колонию?",
+"v": "Začít novou kolonii?"
 },
 {
 "k": "Авто",
@@ -2129,6 +2217,10 @@
 "v": "Začít znovu?"
 },
 {
+"k": "Сохранения",
+"v": "Uložení"
+},
+{
 "k": "Колония троллей и гоблинов на парящем острове: добывай, перерабатывай, вози, торгуй и выводи отряд на арену.",
 "v": "Kolonie trollů a goblinů na vznášejícím se ostrově: těž, zpracovávej, dopravuj, obchoduj a posílej oddíl do arény."
 },
@@ -2149,6 +2241,10 @@
 "v": "Kolonie začne od úplného začátku: budovy, tvorové, zlato i úkoly zmizí."
 },
 {
+"k": "Сохранить колонию в ячейку или открыть прежнюю.",
+"v": "Ulož kolonii do pozice, nebo otevři dřívější."
+},
+{
 "k": "Звук, графика, размер интерфейса и язык.",
 "v": "Zvuk, grafika, velikost rozhraní a jazyk."
 },
@@ -2167,6 +2263,10 @@
 {
 "k": "Начать заново",
 "v": "Začít znovu"
+},
+{
+"k": "Колония начнётся с самого начала, а нынешняя пропадёт: новая займёт место автосохранения после первого приказа. Чтобы оставить нынешнюю, сначала сохраните её в ячейку.",
+"v": "Kolonie začne od úplného začátku a současná zmizí: nová po prvním rozkazu zabere místo automatického uložení. Chceš-li současnou zachovat, nejdřív ji ulož do pozice."
 },
 {
 "k": "Звук",
@@ -2191,18 +2291,6 @@
 {
 "k": "Интерфейс",
 "v": "Rozhraní"
-},
-{
-"k": "Показывать",
-"v": "Zobrazit"
-},
-{
-"k": "Скрыть",
-"v": "Skrýt"
-},
-{
-"k": "Подсказки обучения",
-"v": "Nápověda k výuce"
 },
 {
 "k": "Версия {0}, {1}",
@@ -2333,6 +2421,298 @@
 "v": "Odemčeno: "
 },
 {
+"k": "Колония",
+"v": "Kolonie"
+},
+{
+"k": "Свободная игра",
+"v": "Volná hra"
+},
+{
+"k": "Все задания пройдены",
+"v": "Všechny úkoly splněny"
+},
+{
+"k": "Уровень {0}: {1}",
+"v": "Úroveň {0}: {1}"
+},
+{
+"k": "Автосохранение",
+"v": "Automatické uložení"
+},
+{
+"k": "Ячейка {0}",
+"v": "Pozice {0}"
+},
+{
+"k": "Сохранение",
+"v": "Uložení"
+},
+{
+"k": "Сегодня, {0}",
+"v": "Dnes, {0}"
+},
+{
+"k": "Вчера, {0}",
+"v": "Včera, {0}"
+},
+{
+"k": "меньше минуты",
+"v": "méně než minuta"
+},
+{
+"k": "{0} мин",
+"v": "{0} min"
+},
+{
+"k": "{0}, в игре {1}",
+"v": "{0}, ve hře {1}"
+},
+{
+"k": "Файл повреждён",
+"v": "Soubor je poškozený"
+},
+{
+"k": "Не открыть в этой версии",
+"v": "V této verzi nejde otevřít"
+},
+{
+"k": "Колонию из него не открыть.",
+"v": "Kolonii z něj nejde otevřít."
+},
+{
+"k": "Колонию из него не открыть. Ячейку можно удалить.",
+"v": "Kolonii z něj nejde otevřít. Pozici lze smazat."
+},
+{
+"k": "Сохранено более новой версией игры",
+"v": "Uloženo novější verzí hry"
+},
+{
+"k": "Сохранено версией {0}, у вас {1}",
+"v": "Uloženo verzí {0}, ty máš {1}"
+},
+{
+"k": "Её сохранила более новая версия игры. Обновите игру, и колония откроется.",
+"v": "Uložila ji novější verze hry. Aktualizuj hru a kolonie se otevře."
+},
+{
+"k": "Ячейку сохранила версия {0}, а у вас {1}. Обновите игру, и колония откроется.",
+"v": "Pozici uložila verze {0}, a ty máš {1}. Aktualizuj hru a kolonie se otevře."
+},
+{
+"k": "Эту колонию сохранила полная игра, здесь её не открыть.",
+"v": "Tuhle kolonii uložila plná hra, tady ji neotevřeš."
+},
+{
+"k": "Эту колонию сохранила демо-версия из Steam, здесь её не открыть.",
+"v": "Tuhle kolonii uložila demo verze ze Steamu, tady ji neotevřeš."
+},
+{
+"k": "Эту колонию сохранила альфа-версия, здесь её не открыть.",
+"v": "Tuhle kolonii uložila alfa verze, tady ji neotevřeš."
+},
+{
+"k": "Эту колонию сохранила другая версия игры, здесь её не открыть.",
+"v": "Tuhle kolonii uložila jiná verze hry, tady ji neotevřeš."
+},
+{
+"k": "Откройте её в полной игре: там колония продолжится с того же места.",
+"v": "Otevři ji v plné hře: kolonie tam bude pokračovat od stejného místa."
+},
+{
+"k": "Откройте её в демо-версии из Steam или в полной игре: там колония продолжится.",
+"v": "Otevři ji v demo verzi ze Steamu nebo v plné hře: tam kolonie bude pokračovat."
+},
+{
+"k": "Откройте её в той версии игры, что её сохранила.",
+"v": "Otevři ji v té verzi hry, která ji uložila."
+},
+{
+"k": "из альфа-версии",
+"v": "z alfa verze"
+},
+{
+"k": "из демо-версии",
+"v": "z demo verze"
+},
+{
+"k": "из другой версии",
+"v": "z jiné verze"
+},
+{
+"k": "Колонию сохранила альфа-версия. Здесь она продолжится, и заданий будет больше.",
+"v": "Kolonii uložila alfa verze. Tady bude pokračovat a úkolů bude víc."
+},
+{
+"k": "Колонию сохранила демо-версия. Здесь она продолжится, и заданий будет больше.",
+"v": "Kolonii uložila demo verze. Tady bude pokračovat a úkolů bude víc."
+},
+{
+"k": "Колонию сохранила другая версия игры. Здесь она продолжится.",
+"v": "Kolonii uložila jiná verze hry. Tady bude pokračovat."
+},
+{
+"k": "Казна колонии.",
+"v": "Pokladna kolonie."
+},
+{
+"k": "Существа",
+"v": "Tvorové"
+},
+{
+"k": "Тролли, гоблины и другие жители колонии.",
+"v": "Trollové, goblini a další obyvatelé kolonie."
+},
+{
+"k": "Здания",
+"v": "Budovy"
+},
+{
+"k": "Сколько зданий стоит на острове.",
+"v": "Kolik budov stojí na ostrově."
+},
+{
+"k": "Блоков земли у колонии.",
+"v": "Bloky země kolonie."
+},
+{
+"k": "Победы на арене",
+"v": "Vítězství v aréně"
+},
+{
+"k": "Сколько боёв выиграл отряд.",
+"v": "Kolik bitev oddíl vyhrál."
+},
+{
+"k": "Удалить",
+"v": "Smazat"
+},
+{
+"k": "Сохранить",
+"v": "Uložit"
+},
+{
+"k": "Перезаписать ячейку {0}?",
+"v": "Přepsat pozici {0}?"
+},
+{
+"k": "Перезаписать сохранение?",
+"v": "Přepsat uložení?"
+},
+{
+"k": "Удалить ячейку {0}?",
+"v": "Smazat pozici {0}?"
+},
+{
+"k": "Удалить сохранение?",
+"v": "Smazat uložení?"
+},
+{
+"k": "Загрузить автосохранение?",
+"v": "Načíst automatické uložení?"
+},
+{
+"k": "Загрузить ячейку {0}?",
+"v": "Načíst pozici {0}?"
+},
+{
+"k": "Загрузить сохранение?",
+"v": "Načíst uložení?"
+},
+{
+"k": "Загрузить колонию",
+"v": "Načíst kolonii"
+},
+{
+"k": "Перезаписать",
+"v": "Přepsat"
+},
+{
+"k": "Автосохранение ведёт сама игра, его не удалить.",
+"v": "Automatické uložení vede hra sama, nejde smazat."
+},
+{
+"k": "В ячейке пусто.",
+"v": "Pozice je prázdná."
+},
+{
+"k": "Убрать колонию из ячейки. Игра спросит ещё раз.",
+"v": "Odstraň kolonii z pozice. Hra se zeptá ještě jednou."
+},
+{
+"k": "Автосохранение ведёт сама игра. Выберите ячейку, чтобы сохранить колонию.",
+"v": "Automatické uložení vede hra sama. Vyber pozici, do které kolonii uložíš."
+},
+{
+"k": "Файл в ячейке повреждён: сначала удалите его.",
+"v": "Soubor v pozici je poškozený: nejdřív ho smaž."
+},
+{
+"k": "Сохранить нынешнюю колонию в эту ячейку.",
+"v": "Uložit současnou kolonii do této pozice."
+},
+{
+"k": "Сохранить нынешнюю колонию на место той, что в ячейке. Игра спросит ещё раз.",
+"v": "Uložit současnou kolonii na místo té, která je v pozici. Hra se zeptá ještě jednou."
+},
+{
+"k": "Открыть эту колонию вместо нынешней.",
+"v": "Otevřít tuto kolonii místo současné."
+},
+{
+"k": "Открыть эту колонию.",
+"v": "Otevřít tuto kolonii."
+},
+{
+"k": "Пусто",
+"v": "Prázdná"
+},
+{
+"k": "Сохранено",
+"v": "Uloženo"
+},
+{
+"k": "Сейчас в ячейке",
+"v": "Teď v pozici"
+},
+{
+"k": "Будет",
+"v": "Bude"
+},
+{
+"k": "Сейчас, в игре {0}",
+"v": "Teď, ve hře {0}"
+},
+{
+"k": "Колония из ячейки {0} пропадёт, на её месте будет нынешняя.",
+"v": "Kolonie z pozice {0} zmizí a na jejím místě bude současná."
+},
+{
+"k": "Колония из этого сохранения пропадёт, на её месте будет нынешняя.",
+"v": "Kolonie z tohoto uložení zmizí a na jejím místě bude současná."
+},
+{
+"k": "Колония из ячейки {0} пропадёт насовсем.",
+"v": "Kolonie z pozice {0} zmizí nadobro."
+},
+{
+"k": "Колония из этого сохранения пропадёт насовсем.",
+"v": "Kolonie z tohoto uložení zmizí nadobro."
+},
+{
+"k": "Всё, что не сохранено с {0}, пропадёт.",
+"v": "Všechno, co není uloženo od {0}, zmizí."
+},
+{
+"k": "Нынешняя колония ещё не сохранена и пропадёт.",
+"v": "Současná kolonie ještě není uložená a zmizí."
+},
+{
+"k": "Сохранить не удалось. Проверьте, есть ли место на диске, и попробуйте ещё раз.",
+"v": "Uložit se nepodařilo. Zkontroluj, jestli je na disku místo, a zkus to znovu."
+},
+{
 "k": "работает",
 "v": "pracuje"
 },
@@ -2373,24 +2753,12 @@
 "v": "Pokladna osady. Trh platí za každé dodané zboží."
 },
 {
-"k": "Существа",
-"v": "Tvorové"
-},
-{
-"k": "Свободный",
-"v": "Volný"
-},
-{
 "k": "Показать следующее существо без работы; камера едет к нему. Ещё раз — следующее.",
 "v": "Ukázat dalšího tvora bez práce; kamera k němu přejede. Znovu — další."
 },
 {
 "k": "Купить участок у острова или расчистить свой.",
 "v": "Koupit pozemek u ostrova nebo vyklidit vlastní."
-},
-{
-"k": "Сетка",
-"v": "Mřížka"
 },
 {
 "k": "Клетки поля и пути носильщиков.",
@@ -2401,28 +2769,16 @@
 "v": "Úrovně arény: vítězství otevře další, projitou lze opakovat pro zlato. "
 },
 {
-"k": "Каталог",
-"v": "Katalog"
-},
-{
 "k": "Здания и существа, лоток внизу экрана.",
 "v": "Budovy a tvorové, lišta dole na obrazovce."
-},
-{
-"k": "Справочник",
-"v": "Příručka"
 },
 {
 "k": "Существа, здания, товары, улучшения и арена: кто что делает и сколько стоит.",
 "v": "Tvorové, budovy, zboží, vylepšení a aréna: kdo co dělá a kolik to stojí."
 },
 {
-"k": "Меню",
-"v": "Nabídka"
-},
-{
-"k": "Пауза, настройки звука, графики и языка, об игре, начать заново.",
-"v": "Pauza, nastavení zvuku, grafiky a jazyka, o hře, začít znovu."
+"k": "Пауза, сохранения, настройки звука, графики и языка, об игре, начать заново.",
+"v": "Pauza, uložení, nastavení zvuku, grafiky a jazyka, o hře, začít znovu."
 },
 {
 "k": "{0} без дела",
@@ -2455,10 +2811,6 @@
 {
 "k": "Всего {0}, все при деле.",
 "v": "Celkem {0}, všichni mají práci."
-},
-{
-"k": "Здания",
-"v": "Budovy"
 },
 {
 "k": "Товары",
@@ -3021,8 +3373,8 @@
 "v": "První dělník"
 },
 {
-"k": "Внизу, во вкладке «Существа», нажми на гоблина: он сам встанет у склада.",
-"v": "Dole na kartě „Tvorové“ klikni na goblina: sám se postaví u skladu."
+"k": "Внизу, во вкладке «Существа», нажми на гоблина, потом — на клетку у склада.",
+"v": "Dole na kartě „Tvorové“ klikni na goblina, pak na políčko u skladu."
 },
 {
 "k": "Своя шахта",
@@ -3037,8 +3389,8 @@
 "v": "Do práce!"
 },
 {
-"k": "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, нажми на шахту и в её карточке — «Вывозить на склад»: новый гоблин начнёт носить руду на склад.",
-"v": "Klikni na goblina → „Práce“ (E) → důl: bude kopat rudu. Pak najmi dalšího goblina, klikni na důl a na jeho kartě — „Vozit do skladu“: nový goblin začne nosit rudu do skladu."
+"k": "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, кликни по нему → «Перенос» (H): сначала шахта — откуда носить, потом склад — куда. Те же приказы открывает правый клик.",
+"v": "Klikni na goblina → „Práce“ (E) → důl: bude kopat rudu. Pak najmi dalšího goblina, klikni na něj → „Přeprava“ (H): nejdřív důl — odkud nosit, pak sklad — kam. Stejné příkazy otevře i pravé tlačítko myši."
 },
 {
 "k": "Первая выручка",
@@ -3697,6 +4049,14 @@
 "v": "Vyber jedno nebo několik druhů zboží, nebo nech „Vše“. Kam nosit, ukážeš na mapě."
 },
 {
+"k": "Понравилась игра?",
+"v": "Líbila se ti hra?"
+},
+{
+"k": "Оценка на itch.io помогает другим найти игру.",
+"v": "Hodnocení na itch.io pomáhá ostatním hru najít."
+},
+{
 "k": "Поверните устройство",
 "v": "Otočte zařízení"
 },
@@ -3739,6 +4099,10 @@
 {
 "k": "Шахта",
 "v": "Důl"
+},
+{
+"k": "Склад",
+"v": "Sklad"
 },
 {
 "k": "2. Слизни на лугу",

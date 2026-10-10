@@ -1,0 +1,415 @@
+/*
+ * The saved colonies (SaveSheet, SaveParts): the slot sheet in the pause menu and over the launch window, the
+ * latest save's card on the launch window, and the questions before an overwrite, a delete or a load. Layout and
+ * sizes only; colours, type and buttons come from Theme.uss.
+ */
+
+/* ---------------------------------------------------------------- a picture and a number; the name is in the hint */
+
+.save-facts {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.save-fact {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: 16px;
+}
+
+.save-fact__icon {
+    width: 36px;
+    height: 36px;
+    margin-right: 2px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.save-fact__glyph {
+    width: 22px;
+    height: 22px;
+    margin-right: 6px;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.save-fact__value {
+    font-size: 20px;
+}
+
+.save-facts--small .save-fact {
+    margin-right: 12px;
+}
+
+.save-facts--small .save-fact__icon {
+    width: 28px;
+    height: 28px;
+}
+
+.save-facts--small .save-fact__glyph {
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+}
+
+.save-facts--small .save-fact__value {
+    font-size: 16px;
+}
+
+/* when it was saved and how long it was played, after a clock */
+.save-when {
+    flex-direction: row;
+    align-items: center;
+}
+
+.save-when__glyph {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.save-when__text {
+    font-size: 15px;
+    color: var(--ink-soft);
+}
+
+/* ---------------------------------------------------------------- the island's picture and the lock over it */
+
+.save-thumb__picture {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* a save this build cannot open: its picture pales behind the lock */
+.is-locked .save-thumb__picture {
+    opacity: 0.4;
+}
+
+.save-lock {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    border-width: 2px;
+    border-color: var(--paper);
+    background-color: var(--ink-faint);
+    align-items: center;
+    justify-content: center;
+}
+
+.save-lock > .glyph {
+    width: 20px;
+    height: 20px;
+    -unity-background-image-tint-color: var(--paper);
+}
+
+/* ---------------------------------------------------------------- the sheet: 980 px, its list scrolls when the screen is short */
+
+.menu-dialog.saves-dialog {
+    width: 980px;
+    max-height: 100%;
+}
+
+.saves-dialog > .dialog__header {
+    flex-shrink: 0;
+}
+
+.saves-page,
+.saves-list,
+.saves-question {
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.saves-scroll {
+    flex-shrink: 1;
+    min-height: 140px;
+}
+
+.menu-buttons.saves-footer {
+    flex-shrink: 0;
+    margin-top: 10px;
+}
+
+.saves-footer__glyph {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.btn--danger > .saves-footer__glyph {
+    -unity-background-image-tint-color: var(--bad);
+}
+
+/* ---------------------------------------------------------------- a slot's row */
+
+.save-row {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin: 0 0 8px 0;
+    padding: 10px 18px 10px 10px;
+    border-radius: 22px;
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: var(--paper-soft);
+    transition-property: border-color, background-color;
+    transition-duration: 0.15s, 0.15s;
+}
+
+.save-row:hover {
+    border-color: var(--paper-line);
+}
+
+/* the chosen slot: the buttons under the list act on it */
+.save-row.is-on {
+    border-color: var(--accent);
+    background-color: var(--accent-soft);
+}
+
+/* the slot a question is about, as its row shows it */
+.save-row--static {
+    margin-bottom: 0;
+}
+
+.save-row--static:hover {
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.save-row__thumb {
+    width: 176px;
+    height: 99px;
+    flex-shrink: 0;
+    margin-right: 16px;
+    border-radius: 14px;
+    background-color: var(--paper);
+    align-items: center;
+    justify-content: center;
+}
+
+.save-row__thumb > .save-thumb__picture {
+    border-radius: 14px;
+}
+
+.save-row__thumb--empty {
+    border-width: 2px;
+    border-color: var(--paper-line);
+}
+
+.save-row__empty-glyph {
+    width: 30px;
+    height: 30px;
+    -unity-background-image-tint-color: var(--ink-faint);
+}
+
+.save-row__main {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.save-row__head {
+    flex-direction: row;
+    align-items: center;
+}
+
+.save-row__carried {
+    margin-left: 8px;
+    padding: 0 8px;
+    font-size: 13px;
+}
+
+.save-row__title {
+    margin-top: 1px;
+    font-size: 21px;
+    white-space: normal;
+}
+
+.save-row__facts {
+    margin-top: 6px;
+}
+
+.save-row__note {
+    margin-top: 6px;
+    font-size: 15px;
+    white-space: normal;
+}
+
+.save-row__faded {
+    opacity: 0.5;
+}
+
+.save-row__side {
+    flex-shrink: 0;
+    align-items: flex-end;
+    margin-left: 12px;
+}
+
+.save-row__when {
+    font-size: 16px;
+    -unity-text-align: middle-right;
+}
+
+.save-row__play {
+    margin-top: 6px;
+}
+
+/* «Сохранено»: the slot the player has just saved into */
+.save-row__saved {
+    flex-direction: row;
+    align-items: center;
+    padding: 2px 12px 2px 8px;
+    border-radius: 14px;
+    background-color: var(--paper);
+}
+
+.save-row__saved-glyph {
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+    -unity-background-image-tint-color: var(--good);
+}
+
+.save-row__saved-text {
+    font-size: 15px;
+    color: var(--good);
+}
+
+/* ---------------------------------------------------------------- the questions: was and will be, the warning */
+
+.save-compare {
+    flex-direction: row;
+    align-items: stretch;
+    flex-shrink: 0;
+}
+
+.save-compare__card {
+    flex-grow: 1;
+    flex-basis: 0;
+    padding: 14px 16px;
+}
+
+.save-compare__thumb {
+    height: 214px;
+    margin: 8px 0 10px 0;
+    border-radius: 14px;
+    background-color: var(--paper);
+    align-items: center;
+    justify-content: center;
+}
+
+.save-compare__thumb > .save-thumb__picture {
+    border-radius: 14px;
+}
+
+.save-compare__title {
+    margin-bottom: 6px;
+    font-size: 21px;
+    white-space: normal;
+}
+
+.save-compare__when {
+    margin-top: 8px;
+}
+
+.save-compare__arrow {
+    width: 44px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.save-compare__glyph {
+    width: 22px;
+    height: 22px;
+    rotate: 90deg;
+    -unity-background-image-tint-color: var(--ink-soft);
+}
+
+.save-callout {
+    flex-shrink: 0;
+    margin-top: 14px;
+}
+
+/* ---------------------------------------------------------------- the launch window: the latest save's card */
+
+.intro-dialog.intro-dialog--saves {
+    width: 1000px;
+}
+
+.save-last {
+    margin-top: 16px;
+    padding: 10px 16px 10px 10px;
+}
+
+.save-last__row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.save-last__thumb {
+    width: 160px;
+    height: 90px;
+    flex-shrink: 0;
+    margin-right: 14px;
+    border-radius: 12px;
+    background-color: var(--paper);
+    align-items: center;
+    justify-content: center;
+}
+
+.save-last__text {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.save-last__head {
+    flex-direction: row;
+    align-items: center;
+}
+
+.save-last__title {
+    font-size: 22px;
+    white-space: normal;
+}
+
+.save-last__facts {
+    margin-top: 4px;
+}
+
+.save-last__note {
+    margin-top: 4px;
+    font-size: 15px;
+    white-space: normal;
+}
+
+.save-last__when {
+    margin-top: 4px;
+}
+
+/* the same card in the question before a new colony takes the only save's place */
+.save-last.save-last--question {
+    margin-top: 0;
+}
+
+/* only saves this build cannot open: one line with a lock instead of the card */
+.callout.save-last__callout {
+    padding: 4px 6px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* three ways in: a long word in another language moves a button to the next line instead of off the sheet */
+.intro-dialog__actions.intro-dialog__actions--saves {
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.intro-dialog__actions--saves > .btn {
+    min-width: 0;
+    margin-top: 8px;
+    margin-right: 10px;
+}

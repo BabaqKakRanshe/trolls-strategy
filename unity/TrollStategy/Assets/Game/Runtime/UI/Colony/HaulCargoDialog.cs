@@ -103,6 +103,23 @@ namespace TrollStrategy.UI
             return string.IsNullOrEmpty(about) ? held : held + "\n" + about;
         }
 
+        /// <summary>
+        /// The goods the "everything" card shows, at most three: what the source holds now first, then the rest it hands
+        /// out. The haul's arrow carries the same goods in turn.
+        /// </summary>
+        public static List<ResourceKind> Everything(GameSnapshot snapshot, string sourceId, IReadOnlyList<ResourceKind> choices) =>
+            Everything(Find(snapshot, sourceId), choices);
+
+        private static List<ResourceKind> Everything(BuildingSnapshot source, IReadOnlyList<ResourceKind> choices)
+        {
+            var stack = new List<ResourceKind>(StackIcons);
+            foreach (var resource in choices)
+                if (stack.Count < StackIcons && Stock(source, resource) > 0) stack.Add(resource);
+            foreach (var resource in choices)
+                if (stack.Count < StackIcons && !stack.Contains(resource)) stack.Add(resource);
+            return stack;
+        }
+
         public void Refresh(GameSnapshot snapshot)
         {
             var interaction = _context.Interaction;
@@ -168,13 +185,7 @@ namespace TrollStrategy.UI
 
             _carryAll = Card("Всё", out var art, out var sub);
             art.AddToClassList("cargo-card__stack");
-            // what the source holds goes on the "everything" card first
-            var stack = new List<ResourceKind>(StackIcons);
-            foreach (var resource in choices)
-                if (stack.Count < StackIcons && Stock(source, resource) > 0) stack.Add(resource);
-            foreach (var resource in choices)
-                if (stack.Count < StackIcons && !stack.Contains(resource)) stack.Add(resource);
-            foreach (var resource in stack) art.Add(Icon(resource, "cargo-card__stack-icon"));
+            foreach (var resource in Everything(source, choices)) art.Add(Icon(resource, "cargo-card__stack-icon"));
             Ui.SetText(sub, "что есть");
             UiFeel.Bind(_carryAll, interaction.CarryEverything);
             _tooltip?.Attach(_carryAll, () => "Всё подряд",

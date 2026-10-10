@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TrollStrategy.Application;
 using TrollStrategy.Domain;
 using TrollStrategy.Presentation.Visuals;
@@ -30,6 +31,9 @@ namespace TrollStrategy.UI
         private Vector2? _pointerScreen;
         private float _guideAge;
         private string _focusedKey;
+        // the goods the haul's arrow carries in turn, worked out with each refresh
+        private IReadOnlyList<Sprite> _routeCargo = Array.Empty<Sprite>();
+        private readonly SaveGames _saves;
 
         public ColonyHudView(ColonyHudRoots roots, ColonyHudContext context)
         {
@@ -61,10 +65,16 @@ namespace TrollStrategy.UI
             HaulCargo = new HaulCargoDialog(roots.HaulCargo, context, Tooltip);
             Arena = new ArenaPanel(roots.Arena, context, Tooltip);
             Menu = new MenuPanel(roots.Menu, context, Tooltip);
-            Intro = new IntroPanel(roots.Intro, context.Edition, () => context.IntroClosed?.Invoke());
+            Intro = new IntroPanel(roots.Intro, context.Edition, () => context.IntroClosed?.Invoke(),
+                context.OffersSavesAtLaunch ? context.Saves : null, context.Catalog, Tooltip);
+            // the notice that closes a short public build lives in the intro's document
+            DemoEnd = new DemoEndPanel(roots.Intro, context, Tooltip);
             context.OpenArena = Arena.Open;
             context.OpenMenu = Menu.Open;
             Status = new StatusLine(roots.Status);
+            // a save answers in the status line; the open list of slots follows the autosave
+            _saves = context.Saves;
+            if (_saves != null) _saves.Saved += OnSaved;
             Fan = new CommandFan(roots.Fan, context, Tooltip);
             Reward = new RewardOverlay(roots.Reward, context, Showcase);
             // the battle's gold flies into the treasury's counter
@@ -73,6 +83,10 @@ namespace TrollStrategy.UI
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
             if (roots.Cheat != null) Cheat = new CheatPanel(roots.Cheat, context);
 #endif
+            // the controls lesson comes before the tutorial's first press (a touch screen skips it)
+            Lesson = new ControlsLesson(context.CameraPanned, context.CameraZoomed,
+                TrollStrategy.Presentation.GameSettings.ControlsLearned || UnityEngine.Application.isMobilePlatform,
+                () => MapPointer.UsesTouch);
             // the tutorial pointer over every part but the rewards, the book, the menu and the hints
             _guideLayer = roots.Guide;
             if (_guideLayer != null)
@@ -100,8 +114,10 @@ namespace TrollStrategy.UI
         /// <summary>The book; null while the UI prefab has no document for it.</summary>
         public WikiPanel Wiki { get; }
         public IntroPanel Intro { get; }
+        /// <summary>The notice that closes the itch.io alpha or the Steam demo once its last quest is taken.</summary>
+        public DemoEndPanel DemoEnd { get; }
         /// <summary>A dialog holds the screen: the map's clicks and keys wait.</summary>
-        public bool BlocksMap => Intro.IsOpen || Intro.AsksToRotate || Menu.IsOpen || Arena.IsOpen || Wiki?.IsOpen == true;
+        public bool BlocksMap => Intro.IsOpen || Intro.AsksToRotate || DemoEnd.IsOpen || Menu.IsOpen || Arena.IsOpen || Wiki?.IsOpen == true;
         public StatusLine Status { get; }
         public CommandFan Fan { get; }
         public RewardOverlay Reward { get; }
@@ -110,6 +126,8 @@ namespace TrollStrategy.UI
         public QuestFocus Focus { get; private set; } = QuestFocus.None;
         /// <summary>The tutorial pointer; null while the UI prefab has no layer for it.</summary>
         public GuideOverlay Guide { get; }
+        /// <summary>The tutorial's controls lesson: the camera, the zoom and the keys before the first press.</summary>
+        public ControlsLesson Lesson { get; }
         /// <summary>The tutorial pointer's step as of the last refresh (none after the tutorial or with hints off).</summary>
         public GuideStep CurrentStep { get; private set; } = GuideStep.None;
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
@@ -135,6 +153,7 @@ namespace TrollStrategy.UI
             var interaction = _context.Interaction;
             Catalog.SetCovered(interaction.SelectedIds.Count > 0 || interaction.Mode.Type != InteractionModeType.Neutral);
             HaulCargo.Refresh(snapshot);
+            _routeCargo = RouteCargo(snapshot);
             Fan.Refresh();
             // a building's or creature's card needs the column: the quest folds to its header meanwhile
             Quest.SetMakingRoom(Inspect.IsShown);
@@ -193,9 +212,11 @@ namespace TrollStrategy.UI
             if (Guide == null || _snapshot == null) return;
             _guideAge += deltaTime;
             if (_guideAge >= GuideRefreshSeconds) UpdateGuide();
-            Guide.Tick(deltaTime, LocateInWorld);
+            Lesson.Tick(deltaTime, CurrentStep.Key != null && CurrentStep.Key.StartsWith(ColonyGuide.LessonKey));
+            Guide.Tick(deltaTime, LocateInWorld, PlaceOnGround);
             var from = RouteStart();
-            Guide.SetRoute(from, from != null && _pointerScreen != null ? ScreenToLayer(_pointerScreen.Value) : null);
+            Guide.SetRoute(from, from != null && _pointerScreen != null ? ScreenToLayer(_pointerScreen.Value) : null,
+                _routeCargo);
             FocusOnceOffScreen();
         }
 
@@ -206,6 +227,24 @@ namespace TrollStrategy.UI
             if (mode.Type != InteractionModeType.ChoosingHaulDestination || _context.BuildingToScreen == null) return null;
             var rect = _context.BuildingToScreen(mode.SourceId);
             return rect != null ? ScreenToLayer(rect.Value.center) : null;
+        }
+
+        // the goods the arrow's tokens carry in turn: the ones chosen, or what the cargo dialog's "Всё" card shows
+        private IReadOnlyList<Sprite> RouteCargo(GameSnapshot snapshot)
+        {
+            var interaction = _context.Interaction;
+            var mode = interaction.Mode;
+            if (mode.Type != InteractionModeType.ChoosingHaulDestination) return Array.Empty<Sprite>();
+            var goods = interaction.HaulCargo.Count > 0
+                ? interaction.HaulCargo
+                : HaulCargoDialog.Everything(snapshot, mode.SourceId, interaction.HaulCargoChoices);
+            var pictures = new List<Sprite>(goods.Count);
+            foreach (var resource in goods)
+            {
+                var icon = _context.Catalog.TryGetResource(resource)?.Icon;
+                if (icon != null) pictures.Add(icon);
+            }
+            return pictures;
         }
 
         private Rect? LocateInWorld(GuideTarget target)
@@ -222,6 +261,18 @@ namespace TrollStrategy.UI
                 default:
                     return null;
             }
+        }
+
+        // a place on the map: its corners, as the colony camera sees them
+        private Vector2[] PlaceOnGround(GuideTarget target)
+        {
+            if (_context.MapToScreen == null) return null;
+            return GuidePlace.Corners(target.Cell, Math.Max(1, target.Width), Math.Max(1, target.Height),
+                _context.Catalog.Economy.CellSize, position =>
+                {
+                    var screen = _context.MapToScreen(position);
+                    return screen != null ? ScreenToLayer(screen.Value) : null;
+                });
         }
 
         // the four corners of the cells, as the camera sees them
@@ -346,12 +397,17 @@ namespace TrollStrategy.UI
 
         public void OpenCommandFan(Vector2 panelPoint) => Fan.OpenAt(panelPoint);
 
-        /// <summary>Esc: closes the topmost dialog (the notice, the menu's page, the arena); false when none is open.</summary>
+        /// <summary>Esc: closes the topmost dialog (a notice, the menu's page, the arena); false when none is open.</summary>
         public bool CloseTopOverlay()
         {
             if (Intro.IsOpen)
             {
-                Intro.Close();
+                Intro.Back();
+                return true;
+            }
+            if (DemoEnd.IsOpen)
+            {
+                DemoEnd.Close();
                 return true;
             }
             if (Menu.IsOpen)
@@ -370,6 +426,27 @@ namespace TrollStrategy.UI
                 return true;
             }
             return false;
+        }
+
+        // The saves the status line names: the player's own, and the autosave at a quest's or a battle's end. The
+        // timed autosave (every minute of play) and the ones on the way out stay quiet.
+        private static bool Announced(SaveResult result) =>
+            !result.Autosave || result.Reason == "quest" || result.Reason == "battleReward" || result.Reason == "battle";
+
+        private void OnSaved(SaveResult result)
+        {
+            if (result == null) return;
+            if (Announced(result))
+                Status.ShowNote(result.Ok ? "Колония сохранена" : "Колонию сохранить не удалось", result.Ok);
+            if (result.Autosave) Menu.SavesChanged();
+        }
+
+        /// <summary>The view is dropped (the scene goes, or the HUD is rebuilt): it stops listening, its pictures go.</summary>
+        public void Detach()
+        {
+            if (_saves != null) _saves.Saved -= OnSaved;
+            Menu.SaveSlots?.Release();
+            Intro.ReleasePictures();
         }
 
         /// <summary>The catalog tool's action, also on its key.</summary>
@@ -430,7 +507,7 @@ namespace TrollStrategy.UI
         }
 
         // A won battle's prize, then a finished quest's reward, opens once the colony is on screen and no
-        // placement or order is half done; one at a time.
+        // placement or order is half done; one at a time. After a short build's last reward its end notice opens.
         private void OfferReward()
         {
             if (_snapshot == null || Reward.IsOpen || BattleReward.IsOpen || !_hudVisible || BlocksMap) return;
@@ -442,6 +519,7 @@ namespace TrollStrategy.UI
             }
             var quest = _snapshot.Progress.Quest;
             if (quest != null && quest.IsComplete) Reward.Open(quest);
+            else if (quest == null) DemoEnd.Offer(_snapshot);
         }
 
         // The tracker's button: open the reveal even in the middle of an order.

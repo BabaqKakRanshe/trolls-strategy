@@ -45,6 +45,47 @@ namespace TrollStrategy.Presentation.Feel
             return Mathf.Max(edge * .45f, rim);
         }, FilterMode.Bilinear, 128f);
 
+        /// <summary>Frames of <see cref="DashedRing"/>: one dash's length of turn takes this many.</summary>
+        public const int DashedRingFrames = 12;
+        // the dashed ring's sprite reaches past the ring for its halo: 1.3 of the ring's radius
+        private const float DashedRingSpan = 1.3f;
+        private const int RingDashes = 8;
+        private static readonly Sprite[] s_dashedRing = new Sprite[DashedRingFrames];
+        private static Sprite s_trailStone;
+
+        /// <summary>
+        /// The selection ring: eight white dashes round the feet over a faint ink halo, turned by
+        /// <paramref name="frame"/> / <see cref="DashedRingFrames"/> of a dash. The ring lies on the sprite's unit
+        /// circle: a renderer scaled to the radius × 2 puts the dashes at that radius.
+        /// </summary>
+        public static Sprite DashedRing(int frame)
+        {
+            frame = (frame % DashedRingFrames + DashedRingFrames) % DashedRingFrames;
+            if (s_dashedRing[frame] != null) return s_dashedRing[frame];
+            float turn = frame / (float)DashedRingFrames;
+            Color ink = ColonyPalette.DeepStone;
+            return s_dashedRing[frame] = Paint(160, (x, y) =>
+            {
+                float d = Mathf.Sqrt(x * x + y * y) * DashedRingSpan; // 1 on the ring
+                float along = Mathf.Repeat((Mathf.Atan2(y, x) / (Mathf.PI * 2f) + .5f) * RingDashes - turn, 1f);
+                // a dash over the first 62% of each period, softened over a fortieth of it
+                float dash = Mathf.Clamp01((.31f - Mathf.Abs(along - .31f)) * 40f);
+                float ring = Mathf.Clamp01((.1f - Mathf.Abs(d - 1f)) / .03f + .5f) * dash;
+                float halo = Mathf.Exp(-Mathf.Pow((d - 1f) / .15f, 2f)) * .25f * (1f - ring);
+                float a = ring + halo;
+                return a <= 0f ? new Color(1f, 1f, 1f, 0f) : new Color(
+                    (ring + ink.r * halo) / a, (ring + ink.g * halo) / a, (ring + ink.b * halo) / a, a);
+            }, 160f / DashedRingSpan);
+        }
+
+        /// <summary>A flat stepping stone, 1 unit long and .7 across, its rim a shade darker: tint it the trail's colour.</summary>
+        public static Sprite TrailStone => s_trailStone != null ? s_trailStone : s_trailStone = Paint(64, (x, y) =>
+        {
+            float d = Mathf.Sqrt(x * x + y * y / (.7f * .7f));
+            float rim = 1f - Mathf.Clamp01((d - .55f) / .3f) * .25f;
+            return new Color(rim, rim, rim, Mathf.Clamp01((.85f - d) / .1f + .5f));
+        }, 64f);
+
         /// <summary>Sprite material that can flash to a solid colour (see TrollStrategy/SpriteFlash).</summary>
         public static Material SpriteFlash
         {
@@ -59,6 +100,28 @@ namespace TrollStrategy.Presentation.Feel
         }
 
         private delegate float Alpha(float x, float y, int size);
+        private delegate Color Colour(float x, float y);
+
+        // a coloured sprite with mipmaps: these lie flat on the lawn and shrink as the camera backs off
+        private static Sprite Paint(int size, Colour colour, float pixelsPerUnit)
+        {
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, true)
+            {
+                filterMode = FilterMode.Trilinear,
+                wrapMode = TextureWrapMode.Clamp,
+                hideFlags = HideFlags.DontSave,
+            };
+            var pixels = new Color[size * size];
+            for (int py = 0; py < size; py++)
+            for (int px = 0; px < size; px++)
+                pixels[py * size + px] = colour((px + .5f) / size * 2f - 1f, (py + .5f) / size * 2f - 1f);
+            texture.SetPixels(pixels);
+            texture.Apply(true, true);
+            var sprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(.5f, .5f), pixelsPerUnit,
+                0, SpriteMeshType.FullRect);
+            sprite.hideFlags = HideFlags.DontSave;
+            return sprite;
+        }
 
         private static Sprite Create(int size, Alpha alpha, FilterMode filter, float pixelsPerUnit)
         {

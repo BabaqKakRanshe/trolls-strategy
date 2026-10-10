@@ -1,6 +1,10 @@
 {
 "entries": [
 {
+"k": "Этот уровень арены — в полной игре",
+"v": "This arena level is in the full game"
+},
+{
 "k": "Миссия не найдена",
 "v": "Mission not found"
 },
@@ -437,10 +441,6 @@
 "v": "Creatures hired: {0}."
 },
 {
-"k": "{0} нанят и стоит у склада.",
-"v": "{0} hired and standing by the warehouse."
-},
-{
 "k": "Постройка «{0}» откроется за задание.",
 "v": "“{0}” unlocks with a quest."
 },
@@ -527,26 +527,6 @@
 {
 "k": "Сначала укажите, откуда носить товар.",
 "v": "First choose where to carry goods from."
-},
-{
-"k": "{0} носит на склад: {1}.",
-"v": "{0} is carrying to the warehouse: {1}."
-},
-{
-"k": "Сначала выберите здание.",
-"v": "Select a building first."
-},
-{
-"k": "Отсюда на склад не носят.",
-"v": "Nothing is carried to the warehouse from here."
-},
-{
-"k": "Нет свободного существа «{0}»: найми его в каталоге.",
-"v": "No idle “{0}”: hire one in the catalog."
-},
-{
-"k": "Нет свободных существ: найми работника в каталоге.",
-"v": "No idle creatures: hire a worker in the catalog."
 },
 {
 "k": "Награда за бой: +{0} зол.",
@@ -1473,6 +1453,30 @@
 "v": "Done"
 },
 {
+"k": "Осмотри остров",
+"v": "Look around the island"
+},
+{
+"k": "Двигай камеру клавишами W A S D или стрелками, или тяни карту правой кнопкой мыши.",
+"v": "Move the camera with W A S D or the arrow keys, or drag the map with the right mouse button."
+},
+{
+"k": "Ближе и дальше",
+"v": "Closer and farther"
+},
+{
+"k": "Крути колесо мыши: остров приблизится или отдалится.",
+"v": "Turn the mouse wheel: the island comes closer or moves away."
+},
+{
+"k": "Клавиши",
+"v": "Keys"
+},
+{
+"k": "Кнопки справа нажимаются и с клавиатуры. Попробуй любую.",
+"v": "The buttons on the right work from the keyboard too. Try any of them."
+},
+{
 "k": "Сюда",
 "v": "Here"
 },
@@ -1483,10 +1487,6 @@
 {
 "k": "Найми первого работника",
 "v": "Hire your first worker"
-},
-{
-"k": "Нажми на жетон «{0}»: он сам встанет у склада.",
-"v": "Press the “{0}” token: it will stand by the warehouse by itself."
 },
 {
 "k": "Найми работника",
@@ -1525,8 +1525,8 @@
 "v": "Work"
 },
 {
-"k": "Нажми «Работа» (E), потом на здание.",
-"v": "Press “Work” (E), then a building."
+"k": "Нажми «Работа» (E) внизу или кликни правой кнопкой мыши, потом по зданию.",
+"v": "Press “Work” (E) at the bottom or right-click, then click a building."
 },
 {
 "k": "Выбери работника",
@@ -1535,22 +1535,6 @@
 {
 "k": "Кликни по свободному существу на острове.",
 "v": "Click an idle creature on the island."
-},
-{
-"k": "Вывозить на склад",
-"v": "Haul to warehouse"
-},
-{
-"k": "Ближайший свободный работник начнёт носить отсюда на склад.",
-"v": "The nearest idle worker will start carrying from here to the warehouse."
-},
-{
-"k": "Здание «{0}»",
-"v": "Building “{0}”"
-},
-{
-"k": "Нажми на него: в карточке есть «Вывозить на склад».",
-"v": "Press it: its card has “Haul to warehouse”."
 },
 {
 "k": "Изменить груз",
@@ -1589,8 +1573,8 @@
 "v": "Carry"
 },
 {
-"k": "Нажми «Перенос» (H): дальше два здания, откуда и куда.",
-"v": "Press “Carry” (H): next come two buildings, from and to."
+"k": "Нажми «Перенос» (H) внизу или кликни правой кнопкой мыши: дальше два здания, откуда и куда.",
+"v": "Press “Carry” (H) at the bottom or right-click: next come two buildings, from and to."
 },
 {
 "k": "Выбери носильщика",
@@ -1655,6 +1639,14 @@
 {
 "k": "Нажми «Отмена» (Esc).",
 "v": "Press “Cancel” (Esc)."
+},
+{
+"k": "Колония сохранена",
+"v": "Colony saved"
+},
+{
+"k": "Колонию сохранить не удалось",
+"v": "Couldn't save the colony"
 },
 {
 "k": "Потом кликни по зданию: туда встанут работать.",
@@ -1743,6 +1735,66 @@
 {
 "k": "Расчистить, {0} с",
 "v": "Clear, {0} s"
+},
+{
+"k": "Каталог",
+"v": "Catalog"
+},
+{
+"k": "Сетка",
+"v": "Grid"
+},
+{
+"k": "Справочник",
+"v": "Handbook"
+},
+{
+"k": "Задание",
+"v": "Quest"
+},
+{
+"k": "Свободный",
+"v": "Idle"
+},
+{
+"k": "Меню",
+"v": "Menu"
+},
+{
+"k": "Вы прошли обучение, и на этом альфа-версия кончается. В полной игре колония растёт дальше: новые здания, существа и уровни арены.",
+"v": "You've finished the tutorial, and this is where the alpha version ends. In the full game the colony keeps growing: new buildings, creatures and arena levels."
+},
+{
+"k": "На этом демо-версия кончается. В полной игре колония растёт дальше: новые здания, существа и уровни арены.",
+"v": "This is where the demo version ends. In the full game the colony keeps growing: new buildings, creatures and arena levels."
+},
+{
+"k": "Можно остаться на острове: колония живёт, рынок и арена работают, но новых заданий в этой версии нет.",
+"v": "You can stay on the island: the colony lives on, the market and the arena work, but this version has no more quests."
+},
+{
+"k": "Оценить на itch.io",
+"v": "Rate on itch.io"
+},
+{
+"k": "Остаться на острове",
+"v": "Stay on the island"
+},
+{
+"k": "Демо-версия пройдена",
+"v": "Demo version complete"
+},
+{
+"k": "Альфа-версия пройдена",
+"v": "Alpha version complete"
+},
+{
+"k": "В желаемое",
+"v": "Wishlist"
+},
+{
+"k": "Демо в Steam",
+"v": "Demo on Steam"
 },
 {
 "k": "Чат игроков",
@@ -1857,18 +1909,6 @@
 "v": "Learn more"
 },
 {
-"k": "Склад",
-"v": "Warehouse"
-},
-{
-"k": "свободный работник будет носить отсюда",
-"v": "an idle worker will carry from here"
-},
-{
-"k": "Ближайший свободный работник будет носить отсюда на склад всё, что здесь делают.",
-"v": "The nearest idle worker will carry everything made here to the warehouse."
-},
-{
 "k": "Уровень {0}, {1}×{2}",
 "v": "Level {0}, {1}×{2}"
 },
@@ -1915,6 +1955,10 @@
 {
 "k": "Следующая веха",
 "v": "Next milestone"
+},
+{
+"k": "в полной игре",
+"v": "in the full game"
 },
 {
 "k": "все пройдены",
@@ -2033,20 +2077,32 @@
 "v": "maximum"
 },
 {
-"k": "Привет! Это альфа-версия игры: колония троллей и гоблинов на парящем острове. Она ещё растёт — что-то не доделано, что-то не сбалансировано, а прогресс пока не сохраняется.",
-"v": "Hi! This is an alpha version of the game: a colony of trolls and goblins on a floating island. It's still growing — some things are unfinished, some aren't balanced, and progress isn't saved yet."
+"k": "Привет! Это альфа-версия игры: колония троллей и гоблинов на парящем острове. Она ещё растёт — что-то не доделано, что-то не сбалансировано. Колония сохраняется сама, а в меню её можно сохранить в ячейку.",
+"v": "Hi! This is an alpha version of the game: a colony of trolls and goblins on a floating island. It's still growing — some things are unfinished, some aren't balanced. The colony saves itself, and in the menu you can save it into a slot."
 },
 {
-"k": "Привет! Это демо-версия игры: колония троллей и гоблинов на парящем острове. Полная игра ещё в работе: что-то будет меняться, а прогресс пока не сохраняется.",
-"v": "Hi! This is a demo version of the game: a colony of trolls and goblins on a floating island. The full game is still in the works: things will change, and progress isn't saved yet."
+"k": "Привет! Это демо-версия игры: колония троллей и гоблинов на парящем острове. Полная игра ещё в работе: что-то будет меняться. Колония сохраняется сама, а в меню её можно сохранить в ячейку.",
+"v": "Hi! This is a demo version of the game: a colony of trolls and goblins on a floating island. The full game is still in the works: things will change. The colony saves itself, and in the menu you can save it into a slot."
 },
 {
 "k": "Можно игре отправлять анонимную статистику: до какого задания доходят игроки? Так мы находим, где играть трудно. Ответ можно поменять по F8.",
 "v": "May the game send anonymous statistics: which quest players get to? That's how we find where it gets hard to play. You can change the answer with F8."
 },
 {
+"k": "Новая колония займёт место автосохранения после первого приказа, и эта колония пропадёт. Чтобы её оставить, нажмите «Продолжить» и сохраните её в ячейку через меню.",
+"v": "The new colony takes the autosave's place after its first order, and this colony will be lost. To keep it, press “Resume” and save it into a slot from the menu."
+},
+{
+"k": "Показывать в обучении, куда нажимать: рукой, подсветкой и карточкой с шагом? Это можно поменять в меню.",
+"v": "Show where to click during the tutorial, with a hand, a highlight and a step card? You can change this in the menu."
+},
+{
 "k": "Играть",
 "v": "Play"
+},
+{
+"k": "Загрузить",
+"v": "Load"
 },
 {
 "k": "Анонимная статистика",
@@ -2061,6 +2117,22 @@
 "v": "Don't send"
 },
 {
+"k": "Подсказки обучения",
+"v": "Tutorial hints"
+},
+{
+"k": "Показывать",
+"v": "Show"
+},
+{
+"k": "Скрыть",
+"v": "Hide"
+},
+{
+"k": "Новая колония",
+"v": "New colony"
+},
+{
 "k": "Демо-версия",
 "v": "Demo version"
 },
@@ -2069,20 +2141,36 @@
 "v": "Alpha version"
 },
 {
-"k": "В желаемое",
-"v": "Wishlist"
-},
-{
-"k": "Демо в Steam",
-"v": "Demo on Steam"
-},
-{
 "k": "Добавьте игру в желаемое, чтобы не пропустить выход.",
 "v": "Add the game to your wishlist so you don't miss the release."
 },
 {
 "k": "В Steam можно добавить игру в желаемое, чтобы не пропустить выход.",
 "v": "On Steam you can add the game to your wishlist so you don't miss the release."
+},
+{
+"k": "Открыть последнее сохранение и играть дальше.",
+"v": "Open your latest save and keep playing."
+},
+{
+"k": "Выбрать колонию из автосохранения или ячейки.",
+"v": "Pick a colony from the autosave or a slot."
+},
+{
+"k": "Начать остров с начала. Ячейки останутся, а автосохранение займёт новая колония.",
+"v": "Start the island over. Your slots stay, and the new colony takes the autosave."
+},
+{
+"k": "Сохранённые колонии этой версией не открыть. Почему, видно в списке.",
+"v": "This version can't open the saved colonies. The list shows why."
+},
+{
+"k": "Из другой версии",
+"v": "From another version"
+},
+{
+"k": "Начать новую колонию?",
+"v": "Start a new colony?"
 },
 {
 "k": "Авто",
@@ -2129,6 +2217,10 @@
 "v": "Start over?"
 },
 {
+"k": "Сохранения",
+"v": "Saves"
+},
+{
 "k": "Колония троллей и гоблинов на парящем острове: добывай, перерабатывай, вози, торгуй и выводи отряд на арену.",
 "v": "A colony of trolls and goblins on a floating island: mine, process, carry, trade and send a squad to the arena."
 },
@@ -2149,6 +2241,10 @@
 "v": "The colony starts from scratch: buildings, creatures, gold and quests will be lost."
 },
 {
+"k": "Сохранить колонию в ячейку или открыть прежнюю.",
+"v": "Save the colony into a slot or open an earlier one."
+},
+{
 "k": "Звук, графика, размер интерфейса и язык.",
 "v": "Sound, graphics, interface size and language."
 },
@@ -2167,6 +2263,10 @@
 {
 "k": "Начать заново",
 "v": "Start over"
+},
+{
+"k": "Колония начнётся с самого начала, а нынешняя пропадёт: новая займёт место автосохранения после первого приказа. Чтобы оставить нынешнюю, сначала сохраните её в ячейку.",
+"v": "The colony starts from scratch and the current one will be lost: the new one takes the autosave's place after its first order. To keep the current colony, save it into a slot first."
 },
 {
 "k": "Звук",
@@ -2191,18 +2291,6 @@
 {
 "k": "Интерфейс",
 "v": "Interface"
-},
-{
-"k": "Показывать",
-"v": "Show"
-},
-{
-"k": "Скрыть",
-"v": "Hide"
-},
-{
-"k": "Подсказки обучения",
-"v": "Tutorial hints"
 },
 {
 "k": "Версия {0}, {1}",
@@ -2333,6 +2421,298 @@
 "v": "Unlocked: "
 },
 {
+"k": "Колония",
+"v": "Colony"
+},
+{
+"k": "Свободная игра",
+"v": "Sandbox"
+},
+{
+"k": "Все задания пройдены",
+"v": "All quests done"
+},
+{
+"k": "Уровень {0}: {1}",
+"v": "Level {0}: {1}"
+},
+{
+"k": "Автосохранение",
+"v": "Autosave"
+},
+{
+"k": "Ячейка {0}",
+"v": "Slot {0}"
+},
+{
+"k": "Сохранение",
+"v": "Save"
+},
+{
+"k": "Сегодня, {0}",
+"v": "Today, {0}"
+},
+{
+"k": "Вчера, {0}",
+"v": "Yesterday, {0}"
+},
+{
+"k": "меньше минуты",
+"v": "under a minute"
+},
+{
+"k": "{0} мин",
+"v": "{0} min"
+},
+{
+"k": "{0}, в игре {1}",
+"v": "{0}, played {1}"
+},
+{
+"k": "Файл повреждён",
+"v": "File is damaged"
+},
+{
+"k": "Не открыть в этой версии",
+"v": "Can't be opened in this version"
+},
+{
+"k": "Колонию из него не открыть.",
+"v": "The colony in it can't be opened."
+},
+{
+"k": "Колонию из него не открыть. Ячейку можно удалить.",
+"v": "The colony in it can't be opened. You can delete the slot."
+},
+{
+"k": "Сохранено более новой версией игры",
+"v": "Saved by a newer version of the game"
+},
+{
+"k": "Сохранено версией {0}, у вас {1}",
+"v": "Saved by {0}, you have {1}"
+},
+{
+"k": "Её сохранила более новая версия игры. Обновите игру, и колония откроется.",
+"v": "A newer version of the game saved it. Update the game and the colony will open."
+},
+{
+"k": "Ячейку сохранила версия {0}, а у вас {1}. Обновите игру, и колония откроется.",
+"v": "The slot was saved by {0}, and you have {1}. Update the game and the colony will open."
+},
+{
+"k": "Эту колонию сохранила полная игра, здесь её не открыть.",
+"v": "The full game saved this colony, so it can't be opened here."
+},
+{
+"k": "Эту колонию сохранила демо-версия из Steam, здесь её не открыть.",
+"v": "The Steam demo saved this colony, so it can't be opened here."
+},
+{
+"k": "Эту колонию сохранила альфа-версия, здесь её не открыть.",
+"v": "The alpha version saved this colony, so it can't be opened here."
+},
+{
+"k": "Эту колонию сохранила другая версия игры, здесь её не открыть.",
+"v": "Another version of the game saved this colony, so it can't be opened here."
+},
+{
+"k": "Откройте её в полной игре: там колония продолжится с того же места.",
+"v": "Open it in the full game: the colony carries on from the same spot."
+},
+{
+"k": "Откройте её в демо-версии из Steam или в полной игре: там колония продолжится.",
+"v": "Open it in the Steam demo or the full game: the colony carries on there."
+},
+{
+"k": "Откройте её в той версии игры, что её сохранила.",
+"v": "Open it in the version of the game that saved it."
+},
+{
+"k": "из альфа-версии",
+"v": "from the alpha"
+},
+{
+"k": "из демо-версии",
+"v": "from the demo"
+},
+{
+"k": "из другой версии",
+"v": "from another version"
+},
+{
+"k": "Колонию сохранила альфа-версия. Здесь она продолжится, и заданий будет больше.",
+"v": "The alpha version saved this colony. It carries on here, with more quests."
+},
+{
+"k": "Колонию сохранила демо-версия. Здесь она продолжится, и заданий будет больше.",
+"v": "The demo saved this colony. It carries on here, with more quests."
+},
+{
+"k": "Колонию сохранила другая версия игры. Здесь она продолжится.",
+"v": "Another version of the game saved this colony. It carries on here."
+},
+{
+"k": "Казна колонии.",
+"v": "The colony's treasury."
+},
+{
+"k": "Существа",
+"v": "Creatures"
+},
+{
+"k": "Тролли, гоблины и другие жители колонии.",
+"v": "Trolls, goblins and the colony's other residents."
+},
+{
+"k": "Здания",
+"v": "Buildings"
+},
+{
+"k": "Сколько зданий стоит на острове.",
+"v": "How many buildings stand on the island."
+},
+{
+"k": "Блоков земли у колонии.",
+"v": "Blocks of land the colony has."
+},
+{
+"k": "Победы на арене",
+"v": "Arena wins"
+},
+{
+"k": "Сколько боёв выиграл отряд.",
+"v": "How many battles the squad has won."
+},
+{
+"k": "Удалить",
+"v": "Delete"
+},
+{
+"k": "Сохранить",
+"v": "Save"
+},
+{
+"k": "Перезаписать ячейку {0}?",
+"v": "Overwrite slot {0}?"
+},
+{
+"k": "Перезаписать сохранение?",
+"v": "Overwrite the save?"
+},
+{
+"k": "Удалить ячейку {0}?",
+"v": "Delete slot {0}?"
+},
+{
+"k": "Удалить сохранение?",
+"v": "Delete the save?"
+},
+{
+"k": "Загрузить автосохранение?",
+"v": "Load the autosave?"
+},
+{
+"k": "Загрузить ячейку {0}?",
+"v": "Load slot {0}?"
+},
+{
+"k": "Загрузить сохранение?",
+"v": "Load the save?"
+},
+{
+"k": "Загрузить колонию",
+"v": "Load colony"
+},
+{
+"k": "Перезаписать",
+"v": "Overwrite"
+},
+{
+"k": "Автосохранение ведёт сама игра, его не удалить.",
+"v": "The game keeps the autosave itself, so it can't be deleted."
+},
+{
+"k": "В ячейке пусто.",
+"v": "The slot is empty."
+},
+{
+"k": "Убрать колонию из ячейки. Игра спросит ещё раз.",
+"v": "Remove the colony from the slot. The game will ask once more."
+},
+{
+"k": "Автосохранение ведёт сама игра. Выберите ячейку, чтобы сохранить колонию.",
+"v": "The game keeps the autosave itself. Pick a slot to save the colony."
+},
+{
+"k": "Файл в ячейке повреждён: сначала удалите его.",
+"v": "The file in the slot is damaged: delete it first."
+},
+{
+"k": "Сохранить нынешнюю колонию в эту ячейку.",
+"v": "Save the current colony into this slot."
+},
+{
+"k": "Сохранить нынешнюю колонию на место той, что в ячейке. Игра спросит ещё раз.",
+"v": "Save the current colony over the one in the slot. The game will ask once more."
+},
+{
+"k": "Открыть эту колонию вместо нынешней.",
+"v": "Open this colony instead of the current one."
+},
+{
+"k": "Открыть эту колонию.",
+"v": "Open this colony."
+},
+{
+"k": "Пусто",
+"v": "Empty"
+},
+{
+"k": "Сохранено",
+"v": "Saved"
+},
+{
+"k": "Сейчас в ячейке",
+"v": "In the slot now"
+},
+{
+"k": "Будет",
+"v": "Will be"
+},
+{
+"k": "Сейчас, в игре {0}",
+"v": "Now, played {0}"
+},
+{
+"k": "Колония из ячейки {0} пропадёт, на её месте будет нынешняя.",
+"v": "The colony from slot {0} will be lost; the current one takes its place."
+},
+{
+"k": "Колония из этого сохранения пропадёт, на её месте будет нынешняя.",
+"v": "The colony from this save will be lost; the current one takes its place."
+},
+{
+"k": "Колония из ячейки {0} пропадёт насовсем.",
+"v": "The colony from slot {0} will be lost for good."
+},
+{
+"k": "Колония из этого сохранения пропадёт насовсем.",
+"v": "The colony from this save will be lost for good."
+},
+{
+"k": "Всё, что не сохранено с {0}, пропадёт.",
+"v": "Anything not saved since {0} will be lost."
+},
+{
+"k": "Нынешняя колония ещё не сохранена и пропадёт.",
+"v": "The current colony isn't saved yet and will be lost."
+},
+{
+"k": "Сохранить не удалось. Проверьте, есть ли место на диске, и попробуйте ещё раз.",
+"v": "Couldn't save. Check that there's room on the disk and try again."
+},
+{
 "k": "работает",
 "v": "working"
 },
@@ -2373,24 +2753,12 @@
 "v": "The colony treasury. The market pays for every good delivered."
 },
 {
-"k": "Существа",
-"v": "Creatures"
-},
-{
-"k": "Свободный",
-"v": "Idle"
-},
-{
 "k": "Показать следующее существо без работы; камера едет к нему. Ещё раз — следующее.",
 "v": "Show the next creature without a job; the camera flies to it. Again for the next one."
 },
 {
 "k": "Купить участок у острова или расчистить свой.",
 "v": "Buy a plot from the island or clear your own."
-},
-{
-"k": "Сетка",
-"v": "Grid"
 },
 {
 "k": "Клетки поля и пути носильщиков.",
@@ -2401,28 +2769,16 @@
 "v": "Arena levels: a win unlocks the next one, and cleared ones can be replayed for gold. "
 },
 {
-"k": "Каталог",
-"v": "Catalog"
-},
-{
 "k": "Здания и существа, лоток внизу экрана.",
 "v": "Buildings and creatures, the tray at the bottom of the screen."
-},
-{
-"k": "Справочник",
-"v": "Handbook"
 },
 {
 "k": "Существа, здания, товары, улучшения и арена: кто что делает и сколько стоит.",
 "v": "Creatures, buildings, goods, upgrades and the arena: who makes what and what it costs."
 },
 {
-"k": "Меню",
-"v": "Menu"
-},
-{
-"k": "Пауза, настройки звука, графики и языка, об игре, начать заново.",
-"v": "Pause, sound, graphics and language settings, about, start over."
+"k": "Пауза, сохранения, настройки звука, графики и языка, об игре, начать заново.",
+"v": "Pause, saves, sound, graphics and language settings, about, start over."
 },
 {
 "k": "{0} без дела",
@@ -2455,10 +2811,6 @@
 {
 "k": "Всего {0}, все при деле.",
 "v": "{0} in total, all busy."
-},
-{
-"k": "Здания",
-"v": "Buildings"
 },
 {
 "k": "Товары",
@@ -3021,8 +3373,8 @@
 "v": "First worker"
 },
 {
-"k": "Внизу, во вкладке «Существа», нажми на гоблина: он сам встанет у склада.",
-"v": "At the bottom, in the “Creatures” tab, click the goblin: it will stand by the warehouse by itself."
+"k": "Внизу, во вкладке «Существа», нажми на гоблина, потом — на клетку у склада.",
+"v": "At the bottom, in the “Creatures” tab, click the goblin, then a cell by the warehouse."
 },
 {
 "k": "Своя шахта",
@@ -3037,8 +3389,8 @@
 "v": "Get to work!"
 },
 {
-"k": "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, нажми на шахту и в её карточке — «Вывозить на склад»: новый гоблин начнёт носить руду на склад.",
-"v": "Click a goblin → “Work” (E) → mine: it will dig ore. Then hire another goblin, press the mine and, in its card, “Haul to warehouse”: the new goblin will start carrying ore to the warehouse."
+"k": "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, кликни по нему → «Перенос» (H): сначала шахта — откуда носить, потом склад — куда. Те же приказы открывает правый клик.",
+"v": "Click a goblin → “Work” (E) → mine: it will dig ore. Then hire another goblin, click it → “Carry” (H): first the mine, where to carry from, then the warehouse, where to carry to. A right-click opens the same orders."
 },
 {
 "k": "Первая выручка",
@@ -3697,6 +4049,14 @@
 "v": "Tick one or more goods or leave “All”. You'll pick where to carry on the map."
 },
 {
+"k": "Понравилась игра?",
+"v": "Enjoyed the game?"
+},
+{
+"k": "Оценка на itch.io помогает другим найти игру.",
+"v": "A rating on itch.io helps other players find the game."
+},
+{
 "k": "Поверните устройство",
 "v": "Turn your device"
 },
@@ -3739,6 +4099,10 @@
 {
 "k": "Шахта",
 "v": "Mine"
+},
+{
+"k": "Склад",
+"v": "Warehouse"
 },
 {
 "k": "2. Слизни на лугу",

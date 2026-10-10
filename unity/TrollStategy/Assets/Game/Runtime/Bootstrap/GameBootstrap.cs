@@ -54,12 +54,24 @@ namespace TrollStrategy.Bootstrap
         private GameSession _session;
         private InteractionController _interaction;
         private CampaignTelemetry _telemetry;
+        private SaveGames _saves;
+        // the colony came from a save: no flight in, and the scene's views of buildings it no longer has go
+        private bool _restored;
+        // a checked save the next colony scene opens instead of a new colony (a load reloads the scene with it)
+        private static SavedGame s_pendingLoad;
+        private static bool s_launchLoadTried;
+        // the run's first colony scene has offered the saved colonies (the launch window); later ones do not
+        private static bool s_launchOffered;
         // the pause menu stops the colony's time; the session never advances while it is up
         private bool _paused;
         private PanelSettings _screenPanel;
         private Vector2Int _designedResolution;
 
         public GameSession Session => _session;
+        /// <summary>The colony's saves for the menu: list, save, load, delete; null until the colony is up.</summary>
+        public SaveGames Saves => _saves;
+        /// <summary>This colony was loaded from a save.</summary>
+        public bool Restored => _restored;
         public InteractionController Interaction => _interaction;
         public Camera ColonyCamera => _camera;
         /// <summary>The colony HUD; the battle scene hides it while it covers the screen.</summary>
@@ -124,9 +136,16 @@ namespace TrollStrategy.Bootstrap
             bool campaign = _campaign && _catalog.Progression != null;
             if (_campaign && !campaign)
                 Debug.LogError($"{nameof(GameBootstrap)}: the catalog has no progression; starting a sandbox game.", this);
+            // the public builds end early, each after its quest in Progression.asset; the editor plays the whole game
+            string lastQuest = !campaign ? null : BuildInfo.Current.Edition switch
+            {
+                BuildEdition.Alpha => _catalog.Progression.AlphaLastQuestId,
+                BuildEdition.SteamDemo => _catalog.Progression.SteamDemoLastQuestId,
+                _ => null
+            };
             try
             {
-                _session = new GameSession(_catalog, startingBuildings, campaign);
+                _session = new GameSession(_catalog, startingBuildings, campaign, lastQuest);
             }
             catch (InvalidOperationException exception)
             {
@@ -134,12 +153,32 @@ namespace TrollStrategy.Bootstrap
                 enabled = false;
                 return;
             }
-            var sceneViews = new Dictionary<string, BuildingView>(placements.Count);
-            for (int i = 0; i < placements.Count; i++)
-                sceneViews.Add(_session.StartingBuildingIds[i], placements[i].View);
+            // the scene's buildings as a new colony names them; a save opens in its place before anything sees it
+            var sceneIds = _session.StartingBuildingIds;
+            var saveStore = new FileSaveStore(SaveKeeper.Folder());
+            // this build's games end after LastLevel quests (0: the whole chain); a shorter edition's save is carried
+            // forward to it, a longer one's refused
+            var saveStamp = new SaveStamp(BuildInfo.Current.VersionLabel, BuildInfo.Current.Edition.ToString(),
+                _session.CurrentSnapshot.Progress.LastLevel);
+            var saved = TakeSavedGame(saveStore, saveStamp);
+            if (saved != null)
+            {
+                _session = GameSession.Restore(_catalog, saved);
+                _restored = true;
+                var summary = saved.Header?.Summary;
+                Debug.Log($"[Saves] colony {saved.Header?.ColonyId} opens from its save: quest {summary?.QuestLevel}, " +
+                          $"{(summary?.ActiveTimeMs ?? 0) / 1000} s played, {summary?.Creatures} creatures");
+                if (saved.CarriedFrom != null)
+                    Debug.Log($"[Saves] carried forward from the {saved.CarriedFrom} edition into {saveStamp.Edition}: " +
+                              $"chain {summary?.ChainLength} -> {saveStamp.ChainLength} (0 is the whole chain)" +
+                              (saved.ChainExtended ? $", its ended game opens on quest {_session.CurrentSnapshot.Progress.Level}" : ""));
+            }
+            var sceneViews = SceneViews(placements, sceneIds);
+            _saves = new SaveGames(_session, saveStore, saveStamp, _restored ? saved.Header : null, LoadSaved);
             _interaction = new InteractionController(_session);
             // where players stop: quests, battles and a heartbeat go to analytics while the player allows it
-            _telemetry = new CampaignTelemetry(_session, e => Telemetry.Game.Record(e.Name, e.Fields));
+            _telemetry = new CampaignTelemetry(_session, e => Telemetry.Game.Record(e.Name, e.Fields), resumed: _restored);
+            if (_restored) _telemetry.Loaded(saved, saveStamp.Edition);
             if (_support != null) _support.Init(() => SessionDigest.Describe(_session));
 
             if (_buildingManager != null)
@@ -165,6 +204,9 @@ namespace TrollStrategy.Bootstrap
             else if (_session.CurrentSnapshot.Land != null)
                 Debug.LogError($"{nameof(GameBootstrap)} has no {nameof(LandPresenter)}; the island does not show the land.", this);
 
+            // the launch window offers the saves once a run: not after a load, a new start or «Начать заново»
+            bool offerSaves = !_restored && !s_launchOffered;
+            s_launchOffered = true;
             if (_hud != null)
             {
                 // the tutorial pointer finds buildings, creatures and cells on the screen through the colony camera
@@ -176,7 +218,12 @@ namespace TrollStrategy.Bootstrap
                     OpenBattle = mission => BattleSceneController.Open(this, mission),
                     SetPaused = SetPaused,
                     Restart = Restart,
-                    IntroClosed = PlayFirstFlight,
+                    Saves = _saves,
+                    OffersSavesAtLaunch = offerSaves,
+                    IntroClosed = PlayFlight,
+                    CameraBusy = () => Rig != null && Rig.IsPlayingIntro,
+                    CameraPanned = () => Rig != null ? Rig.PlayerPanned : 0f,
+                    CameraZoomed = () => Rig != null ? Rig.PlayerZoomed : 0f,
                     ReportBug = _support != null ? _support.ReportFromMenu : null,
                     Languages = Localization.Languages,
                     CurrentLanguage = () => Localization.Current,
@@ -193,8 +240,8 @@ namespace TrollStrategy.Bootstrap
                 _screenPanel = _hud.Document != null ? _hud.Document.panelSettings : null;
                 if (_screenPanel != null) _designedResolution = _screenPanel.referenceResolution;
                 ApplyUiScale();
-                // a new version opens with the alpha notice; the first launch flies in once it is closed
-                if (_hud.View == null || !_hud.View.Intro.OpenOnce(Telemetry.Game)) PlayFirstFlight();
+                // a new version opens with the alpha notice once the HUD is built; every new colony flies in once it is closed
+                _hud.OpenIntro(Telemetry.Game);
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
                 if (_support != null) _support.SetCheats(() => _hud.View?.ToggleCheat());
 #endif
@@ -206,6 +253,11 @@ namespace TrollStrategy.Bootstrap
             feedback.transform.SetParent(transform, false);
             feedback.Init(_session, _interaction, _worldView, _buildingManager,
                 _hud != null ? _hud.PlayRefusalCue : null);
+            // the autosave runs beside the colony: a battle switching the colony off leaves it on and holds its timer;
+            // each save carries a picture of the island from the colony camera
+            var keeper = new GameObject("SaveKeeper", typeof(SaveKeeper)).GetComponent<SaveKeeper>();
+            keeper.transform.SetParent(transform, false);
+            keeper.Init(_saves, () => this == null || !isActiveAndEnabled, () => _camera);
             // the camera goes to the creature the player asked to see
             _interaction.FocusRequested += FocusOn;
             // the theme opens the game, then colony music and the meadow bed
@@ -230,15 +282,70 @@ namespace TrollStrategy.Bootstrap
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
+        // a checked save opens in place of this colony: the scene starts again and takes it instead of a new colony
+        private void LoadSaved(SavedGame saved)
+        {
+            s_pendingLoad = saved;
+            SetPaused(false);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        // The save this scene opens: the one a load handed over across the reload, else, on the run's first scene,
+        // the slot -loadSave names (?loadSave= on WebGL), for testers and checks. Null: a new colony.
+        private SavedGame TakeSavedGame(ISaveStore store, SaveStamp stamp)
+        {
+            var saved = s_pendingLoad;
+            s_pendingLoad = null;
+            if (saved != null) return saved;
+            if (s_launchLoadTried) return null;
+            s_launchLoadTried = true;
+            string slot = SaveKeeper.Argument("loadSave");
+            if (string.IsNullOrEmpty(slot)) return null;
+            var io = store.Read(slot);
+            var read = io.Ok ? SaveCodec.Read(io.Bytes, _catalog, stamp) : LoadResult.Fail(io.Error, io.Detail);
+            if (read.Ok) return read.Game.InSlot(slot);
+            Debug.LogError($"[Saves] -loadSave {slot}: {read.Error} {read.Detail}; a new colony starts instead.", this);
+            return null;
+        }
+
+        // The scene's starting buildings become their buildings' views. A loaded colony keeps the view of a starting
+        // building it still has (moved or raised, the view follows the save); one it no longer has goes.
+        private Dictionary<string, BuildingView> SceneViews(List<SceneBuildingPlacements.Placement> placements,
+            IReadOnlyList<string> ids)
+        {
+            var kinds = new Dictionary<string, BuildingKind>();
+            if (_restored)
+                foreach (var building in _session.CurrentSnapshot.Buildings) kinds[building.Id] = building.Kind;
+            var views = new Dictionary<string, BuildingView>(placements.Count);
+            for (int i = 0; i < placements.Count; i++)
+            {
+                var view = placements[i].View;
+                if (!_restored || (kinds.TryGetValue(ids[i], out var kind) && kind == placements[i].Building.Kind))
+                    views.Add(ids[i], view);
+                else
+                {
+                    view.gameObject.SetActive(false);
+                    Destroy(view.gameObject);
+                }
+            }
+            return views;
+        }
+
+        // Enter Play Mode keeps statics in the editor: every play starts with no load waiting
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetLoads()
+        {
+            s_pendingLoad = null;
+            s_launchLoadTried = false;
+            s_launchOffered = false;
+        }
+
         private IslandCameraRig Rig => _camera != null ? _camera.GetComponent<IslandCameraRig>() : null;
 
-        private void PlayFirstFlight()
+        // the flight over the island opens every new colony, not one loaded from a save; any key lands it
+        private void PlayFlight()
         {
-            if (GameSettings.FlightShown) return;
-            var rig = Rig;
-            if (rig == null) return;
-            rig.PlayIntro();
-            GameSettings.MarkFlightShown();
+            if (!_restored) Rig?.PlayIntro();
         }
 
         private void FocusOn(TrollStrategy.Domain.WorldPosition position)

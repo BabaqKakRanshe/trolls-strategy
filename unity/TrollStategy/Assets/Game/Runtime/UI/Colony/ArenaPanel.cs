@@ -610,7 +610,8 @@ namespace TrollStrategy.UI
             int wins = session.MissionWins(mission.MissionId);
             int wait = session.MissionWaitMs(mission.MissionId);
             if (!session.IsMissionUnlocked(mission.MissionId))
-                return mission == _nextClosed ? enter.Error : $"Откроется после победы на {mission.Level - 1}-м уровне";
+                return session.InFullGameOnly(mission) ? BattleApplication.FullGameOnly
+                    : mission == _nextClosed ? enter.Error : $"Откроется после победы на {mission.Level - 1}-м уровне";
             if (enter.Ok) return wins > 0 ? $"Побед: {wins}. Можно в бой" : "Можно в бой";
             return wait > 0 ? $"Отдых {TopBar.Duration(wait)}" : enter.Error;
         }

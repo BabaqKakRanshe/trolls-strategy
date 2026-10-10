@@ -30,8 +30,10 @@ namespace TrollStrategy.Editor.Setup
         }
 
         /// <summary>
-        /// The Windows player for the Steam demo: the same game stamped as the demo (BuildInfo.Edition), so the
-        /// intro and the about page call it a demo and offer the wishlist. Every other build is the itch.io alpha.
+        /// The Windows player for the Steam demo: the same game stamped as the demo (BuildInfo.Edition), so it ends
+        /// after the demo's quest in Progression.asset and the intro and the about page call it a demo and offer the
+        /// wishlist. The testers' browser build plays the whole game; every other build is the itch.io alpha, which
+        /// ends after the tutorial.
         /// </summary>
         [MenuItem("TrollStrategy/Build Windows Player (Steam Demo)")]
         public static void BuildSteamDemo()
@@ -57,7 +59,7 @@ namespace TrollStrategy.Editor.Setup
         [MenuItem("TrollStrategy/Build WebGL Player (itch.io)")]
         public static void BuildWebGL() => BuildWebGL(false);
 
-        /// <summary>The same browser player with the cheat menu, for testers; not for the public page.</summary>
+        /// <summary>The browser player with the cheat menu and the whole game, for testers; not for the public page.</summary>
         [MenuItem("TrollStrategy/Build WebGL Player (itch.io, cheats)")]
         public static void BuildWebGLWithCheats() => BuildWebGL(true);
 
@@ -73,7 +75,17 @@ namespace TrollStrategy.Editor.Setup
 
             if (Directory.Exists(WebFolder))
                 Directory.Delete(WebFolder, true);
-            bool built = Build(WebFolder, WebFolder, BuildTarget.WebGL, cheats ? new[] { CheatsDefine } : null);
+            // the testers play the whole game; the public page gets the alpha, which ends after the tutorial
+            BuildInfoStamp.Edition = cheats ? BuildEdition.Full : BuildEdition.Alpha;
+            bool built;
+            try
+            {
+                built = Build(WebFolder, WebFolder, BuildTarget.WebGL, cheats ? new[] { CheatsDefine } : null);
+            }
+            finally
+            {
+                BuildInfoStamp.Edition = BuildEdition.Alpha;
+            }
             string zip = cheats ? WebCheatsZip : WebZip;
             if (built)
             {

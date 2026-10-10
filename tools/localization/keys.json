@@ -1,4 +1,7 @@
 {
+ "Этот уровень арены — в полной игре": [
+  "Runtime/Application/BattleApplication.cs"
+ ],
  "Миссия не найдена": [
   "Runtime/Application/BattleApplication.cs",
   "Runtime/Application/GameSession.cs",
@@ -179,13 +182,15 @@
   "Runtime/Application/GameSession.cs"
  ],
  "Новая постройка": [
-  "Runtime/Application/GameSession.cs"
+  "Runtime/Application/GameSession.cs",
+  "Runtime/UI/Colony/DemoEndPanel.cs"
  ],
  "Теперь её можно строить: каталог внизу, вкладка «Здания», {0} золота.": [
   "Runtime/Application/GameSession.cs"
  ],
  "Новое существо": [
-  "Runtime/Application/GameSession.cs"
+  "Runtime/Application/GameSession.cs",
+  "Runtime/UI/Colony/DemoEndPanel.cs"
  ],
  "Теперь его можно нанимать: каталог внизу, вкладка «Существа», {0} золота.": [
   "Runtime/Application/GameSession.cs"
@@ -205,6 +210,7 @@
  ],
  "Золото": [
   "Runtime/Application/GameSession.cs",
+  "Runtime/UI/Colony/SaveParts.cs",
   "Runtime/UI/Colony/TopBar.cs"
  ],
  "Пополнит казну поселения.": [
@@ -335,9 +341,6 @@
  "Нанято существ: {0}.": [
   "Runtime/Application/InteractionController.cs"
  ],
- "{0} нанят и стоит у склада.": [
-  "Runtime/Application/InteractionController.cs"
- ],
  "Постройка «{0}» откроется за задание.": [
   "Runtime/Application/InteractionController.cs"
  ],
@@ -402,21 +405,6 @@
   "Runtime/Application/InteractionController.cs"
  ],
  "Сначала укажите, откуда носить товар.": [
-  "Runtime/Application/InteractionController.cs"
- ],
- "{0} носит на склад: {1}.": [
-  "Runtime/Application/InteractionController.cs"
- ],
- "Сначала выберите здание.": [
-  "Runtime/Application/InteractionController.cs"
- ],
- "Отсюда на склад не носят.": [
-  "Runtime/Application/InteractionController.cs"
- ],
- "Нет свободного существа «{0}»: найми его в каталоге.": [
-  "Runtime/Application/InteractionController.cs"
- ],
- "Нет свободных существ: найми работника в каталоге.": [
   "Runtime/Application/InteractionController.cs"
  ],
  "Награда за бой: +{0} зол.": [
@@ -745,7 +733,8 @@
   "Runtime/Support/SystemReport.cs"
  ],
  "{0} ч {1} мин": [
-  "Runtime/Support/SystemReport.cs"
+  "Runtime/Support/SystemReport.cs",
+  "Runtime/UI/Colony/SaveParts.cs"
  ],
  "{0} мин {1} с": [
   "Runtime/Support/SystemReport.cs"
@@ -877,6 +866,7 @@
  ],
  "Продолжить": [
   "Runtime/UI/Battle/ReplayBar.cs",
+  "Runtime/UI/Colony/IntroPanel.cs",
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
  "Пауза": [
@@ -1138,6 +1128,24 @@
  "Готово": [
   "Runtime/UI/Colony/CheatPanel.cs"
  ],
+ "Осмотри остров": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Двигай камеру клавишами W A S D или стрелками, или тяни карту правой кнопкой мыши.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Ближе и дальше": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Крути колесо мыши: остров приблизится или отдалится.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Клавиши": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Кнопки справа нажимаются и с клавиатуры. Попробуй любую.": [
+  "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
  "Сюда": [
   "Runtime/UI/Colony/ColonyGuide.cs"
  ],
@@ -1145,9 +1153,6 @@
   "Runtime/UI/Colony/ColonyGuide.cs"
  ],
  "Найми первого работника": [
-  "Runtime/UI/Colony/ColonyGuide.cs"
- ],
- "Нажми на жетон «{0}»: он сам встанет у склада.": [
   "Runtime/UI/Colony/ColonyGuide.cs"
  ],
  "Найми работника": [
@@ -1181,26 +1186,13 @@
   "Runtime/UI/Colony/ContextBar.cs",
   "Runtime/UI/Colony/WikiPanel.cs"
  ],
- "Нажми «Работа» (E), потом на здание.": [
+ "Нажми «Работа» (E) внизу или кликни правой кнопкой мыши, потом по зданию.": [
   "Runtime/UI/Colony/ColonyGuide.cs"
  ],
  "Выбери работника": [
   "Runtime/UI/Colony/ColonyGuide.cs"
  ],
  "Кликни по свободному существу на острове.": [
-  "Runtime/UI/Colony/ColonyGuide.cs"
- ],
- "Вывозить на склад": [
-  "Runtime/UI/Colony/ColonyGuide.cs",
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
- "Ближайший свободный работник начнёт носить отсюда на склад.": [
-  "Runtime/UI/Colony/ColonyGuide.cs"
- ],
- "Здание «{0}»": [
-  "Runtime/UI/Colony/ColonyGuide.cs"
- ],
- "Нажми на него: в карточке есть «Вывозить на склад».": [
   "Runtime/UI/Colony/ColonyGuide.cs"
  ],
  "Изменить груз": [
@@ -1233,7 +1225,7 @@
   "Runtime/UI/Colony/CommandFan.cs",
   "Runtime/UI/Colony/ContextBar.cs"
  ],
- "Нажми «Перенос» (H): дальше два здания, откуда и куда.": [
+ "Нажми «Перенос» (H) внизу или кликни правой кнопкой мыши: дальше два здания, откуда и куда.": [
   "Runtime/UI/Colony/ColonyGuide.cs"
  ],
  "Выбери носильщика": [
@@ -1254,6 +1246,7 @@
  ],
  "Арена": [
   "Runtime/UI/Colony/ColonyGuide.cs",
+  "Runtime/UI/Colony/ControlsLesson.cs",
   "Runtime/UI/Colony/InspectPanel.cs",
   "Runtime/UI/Colony/TopBar.cs",
   "Runtime/UI/Colony/WikiPanel.cs"
@@ -1290,6 +1283,12 @@
  ],
  "Нажми «Отмена» (Esc).": [
   "Runtime/UI/Colony/ColonyGuide.cs"
+ ],
+ "Колония сохранена": [
+  "Runtime/UI/Colony/ColonyHudView.cs"
+ ],
+ "Колонию сохранить не удалось": [
+  "Runtime/UI/Colony/ColonyHudView.cs"
  ],
  "Потом кликни по зданию: туда встанут работать.": [
   "Runtime/UI/Colony/CommandFan.cs",
@@ -1332,7 +1331,9 @@
  "Отмена": [
   "Runtime/UI/Colony/ContextBar.cs",
   "Runtime/UI/Colony/HaulCargoDialog.cs",
-  "Runtime/UI/Colony/MenuPanel.cs"
+  "Runtime/UI/Colony/IntroPanel.cs",
+  "Runtime/UI/Colony/MenuPanel.cs",
+  "Runtime/UI/Colony/SaveSheet.cs"
  ],
  "Вернуться, ничего не меняя.": [
   "Runtime/UI/Colony/ContextBar.cs"
@@ -1360,11 +1361,71 @@
  ],
  "Земля": [
   "Runtime/UI/Colony/ContextBar.cs",
+  "Runtime/UI/Colony/ControlsLesson.cs",
+  "Runtime/UI/Colony/SaveParts.cs",
   "Runtime/UI/Colony/TopBar.cs",
   "UI/Uxml/Colony/TopBar.uxml"
  ],
  "Расчистить, {0} с": [
   "Runtime/UI/Colony/ContextBar.cs"
+ ],
+ "Каталог": [
+  "Runtime/UI/Colony/ControlsLesson.cs",
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Сетка": [
+  "Runtime/UI/Colony/ControlsLesson.cs",
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Справочник": [
+  "Runtime/UI/Colony/ControlsLesson.cs",
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml",
+  "UI/Uxml/Colony/Wiki.uxml"
+ ],
+ "Задание": [
+  "Runtime/UI/Colony/ControlsLesson.cs"
+ ],
+ "Свободный": [
+  "Runtime/UI/Colony/ControlsLesson.cs",
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Меню": [
+  "Runtime/UI/Colony/ControlsLesson.cs",
+  "Runtime/UI/Colony/TopBar.cs",
+  "UI/Uxml/Colony/TopBar.uxml"
+ ],
+ "Вы прошли обучение, и на этом альфа-версия кончается. В полной игре колония растёт дальше: новые здания, существа и уровни арены.": [
+  "Runtime/UI/Colony/DemoEndPanel.cs"
+ ],
+ "На этом демо-версия кончается. В полной игре колония растёт дальше: новые здания, существа и уровни арены.": [
+  "Runtime/UI/Colony/DemoEndPanel.cs"
+ ],
+ "Можно остаться на острове: колония живёт, рынок и арена работают, но новых заданий в этой версии нет.": [
+  "Runtime/UI/Colony/DemoEndPanel.cs"
+ ],
+ "Оценить на itch.io": [
+  "Runtime/UI/Colony/DemoEndPanel.cs"
+ ],
+ "Остаться на острове": [
+  "Runtime/UI/Colony/DemoEndPanel.cs"
+ ],
+ "Демо-версия пройдена": [
+  "Runtime/UI/Colony/DemoEndPanel.cs"
+ ],
+ "Альфа-версия пройдена": [
+  "Runtime/UI/Colony/DemoEndPanel.cs"
+ ],
+ "В желаемое": [
+  "Runtime/UI/Colony/DemoEndPanel.cs",
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Демо в Steam": [
+  "Runtime/UI/Colony/DemoEndPanel.cs",
+  "Runtime/UI/Colony/IntroPanel.cs"
  ],
  "Чат игроков": [
   "Runtime/UI/Colony/GameLinks.cs"
@@ -1452,16 +1513,6 @@
   "Runtime/UI/Colony/InspectPanel.cs",
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
- "Склад": [
-  "Runtime/UI/Colony/InspectPanel.cs",
-  "Content/Definitions/Building_Warehouse.asset"
- ],
- "свободный работник будет носить отсюда": [
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
- "Ближайший свободный работник будет носить отсюда на склад всё, что здесь делают.": [
-  "Runtime/UI/Colony/InspectPanel.cs"
- ],
  "Уровень {0}, {1}×{2}": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
@@ -1497,6 +1548,9 @@
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "Следующая веха": [
+  "Runtime/UI/Colony/InspectPanel.cs"
+ ],
+ "в полной игре": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
  "все пройдены": [
@@ -1587,17 +1641,27 @@
  "максимум": [
   "Runtime/UI/Colony/InspectPanel.cs"
  ],
- "Привет! Это альфа-версия игры: колония троллей и гоблинов на парящем острове. Она ещё растёт — что-то не доделано, что-то не сбалансировано, а прогресс пока не сохраняется.": [
+ "Привет! Это альфа-версия игры: колония троллей и гоблинов на парящем острове. Она ещё растёт — что-то не доделано, что-то не сбалансировано. Колония сохраняется сама, а в меню её можно сохранить в ячейку.": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
- "Привет! Это демо-версия игры: колония троллей и гоблинов на парящем острове. Полная игра ещё в работе: что-то будет меняться, а прогресс пока не сохраняется.": [
+ "Привет! Это демо-версия игры: колония троллей и гоблинов на парящем острове. Полная игра ещё в работе: что-то будет меняться. Колония сохраняется сама, а в меню её можно сохранить в ячейку.": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
  "Можно игре отправлять анонимную статистику: до какого задания доходят игроки? Так мы находим, где играть трудно. Ответ можно поменять по F8.": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
+ "Новая колония займёт место автосохранения после первого приказа, и эта колония пропадёт. Чтобы её оставить, нажмите «Продолжить» и сохраните её в ячейку через меню.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Показывать в обучении, куда нажимать: рукой, подсветкой и карточкой с шагом? Это можно поменять в меню.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
  "Играть": [
   "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Загрузить": [
+  "Runtime/UI/Colony/IntroPanel.cs",
+  "Runtime/UI/Colony/SaveSheet.cs"
  ],
  "Анонимная статистика": [
   "Runtime/UI/Colony/IntroPanel.cs"
@@ -1608,22 +1672,50 @@
  "Не отправлять": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
+ "Подсказки обучения": [
+  "Runtime/UI/Colony/IntroPanel.cs",
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Показывать": [
+  "Runtime/UI/Colony/IntroPanel.cs",
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Скрыть": [
+  "Runtime/UI/Colony/IntroPanel.cs",
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Новая колония": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
  "Демо-версия": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
  "Альфа-версия": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
- "В желаемое": [
-  "Runtime/UI/Colony/IntroPanel.cs"
- ],
- "Демо в Steam": [
-  "Runtime/UI/Colony/IntroPanel.cs"
- ],
  "Добавьте игру в желаемое, чтобы не пропустить выход.": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
  "В Steam можно добавить игру в желаемое, чтобы не пропустить выход.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Открыть последнее сохранение и играть дальше.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Выбрать колонию из автосохранения или ячейки.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Начать остров с начала. Ячейки останутся, а автосохранение займёт новая колония.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Сохранённые колонии этой версией не открыть. Почему, видно в списке.": [
+  "Runtime/UI/Colony/IntroPanel.cs"
+ ],
+ "Из другой версии": [
+  "Runtime/UI/Colony/IntroPanel.cs",
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Начать новую колонию?": [
   "Runtime/UI/Colony/IntroPanel.cs"
  ],
  "Авто": [
@@ -1660,6 +1752,10 @@
  "Начать заново?": [
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
+ "Сохранения": [
+  "Runtime/UI/Colony/MenuPanel.cs",
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
  "Колония троллей и гоблинов на парящем острове: добывай, перерабатывай, вози, торгуй и выводи отряд на арену.": [
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
@@ -1675,6 +1771,9 @@
  "Колония начнётся с самого начала: здания, существа, золото и задания пропадут.": [
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
+ "Сохранить колонию в ячейку или открыть прежнюю.": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
  "Звук, графика, размер интерфейса и язык.": [
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
@@ -1688,6 +1787,9 @@
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
  "Начать заново": [
+  "Runtime/UI/Colony/MenuPanel.cs"
+ ],
+ "Колония начнётся с самого начала, а нынешняя пропадёт: новая займёт место автосохранения после первого приказа. Чтобы оставить нынешнюю, сначала сохраните её в ячейку.": [
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
  "Звук": [
@@ -1706,15 +1808,6 @@
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
  "Интерфейс": [
-  "Runtime/UI/Colony/MenuPanel.cs"
- ],
- "Показывать": [
-  "Runtime/UI/Colony/MenuPanel.cs"
- ],
- "Скрыть": [
-  "Runtime/UI/Colony/MenuPanel.cs"
- ],
- "Подсказки обучения": [
   "Runtime/UI/Colony/MenuPanel.cs"
  ],
  "Версия {0}, {1}": [
@@ -1815,6 +1908,234 @@
  "Открыто: ": [
   "Runtime/UI/Colony/RewardOverlay.cs"
  ],
+ "Колония": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Свободная игра": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Все задания пройдены": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Уровень {0}: {1}": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Автосохранение": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Ячейка {0}": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Сохранение": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Сегодня, {0}": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Вчера, {0}": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "меньше минуты": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "{0} мин": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "{0}, в игре {1}": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Файл повреждён": [
+  "Runtime/UI/Colony/SaveParts.cs",
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Не открыть в этой версии": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Колонию из него не открыть.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Колонию из него не открыть. Ячейку можно удалить.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Сохранено более новой версией игры": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Сохранено версией {0}, у вас {1}": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Её сохранила более новая версия игры. Обновите игру, и колония откроется.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Ячейку сохранила версия {0}, а у вас {1}. Обновите игру, и колония откроется.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Эту колонию сохранила полная игра, здесь её не открыть.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Эту колонию сохранила демо-версия из Steam, здесь её не открыть.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Эту колонию сохранила альфа-версия, здесь её не открыть.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Эту колонию сохранила другая версия игры, здесь её не открыть.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Откройте её в полной игре: там колония продолжится с того же места.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Откройте её в демо-версии из Steam или в полной игре: там колония продолжится.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Откройте её в той версии игры, что её сохранила.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "из альфа-версии": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "из демо-версии": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "из другой версии": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Колонию сохранила альфа-версия. Здесь она продолжится, и заданий будет больше.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Колонию сохранила демо-версия. Здесь она продолжится, и заданий будет больше.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Колонию сохранила другая версия игры. Здесь она продолжится.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Казна колонии.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Существа": [
+  "Runtime/UI/Colony/SaveParts.cs",
+  "Runtime/UI/Colony/TopBar.cs",
+  "Runtime/UI/Colony/WikiPanel.cs",
+  "UI/Uxml/Colony/Catalog.uxml",
+  "UI/Uxml/Colony/Intro.uxml"
+ ],
+ "Тролли, гоблины и другие жители колонии.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Здания": [
+  "Runtime/UI/Colony/SaveParts.cs",
+  "Runtime/UI/Colony/WikiPanel.cs",
+  "UI/Uxml/Colony/Catalog.uxml",
+  "UI/Uxml/Colony/Intro.uxml"
+ ],
+ "Сколько зданий стоит на острове.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Блоков земли у колонии.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Победы на арене": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Сколько боёв выиграл отряд.": [
+  "Runtime/UI/Colony/SaveParts.cs"
+ ],
+ "Удалить": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Сохранить": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Перезаписать ячейку {0}?": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Перезаписать сохранение?": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Удалить ячейку {0}?": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Удалить сохранение?": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Загрузить автосохранение?": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Загрузить ячейку {0}?": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Загрузить сохранение?": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Загрузить колонию": [
+  "Runtime/UI/Colony/SaveSheet.cs",
+  "UI/Uxml/Colony/Intro.uxml"
+ ],
+ "Перезаписать": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Автосохранение ведёт сама игра, его не удалить.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "В ячейке пусто.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Убрать колонию из ячейки. Игра спросит ещё раз.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Автосохранение ведёт сама игра. Выберите ячейку, чтобы сохранить колонию.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Файл в ячейке повреждён: сначала удалите его.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Сохранить нынешнюю колонию в эту ячейку.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Сохранить нынешнюю колонию на место той, что в ячейке. Игра спросит ещё раз.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Открыть эту колонию вместо нынешней.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Открыть эту колонию.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Пусто": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Сохранено": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Сейчас в ячейке": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Будет": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Сейчас, в игре {0}": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Колония из ячейки {0} пропадёт, на её месте будет нынешняя.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Колония из этого сохранения пропадёт, на её месте будет нынешняя.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Колония из ячейки {0} пропадёт насовсем.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Колония из этого сохранения пропадёт насовсем.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Всё, что не сохранено с {0}, пропадёт.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Нынешняя колония ещё не сохранена и пропадёт.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
+ "Сохранить не удалось. Проверьте, есть ли место на диске, и попробуйте ещё раз.": [
+  "Runtime/UI/Colony/SaveSheet.cs"
+ ],
  "работает": [
   "Runtime/UI/Colony/StaffList.cs"
  ],
@@ -1845,24 +2166,11 @@
  "Казна поселения. Рынок платит за каждый доставленный товар.": [
   "Runtime/UI/Colony/TopBar.cs"
  ],
- "Существа": [
-  "Runtime/UI/Colony/TopBar.cs",
-  "Runtime/UI/Colony/WikiPanel.cs",
-  "UI/Uxml/Colony/Catalog.uxml"
- ],
- "Свободный": [
-  "Runtime/UI/Colony/TopBar.cs",
-  "UI/Uxml/Colony/TopBar.uxml"
- ],
  "Показать следующее существо без работы; камера едет к нему. Ещё раз — следующее.": [
   "Runtime/UI/Colony/TopBar.cs"
  ],
  "Купить участок у острова или расчистить свой.": [
   "Runtime/UI/Colony/TopBar.cs"
- ],
- "Сетка": [
-  "Runtime/UI/Colony/TopBar.cs",
-  "UI/Uxml/Colony/TopBar.uxml"
  ],
  "Клетки поля и пути носильщиков.": [
   "Runtime/UI/Colony/TopBar.cs"
@@ -1870,26 +2178,13 @@
  "Уровни арены: победа открывает следующий, пройденный можно повторять ради золота. ": [
   "Runtime/UI/Colony/TopBar.cs"
  ],
- "Каталог": [
-  "Runtime/UI/Colony/TopBar.cs",
-  "UI/Uxml/Colony/TopBar.uxml"
- ],
  "Здания и существа, лоток внизу экрана.": [
   "Runtime/UI/Colony/TopBar.cs"
- ],
- "Справочник": [
-  "Runtime/UI/Colony/TopBar.cs",
-  "UI/Uxml/Colony/TopBar.uxml",
-  "UI/Uxml/Colony/Wiki.uxml"
  ],
  "Существа, здания, товары, улучшения и арена: кто что делает и сколько стоит.": [
   "Runtime/UI/Colony/TopBar.cs"
  ],
- "Меню": [
-  "Runtime/UI/Colony/TopBar.cs",
-  "UI/Uxml/Colony/TopBar.uxml"
- ],
- "Пауза, настройки звука, графики и языка, об игре, начать заново.": [
+ "Пауза, сохранения, настройки звука, графики и языка, об игре, начать заново.": [
   "Runtime/UI/Colony/TopBar.cs"
  ],
  "{0} без дела": [
@@ -1915,10 +2210,6 @@
  ],
  "Всего {0}, все при деле.": [
   "Runtime/UI/Colony/TopBar.cs"
- ],
- "Здания": [
-  "Runtime/UI/Colony/WikiPanel.cs",
-  "UI/Uxml/Colony/Catalog.uxml"
  ],
  "Товары": [
   "Runtime/UI/Colony/WikiPanel.cs"
@@ -2453,7 +2744,7 @@
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
  ],
- "Внизу, во вкладке «Существа», нажми на гоблина: он сам встанет у склада.": [
+ "Внизу, во вкладке «Существа», нажми на гоблина, потом — на клетку у склада.": [
   "Editor/Setup/ProgressionContentSetup.cs"
  ],
  "Своя шахта": [
@@ -2467,7 +2758,7 @@
   "Editor/Setup/ProgressionContentSetup.cs",
   "Content/Definitions/Progression.asset"
  ],
- "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, нажми на шахту и в её карточке — «Вывозить на склад»: новый гоблин начнёт носить руду на склад.": [
+ "Кликни по гоблину → «Работа» (E) → шахта: он будет копать руду. Потом найми ещё гоблина, кликни по нему → «Перенос» (H): сначала шахта — откуда носить, потом склад — куда. Те же приказы открывает правый клик.": [
   "Editor/Setup/ProgressionContentSetup.cs"
  ],
  "Первая выручка": [
@@ -3083,6 +3374,12 @@
  "Отметьте один или несколько товаров или оставьте «Всё». Куда носить, укажете на карте.": [
   "UI/Uxml/Colony/HaulCargo.uxml"
  ],
+ "Понравилась игра?": [
+  "UI/Uxml/Colony/Intro.uxml"
+ ],
+ "Оценка на itch.io помогает другим найти игру.": [
+  "UI/Uxml/Colony/Intro.uxml"
+ ],
  "Поверните устройство": [
   "UI/Uxml/Colony/Intro.uxml"
  ],
@@ -3115,6 +3412,9 @@
  ],
  "Шахта": [
   "Content/Definitions/Building_Mine.asset"
+ ],
+ "Склад": [
+  "Content/Definitions/Building_Warehouse.asset"
  ],
  "2. Слизни на лугу": [
   "Content/Definitions/Mission_02.asset"

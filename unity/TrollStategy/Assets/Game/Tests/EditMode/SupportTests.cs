@@ -66,6 +66,16 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void BuildStamp_TheTestersBuildAndTheEditorPlayTheWholeGame()
+        {
+            var full = new BuildInfo("1.0", 412, "a1b2c3d", false, null, false, BuildEdition.Full).Serialize();
+
+            Assert.That(full, Does.Contain("edition=full"));
+            Assert.That(BuildInfo.Parse(full, "1.0").Edition, Is.EqualTo(BuildEdition.Full));
+            Assert.That(BuildInfo.Current.Edition, Is.EqualTo(BuildEdition.Full), "The editor plays the whole game");
+        }
+
+        [Test]
         public void FrameMeter_ReadsHalfSecondWindowsAndRemembersTheSlowestFrameForFiveSeconds()
         {
             var meter = new FrameRateMeter();

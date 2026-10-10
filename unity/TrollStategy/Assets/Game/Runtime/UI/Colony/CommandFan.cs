@@ -41,6 +41,8 @@ namespace TrollStrategy.UI
 
         public bool IsShown => Ui.IsShown(_fan);
         public IReadOnlyList<Button> Buttons => _buttons;
+        public Button WorkButton => _buttons[0];
+        public Button HaulButton => _buttons[1];
 
         /// <summary>Centres the fan on a point in panel coordinates, kept clear of the screen edges.</summary>
         public void OpenAt(Vector2 panelPoint)

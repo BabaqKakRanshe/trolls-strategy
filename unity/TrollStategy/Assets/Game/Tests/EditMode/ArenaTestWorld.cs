@@ -58,13 +58,16 @@ namespace TrollStrategy.Tests
 
         public BattleMissionDefinition Mission(int level) => Missions[level - 1];
 
-        /// <summary>A campaign session with barracks; call once the catalog is set up.</summary>
-        public GameSession Start(bool campaign = true)
+        /// <summary>
+        /// A campaign session with barracks (a short one ends after <paramref name="lastQuestId"/>); call once the
+        /// catalog is set up.
+        /// </summary>
+        public GameSession Start(bool campaign = true, string lastQuestId = null)
         {
             Session = new GameSession(Catalog, TestColony.LayoutFor(Catalog,
                 new StartingBuilding(BuildingKind.Warehouse, new Cell(10, 8)),
                 new StartingBuilding(BuildingKind.Market, new Cell(10, 2)),
-                new StartingBuilding(BuildingKind.Barracks, new Cell(2, 9))), campaign: campaign);
+                new StartingBuilding(BuildingKind.Barracks, new Cell(2, 9))), campaign, lastQuestId);
             return Session;
         }
 

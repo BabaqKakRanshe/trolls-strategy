@@ -34,6 +34,8 @@
     --magic: #8E5BE0;
     --veil: rgba(228, 236, 245, 0.45);
     --veil-deep: rgba(220, 230, 241, 0.72);
+    /* the tutorial's touch and the haul's arrow */
+    --guide-touch: #FF7A1A;
 }
 
 /* Root of the screen UI document: type and text colour inherit from here into every nested document. */
@@ -376,6 +378,14 @@
     -unity-background-image-tint-color: var(--accent-deep);
 }
 
+.glyph--mouse-right {
+    background-image: url("../Icons/mouse-right.svg");
+}
+
+.glyph--mouse-wheel {
+    background-image: url("../Icons/mouse-wheel.svg");
+}
+
 .glyph--idle {
     background-image: url("../Icons/idle.svg");
 }
@@ -522,8 +532,10 @@
 
 /* The key for a command, as a small keycap after its caption. */
 .hotkey {
+    flex-shrink: 0;
     margin-left: 8px;
     padding: 1px 6px;
+    white-space: nowrap;
     border-radius: 6px;
     background-color: rgba(30, 42, 64, 0.08);
     font-size: 12px;
@@ -817,6 +829,15 @@
     background-image: url("../Icons/heart.svg");
 }
 
+/* The saves: a floppy for saving and the slots, a bin for deleting */
+.glyph--save {
+    background-image: url("../Icons/save.svg");
+}
+
+.glyph--trash {
+    background-image: url("../Icons/trash.svg");
+}
+
 .glyph--muted {
     -unity-background-image-tint-color: var(--ink-soft);
 }
@@ -1075,9 +1096,11 @@
     height: 76px;
 }
 
+/* The link SVGs import cropped to their strokes (an envelope is wider than tall): fit, never stretch. */
 .link-disc__button > .glyph {
     width: 26px;
     height: 26px;
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .link-disc__caption {
@@ -1110,6 +1133,7 @@
 .link-row__icon > .glyph {
     width: 18px;
     height: 18px;
+    -unity-background-scale-mode: scale-to-fit;
     -unity-background-image-tint-color: var(--accent-deep);
 }
 
@@ -1122,5 +1146,6 @@
 .link-row__out {
     width: 16px;
     height: 16px;
+    -unity-background-scale-mode: scale-to-fit;
     -unity-background-image-tint-color: var(--ink-faint);
 }

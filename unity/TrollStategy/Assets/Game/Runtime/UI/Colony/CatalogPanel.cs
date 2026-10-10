@@ -218,6 +218,8 @@ namespace TrollStrategy.UI
                 if (locked && fromArena && _progress.UnlockLevel(unit.Kind) <= 0)
                     Ui.SetText(token.View.Lock, $"арена, ур. {arenaLevel}");
                 token.Listed = !locked || !fromArena || arenaLevel == nextArena || _progress.UnlockLevel(unit.Kind) > 0;
+                // a finished short game opens no arena level above its cap: those creatures wait for the full game
+                if (locked && fromArena && _progress.ArenaCap > 0 && arenaLevel > _progress.ArenaCap) token.Listed = false;
                 // a campaign points at what the quest asks; a sandbox, once the mine stands, at hands to work it
                 bool suggested = campaign ? _focus.Hire == unit.Kind : _hasMine && !_hasUnits;
                 token.View.Root.EnableInClassList("is-suggested", suggested && !locked);

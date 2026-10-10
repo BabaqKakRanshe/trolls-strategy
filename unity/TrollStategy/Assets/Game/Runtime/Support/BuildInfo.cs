@@ -6,11 +6,15 @@ using UnityEngine.CrashReportHandler;
 
 namespace TrollStrategy.Support
 {
-    /// <summary>Which public build this is: the itch.io alpha, or the demo on Steam.</summary>
+    /// <summary>
+    /// Which build this is: the itch.io alpha, the demo on Steam, or the whole game (the editor and the testers'
+    /// build). The alpha and the demo end after their quests in Progression.asset.
+    /// </summary>
     public enum BuildEdition
     {
         Alpha,
-        SteamDemo
+        SteamDemo,
+        Full
     }
 
     /// <summary>
@@ -24,6 +28,7 @@ namespace TrollStrategy.Support
 
         private const string AlphaKey = "alpha";
         private const string SteamDemoKey = "steam-demo";
+        private const string FullKey = "full";
 
         private static BuildInfo s_current;
 
@@ -49,7 +54,7 @@ namespace TrollStrategy.Support
         public bool Dirty { get; }
         public DateTime? BuiltUtc { get; }
         public bool IsEditor { get; }
-        /// <summary>The itch.io alpha unless the build was stamped as the Steam demo; the editor runs the alpha.</summary>
+        /// <summary>The itch.io alpha unless the build was stamped otherwise; the editor plays the whole game.</summary>
         public BuildEdition Edition { get; }
 
         /// <summary>"1.0.412", or "1.0" without a build number.</summary>
@@ -73,7 +78,8 @@ namespace TrollStrategy.Support
             text.Append("build=").AppendLine(Build.ToString(CultureInfo.InvariantCulture));
             if (Commit != null) text.Append("commit=").AppendLine(Commit);
             text.Append("dirty=").AppendLine(Dirty ? "true" : "false");
-            text.Append("edition=").AppendLine(Edition == BuildEdition.SteamDemo ? SteamDemoKey : AlphaKey);
+            text.Append("edition=").AppendLine(Edition == BuildEdition.SteamDemo ? SteamDemoKey
+                : Edition == BuildEdition.Full ? FullKey : AlphaKey);
             if (BuiltUtc.HasValue)
                 text.Append("built=").AppendLine(BuiltUtc.Value.ToString("o", CultureInfo.InvariantCulture));
             return text.ToString();
@@ -99,7 +105,10 @@ namespace TrollStrategy.Support
                     case "build": int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out build); break;
                     case "commit": commit = value; break;
                     case "dirty": dirty = value == "true"; break;
-                    case "edition": edition = value == SteamDemoKey ? BuildEdition.SteamDemo : BuildEdition.Alpha; break;
+                    case "edition":
+                        edition = value == SteamDemoKey ? BuildEdition.SteamDemo
+                            : value == FullKey ? BuildEdition.Full : BuildEdition.Alpha;
+                        break;
                     case "built":
                         if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var at))
                             built = at.ToUniversalTime();
@@ -112,7 +121,7 @@ namespace TrollStrategy.Support
         private static BuildInfo Load()
         {
 #if UNITY_EDITOR
-            return new BuildInfo(UnityEngine.Application.version, 0, null, false, null, true);
+            return new BuildInfo(UnityEngine.Application.version, 0, null, false, null, true, BuildEdition.Full);
 #else
             var stamp = Resources.Load<TextAsset>(ResourceName);
             return Parse(stamp != null ? stamp.text : null, UnityEngine.Application.version);

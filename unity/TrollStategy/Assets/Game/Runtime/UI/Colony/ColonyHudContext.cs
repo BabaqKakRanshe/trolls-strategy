@@ -52,8 +52,21 @@ namespace TrollStrategy.UI
         public Action<bool> SetPaused { get; set; }
         /// <summary>Starts the colony over from the beginning.</summary>
         public Action Restart { get; set; }
+        /// <summary>The colony's saves: the menu's «Сохранения» and the launch window's list; null hides them.</summary>
+        public SaveGames Saves { get; set; }
+        /// <summary>
+        /// The launch window offers the saved colonies: the run's first colony scene, not one a load opened or a
+        /// new start replaced.
+        /// </summary>
+        public bool OffersSavesAtLaunch { get; set; }
         /// <summary>The alpha notice was closed: the first-launch camera flight may start.</summary>
         public Action IntroClosed { get; set; }
+        /// <summary>The camera flies over the island (a new colony's start); the tutorial pointer waits for it.</summary>
+        public Func<bool> CameraBusy { get; set; }
+        /// <summary>How far the player has moved the camera, in sides of the land it frames (the controls lesson).</summary>
+        public Func<float> CameraPanned { get; set; }
+        /// <summary>How much the player has zoomed the camera, as the sum of |ln| of the steps (the controls lesson).</summary>
+        public Func<float> CameraZoomed { get; set; }
         /// <summary>Sends a bug report and shows its progress (the menu's "report a bug"); null without support.</summary>
         public Action ReportBug { get; set; }
         /// <summary>Languages the menu offers, as code and name in that language.</summary>

@@ -40,10 +40,11 @@ namespace TrollStrategy.Application
         /// <summary>
         /// Starts a colony with the given buildings. Throws when the layout breaks placement rules;
         /// StartingBuildingIds lists the created ids in layout order. A campaign game plays the catalog's
-        /// quest chain and starts with only its opening unlocks; a sandbox game has everything open.
+        /// quest chain and starts with only its opening unlocks; a sandbox game has everything open. A campaign
+        /// that names <paramref name="lastQuestId"/> (a short public build) ends after that quest.
         /// </summary>
         public GameSession(GameContentCatalog catalog, IReadOnlyList<StartingBuilding> startingBuildings,
-            bool campaign = false)
+            bool campaign = false, string lastQuestId = null)
         {
             _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
             if (startingBuildings == null) throw new ArgumentNullException(nameof(startingBuildings));
@@ -70,8 +71,30 @@ namespace TrollStrategy.Application
                         DefinitionId = definition.ItemId
                     });
             }
-            if (campaign) Progression.Start(_state, _catalog);
+            if (campaign) Progression.Start(_state, _catalog, lastQuestId);
             _revision = 1;
+        }
+
+        // A loaded colony: the saved state as it was, its step clock where it stood; the caches start empty and the
+        // revision at 1, as in a new session.
+        private GameSession(GameContentCatalog catalog, GameState state, float remainderSeconds)
+        {
+            _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
+            _state = state ?? throw new ArgumentNullException(nameof(state));
+            _remainderSeconds = remainderSeconds;
+            StartingBuildingIds = Array.Empty<string>();
+            _revision = 1;
+        }
+
+        /// <summary>
+        /// A colony from a saved game, played on from exactly where it was saved. <paramref name="saved"/> comes from
+        /// <see cref="SaveCodec.Read"/>, which checked it against this catalog, or from <see cref="Export"/>; the
+        /// session plays a copy of its state. Starting buildings are not placed: they are in the save.
+        /// </summary>
+        public static GameSession Restore(GameContentCatalog catalog, SavedGame saved)
+        {
+            if (saved == null) throw new ArgumentNullException(nameof(saved));
+            return new GameSession(catalog, saved.State.Clone(), saved.StepRemainderSeconds);
         }
 
         public IReadOnlyList<string> StartingBuildingIds { get; }
@@ -87,6 +110,20 @@ namespace TrollStrategy.Application
         /// <summary>Gold the market has paid over the whole game.</summary>
         public int SalesGold => _state.SalesGold;
         public bool IsCampaign => _state.Progress != null;
+        /// <summary>Colony time the current quest began at; 0 in a sandbox game.</summary>
+        public int QuestStartedMs => _state.Progress?.QuestStartMs ?? 0;
+
+        /// <summary>
+        /// The game as a save holds it: a copy of the state and the step clock. A battle being watched is left out:
+        /// its outcome is in the state from the moment it started, so the save opens in the colony after it. Commands
+        /// and steps commit whole, so any moment other code runs is a consistent one.
+        /// </summary>
+        public SavedGame Export()
+        {
+            var state = _state.Clone();
+            state.ActiveBattle = null;
+            return new SavedGame(null, state, _remainderSeconds);
+        }
 
         public bool IsBuildingUnlocked(BuildingKind kind) => Progression.IsBuildingUnlocked(_state, kind);
         public bool IsUnitUnlocked(UnitKind kind) => Progression.IsUnitUnlocked(_state, kind);
@@ -249,12 +286,17 @@ namespace TrollStrategy.Application
         public BattleMissionDefinition NextMilestone()
         {
             foreach (var mission in ArenaLadder())
-                if (mission.Milestone && mission.Level > _state.HighestMissionLevel) return mission;
+                if (mission.Milestone && mission.Level > _state.HighestMissionLevel &&
+                    Progression.MayOpenMission(_state, mission.Level)) return mission;
             return null;
         }
 
         /// <summary>Whether the mission is open on the ladder (not counting the time it rests).</summary>
         public bool IsMissionUnlocked(string missionId) => Progression.IsMissionUnlocked(_state, missionId);
+
+        /// <summary>A level a finished short game will not open: it waits for the full game.</summary>
+        public bool InFullGameOnly(BattleMissionDefinition mission) =>
+            mission != null && !Progression.MayOpenMission(_state, mission.Level);
 
         /// <summary>The arena ladder in level order: the missions of the catalog sorted by level.</summary>
         public IReadOnlyList<BattleMissionDefinition> ArenaLadder()
@@ -595,7 +637,7 @@ namespace TrollStrategy.Application
             return new ProgressSnapshot(true, progress.QuestIndex + 1, questSnapshot,
                 new List<BuildingKind>(progress.UnlockedBuildings), new List<UnitKind>(progress.UnlockedUnits),
                 new List<string>(progress.UnlockedMissions), _buildingUnlockLevels, _unitUnlockLevels,
-                _missionUnlockLevels);
+                _missionUnlockLevels, progress.ChainLength, Progression.IsOver(_state), progress.ArenaCap);
         }
 
         private void EnsureUnlockLevels()
@@ -608,7 +650,11 @@ namespace TrollStrategy.Application
             _tutorialSteps = 0;
             while (_tutorialSteps < chain.Count && chain[_tutorialSteps] != null && chain[_tutorialSteps].IsTutorial)
                 _tutorialSteps++;
-            for (int i = 0; i < chain.Count; i++)
+            // a short game names no level past its end: what opens there waits for the full game
+            int played = _state.Progress != null && _state.Progress.ChainLength > 0
+                ? Math.Min(chain.Count, _state.Progress.ChainLength)
+                : chain.Count;
+            for (int i = 0; i < played; i++)
             {
                 if (chain[i] == null) continue;
                 foreach (var reward in chain[i].Rewards)

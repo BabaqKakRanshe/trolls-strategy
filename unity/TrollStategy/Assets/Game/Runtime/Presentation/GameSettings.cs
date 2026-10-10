@@ -18,7 +18,7 @@ namespace TrollStrategy.Presentation
         private const string UiScaleKey = "settings.uiScale";
         private const string HintsKey = "settings.tutorialHints";
         private const string IntroKey = "intro.seen";
-        private const string FlightKey = "intro.flight";
+        private const string ControlsKey = "tutorial.controls";
 
         /// <summary>The quality choice that lets the game pick a level for the device.</summary>
         public const int AutoQuality = -1;
@@ -28,7 +28,7 @@ namespace TrollStrategy.Presentation
         public static float Ambience { get; private set; } = 1f;
         /// <summary><see cref="AutoQuality"/> or an index into QualitySettings.names.</summary>
         public static int Quality { get; private set; } = AutoQuality;
-        /// <summary>Two-letter language code; empty means the system language when it is supported.</summary>
+        /// <summary>Two-letter language code; empty means English until the player picks one.</summary>
         public static string Language { get; private set; } = string.Empty;
         /// <summary>The interface size the player chose; 0 is automatic.</summary>
         public static float UiScale { get; private set; }
@@ -73,6 +73,16 @@ namespace TrollStrategy.Presentation
                 PlayerPrefs.Save();
             });
             Changed?.Invoke();
+        }
+
+        /// <summary>Whether the player has chosen hints or none (the first launch's notice asks it once).</summary>
+        public static bool TutorialHintsChosen
+        {
+            get
+            {
+                try { return PlayerPrefs.HasKey(HintsKey); }
+                catch (Exception) { return true; }
+            }
         }
 
         public static void SetTutorialHints(bool on)
@@ -134,21 +144,21 @@ namespace TrollStrategy.Presentation
             return Mathf.Clamp(level, 0, top);
         }
 
+        /// <summary>Whether the player has had the tutorial's controls lesson (the camera, the zoom, the keys); once per player.</summary>
+        public static bool ControlsLearned => ReadInt(ControlsKey, 0) == 1;
+
+        public static void SetControlsLearned(bool learned) => Try(() =>
+        {
+            PlayerPrefs.SetInt(ControlsKey, learned ? 1 : 0);
+            PlayerPrefs.Save();
+        });
+
         /// <summary>Whether the alpha notice was already shown for this build's version.</summary>
         public static bool IntroSeen(string version) => ReadString(IntroKey, string.Empty) == version;
 
         public static void MarkIntroSeen(string version) => Try(() =>
         {
             PlayerPrefs.SetString(IntroKey, version ?? string.Empty);
-            PlayerPrefs.Save();
-        });
-
-        /// <summary>The first-launch camera flight plays once per player.</summary>
-        public static bool FlightShown => ReadInt(FlightKey, 0) == 1;
-
-        public static void MarkFlightShown() => Try(() =>
-        {
-            PlayerPrefs.SetInt(FlightKey, 1);
             PlayerPrefs.Save();
         });
 

@@ -24,7 +24,7 @@ namespace TrollStrategy.Editor.Setup
 
         public int callbackOrder => 0;
 
-        /// <summary>The edition the next player build is stamped with; PlayerBuild sets it around the Steam demo.</summary>
+        /// <summary>The edition the next player build is stamped with; PlayerBuild sets it around the Steam demo and the testers' build.</summary>
         public static BuildEdition Edition { get; set; } = BuildEdition.Alpha;
 
         public void OnPreprocessBuild(BuildReport report)

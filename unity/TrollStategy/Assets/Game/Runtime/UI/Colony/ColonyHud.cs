@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TrollStrategy.Application;
 using TrollStrategy.Presentation.Visuals;
+using TrollStrategy.Support;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -45,6 +46,9 @@ namespace TrollStrategy.UI
         private MapInputHandler _mapInput;
         private ColonyHudView _view;
         private bool _visible = true;
+        // the launch notice waits for the view: nested documents may attach after Init
+        private bool _introWanted;
+        private Telemetry _introStats;
 
         public ColonyHudView View => _view;
         public UIDocument Document => _document;
@@ -106,6 +110,23 @@ namespace TrollStrategy.UI
             };
         }
 
+        /// <summary>
+        /// Opens the launch notice (<see cref="IntroPanel.OpenOnce"/>) as soon as the view is built; when it has
+        /// nothing to show, the context's IntroClosed runs at once, as if it had been closed.
+        /// </summary>
+        public void OpenIntro(Telemetry stats)
+        {
+            _introStats = stats;
+            _introWanted = true;
+            if (_view != null) ShowIntro();
+        }
+
+        private void ShowIntro()
+        {
+            _introWanted = false;
+            if (!_view.Intro.OpenOnce(_introStats)) _context.IntroClosed?.Invoke();
+        }
+
         /// <summary>Plays the HUD's "no" for a refused intent or command.</summary>
         public void PlayRefusalCue() => _view?.PlayRefusal();
 
@@ -129,6 +150,7 @@ namespace TrollStrategy.UI
         private void OnDestroy()
         {
             Unsubscribe();
+            _view?.Detach();
             _context?.Showcase?.Dispose();
         }
 
@@ -156,7 +178,7 @@ namespace TrollStrategy.UI
             if (_visible && _view.Wiki != null && Hotkeys.Wiki.WasPressed && !_view.Wiki.IsTyping &&
                 (_view.Wiki.IsOpen || !_view.BlocksMap))
                 _view.ToggleWiki();
-            if (_visible && _view.Intro.IsOpen && Hotkeys.Confirm.WasPressed) _view.Intro.Close();
+            if (_visible && _view.Intro.IsOpen && Hotkeys.Confirm.WasPressed) _view.Intro.Confirm();
 #if UNITY_EDITOR || UNITY_ENABLE_CHECKS
             if (_visible && Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)
                 _view.ToggleCheat();
@@ -170,10 +192,14 @@ namespace TrollStrategy.UI
             // nested documents attach to this one when they are enabled, which may come after Init
             foreach (var root in roots.Required)
                 if (root == null || root.panel == null) return false;
+            // a rebuilt view starts with its notice closed: one that was open opens again
+            bool introOpen = _view != null && _view.Intro.IsOpen;
+            _view?.Detach();
             _view = new ColonyHudView(roots, _context);
             _builtFrom.Clear();
             foreach (var root in roots.Required) _builtFrom.Add((root, FirstChild(root)));
             ApplyVisibility();
+            if (_introWanted || introOpen) ShowIntro();
             return true;
         }
 

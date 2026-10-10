@@ -53,6 +53,7 @@ namespace TrollStrategy.Application
         public const string CampaignCompleted = "campaignCompleted";
         public const string BattleFinished = "battleFinished";
         public const string Heartbeat = "progressHeartbeat";
+        public const string GameLoaded = "gameLoaded";
 
         /// <summary>Colony time between heartbeats.</summary>
         public const int HeartbeatMs = 60000;
@@ -70,7 +71,10 @@ namespace TrollStrategy.Application
                     ("fallen", typeof(int)), ("questLevel", typeof(int)), ("activeSeconds", typeof(int))),
                 [Heartbeat] = Fields(("questId", typeof(string)), ("questLevel", typeof(int)),
                     ("activeSeconds", typeof(int)), ("gold", typeof(int)), ("buildingCount", typeof(int)),
-                    ("unitCount", typeof(int)))
+                    ("unitCount", typeof(int))),
+                [GameLoaded] = Fields(("slot", typeof(string)), ("questId", typeof(string)),
+                    ("questLevel", typeof(int)), ("activeSeconds", typeof(int)), ("edition", typeof(string)),
+                    ("carriedFrom", typeof(string)), ("formatVersion", typeof(int)))
             };
 
         private readonly GameSession _session;
@@ -84,15 +88,20 @@ namespace TrollStrategy.Application
         private int _nextHeartbeatMs = HeartbeatMs;
         private bool _disposed;
 
-        /// <summary>Starts listening, and in a campaign at once sends the quest the player starts on.</summary>
-        public CampaignTelemetry(GameSession session, Action<TelemetryEvent> send)
+        /// <summary>
+        /// Starts listening, and in a campaign at once sends the quest the player starts on. A
+        /// <paramref name="resumed"/> game (loaded from a save) sends nothing for the quest at hand: its start, and
+        /// its completion if its goals are met, went out before the save; its time counts from the quest's start.
+        /// </summary>
+        public CampaignTelemetry(GameSession session, Action<TelemetryEvent> send, bool resumed = false)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _send = send ?? throw new ArgumentNullException(nameof(send));
             _authoredQuests = session.Catalog.Progression != null ? session.Catalog.Progression.Quests.Count : 0;
             _session.OnSnapshotChanged += Observe;
             _session.OnCommandResolved += ObserveCommand;
-            Observe(session.CurrentSnapshot);
+            if (resumed) Resume(session.CurrentSnapshot);
+            else Observe(session.CurrentSnapshot);
         }
 
         public void Dispose()
@@ -135,6 +144,48 @@ namespace TrollStrategy.Application
                         ("activeSeconds", now / 1000), ("gold", snapshot.Gold),
                         ("buildingCount", snapshot.Buildings.Count), ("unitCount", snapshot.Units.Count)));
             }
+        }
+
+        /// <summary>
+        /// A game opened from a save (call it after a <c>resumed</c> start): which slot, the quest it opens on, the
+        /// colony time played, this build's edition and the one the save was carried forward from ("" when none),
+        /// and the save's format version. A carried game whose short chain had ended opens on a new quest, which
+        /// starts here. A sandbox game sends nothing, as always.
+        /// </summary>
+        public void Loaded(SavedGame saved, string edition)
+        {
+            if (_disposed || saved == null || !_session.IsCampaign) return;
+            var progress = _session.CurrentSnapshot.Progress;
+            var quest = progress.Quest;
+            _send(new TelemetryEvent(GameLoaded,
+                ("slot", SaveGames.IsAutosave(saved.SlotId) ? "autosave" : "manual"),
+                ("questId", quest?.Id ?? string.Empty), ("questLevel", progress.Level),
+                ("activeSeconds", ActiveSeconds), ("edition", edition ?? string.Empty),
+                ("carriedFrom", saved.CarriedFrom ?? string.Empty),
+                ("formatVersion", saved.Header?.Version ?? SaveCodec.Version)));
+            if (!saved.ChainExtended || quest == null) return;
+            _campaignDone = false;
+            Begin(quest);
+        }
+
+        // where the saved game stood in the funnel, without sending it again; the heartbeat goes on from the next minute
+        private void Resume(GameSnapshot snapshot)
+        {
+            int now = _session.ActiveTimeMs;
+            _nextHeartbeatMs = (now / HeartbeatMs + 1) * HeartbeatMs;
+            var progress = snapshot.Progress;
+            if (progress == null || !progress.Enabled) return;
+            var quest = progress.Quest;
+            if (quest == null)
+            {
+                _campaignDone = true;
+                return;
+            }
+            _level = quest.Level;
+            _questId = quest.Id;
+            _questStartMs = _session.QuestStartedMs;
+            if (quest.IsComplete) _completedLevel = _level;
+            _campaignDone = quest.Level > _authoredQuests;
         }
 
         private void Begin(QuestSnapshot quest)

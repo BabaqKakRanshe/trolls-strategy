@@ -30,6 +30,20 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
+        public void ShortBuilds_EndOnQuestsOfTheChain_TheAlphaWithTheTutorial_TheDemoLater()
+        {
+            var ids = _progression.Quests.Select(q => q.Id).ToList();
+            int alpha = ids.IndexOf(_progression.AlphaLastQuestId);
+            int demo = ids.IndexOf(_progression.SteamDemoLastQuestId);
+
+            Assert.That(alpha, Is.GreaterThanOrEqualTo(0), "The itch.io alpha ends on a quest of the chain");
+            Assert.That(_progression.Quests[alpha].IsTutorial, Is.True, "The alpha ends with the tutorial");
+            Assert.That(_progression.Quests[alpha + 1].IsTutorial, Is.False, "...with all of it");
+            Assert.That(demo, Is.GreaterThan(alpha), "The Steam demo plays further than the alpha");
+            Assert.That(demo, Is.LessThan(ids.Count - 1), "The demo leaves the full game something");
+        }
+
+        [Test]
         public void EveryQuest_HasAnIdTextGoalsAndRewards()
         {
             var all = _progression.Quests.Concat(_progression.RepeatableQuests).ToList();
