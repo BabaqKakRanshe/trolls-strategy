@@ -1,0 +1,6 @@
+14:12:38 start before
+14:12:41 pressed quick
+14:12:44 shot 16x9 cam=BattleCamera pos=(1008.50, 20.74, 984.58) fov=32,2 aspect=1,777778 fog=False Linear 27,91742-98,53207 amb=Trilight RGBA(0.550, 0.620, 0.760, 1.000) sun=BattleSun ss=0,8
+14:12:50 perf 16x9: frames=1354 fps=221,0 worst=126,3ms main=6,21ms gpu=1,28ms setpass=42 tris=543963
+14:12:53 shot 21x9 cam=BattleCamera pos=(1008.50, 20.74, 984.58) fov=32,2 aspect=2,333333 fog=False Linear 27,91742-98,53207 amb=Trilight RGBA(0.550, 0.620, 0.760, 1.000) sun=BattleSun ss=0,8
+14:12:54 done

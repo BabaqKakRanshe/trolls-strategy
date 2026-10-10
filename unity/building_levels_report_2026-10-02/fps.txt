@@ -1,0 +1,5 @@
+levelperf 2026-10-02 21:40, 1920x1080, quality Ultra, NVIDIA GeForce RTX 3080, Direct3D12, 40 buildings of 16 kinds
+L1: 98,6 fps avg, 10,41 ms median, 21,44 ms p99, triangles 1020939, setpass 43, draws 0
+L3: 98,3 fps avg, 10,53 ms median, 18,06 ms p99, triangles 1198785, setpass 43, draws 0
+L1: 97,3 fps avg, 10,51 ms median, 21,73 ms p99, triangles 1021974, setpass 44, draws 0
+done
