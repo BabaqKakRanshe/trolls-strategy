@@ -4,6 +4,44 @@
 
 Картинки в `images/` вырезаны из кадров игры скриптом `make_images.py` (запуск: `python make_images.py <repo> <out>`). Логотипа в них нет: название «Trollstead» на макетах набрано шрифтом Lilita One как заглушка. Название взято с макетов капсул Steam; на itch оно свободно (поиск 2026-10-09).
 
+## Текст на странице сейчас (2026-10-12)
+
+Залит на itch 2026-10-12 вместо текста варианта 2 ниже: хук «Your workers are your army», без списка будущего контента.
+
+> **Your workers are your army.**
+>
+> Trollstead is a small colony sim on a floating island. Goblins and trolls dig ore and haul it to market all day. When the arena calls, the same workers pick up swords and go fight. If one of them dies, you lose the fighter, their gear and the hands at their old job.
+>
+> The free alpha runs in your browser and takes about 20 minutes.
+>
+> ## Nothing teleports
+>
+> If you need something somewhere, someone has to carry it there. You set the routes: where to load, what to carry, where to drop it. Then you watch the island and look for the jam: a market that's too far, too few haulers, a building waiting on one missing load.
+>
+> Goblins are cheap and quick, while trolls are stronger and carry more but move slowly. Who digs and who carries is up to you.
+>
+> ## Dig, haul, sell, arm, fight
+>
+> Ore sells for gold, and gold hires more hands. Arena wins bring trophies, and those travel the same way: haulers take them to the armory, and from there they go onto your fighters. Better gear wins harder fights, and the gold and trophies keep the colony growing.
+>
+> ## The arena
+>
+> Battles play out on their own. Everything is decided before the first blow: who you send, what they wear and where they stand on the hexes. Pulling your best miner off the job might win the fight. Losing them leaves the mine short until you hire someone new.
+>
+> ## In this alpha
+>
+> The tutorial campaign: nine quests, from your first goblin to an armoured squad. The game saves as you play, and you get four slots of your own. Smelting, forging and the rest of the colony come after the alpha. They're built and being balanced.
+>
+> Next up: a layout for phone screens, clearer roles for each kind of worker, and a demo on Steam. Plans, not promises.
+>
+> Tell me in the comments where you got stuck. If something breaks, press F8 and send the logs.
+>
+> ## Controls
+>
+> Left click selects, drag selects a group, right click gives orders. WASD, the arrow keys or the screen edge move the camera, and the wheel zooms. Every button shows its key.
+>
+> 16 languages. Made in Unity. Creatures: Minifantasy by Krishna Palacio. Music: YannZ (CC BY 4.0).
+
 ## Что работает на itch (исследование 2026-10-09)
 
 - **Игра в браузере — главное.** У браузерных игр в браузере играет в среднем 37 % зашедших, у скачиваемых — 6–7 % скачивают (опрос 169 разработчиков). [howtomarketagame.com](https://howtomarketagame.com/2025/05/12/benchmark-itch-io-traffic/)
@@ -131,7 +169,7 @@
 >
 > Hire goblins and trolls, dig ore and haul it to the market by hand. Sell it, or use what you earn to arm the same workers and send them to fight. Nothing teleports here: every ore crosses the island on somebody's back.
 >
-> This is a free alpha: the tutorial campaign, about 20 minutes, in your browser or on Windows. There are no saves yet, so a closed tab means a fresh island.
+> This is a free alpha: the tutorial campaign, about 20 minutes, right in your browser. The game saves on its own as you play, and you have four slots for saves of your own.
 >
 > ## Mine it and carry it
 > Put goblins in the mine, then draw a route: pick where to load, what to carry and where to drop it. The haulers walk it there one load at a time. A goblin is cheap and quick. A troll digs harder and carries more, but walks slower. When the market is far or the haulers are busy, the gold slows down, and finding out why is the game.
@@ -150,7 +188,7 @@
 > The rest of the game is built and being balanced:
 > - 16 buildings with three levels each, among them a smelter, a forge, a tavern and an enchanter
 > - 11 kinds of workers: nine join after arena wins, each faster in its favourite buildings
-> - 30 arena levels, with a champion on every fifth
+> - 30 arena levels in six places (meadow, forest, swamp, graveyard, mountain pass and snow), with a champion on every fifth
 > - 34 quests
 >
 > *[image: the production chain]*
@@ -159,10 +197,7 @@
 > As of October 2026. These are plans, not promises, and your comments move them around.
 >
 > ### Done
-> The tutorial island, the first arena fights, 16 languages and bug reports from inside the game.
->
-> ### Now
-> Saves, with an autosave and four slots. Until they arrive, every update starts a fresh colony.
+> The tutorial island with a pointer that shows where to click, the first arena fights, saves (an autosave and four slots), arenas in six places, 16 languages and bug reports from inside the game.
 >
 > ### Next
 > - A layout that fits a phone screen.
@@ -170,7 +205,6 @@
 > - Goods your colony uses itself instead of only selling them.
 >
 > ### Later
-> - New arenas in the forest, the swamp, the graveyard and the snow.
 > - A demo on Steam.
 >
 > ### Not planned
@@ -185,13 +219,8 @@
 > Languages: English, Russian (the original) and 14 more.
 >
 > Made in Unity. Creatures: Minifantasy by Krishna Palacio. Music: YannZ (CC BY 4.0).
->
-> ## По-русски
-> Колония троллей и гоблинов на парящем острове, в духе The Settlers. Гоблины добывают руду, носильщики несут её на рынок, а на заработанное те же работники надевают броню и идут на арену. Бой идёт сам: исход решают состав и снаряжение. Погибший боец не вернётся.
->
-> В альфе — обучение: девять заданий, около 20 минут. Сохранений пока нет. Если что-то сломалось, нажмите F8 → «Отправить логи» или напишите в комментариях. Игра написана на русском.
 
-**Откуда факты.** В альфе (обучение до «В броне на арену», `docs/GDD.md` §9.1, §9.3) есть шахта, склад, рынок, бараки, склад экипировки, гоблины и тролли; плавильни и кузницы нет, поэтому они только в блоке «Built, not in the alpha yet». 16 зданий — атлас `buildings-icons`; 11 видов и любимые здания — `specs/005-creature-roles`; 30 уровней и чемпионы на вехах — GDD §6.4; 34 задания — GDD §9.2. Пока идёт бой, колония стоит (GDD §6.1), поэтому работник пропадает с работы только погибнув. «Coming next»: сохранения — решение 2026-10-09; телефон — `specs/003-mobile-ui`; гномы и хоббиты — `specs/005-creature-roles`; товары для колонии — `specs/004-colony-consumers`; биомы — GDD §6.4; «Not planned» — опора №4 из GDD §3.
+**Сверено с игрой 2026-10-10:** сохранения (автосейв и 4 ячейки) и шесть биомов арены уже в игре; русский блок со страницы убран владельцем. **Откуда факты.** В альфе (обучение до «В броне на арену», `docs/GDD.md` §9.1, §9.3) есть шахта, склад, рынок, бараки, склад экипировки, гоблины и тролли; плавильни и кузницы нет, поэтому они только в блоке «Built, not in the alpha yet». 16 зданий — атлас `buildings-icons`; 11 видов и любимые здания — `specs/005-creature-roles`; 30 уровней и чемпионы на вехах — GDD §6.4; 34 задания — GDD §9.2. Пока идёт бой, колония стоит (GDD §6.1), поэтому работник пропадает с работы только погибнув. «Coming next»: сохранения — решение 2026-10-09; телефон — `specs/003-mobile-ui`; гномы и хоббиты — `specs/005-creature-roles`; товары для колонии — `specs/004-colony-consumers`; биомы — GDD §6.4; «Not planned» — опора №4 из GDD §3.
 
 **Подтвердить до публикации:** сравнение с The Settlers (это ориентир для игрока, Зуковски советует называть его); порядок «Next / Later»; «about 20 minutes» — медиана ботов 16 минут, у людей дольше.
 
