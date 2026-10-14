@@ -2358,6 +2358,9 @@
  "везде одинаково": [
   "Runtime/UI/Colony/WikiPanel.cs"
  ],
+ "Далее": [
+  "Runtime/UI/Common/GuideOverlay.cs"
+ ],
  "Шаг {0} из {1}": [
   "Runtime/UI/Common/GuideOverlay.cs"
  ],

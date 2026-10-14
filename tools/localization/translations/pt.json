@@ -1107,5 +1107,6 @@
  "Пауза, сохранения, настройки звука, графики и языка, об игре, начать заново.": "Pausa, salvamentos, configurações de som, gráficos e idioma, sobre o jogo, recomeçar.",
  "Начать новую колонию?": "Começar uma nova colônia?",
  "Новая колония займёт место автосохранения после первого приказа, и эта колония пропадёт. Чтобы её оставить, нажмите «Продолжить» и сохраните её в ячейку через меню.": "A nova colônia ocupará o salvamento automático depois da primeira ordem, e esta colônia será perdida. Para mantê-la, clique em “Continuar” e salve-a em um espaço pelo menu.",
- "Колония начнётся с самого начала, а нынешняя пропадёт: новая займёт место автосохранения после первого приказа. Чтобы оставить нынешнюю, сначала сохраните её в ячейку.": "A colônia recomeçará do zero e a atual será perdida: a nova ocupará o salvamento automático depois da primeira ordem. Para manter a atual, salve-a antes em um espaço."
+ "Колония начнётся с самого начала, а нынешняя пропадёт: новая займёт место автосохранения после первого приказа. Чтобы оставить нынешнюю, сначала сохраните её в ячейку.": "A colônia recomeçará do zero e a atual será perdida: a nova ocupará o salvamento automático depois da primeira ordem. Para manter a atual, salve-a antes em um espaço.",
+ "Далее": "Próximo"
 }

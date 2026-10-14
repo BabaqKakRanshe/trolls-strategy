@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TrollStrategy.Presentation.Visuals;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,7 +12,8 @@ namespace TrollStrategy.UI
     /// round button at the edge instead, which brings the camera to it. A place on the map (where to build, the cell
     /// for a hire) gets no veil and no hand: it lights up, and a pin floats over it with the picture of what goes
     /// there (GuidePlace). While the player picks
-    /// where to carry, an arrow runs from the source to the pointer. Nothing here catches the pointer except that edge button: presses
+    /// where to carry, an arrow runs from the source to the pointer. Nothing here catches the pointer except that edge
+    /// button and the card's «Далее» on a step the player ends when they like (the controls lesson): presses
     /// go through to the game, and a press outside the window lifts the veil of that step (the touch and the card
     /// stay). The layer is a document of its own above the HUD's dialogs; colours come from the theme (Guide.uss).
     /// </summary>
@@ -80,8 +82,10 @@ namespace TrollStrategy.UI
         private readonly Label _step;
         private readonly Label _title;
         private readonly Label _text;
+        private readonly VisualElement _foot;
         private readonly VisualElement _keys;
         private readonly List<string> _keyLabels = new();
+        private readonly Button _next;
         private readonly Button _edge;
         private readonly VisualElement _edgeGlyph;
         private readonly VisualElement _route;
@@ -146,8 +150,15 @@ namespace TrollStrategy.UI
             _card.Add(_step);
             _card.Add(_title);
             _card.Add(_text);
+            // the keys and «Далее» in one row at the card's foot
+            _foot = Box("guide-card__foot");
+            _card.Add(_foot);
             _keys = Box("guide-card__keys");
-            _card.Add(_keys);
+            _foot.Add(_keys);
+            // «Далее»: the player says when a step that ends by no press (the controls lesson) is enough
+            _next = UiFeel.Bind(Ui.CaptionButton("Далее", Hotkeys.Confirm.Label, "btn guide-card__next"),
+                () => NextRequested?.Invoke(_shown));
+            _foot.Add(_next);
             _root.Add(_card);
 
             // the one thing that takes a press: the way to a target off the screen
@@ -162,6 +173,9 @@ namespace TrollStrategy.UI
         /// <summary>The edge button was pressed: the camera should go to the step's target.</summary>
         public event Action<GuideTarget> FocusRequested;
 
+        /// <summary>The card's «Далее» was pressed (or Enter, through <see cref="PressNext"/>) on this step.</summary>
+        public event Action<GuideStep> NextRequested;
+
         public GuideStep Step => _shown;
         public bool IsShowing => _shown.IsShown;
         /// <summary>Whether the veil covers the screen now (shown, not lifted, placed).</summary>
@@ -173,6 +187,9 @@ namespace TrollStrategy.UI
         /// <summary>Whether the pin floats over the step's place now.</summary>
         public bool PinShown => _place != null;
         public Button EdgeButton => _edge;
+        /// <summary>The card's «Далее»; it shows only on a step that offers it.</summary>
+        public Button NextButton => _next;
+        public bool NextShown => _shown.IsShown && _shown.Next != GuideNext.None;
         /// <summary>The pictures of the goods the haul's arrow carries in turn; empty when no haul is being given.</summary>
         public IReadOnlyList<Sprite> RouteCargo => _routeCargo;
         public string CardStep => _step.text;
@@ -204,6 +221,17 @@ namespace TrollStrategy.UI
             Ui.SetText(_text, step.Text ?? string.Empty);
             Ui.Show(_text, !string.IsNullOrEmpty(step.Text));
             if (changed) ShowKeys(step.Keys);
+            Ui.Show(_next, step.Next != GuideNext.None);
+            Ui.Show(_foot, step.Keys.Count > 0 || step.Next != GuideNext.None);
+            _next.EnableInClassList("btn--primary", step.Next == GuideNext.Suggested);
+            // a card with «Далее» widens, so the button stands beside its keys
+            _card.EnableInClassList("guide-card--next", step.Next != GuideNext.None);
+        }
+
+        /// <summary>Enter: presses the card's «Далее» when it shows.</summary>
+        public void PressNext()
+        {
+            if (NextShown) UiFeel.Press(_next);
         }
 
         // keycaps and mouse pictures in one row; keys with names as a list of two columns

@@ -1107,5 +1107,6 @@
  "Пауза, сохранения, настройки звука, графики и языка, об игре, начать заново.": "Pause, saves, sound, graphics and language settings, about, start over.",
  "Начать новую колонию?": "Start a new colony?",
  "Новая колония займёт место автосохранения после первого приказа, и эта колония пропадёт. Чтобы её оставить, нажмите «Продолжить» и сохраните её в ячейку через меню.": "The new colony takes the autosave's place after its first order, and this colony will be lost. To keep it, press “Resume” and save it into a slot from the menu.",
- "Колония начнётся с самого начала, а нынешняя пропадёт: новая займёт место автосохранения после первого приказа. Чтобы оставить нынешнюю, сначала сохраните её в ячейку.": "The colony starts from scratch and the current one will be lost: the new one takes the autosave's place after its first order. To keep the current colony, save it into a slot first."
+ "Колония начнётся с самого начала, а нынешняя пропадёт: новая займёт место автосохранения после первого приказа. Чтобы оставить нынешнюю, сначала сохраните её в ячейку.": "The colony starts from scratch and the current one will be lost: the new one takes the autosave's place after its first order. To keep the current colony, save it into a slot first.",
+ "Далее": "Next"
 }

@@ -342,27 +342,36 @@ namespace TrollStrategy.Tests
                 Assert.That((step.Number, step.Count, step.Title), Is.EqualTo((1, 3, "Осмотри остров")));
                 Assert.That(step.Keys.Select(k => k.ToString()), Is.EqualTo(new[] { "W", "A", "S", "D", "mouse-right" }));
                 Assert.That(hud.Guide.CardKeys, Is.EqualTo(new[] { "W", "A", "S", "D", "mouse-right" }));
+                Assert.That(step.Next, Is.EqualTo(GuideNext.Offered), "«Далее» from the start: the player says when");
+                Assert.That(hud.Guide.NextShown, Is.True);
 
                 panned = .3f;
                 Frame();
-                Assert.That(hud.Lesson.Current, Is.EqualTo(ControlsLesson.Stage.Move), "Not far enough yet");
+                Assert.That(hud.CurrentStep.Next, Is.EqualTo(GuideNext.Offered), "Not far enough to light it up yet");
                 panned = 1f;
                 Frame();
                 Frame();
+                Assert.That(hud.CurrentStep.Next, Is.EqualTo(GuideNext.Suggested));
+                Assert.That(hud.Guide.NextButton.ClassListContains("btn--primary"), Is.True);
+                Frame();
+                Assert.That(hud.Lesson.Current, Is.EqualTo(ControlsLesson.Stage.Move), "The card stays until «Далее»");
+
+                UiFeel.Press(hud.Guide.NextButton);
                 Assert.That((hud.CurrentStep.Number, hud.CurrentStep.Title), Is.EqualTo((2, "Ближе и дальше")));
                 Assert.That(hud.Guide.CardKeys, Is.EqualTo(new[] { "mouse-wheel" }));
+                Assert.That(hud.CurrentStep.Next, Is.EqualTo(GuideNext.Offered), "Each part lights it up afresh");
 
-                zoomed = .5f;
-                Frame();
-                Frame();
+                // the player may go on without trying
+                hud.Guide.PressNext();
                 step = hud.CurrentStep;
                 Assert.That((step.Number, step.Title), Is.EqualTo((3, "Клавиши")));
                 Assert.That(step.Keys.Select(k => k.Label), Is.EqualTo(ControlsLesson.ToolKeys.Select(k => k.Key.Label)));
                 Assert.That(step.Keys.All(k => !string.IsNullOrEmpty(k.Name)), Is.True, "Every key with what it opens");
 
-                hud.Lesson.NoteKey();
+                UiFeel.Press(hud.Guide.NextButton);
                 Frame();
                 Assert.That(hud.Lesson.IsDone, Is.True);
+                Assert.That(hud.Guide.NextShown, Is.False, "The quest's steps end by their own press");
                 Assert.That(GameSettings.ControlsLearned, Is.True, "Once per player");
                 Assert.That(hud.CurrentStep.Target.Element, Is.SameAs(hud.Catalog.HireButton(UnitKind.Goblin)));
             }
@@ -373,7 +382,7 @@ namespace TrollStrategy.Tests
         }
 
         [Test]
-        public void ControlsLesson_KeysCardGoesByItself_AndATouchScreenSkipsTheLesson()
+        public void ControlsLesson_GoesOnOnlyByNext_LightsItUpOnceTried_AndATouchScreenSkipsIt()
         {
             var lesson = new ControlsLesson(() => 0f, () => 0f, learned: false);
             Assert.That(lesson.Current, Is.EqualTo(ControlsLesson.Stage.Move));
@@ -381,22 +390,29 @@ namespace TrollStrategy.Tests
             try
             {
                 var keys = new ControlsLesson(() => 5f, () => 5f, learned: false);
-                keys.Tick(.1f, true);
-                keys.Tick(.1f, true);
-                Assert.That(keys.Current, Is.EqualTo(ControlsLesson.Stage.Move), "Counted from when its card came up");
+                keys.Tick(true);
+                keys.Tick(true);
+                Assert.That(keys.Tried, Is.False, "Counted from when its card came up");
                 float panned = 0f, zoomed = 0f;
                 var walk = new ControlsLesson(() => panned, () => zoomed, learned: false);
-                walk.Tick(.1f, true);
+                walk.Tick(true);
                 panned = 1f;
-                walk.Tick(.1f, true);
-                walk.Tick(.1f, true);
+                walk.Tick(false);
+                Assert.That(walk.Tried, Is.False, "Counted only while the card is up");
+                walk.Tick(true);
+                Assert.That((walk.Current, walk.Tried), Is.EqualTo((ControlsLesson.Stage.Move, true)), "Tried, still here");
+                walk.Next();
+                Assert.That((walk.Current, walk.Tried), Is.EqualTo((ControlsLesson.Stage.Zoom, false)));
+                walk.Tick(true);
                 zoomed = 1f;
-                walk.Tick(.1f, true);
-                Assert.That(walk.Current, Is.EqualTo(ControlsLesson.Stage.Keys));
-                walk.Tick(ControlsLesson.KeysSeconds / 2f, false);
-                Assert.That(walk.Current, Is.EqualTo(ControlsLesson.Stage.Keys), "Time runs only while the card is up");
-                walk.Tick(ControlsLesson.KeysSeconds + 1f, true);
+                walk.Tick(true);
+                Assert.That(walk.Tried, Is.True);
+                walk.Next();
+                walk.Tick(true);
+                Assert.That((walk.Current, walk.Tried), Is.EqualTo((ControlsLesson.Stage.Keys, false)));
+                walk.Next();
                 Assert.That(walk.IsDone, Is.True);
+                Assert.That(GameSettings.ControlsLearned, Is.True);
             }
             finally
             {
@@ -406,7 +422,7 @@ namespace TrollStrategy.Tests
             bool touch = false;
             var fingers = new ControlsLesson(() => 0f, () => 0f, learned: false, () => touch);
             touch = true;
-            fingers.Tick(.1f, true);
+            fingers.Tick(true);
             Assert.That(fingers.IsDone, Is.True, "No keys and no wheel on a touch screen");
             Assert.That(new ControlsLesson(null, null, learned: false).IsDone, Is.True, "No camera, no lesson");
         }

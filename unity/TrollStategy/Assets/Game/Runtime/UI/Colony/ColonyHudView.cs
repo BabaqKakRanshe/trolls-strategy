@@ -93,6 +93,7 @@ namespace TrollStrategy.UI
             {
                 Guide = new GuideOverlay(_guideLayer);
                 Guide.FocusRequested += target => FocusOn(target);
+                Guide.NextRequested += NextLessonStep;
             }
             // the static texts of every part's layout in the player's language
             TrollStrategy.Presentation.Localization.TranslateTree(roots.Screen);
@@ -205,6 +206,17 @@ namespace TrollStrategy.UI
             Guide?.Show(CurrentStep);
         }
 
+        private static bool IsLessonStep(GuideStep step) =>
+            step.Key != null && step.Key.StartsWith(ColonyGuide.LessonKey);
+
+        // the lesson's «Далее»: the next part's card comes at once
+        private void NextLessonStep(GuideStep step)
+        {
+            if (!IsLessonStep(step)) return;
+            Lesson.Next();
+            UpdateGuide();
+        }
+
         // the step follows the HUD's own changes (a tab, the arena's dialog) a few times a second; the window follows
         // its target every frame
         private void TickGuide(float deltaTime)
@@ -212,7 +224,7 @@ namespace TrollStrategy.UI
             if (Guide == null || _snapshot == null) return;
             _guideAge += deltaTime;
             if (_guideAge >= GuideRefreshSeconds) UpdateGuide();
-            Lesson.Tick(deltaTime, CurrentStep.Key != null && CurrentStep.Key.StartsWith(ColonyGuide.LessonKey));
+            Lesson.Tick(IsLessonStep(CurrentStep));
             Guide.Tick(deltaTime, LocateInWorld, PlaceOnGround);
             var from = RouteStart();
             Guide.SetRoute(from, from != null && _pointerScreen != null ? ScreenToLayer(_pointerScreen.Value) : null,

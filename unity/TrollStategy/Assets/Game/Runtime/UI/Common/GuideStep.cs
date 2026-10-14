@@ -25,6 +25,17 @@ namespace TrollStrategy.UI
         Card
     }
 
+    /// <summary>
+    /// The card's «Далее»: none (the step ends by the press it points at), offered (the player goes on whenever they
+    /// like) or suggested (they have done what the step asks, and the button lights up to say so).
+    /// </summary>
+    public enum GuideNext
+    {
+        None,
+        Offered,
+        Suggested
+    }
+
     /// <summary>A key or a mouse gesture a tutorial card shows: a keycap with its letter or a mouse picture, and a name in a list.</summary>
     public readonly struct GuideKey
     {
@@ -108,7 +119,7 @@ namespace TrollStrategy.UI
         public static readonly GuideStep None = new(default, null, null, 0, 0, false, null);
 
         public GuideStep(GuideTarget target, string title, string text, int number, int count, bool veil, string key,
-            IReadOnlyList<GuideKey> keys = null)
+            IReadOnlyList<GuideKey> keys = null, GuideNext next = GuideNext.None)
         {
             Target = target;
             Title = title;
@@ -118,6 +129,7 @@ namespace TrollStrategy.UI
             Veil = veil;
             Key = key;
             Keys = keys ?? Array.Empty<GuideKey>();
+            Next = next;
         }
 
         public GuideTarget Target { get; }
@@ -134,6 +146,8 @@ namespace TrollStrategy.UI
         public string Key { get; }
         /// <summary>The keys and mouse gestures of the step, as keycaps and pictures under the card's line.</summary>
         public IReadOnlyList<GuideKey> Keys { get; }
+        /// <summary>Whether the card has a «Далее» (Enter) the player presses when they have had enough of the step.</summary>
+        public GuideNext Next { get; }
         public bool IsShown => Target.Kind != GuideTargetKind.None;
 
         public override string ToString() => IsShown ? $"{Number}/{Count} {Title} → {Target}" : "no step";

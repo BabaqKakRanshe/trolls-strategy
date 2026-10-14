@@ -65,15 +65,30 @@
     white-space: normal;
 }
 
+/* a card with «Далее» (the controls lesson) is wider: its keys and the button share one row */
+.guide-card--next {
+    max-width: 620px;
+}
+
+/* the card's foot: the keys on the left, «Далее» on the right, level with them */
+.guide-card__foot {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
 /* the keys a step names: keycaps and mouse pictures in a row, or a list of keys with their names in two columns */
 .guide-card__keys {
-    margin-top: 10px;
+    flex-grow: 1;
+    flex-shrink: 1;
 }
 
 .guide-keys__row {
     flex-direction: row;
     align-items: center;
-    margin-top: 6px;
+    margin-top: 3px;
+    margin-bottom: 3px;
 }
 
 .guide-key {
@@ -83,21 +98,28 @@
 }
 
 .guide-key--named {
-    width: 190px;
+    width: 160px;
     margin-right: 0;
 }
 
+/* a letter's keycap is square; a longer name (Esc) widens it */
 .guide-key__cap {
-    min-width: 34px;
+    min-width: 36px;
+    height: 36px;
     font-size: 17px;
     -unity-text-align: middle-center;
 }
 
 .guide-key__glyph {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     margin-left: 4px;
     -unity-background-image-tint-color: var(--ink);
+}
+
+/* «Далее» at the foot's right end: the player goes on when they have had enough */
+.guide-card__next {
+    margin-left: 16px;
 }
 
 .guide-key__name {

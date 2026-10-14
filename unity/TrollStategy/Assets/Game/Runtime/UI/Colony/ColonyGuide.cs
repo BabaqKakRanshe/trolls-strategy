@@ -57,9 +57,10 @@ namespace TrollStrategy.UI
             }
         }
 
-        // the controls lesson: a card alone, with its keys; no veil, the island is what the player looks at
+        // the controls lesson: a card alone, with its keys and «Далее»; no veil, the island is what the player looks at
         private static GuideStep Lesson(ControlsLesson lesson)
         {
+            var next = lesson.Tried ? GuideNext.Suggested : GuideNext.Offered;
             switch (lesson.Current)
             {
                 case ControlsLesson.Stage.Move:
@@ -68,16 +69,17 @@ namespace TrollStrategy.UI
                         LessonKey + ":move", new[]
                         {
                             GuideKey.Of("W"), GuideKey.Of("A"), GuideKey.Of("S"), GuideKey.Of("D"), GuideKey.RightButton
-                        });
+                        }, next);
                 case ControlsLesson.Stage.Zoom:
                     return new GuideStep(GuideTarget.Card, "Ближе и дальше",
                         "Крути колесо мыши: остров приблизится или отдалится.", 2, 3, false, LessonKey + ":zoom",
-                        new[] { GuideKey.Wheel });
+                        new[] { GuideKey.Wheel }, next);
                 default:
                     var keys = new List<GuideKey>();
                     foreach (var (key, name) in ControlsLesson.ToolKeys) keys.Add(GuideKey.Of(key.Label, name));
                     return new GuideStep(GuideTarget.Card, "Клавиши",
-                        "Кнопки справа нажимаются и с клавиатуры. Попробуй любую.", 3, 3, false, LessonKey + ":keys", keys);
+                        "Кнопки справа нажимаются и с клавиатуры. Попробуй любую.", 3, 3, false, LessonKey + ":keys", keys,
+                        next);
             }
         }
 

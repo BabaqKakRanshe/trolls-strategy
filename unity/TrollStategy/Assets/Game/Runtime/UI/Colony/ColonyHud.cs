@@ -172,6 +172,8 @@ namespace TrollStrategy.UI
                 if (Hotkeys.Quest.WasPressed) _view.Quest.ToggleCollapsed();
                 if (Hotkeys.Catalog.WasPressed) _view.ToggleCatalogTool();
                 if (Hotkeys.Arena.WasPressed) _view.Arena.Toggle();
+                // the tutorial card's «Далее»
+                if (Hotkeys.Confirm.WasPressed) _view.Guide?.PressNext();
             }
             // K opens the book (on the hinted or inspected entry) and closes it again, unless the player types it
             // into the book's search
