@@ -383,24 +383,31 @@ namespace TrollStrategy.Bots
         }
 
         /// <summary>
-        /// Looks around the island as a new player does: drags the ground there and back and turns the wheel out and
-        /// in. The first tutorial cards wait for exactly that.
+        /// Looks around the island as a new player does: drags the ground there and back. The first tutorial card
+        /// lights its «Далее» after that.
         /// </summary>
         public IEnumerator LookAround()
         {
-            var middle = FreeGround(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f));
+            var middle = MiddleGround();
             if (middle == null) yield break;
             var side = new Vector2(Screen.width * 0.22f, Screen.height * 0.06f);
             yield return DragGround(middle.Value, middle.Value + side);
             yield return DragGround(middle.Value + side, middle.Value - side);
             yield return DragGround(middle.Value - side, middle.Value);
-            // the lesson counts the wheel from its own card on, which comes a moment after the drag
-            yield return Wait(0.8f);
+        }
+
+        /// <summary>Turns the wheel out and in over the island's middle, as the second tutorial card asks.</summary>
+        public IEnumerator ZoomAround()
+        {
+            var middle = MiddleGround();
+            if (middle == null) yield break;
             for (int i = 0; i < 3; i++) yield return Scroll(() => middle, -1f, "колесо");
             yield return Wait(0.4f);
             for (int i = 0; i < 3; i++) yield return Scroll(() => middle, 1f, "колесо");
             yield return Wait(0.6f);
         }
+
+        private static Vector2? MiddleGround() => FreeGround(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f));
 
         /// <summary>A map point near <paramref name="near"/> that no HUD panel covers.</summary>
         private static Vector2? FreeGround(Vector2 near)

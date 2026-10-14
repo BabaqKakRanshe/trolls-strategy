@@ -403,9 +403,18 @@ namespace TrollStrategy.Bots
                 yield return _hand.Until(() => !rig.IsPlayingIntro, 12f, "камера прилетела");
             }
             yield return _hand.Wait(0.5f);
-            // the controls lesson waits for the camera to move and zoom; any new player looks around first anyway
-            _overlay.SetThought("Осматриваю остров", "двигаю камеру и приближаю, как новый игрок");
+            // any new player looks around first; the controls lesson's cards then go on with their «Далее»
+            bool lesson = view.Lesson != null && !view.Lesson.IsDone && view.Guide != null;
+            _overlay.SetThought("Осматриваю остров", "двигаю камеру, как новый игрок");
             yield return _hand.LookAround();
+            if (lesson) yield return _hand.Press(view.Guide.NextButton, "Далее");
+            _overlay.SetThought("Осматриваю остров", "приближаю и отдаляю колесом");
+            yield return _hand.ZoomAround();
+            if (!lesson) yield break;
+            yield return _hand.Press(view.Guide.NextButton, "Далее");
+            _overlay.SetThought("Клавиши", "читаю карточку и иду дальше");
+            yield return _hand.Wait(1.5f);
+            yield return _hand.Press(view.Guide.NextButton, "Далее");
         }
 
         private static T Property<T>(object owner, string name)
